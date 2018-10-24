@@ -1,8 +1,11 @@
 import React from 'react'
 import { Link } from 'gatsby'
-
+import Amplify from 'aws-amplify'
 import Layout from '../components/layout'
 import Image from '../components/image'
+import configuration from '../aws-exports'
+
+Amplify.configure(configuration);
 
 const IndexPage = () => (
   <Layout>
