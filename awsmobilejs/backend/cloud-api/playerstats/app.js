@@ -55,7 +55,24 @@ const convertUrlType = (param, type) => {
 /********************************
  * HTTP Get method for list objects *
  ********************************/
+app.get('/player-stats', function(req, res) {
+  const queryParams = {
+    TableName: tableName,
+  }
 
+  // use scan to read every item in table
+  dynamodb.scan(queryParams, (err, data) => {
+    if (err) {
+      res.json({ error: 'Could not load items: ' + err });
+    } else {
+      res.json(data.Items);
+    }
+  });
+});
+
+/********************************
+ * HTTP Get method for one player by id *
+ ********************************/
 app.get('/player-stats/:id', function(req, res) {
   var condition = {}
   condition[partitionKeyName] = {
@@ -81,7 +98,6 @@ app.get('/player-stats/:id', function(req, res) {
     if (err) {
       res.json({error: 'Could not load items: ' + err});
     } else {
-      console.log('SUCCESS IN GET');
       res.json(data.Items);
     }
   });

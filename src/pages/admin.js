@@ -19,10 +19,8 @@ class Admin extends React.Component {
   }
 
   componentDidMount() {
-    console.log('componentDidMount');
-    // need to add /partition_key_value to /player-stats endpoint
-    API.get('player-statsCRUD', '/player-stats/two').then(stats => {
-      console.log('stats', stats);
+    API.get('player-statsCRUD', '/player-stats').then(stats => {
+      //console.log('stats', stats);
       this.setState(() => ({ data: stats }))
     }).catch(error => console.log(error.response.data));
     //let data = API.get('player-statsCRUD', '/player-stats');
@@ -31,7 +29,7 @@ class Admin extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    console.log('componentDidUpdate');
+    //console.log('componentDidUpdate');
     //let data = API.get('player-statsCRUD', '/player-stats');
     //if(prevState.data[0].id !== this.state.data[0].id){
     //  this.setState({data});
@@ -48,18 +46,19 @@ class Admin extends React.Component {
       name: 'two',
       gamesPlayed: 1
     };
-    API.post('player-statsCRUD', '/player-stats', {body: playerstats});
+    API.post('player-statsCRUD', '/player-stats', { body: playerstats });
   };
 
   render() {
     const { data } = this.state;
+
     return (
       <Layout>
         <h1>Hi from the second page</h1>
         <p>Welcome to page 2</p>
         <Link to="/">Go back to the homepage</Link>
         <button onClick={this.handleSubmitData}>Submit</button>
-        <pre>{JSON.stringify(this.state.data)}</pre>
+        <pre>{JSON.stringify(data)}</pre>
       </Layout>
     );
   }
