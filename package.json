@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "author": "Vien Tang <vientang@gmail.com>",
   "dependencies": {
+    "antd": "^3.10.3",
     "aws-amplify": "^1.1.7",
     "aws-amplify-react": "^2.1.1",
     "gatsby": "^2.0.19",
@@ -14,9 +15,11 @@
     "gatsby-plugin-sharp": "^2.0.7",
     "gatsby-source-filesystem": "^2.0.4",
     "gatsby-transformer-sharp": "^2.1.4",
+    "lodash": "^4.17.11",
     "react": "^16.5.1",
     "react-dom": "^16.5.1",
-    "react-helmet": "^5.2.0"
+    "react-helmet": "^5.2.0",
+    "react-table": "^6.8.6"
   },
   "keywords": [
     "gatsby"

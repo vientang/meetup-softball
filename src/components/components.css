@@ -1,0 +1,44 @@
+/* HEADER */
+.header {
+    background-color: rebeccapurple;
+    margin-bottom: 1.45rem;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 auto;
+    max-width: 1060px;
+    padding: 1.45rem 0;
+}
+
+.header-h1 {
+    margin: 0;
+}
+
+.site-title {
+    color: white;
+    text-decoration: none;
+}
+
+/* ADMIN FORM */
+.admin-form {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    width: 100%;
+}
+
+.stat-table {
+    height: 600px; /* This will force the table body to overflow and scroll, since there is not enough room */
+    margin-bottom: 30px;
+}
+
+.stat-cell:focus {
+    outline: none;
+}
+
+.submit-button {
+    text-align: right;
+}

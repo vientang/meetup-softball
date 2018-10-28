@@ -1,31 +1,36 @@
 import React from 'react'
-import { Link } from 'gatsby'
-import { withAuthenticator } from 'aws-amplify-react'
-import Layout from '../components/layout'
-
 import { API } from 'aws-amplify';
-//import { Utils } from "../utils";
-//import AdminSideMenu from '../components/AdminSideMenu';
-//import AdminStatsTable from '../components/AdminStatsTable';
+import { withAuthenticator } from 'aws-amplify-react';
+
+import Layout from '../components/layout'
+import AdminSideMenu from '../components/AdminSideMenu';
+import AdminStatsTable from '../components/AdminStatsTable';
+import { Utils } from "../utils";
+
+const layoutStyle = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  maxWidth: 1500,
+  minWidth: 1170,
+  width: 1170,
+  margin: '0 6.0875rem',
+  padding: '0px 1.0875rem 1.45rem',
+};
 
 class Admin extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      // temporarily make mock data
-      //data: Utils.makeData()
-      data: [],
+      data: Utils.makeData(), // mock data
     };
   }
 
-  componentDidMount() {
-    API.get('player-statsCRUD', '/player-stats').then(stats => {
-      //console.log('stats', stats);
-      this.setState(() => ({ data: stats }))
+  async componentDidMount() {
+    let data = await API.get('player-statsCRUD', '/player-stats').then(stats => {
+      this.setState(() => ({ data: stats }));
+      return stats;
     }).catch(error => console.log(error.response.data));
-    //let data = API.get('player-statsCRUD', '/player-stats');
-    //let data = await API.get('player-statsCRUD', '/player-stats');
-    //console.log('componentDidMount', data);
+    console.log('async stats from dynamo', data);
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -37,15 +42,15 @@ class Admin extends React.Component {
     //console.log('did update', { prevProps, prevState, snapshot });
   }
 
-  handleSubmitData = (event) => {
-    // hit the submit button
-    // send state.data to server to update
-    console.log('handleSubmitData', event);
+  handleSubmitData = (stats) => {
+    // send stats to dynamo
+    console.log('handleSubmitData', stats);
     const playerstats = {
       id: 'two',
       name: 'two',
       gamesPlayed: 1
     };
+    this.setState(() => ({ data: stats }))
     API.post('player-statsCRUD', '/player-stats', { body: playerstats });
   };
 
@@ -53,13 +58,13 @@ class Admin extends React.Component {
     const { data } = this.state;
 
     return (
-      <Layout>
-        <h1>Hi from the second page</h1>
-        <p>Welcome to page 2</p>
-        <Link to="/">Go back to the homepage</Link>
-        <button onClick={this.handleSubmitData}>Submit</button>
+      <>
+        <Layout style={layoutStyle}>
+          <AdminSideMenu />
+          <AdminStatsTable data={data} onSubmit={this.handleSubmitData} />
+        </Layout>
         <pre>{JSON.stringify(data)}</pre>
-      </Layout>
+      </>
     );
   }
 }
