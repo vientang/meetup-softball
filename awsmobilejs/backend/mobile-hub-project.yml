@@ -2,6 +2,38 @@
 features:
   cloudlogic: !com.amazonaws.mobilehub.v0.CloudLogic 
     components:
+      game-statsCRUD: !com.amazonaws.mobilehub.v0.API 
+        attributes:
+          name: game-statsCRUD
+          requires-signin: true
+          sdk-generation-stage-name: Development
+        paths:
+          /game-stats: !com.amazonaws.mobilehub.v0.Function 
+            codeFilename: uploads/gamestats-20181028162404.zip
+            description: 'Handler for calls to resource path : /game-stats/{proxy+}'
+            enableCORS: true
+            environment: {}
+            handler: lambda.handler
+            hashcode: 7IwhZpP1mF/ejp8VTbOhKGRXj/Pd8EfX3l34ZSchL9o=
+            memorySize: '128'
+            modified: '2018-10-28T23:25:01.259+0000'
+            name: gamestats
+            runtime: nodejs6.10
+            timeout: '3'
+            version: ndBRxnvb1BTS2JDN5UT09Icg1ol8kUS8
+          '/game-stats/{proxy+}': !com.amazonaws.mobilehub.v0.Function 
+            codeFilename: uploads/gamestats-20181028162404.zip
+            description: 'Handler for calls to resource path : /game-stats/{proxy+}'
+            enableCORS: true
+            environment: {}
+            handler: lambda.handler
+            hashcode: 7IwhZpP1mF/ejp8VTbOhKGRXj/Pd8EfX3l34ZSchL9o=
+            memorySize: '128'
+            modified: '2018-10-28T23:25:01.259+0000'
+            name: gamestats
+            runtime: nodejs6.10
+            timeout: '3'
+            version: jdB2IVwPeLhjcpUBzjxIRyD3TG1AYUqD
       player-statsCRUD: !com.amazonaws.mobilehub.v0.API 
         attributes:
           name: player-statsCRUD
@@ -9,31 +41,31 @@ features:
           sdk-generation-stage-name: Development
         paths:
           /player-stats: !com.amazonaws.mobilehub.v0.Function 
-            codeFilename: uploads/playerstats-20181026161241.zip
+            codeFilename: uploads/playerstats-20181028162404.zip
             description: 'Handler for calls to resource path : /player-stats/{proxy+}'
             enableCORS: true
             environment: {}
             handler: lambda.handler
-            hashcode: DonUsVu8yeW8tF+2W4BxwYJQcz1aWbX9322ke/3J7Go=
+            hashcode: P9lGy6EizRj77CZ41D4cCjrcFvwOC+dXz/jPSW83M6c=
             memorySize: '128'
-            modified: '2018-10-26T23:13:43.140+0000'
+            modified: '2018-10-28T23:24:59.830+0000'
             name: playerstats
             runtime: nodejs6.10
             timeout: '3'
-            version: FR7I2WOCxZ1OJ.BqrygR3BikkkPY2GoU
+            version: PEO87XDgTm.tm_jGM3RSclSl3VzH.Eou
           '/player-stats/{proxy+}': !com.amazonaws.mobilehub.v0.Function 
-            codeFilename: uploads/playerstats-20181026161241.zip
+            codeFilename: uploads/playerstats-20181028162404.zip
             description: 'Handler for calls to resource path : /player-stats/{proxy+}'
             enableCORS: true
             environment: {}
             handler: lambda.handler
-            hashcode: DonUsVu8yeW8tF+2W4BxwYJQcz1aWbX9322ke/3J7Go=
+            hashcode: P9lGy6EizRj77CZ41D4cCjrcFvwOC+dXz/jPSW83M6c=
             memorySize: '128'
-            modified: '2018-10-26T23:13:43.140+0000'
+            modified: '2018-10-28T23:24:59.830+0000'
             name: playerstats
             runtime: nodejs6.10
             timeout: '3'
-            version: nwH3sesXW4XaF7x9M0yRjn16mAXN7Loz
+            version: c.pOyEz98WmMJVVllpyTCB.22p55gBH.
   content-delivery: !com.amazonaws.mobilehub.v0.ContentDelivery 
     attributes:
       enabled: true
@@ -54,6 +86,22 @@ features:
             rangeKeyName: ''
             rangeKeyType: ''
             tableName: ___DYNAMIC_PREFIX___-player-stats
+            tablePrivacy: public
+          - !com.amazonaws.mobilehub.v0.NoSQLTable 
+            attributes:
+              date: S
+              fieldName: S
+              id: S
+              isGameTied: BOOL
+              isTournament: BOOL
+              losers: M
+              tournamentName: S
+              winners: M
+            hashKeyName: id
+            hashKeyType: S
+            rangeKeyName: ''
+            rangeKeyType: ''
+            tableName: ___DYNAMIC_PREFIX___-game-stats
             tablePrivacy: public
   mobile-analytics: !com.amazonaws.mobilehub.v0.Pinpoint 
     components:

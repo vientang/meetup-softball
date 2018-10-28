@@ -26,32 +26,48 @@ class Admin extends React.Component {
   }
 
   async componentDidMount() {
-    let data = await API.get('player-statsCRUD', '/player-stats').then(stats => {
+    //let data = await API.get('player-statsCRUD', '/player-stats').then(stats => {
+    //  this.setState(() => ({ data: stats }));
+    //  return stats;
+    //}).catch(error => console.log(error.response.data));
+    let data = await API.get('game-statsCRUD', '/game-stats').then(stats => {
       this.setState(() => ({ data: stats }));
+      console.log('async stats from dynamo', stats);
       return stats;
-    }).catch(error => console.log(error.response.data));
-    console.log('async stats from dynamo', data);
+    }).catch(error => console.log(error));
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    //console.log('componentDidUpdate');
-    //let data = API.get('player-statsCRUD', '/player-stats');
-    //if(prevState.data[0].id !== this.state.data[0].id){
-    //  this.setState({data});
-    //}
-    //console.log('did update', { prevProps, prevState, snapshot });
+    API.get('game-statsCRUD', '/game-stats').then(stats => {
+      //this.setState(() => ({ data: stats }));
+      console.log('game stats from dynamo', stats);
+      stats.forEach((g) => {
+        console.log('winners', g);
+      })
+    }).catch(error => console.log(error));
   }
 
   handleSubmitData = (stats) => {
     // send stats to dynamo
-    console.log('handleSubmitData', stats);
-    const playerstats = {
-      id: 'two',
-      name: 'two',
-      gamesPlayed: 1
+    //const playerstats = {
+    //  id: 'two',
+    //  name: 'two',
+    //  gamesPlayed: 1
+    //};
+    //this.setState(() => ({ data: stats }))
+    //API.post('player-statsCRUD', '/player-stats', { body: playerstats });
+    const winners = {
+      players: stats,
     };
-    this.setState(() => ({ data: stats }))
-    API.post('player-statsCRUD', '/player-stats', { body: playerstats });
+
+    const gamestats = {
+      id: 'game7',
+      isTournament: false,
+      winners,
+    };
+    console.log('gamestats', gamestats);
+    this.setState(() => ({ gameData: gamestats }));
+    API.post('game-statsCRUD', '/game-stats', { body: gamestats });
   };
 
   render() {
