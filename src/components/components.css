@@ -1,16 +1,15 @@
 /* HEADER */
-.header {
+.header-container {
     background-color: rebeccapurple;
     margin-bottom: 1.45rem;
 }
 
-.header-container {
+.header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin: 0 auto;
-    max-width: 1060px;
-    padding: 1.45rem 0;
+    margin: 0 6.0875rem;
+    max-width: 100%;
+    padding: 1.45rem 1.0875rem;
 }
 
 .header-h1 {
@@ -30,7 +29,11 @@
     width: 100%;
 }
 
-.stat-table {
+.stats-table-container {
+    margin: 0 auto;
+}
+
+.stats-table {
     height: 600px; /* This will force the table body to overflow and scroll, since there is not enough room */
     margin-bottom: 30px;
 }

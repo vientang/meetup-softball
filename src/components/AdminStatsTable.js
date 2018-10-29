@@ -4,6 +4,7 @@ import ReactTable from "react-table";
 import { Button } from 'antd';
 import { Utils } from "../utils";
 import "react-table/react-table.css";
+import './components.css';
 
 class AdminStatsTable extends React.Component {
 	constructor(props) {
@@ -95,7 +96,7 @@ class AdminStatsTable extends React.Component {
 		const { data } = this.state;
 
 		return (
-			<div>
+			<div className="stats-table-container">
 				<ReactTable
 					data={data}
 					columns={[
@@ -181,7 +182,7 @@ class AdminStatsTable extends React.Component {
 						},
 					]}
 					defaultPageSize={data.length}
-					className="-striped -highlight stat-table"
+					className="-striped -highlight stats-table"
 					showPaginationBottom={false}
 				/>
 				<div className="submit-button">

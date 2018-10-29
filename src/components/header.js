@@ -1,42 +1,16 @@
 import React from 'react'
 import { Link } from 'gatsby'
+import './components.css';
 
 const Header = () => ({ siteTitle }) => (
-  <div
-    style={{
-      background: 'rebeccapurple',
-      marginBottom: '1.45rem',
-    }}
-  >
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        maxWidth: 1500,
-        minWidth: 1170,
-        width: 1170,
-        margin: '0px 6.0875rem',
-        padding: '1.45rem 1.0875rem',
-      }}
-    >
-      <h1 style={{ margin: 0 }}>
-        <Link
-          to="/"
-          style={{
-            color: 'white',
-            textDecoration: 'none',
-          }}
-        >
+  <div className="header-container">
+    <div className="header">
+      <h1 className="header-h1">
+        <Link to="/" className="site-title">
           {siteTitle}
         </Link>
       </h1>
-      <Link
-        to="/admin"
-        style={{
-          color: 'white',
-          textDecoration: 'none',
-        }}
-      >
+      <Link to="/admin" className="site-title">
         Sign in
       </Link>
     </div>

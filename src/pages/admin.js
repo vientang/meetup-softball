@@ -6,13 +6,11 @@ import Layout from '../components/layout'
 import AdminSideMenu from '../components/AdminSideMenu';
 import AdminStatsTable from '../components/AdminStatsTable';
 import { Utils } from "../utils";
+import styles from './pages.module.css';
 
 const layoutStyle = {
   display: 'flex',
-  justifyContent: 'space-between',
-  maxWidth: 1500,
-  minWidth: 1170,
-  width: 1170,
+  maxWidth: '100%',
   margin: '0 6.0875rem',
   padding: '0px 1.0875rem 1.45rem',
 };
@@ -67,7 +65,7 @@ class Admin extends React.Component {
 
     return (
       <>
-        <Layout style={layoutStyle}>
+        <Layout className={styles.adminPage}>
           <AdminSideMenu />
           <AdminStatsTable data={data} onSubmit={this.handleSubmitData} />
         </Layout>
