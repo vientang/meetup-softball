@@ -63,6 +63,7 @@ const sortByNameLength = (a, b) => {
 	return a.length > b.length ? 1 : -1;
 };
 
+console.log('make datat', makeData());
 export default {
 	makeData,
 	sortByNameLength,

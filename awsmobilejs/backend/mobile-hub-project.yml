@@ -9,31 +9,31 @@ features:
           sdk-generation-stage-name: Development
         paths:
           /game-stats: !com.amazonaws.mobilehub.v0.Function 
-            codeFilename: uploads/gamestats-20181028162404.zip
+            codeFilename: uploads/gamestats-20181028212701.zip
             description: 'Handler for calls to resource path : /game-stats/{proxy+}'
             enableCORS: true
             environment: {}
             handler: lambda.handler
-            hashcode: 7IwhZpP1mF/ejp8VTbOhKGRXj/Pd8EfX3l34ZSchL9o=
+            hashcode: eTh3wClHUFngHXmM8IdQrWgpQ6plS9MkT3XKgYmqeVY=
             memorySize: '128'
-            modified: '2018-10-28T23:25:01.259+0000'
+            modified: '2018-10-29T05:59:25.474+0000'
             name: gamestats
             runtime: nodejs6.10
             timeout: '3'
-            version: ndBRxnvb1BTS2JDN5UT09Icg1ol8kUS8
+            version: KHPIeYwjP.mt0J0IR0yiyb8Dd_lwyam8
           '/game-stats/{proxy+}': !com.amazonaws.mobilehub.v0.Function 
-            codeFilename: uploads/gamestats-20181028162404.zip
+            codeFilename: uploads/gamestats-20181028212701.zip
             description: 'Handler for calls to resource path : /game-stats/{proxy+}'
             enableCORS: true
             environment: {}
             handler: lambda.handler
-            hashcode: 7IwhZpP1mF/ejp8VTbOhKGRXj/Pd8EfX3l34ZSchL9o=
+            hashcode: eTh3wClHUFngHXmM8IdQrWgpQ6plS9MkT3XKgYmqeVY=
             memorySize: '128'
-            modified: '2018-10-28T23:25:01.259+0000'
+            modified: '2018-10-29T05:59:25.474+0000'
             name: gamestats
             runtime: nodejs6.10
             timeout: '3'
-            version: jdB2IVwPeLhjcpUBzjxIRyD3TG1AYUqD
+            version: hpl02ULhMnWxnobunneMBPbvLHCDlS5z
       player-statsCRUD: !com.amazonaws.mobilehub.v0.API 
         attributes:
           name: player-statsCRUD
@@ -41,31 +41,31 @@ features:
           sdk-generation-stage-name: Development
         paths:
           /player-stats: !com.amazonaws.mobilehub.v0.Function 
-            codeFilename: uploads/playerstats-20181028162404.zip
+            codeFilename: uploads/playerstats-20181028231055.zip
             description: 'Handler for calls to resource path : /player-stats/{proxy+}'
             enableCORS: true
             environment: {}
             handler: lambda.handler
-            hashcode: P9lGy6EizRj77CZ41D4cCjrcFvwOC+dXz/jPSW83M6c=
+            hashcode: 3pSVeevJVmCCmAor01T2xBRQeRElH2wKo2oM+Sznr/g=
             memorySize: '128'
-            modified: '2018-10-28T23:24:59.830+0000'
+            modified: '2018-10-29T06:11:48.618+0000'
             name: playerstats
             runtime: nodejs6.10
             timeout: '3'
-            version: PEO87XDgTm.tm_jGM3RSclSl3VzH.Eou
+            version: 8cwUQ2zjucGHdw3G1JuUPz5Fnk_V5g_b
           '/player-stats/{proxy+}': !com.amazonaws.mobilehub.v0.Function 
-            codeFilename: uploads/playerstats-20181028162404.zip
+            codeFilename: uploads/playerstats-20181028231055.zip
             description: 'Handler for calls to resource path : /player-stats/{proxy+}'
             enableCORS: true
             environment: {}
             handler: lambda.handler
-            hashcode: P9lGy6EizRj77CZ41D4cCjrcFvwOC+dXz/jPSW83M6c=
+            hashcode: 3pSVeevJVmCCmAor01T2xBRQeRElH2wKo2oM+Sznr/g=
             memorySize: '128'
-            modified: '2018-10-28T23:24:59.830+0000'
+            modified: '2018-10-29T06:11:48.618+0000'
             name: playerstats
             runtime: nodejs6.10
             timeout: '3'
-            version: c.pOyEz98WmMJVVllpyTCB.22p55gBH.
+            version: 1VGWlOdjyqTPnmmzDKHhosjhCi3WrHtQ
   content-delivery: !com.amazonaws.mobilehub.v0.ContentDelivery 
     attributes:
       enabled: true

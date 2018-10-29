@@ -12,7 +12,9 @@ const AWS = require('aws-sdk')
 const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware');
 
 AWS.config.update({ region: process.env.REGION });
-const dynamodb = new AWS.DynamoDB.DocumentClient();
+const dynamodb = new AWS.DynamoDB.DocumentClient({
+  convertEmptyValues: true,
+});
 
 const mhprefix  = process.env.MOBILE_HUB_DYNAMIC_PREFIX;
 let tableName = "game-stats";
@@ -179,6 +181,12 @@ app.post(path, function(req, res) {
   let putItemParams = {
     TableName: tableName,
     Item: req.body,
+    //UpdateExpression: "set info.id = :id, info.isTournament=:tm, info.winners=:w",
+    //ExpressionAttributeValues:{
+    //  ":id":req.body.id,
+    //  ":tm":req.body.isTournament,
+    //  ":w":{ "players": new Map([['players', req.body.winners.players]])},
+    //}
   };
 
   dynamodb.put(putItemParams, (err, data) => {

@@ -22,6 +22,7 @@ class Admin extends React.Component {
     super(props);
     this.state = {
       data: Utils.makeData(), // mock data
+      dataSubmitted: false,
     };
   }
 
@@ -30,43 +31,34 @@ class Admin extends React.Component {
     //  this.setState(() => ({ data: stats }));
     //  return stats;
     //}).catch(error => console.log(error.response.data));
-    let data = await API.get('game-statsCRUD', '/game-stats').then(stats => {
+    await API.get('game-statsCRUD', '/game-stats').then(stats => {
+      console.log('async stats on mount', stats);
       this.setState(() => ({ data: stats }));
-      console.log('async stats from dynamo', stats);
-      return stats;
     }).catch(error => console.log(error));
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    API.get('game-statsCRUD', '/game-stats').then(stats => {
-      //this.setState(() => ({ data: stats }));
-      console.log('game stats from dynamo', stats);
-      stats.forEach((g) => {
-        console.log('winners', g);
-      })
-    }).catch(error => console.log(error));
+    if (this.state.dataSubmitted) {
+      API.get('game-statsCRUD', '/game-stats').then(stats => {
+        console.log('game stats updated', stats);
+        this.setState(() => ({ data: stats, dataSubmitted: false }));
+      }).catch(error => console.log(error));
+    }
   }
 
   handleSubmitData = (stats) => {
     // send stats to dynamo
-    //const playerstats = {
-    //  id: 'two',
-    //  name: 'two',
-    //  gamesPlayed: 1
-    //};
-    //this.setState(() => ({ data: stats }))
-    //API.post('player-statsCRUD', '/player-stats', { body: playerstats });
-    const winners = {
-      players: stats,
-    };
-
     const gamestats = {
-      id: 'game7',
-      isTournament: false,
-      winners,
+      id: 'game15', // get from meetup api
+      isTournament: false, // get from meetup api
+      winners: {
+        players: stats,
+      },
     };
-    console.log('gamestats', gamestats);
-    this.setState(() => ({ gameData: gamestats }));
+    this.setState(() => ({ data: stats, dataSubmitted: true, gameData: gamestats }));
+    API.del('game-statsCRUD', '/game-stats/object/' + gamestats.id).then((stats) => {
+      console.log('del', stats);
+    });
     API.post('game-statsCRUD', '/game-stats', { body: gamestats });
   };
 

@@ -22,7 +22,8 @@ class AdminStatsTable extends React.Component {
 		}
 	}
 
-	handleSubmitData = () => {
+	handleSubmitData = (e) => {
+	  e.preventDefault();
 		// hit the submit button
 		// send state.data to server to update
 		this.props.onSubmit(this.state.data);
@@ -59,8 +60,7 @@ class AdminStatsTable extends React.Component {
 
 	/**
 	 * Save number entries to state
-	 * @param cellInfo - argument passed back from Cell renderer from React Table columns
-	 * @param e - event object from keyUp event
+	 * @param cellInfo - meta data for each cell
 	 */
 	handleDataEntry = (cellInfo) => (e) => {
 		let value = Number(e.key);
@@ -75,7 +75,7 @@ class AdminStatsTable extends React.Component {
 		this.setState(() => ({ data }));
 	};
 
-	renderEditable = (cellInfo) => {
+	renderEditableCell = (cellInfo) => {
 		const makeContentEditable = this.makeContentEditable(cellInfo);
 
 		return (
@@ -102,7 +102,7 @@ class AdminStatsTable extends React.Component {
 						{
 							Header: "PLAYER",
 							accessor: "player",
-							Cell: this.renderEditable,
+							Cell: this.renderEditableCell,
 							sortMethod: Utils.sortByNameLength,
 							maxWidth: 150,
 							width: 150,
@@ -110,73 +110,73 @@ class AdminStatsTable extends React.Component {
 						{
 							Header: "O",
 							accessor: "o",
-							Cell: this.renderEditable,
+							Cell: this.renderEditableCell,
 							maxWidth: 50,
 						},
 						{
 							Header: "1b",
 							accessor: "1b",
-							Cell: this.renderEditable,
+							Cell: this.renderEditableCell,
 							maxWidth: 50,
 						},
 						{
 							Header: "2b",
 							accessor: "2b",
-							Cell: this.renderEditable,
+							Cell: this.renderEditableCell,
 							maxWidth: 50,
 						},
 						{
 							Header: "3b",
 							accessor: "3b",
-							Cell: this.renderEditable,
+							Cell: this.renderEditableCell,
 							maxWidth: 50,
 						},
 						{
 							Header: "HR",
 							accessor: "hr",
-							Cell: this.renderEditable,
+							Cell: this.renderEditableCell,
 							maxWidth: 50,
 						},
 						{
 							Header: "RBI",
 							accessor: "rbi",
-							Cell: this.renderEditable,
+							Cell: this.renderEditableCell,
 							maxWidth: 50,
 						},
 						{
 							Header: "R",
 							accessor: "r",
-							Cell: this.renderEditable,
+							Cell: this.renderEditableCell,
 							maxWidth: 50,
 						},
 						{
 							Header: "BB",
 							accessor: "bb",
-							Cell: this.renderEditable,
+							Cell: this.renderEditableCell,
 							maxWidth: 50,
 						},
 						{
 							Header: "K",
 							accessor: "k",
-							Cell: this.renderEditable,
+							Cell: this.renderEditableCell,
 							maxWidth: 50,
 						},
 						{
 							Header: "SB",
 							accessor: "sb",
-							Cell: this.renderEditable,
+							Cell: this.renderEditableCell,
 							maxWidth: 50,
 						},
 						{
 							Header: "CS",
 							accessor: "cs",
-							Cell: this.renderEditable,
+							Cell: this.renderEditableCell,
 							maxWidth: 50,
 						},
 						{
 							Header: "AB",
 							accessor: "ab",
-							Cell: this.renderEditable,
+							Cell: this.renderEditableCell,
 							maxWidth: 50,
 						},
 					]}
