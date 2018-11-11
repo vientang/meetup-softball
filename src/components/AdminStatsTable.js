@@ -15,6 +15,12 @@ class AdminStatsTable extends React.Component {
 		};
 	}
 
+	static getDerivedStateFromProps(props) {
+		return {
+			data: props.data,
+		}
+	}
+
 	componentDidUpdate(prevProps, prevState, snapshot) {
 		// after submitting the data, we need to reset this back to false
 		// to prevent unnecessary updates in shouldComponentUpdate

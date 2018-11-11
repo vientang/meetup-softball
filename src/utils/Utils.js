@@ -1,4 +1,4 @@
-const players = [
+const game1Players = [
 	'Vien',
 	'Mike',
 	'Steven',
@@ -17,6 +17,27 @@ const players = [
 	'Brendan',
 	'Eli',
 	'Hector',
+];
+
+const game2Players = [
+	'Annabel',
+	'Eida',
+	'Carlos',
+	'Mike B OG',
+	'New Mike B',
+	'Michael',
+	'Dale',
+	'Jessica',
+	'Matthew',
+	'Tall Matthew',
+	'Chris',
+	'Efrain',
+	'Santiago',
+	'Vien',
+	'Earl',
+	'Brendan',
+	'Laura',
+	'Natcha',
 ];
 
 // returns an array of len numbers, starting from 0
@@ -47,7 +68,8 @@ const newPerson = (player) => {
 	};
 };
 
-const makeData = () => {
+const makeData = (game) => {
+	const players = game === 1 ? game1Players : game2Players;
 	return players.map((p) => {
 		return {
 			...newPerson(p),
@@ -63,7 +85,7 @@ const sortByNameLength = (a, b) => {
 	return a.length > b.length ? 1 : -1;
 };
 
-console.log('make datat', makeData());
+console.log('make datat', makeData(1));
 export default {
 	makeData,
 	sortByNameLength,
