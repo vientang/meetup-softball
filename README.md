@@ -15,25 +15,40 @@ better organize information like stats, scores, join the group, etc.
 ## 🚀 Quick start
 
 1.  **Clone the repo.**
-    [Meetup Softball](https://github.com/mikebasta/softballmeetup.git)
+    [Meetup Softball](https://github.com/vientang/meetup-softball.git)
 
 2.  **Run the scripts.**
     ```
+        # install the dependencies
+        npm install
+
         # install the Gatsby CLI globally
         npm install -g gatsby-cli
+
+        # install the AWSMobile CLI
+        npm install -g awsmobile-cli
     ```
-    
-3.  **Start developing.**
+
+4.  **Set up AWS backend configurations (just once).**
+    ```
+    # set up credentials to interact with AWS.
+
+    I'll need to send you the credentials. Hit me up.
+    ```
+
+5.  **Start the server**
     ```
     # start a hot-reloading development environment accessible at `localhost:8000`
     npm start
+
+    Your site is now running at `http://localhost:8000`!
+
+    If a `localhost:8000` server is already running, Gatsby will suggest another port. Just say yes when prompted.
     ```
 
-4.  **Open the source code and start editing!**
+6.  **Open the source code and start editing!**
     Open `pages/index.js`. This is the starting point. 
       
-    Your site is now running at `http://localhost:8000`!
-    
     *Note: You'll also see a second link: `http://localhost:8000___graphql`. This is a tool you can use to experiment with querying your data. Learn more about using this tool in the [Gatsby tutorial](https://next.gatsbyjs.org/tutorial/part-five/#introducing-graphiql).*
     
 ## 🧐 What's inside?
@@ -77,13 +92,13 @@ A quick look at the top-level files and directories you'll see in a Gatsby proje
   
   9.  **`LICENSE`**: Gatsby is licensed under the MIT license.
   
-  10.  **`package-lock.json`** (See `package.json` below, first). This is an automatically generated file based on the exact versions of your npm dependencies that were installed for your project. (You won’t change this file directly).
+  10.  **`package-lock.json`** (See `package.json` below, first). This is an automatically generated file based on the exact versions of your npm dependencies that were installed. (You won’t change this file directly).
   
-  11.  **`package.json`**: A manifest file for Node.js projects, which includes things like metadata (the project’s name, author, etc). This manifest is how npm knows which packages to install for your project.
+  11.  **`package.json`**: A manifest file for Node.js projects, which includes things like metadata (the project’s name, author, etc). This manifest is how npm knows which packages to install.
   
-  12.  **`README.md`**: A text file containing useful reference information about your project.
+  12.  **`README.md`**: A text file containing useful reference information about this project.
   
-  13.  **`yarn.lock`**: [Yarn](https://yarnpkg.com/) is a package manager alternative to npm. You can use either yarn or npm, though all of the Gatsby docs reference npm.  This file serves essentially the same purpose as `package-lock.json`, just for a different package management system.
+  13.  **`yarn.lock`**: [Yarn](https://yarnpkg.com/) is a package manager alternative to npm. You can use either yarn or npm. This file serves essentially the same purpose as `package-lock.json`, just for a different package management system. (You won’t change this file directly).
 
 ## Issues getting started
 

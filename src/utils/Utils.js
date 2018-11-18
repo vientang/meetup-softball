@@ -49,10 +49,10 @@ const range = len => {
 	return arr;
 };
 
-const newPerson = (player) => {
+const newPerson = (player, index) => {
 	return {
+		id: `${player}${index}`,
 		player,
-		gameId: '',
 		o: '',
 		"1b": '',
 		"2b": '',
@@ -64,15 +64,15 @@ const newPerson = (player) => {
 		k: '',
 		sb: '',
 		cs: '',
-		ab: '',
+		sac: '',
 	};
 };
 
 const makeData = (game) => {
 	const players = game === 1 ? game1Players : game2Players;
-	return players.map((p) => {
+	return players.map((p, idx) => {
 		return {
-			...newPerson(p),
+			...newPerson(p, idx),
 			//children: range(10).map(newPerson)
 		};
 	});

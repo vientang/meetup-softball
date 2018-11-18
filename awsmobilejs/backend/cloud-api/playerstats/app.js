@@ -12,7 +12,9 @@ const AWS = require('aws-sdk')
 const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware');
 
 AWS.config.update({ region: process.env.REGION });
-const dynamodb = new AWS.DynamoDB.DocumentClient();
+const dynamodb = new AWS.DynamoDB.DocumentClient({
+  convertEmptyValues: true,
+});
 
 const mhprefix  = process.env.MOBILE_HUB_DYNAMIC_PREFIX;
 let tableName = "player-stats";
@@ -183,6 +185,33 @@ app.post(path, function(req, res) {
     TableName: tableName,
     Item: req.body
   }
+
+  dynamodb.put(putItemParams, (err, data) => {
+    if(err) {
+      res.json({error: err, url: req.url, body: req.body});
+    } else{
+      res.json({success: 'post call succeed!', url: req.url, data: data})
+    }
+  });
+});
+
+app.post('/player-stats/object/:id', function(req, res) {
+  
+  if (userIdPresent) {
+    req.body['userId'] = req.apiGateway.event.requestContext.identity.cognitoIdentityId || UNAUTH;
+  }
+
+  // get existing user data
+  // utils.transform({ stats: req.body, existingPlayerData });
+  // call something like this - util.transform({ newPlayerStats: req.body, existingPlayerStats })
+  // to transform stats (add counting stats, recalculate percentage stats, …)
+  // return updated user data
+  
+  let putItemParams = {
+    TableName: tableName,
+    Item: req.body
+  }
+
   dynamodb.put(putItemParams, (err, data) => {
     if(err) {
       res.json({error: err, url: req.url, body: req.body});

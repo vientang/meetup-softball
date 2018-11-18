@@ -50,7 +50,7 @@ class Admin extends React.Component {
     // send to AdminStatsTable
 
     await API.get('game-statsCRUD', '/game-stats').then(stats => {
-      console.log('async stats on mount', stats);
+      // console.log('async stats on mount', stats);
       // this.setState(() => ({ data: stats }));
     }).catch(error => console.log(error));
   }
@@ -58,7 +58,7 @@ class Admin extends React.Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (this.state.dataSubmitted) {
       API.get('game-statsCRUD', '/game-stats').then(stats => {
-        console.log('game stats updated', stats);
+        // console.log('game stats updated', stats);
         this.setState(() => ({ dataSubmitted: false }));
       }).catch(error => console.log(error));
     }
@@ -68,7 +68,7 @@ class Admin extends React.Component {
     // meetup is from meetup API
     // stats is from admin generated data
     const gamestats = {
-      id: 'brnhcqyxmbcb', // name.toLowerCase().slice(0, 7).split(' ').join('')_${meetup.id}
+      id: 'xxxxxxxcqyxmbcb', // name.toLowerCase().slice(0, 7).split(' ').join('')_${meetup.id}
       date: new Date(), // meetup.local_date
       time: '1535823000000', // meetup.local_time
       field: 'Westlake', // meetup.venue.name
@@ -76,29 +76,47 @@ class Admin extends React.Component {
       tournamentName: '', // playerStats.tournamentName
       isGameTied: false, // playerStats.isGameTied
       winners: {
+        runsScored: '13',
         teamName: 'Winners', // playerStats.teamName
         players: playerStats,
       },
       losers: {
+        runsScored: '13',
         teamName: 'Losers', // playerStats.teamName
         players: playerStats,
       }
     };
 
+    const stats = {
+      id: playerStats[0].userId,
+      stats: playerStats[0],
+    }
+
+    // API.post('player-statsCRUD', '/player-stats', { body: playerStats }).catch(error => console.log(error));
+
+    API.post('player-statsCRUD', '/player-stats/object/' + playerStats[0].userId, { body: stats }).catch(error => console.log(error));
     // for new game stats
     // loop through player stats
-    // for each player, API.get data for that player (find by id)
+    // for each player, API.get data for only players in that game
+    // look into FilterExpression || BatchGetItem || BatchWriteItem in .get
+    // await playerStats.forEach((player, idx) => {
+    //   API.get('player-statsCRUD', '/player-stats/' + playerStats.id).then(result => {
+    //     if (result.length < 1) {
+    //       console.log('Player from Dynamo', {result, player});
+    //       API.post('player-statsCRUD', '/player-stats/' + playerStats.id, { body: player }).catch(error => console.log(error));
+    //     }
+    //   }).catch(error => console.log(`Could not locate ${player.player}`, error));
+    // })
     // add counting stats
     // calculate percentage stats
     // API.post to update each player stats
 
-
     await API.post('game-statsCRUD', '/game-stats', { body: gamestats }).catch(error => console.log(error));
     
-
     // when post is complete, 
     // if there's another game to add stats
     // tell AdminSideMenu to focus on next game
+    // removed the complete game from the AdminSideMenu
     // this should show the AdminStatsTable for the next game
 
     // else, route the admin to AdminDashboard (need to build out an admin dashboard)
