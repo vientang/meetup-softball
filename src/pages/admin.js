@@ -20,11 +20,10 @@ class Admin extends React.Component {
   }
 
   async componentDidMount() {
-    // request game info from meetup api
-    // get game name, venue name, date, and time
-    // add data from meetup to game data object
-    // save game data object to state
+    // get game info from meetup api
+    // we need game name, venue name, date, and time
     // send to AdminSideMenu
+    // here's an example
     const game247 = {
       gameNumber: 'Game 247',
       location: 'Westlake Park, Daly City',
@@ -43,58 +42,35 @@ class Admin extends React.Component {
       selectedPlayers: Utils.makeData(1),
     }));
 
-    // request list of players who attended the game from meetup api
-    // add their name to an object of stat categories
-    // add that object to the data array
-    // save data array to state
+    // get list of players who attended the game from meetup api
+    // merge each player name and meetup id with the stats categories
     // send to AdminStatsTable
 
-    await API.get('game-statsCRUD', '/game-stats').then(stats => {
-      // console.log('async stats on mount', stats);
-      // this.setState(() => ({ data: stats }));
-    }).catch(error => console.log(error));
+    // await API.get('game-statsCRUD', '/game-stats').then(stats => {
+    //   console.log('async stats on mount', stats);
+    //   this.setState(() => ({ data: stats }));
+    // }).catch(error => console.log(error));
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (this.state.dataSubmitted) {
-      API.get('game-statsCRUD', '/game-stats').then(stats => {
-        // console.log('game stats updated', stats);
-        this.setState(() => ({ dataSubmitted: false }));
-      }).catch(error => console.log(error));
-    }
+    // if (this.state.dataSubmitted) {
+    //   API.get('game-statsCRUD', '/game-stats').then(stats => {
+    //     console.log('game stats updated', stats);
+    //     this.setState(() => ({ dataSubmitted: false }));
+    //   }).catch(error => console.log(error));
+    // }
   }
 
   handleSubmitData = async (playerStats) => {
-    // meetup is from meetup API
-    // stats is from admin generated data
-    const gamestats = {
-      id: 'xxxxxxxcqyxmbcb', // name.toLowerCase().slice(0, 7).split(' ').join('')_${meetup.id}
-      date: new Date(), // meetup.local_date
-      time: '1535823000000', // meetup.local_time
-      field: 'Westlake', // meetup.venue.name
-      isTournament: false, // playerStats.isTournament
-      tournamentName: '', // playerStats.tournamentName
-      isGameTied: false, // playerStats.isGameTied
-      winners: {
-        runsScored: '13',
-        teamName: 'Winners', // playerStats.teamName
-        players: playerStats,
-      },
-      losers: {
-        runsScored: '13',
-        teamName: 'Losers', // playerStats.teamName
-        players: playerStats,
+    // refactor to do a bulk write
+    await playerStats.forEach((player) => {
+      const stats = {
+        id: player.id,
+        stats: player,
       }
-    };
+      API.post('player-statsCRUD', '/player-stats/object/' + player.id, { body: stats }).catch(error => console.log(error));
+    });
 
-    const stats = {
-      id: playerStats[0].userId,
-      stats: playerStats[0],
-    }
-
-    // API.post('player-statsCRUD', '/player-stats', { body: playerStats }).catch(error => console.log(error));
-
-    API.post('player-statsCRUD', '/player-stats/object/' + playerStats[0].userId, { body: stats }).catch(error => console.log(error));
     // for new game stats
     // loop through player stats
     // for each player, API.get data for only players in that game
@@ -111,7 +87,7 @@ class Admin extends React.Component {
     // calculate percentage stats
     // API.post to update each player stats
 
-    await API.post('game-statsCRUD', '/game-stats', { body: gamestats }).catch(error => console.log(error));
+    // await API.post('game-statsCRUD', '/game-stats', { body: gamestats }).catch(error => console.log(error));
     
     // when post is complete, 
     // if there's another game to add stats

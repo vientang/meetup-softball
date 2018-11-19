@@ -46,26 +46,26 @@ features:
             enableCORS: true
             environment: {}
             handler: lambda.handler
-            hashcode: 9hFFQOUkaekIBrjtqgI+I43ORJa1nh8RrPVgIPD+Dvc=
+            hashcode: zjPJulOU3aOifzuN6hgUDXw6LmSkwzyIbio1zRZXrw8=
             memorySize: '128'
-            modified: '2018-11-11T23:29:03.581+0000'
+            modified: '2018-11-18T19:02:14.487+0000'
             name: playerstats
             runtime: nodejs6.10
             timeout: '3'
-            version: ahqRYhTWuNmDTcnmGM1Yl1.p5ZK83C3F
+            version: cNse.Nz8q.Bz6vQdB3psoDs.9d7JRjZP
           '/player-stats/{proxy+}': !com.amazonaws.mobilehub.v0.Function 
             codeFilename: uploads/playerstats-20181118110004.zip
             description: 'Handler for calls to resource path : /player-stats/{proxy+}'
             enableCORS: true
             environment: {}
             handler: lambda.handler
-            hashcode: 9hFFQOUkaekIBrjtqgI+I43ORJa1nh8RrPVgIPD+Dvc=
+            hashcode: zjPJulOU3aOifzuN6hgUDXw6LmSkwzyIbio1zRZXrw8=
             memorySize: '128'
-            modified: '2018-11-11T23:29:03.581+0000'
+            modified: '2018-11-18T19:02:14.487+0000'
             name: playerstats
             runtime: nodejs6.10
             timeout: '3'
-            version: vie7y82Wbb4z_QqortiyrBwWomnq3CWu
+            version: TPrH1hKUWZd_6taKKftq4NbwqBviMEJ3
   content-delivery: !com.amazonaws.mobilehub.v0.ContentDelivery 
     attributes:
       enabled: true
@@ -78,9 +78,28 @@ features:
         tables:
           - !com.amazonaws.mobilehub.v0.NoSQLTable 
             attributes:
+              1b: S
+              2b: S
+              3b: S
+              ab: S
+              avg: S
+              bb: S
+              cs: S
               gamesPlayed: N
+              hr: S
               id: S
+              k: S
               name: S
+              o: S
+              obp: S
+              ops: S
+              r: S
+              rbi: S
+              rc: S
+              sac: S
+              sb: S
+              slug: S
+              woba: S
             hashKeyName: id
             hashKeyType: S
             rangeKeyName: ''

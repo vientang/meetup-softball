@@ -185,7 +185,6 @@ app.post(path, function(req, res) {
     TableName: tableName,
     Item: req.body
   }
-
   dynamodb.put(putItemParams, (err, data) => {
     if(err) {
       res.json({error: err, url: req.url, body: req.body});
@@ -201,12 +200,6 @@ app.post('/player-stats/object/:id', function(req, res) {
     req.body['userId'] = req.apiGateway.event.requestContext.identity.cognitoIdentityId || UNAUTH;
   }
 
-  // get existing user data
-  // utils.transform({ stats: req.body, existingPlayerData });
-  // call something like this - util.transform({ newPlayerStats: req.body, existingPlayerStats })
-  // to transform stats (add counting stats, recalculate percentage stats, …)
-  // return updated user data
-  
   let putItemParams = {
     TableName: tableName,
     Item: req.body

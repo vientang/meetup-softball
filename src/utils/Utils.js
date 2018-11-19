@@ -85,8 +85,28 @@ const sortByNameLength = (a, b) => {
 	return a.length > b.length ? 1 : -1;
 };
 
-console.log('make datat', makeData(1));
+const mockGameStats = {
+	id: 'xxxxxxxcqyxmbcb', // name.toLowerCase().slice(0, 7).split(' ').join('')_${meetup.id}
+	date: new Date(), // meetup.local_date
+	time: '1535823000000', // meetup.local_time
+	field: 'Westlake', // meetup.venue.name
+	isTournament: false, // playerStats.isTournament
+	tournamentName: '', // playerStats.tournamentName
+	isGameTied: false, // playerStats.isGameTied
+	winners: {
+		runsScored: '13',
+		teamName: 'Winners', // playerStats.teamName
+		players: [],
+	},
+	losers: {
+		runsScored: '13',
+		teamName: 'Losers', // playerStats.teamName
+		players: [],
+	}
+};
+
 export default {
 	makeData,
+	mockGameStats,
 	sortByNameLength,
 }
