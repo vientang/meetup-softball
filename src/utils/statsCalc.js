@@ -20,7 +20,7 @@ function getHits(singles, doubles, triples, homeRuns){
         typeof triples !== 'number'||
         typeof homeRuns !== 'number') {
             return Error('Inputs for getHits need to be integers');
-      }
+        }
    return singles + doubles + triples + homeRuns;
   }
   
@@ -33,8 +33,15 @@ function getAtBats(hits, outs){
 }
 
 function getTotalBases(singles, doubles, triples, homeRuns){
- return singles + (doubles * 2) + (triples * 3) + (homeRuns * 4);
-}
+    if (
+        typeof singles !== 'number'||
+        typeof doubles !== 'number'||
+        typeof triples !== 'number'||
+        typeof homeRuns !== 'number') {
+            return Error('Inputs for getTotalBases need to be integers');
+        }
+   return singles + (doubles * 2) + (triples * 3) + (homeRuns * 4);
+  }
 
 function getRunsCreated(hits, walks, caughtStealing, totalBases, stolenBases, atBats){
     return ((hits + walks - caughtStealing) * (totalBases + (stolenBases * .55)) / (atBats + walks));
