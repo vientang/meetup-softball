@@ -23,24 +23,15 @@ function mergeStats(exisitingData, enteredData){
 }*/
 //Derive hits from user entered data to use in other functions
 function getHits(singles, doubles, triples, homeRuns){
-    /*if (!isNumber([singles, doubles, triples, homeRuns])) {
-        return Error('Inputs for getHits need to be integers');
-    }*/
    return singles + doubles + triples + homeRuns;
 }
   
 
 function getAtBats(hits, outs){
-    /*if (!isNumber([hits, outs])) {
-        return Error('Inputs for getAtBats need to be integers');
-    }*/
     return hits + outs;
 }
 
 function getTotalBases(singles, doubles, triples, homeRuns){
-    /*if (!isNumber([singles, doubles, triples, homeRuns])) {
-        return Error('Inputs for getTotalBases need to be integers');
-    }*/
     return singles + (doubles * 2) + (triples * 3) + (homeRuns * 4);
 }
 
