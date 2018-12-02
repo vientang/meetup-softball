@@ -32,7 +32,7 @@ const awsmobile = {}
 
 if (hasDynamicPrefix) {
   tableName = mhprefix + '-' + tableName;
-} 
+}
 
 const UNAUTH = 'UNAUTH';
 
@@ -77,7 +77,7 @@ app.get('/game-stats/:id', function(req, res) {
   condition[partitionKeyName] = {
     ComparisonOperator: 'EQ'
   }
-  
+
   if (userIdPresent && req.apiGateway) {
     condition[partitionKeyName]['AttributeValueList'] = [req.apiGateway.event.requestContext.identity.cognitoIdentityId || UNAUTH ];
   } else {
@@ -91,13 +91,38 @@ app.get('/game-stats/:id', function(req, res) {
   let queryParams = {
     TableName: tableName,
     KeyConditions: condition
-  } 
+  }
 
   dynamodb.query(queryParams, (err, data) => {
     if (err) {
       res.json({error: 'Could not load items: ' + err});
     } else {
       res.json(data.Items);
+    }
+  });
+});
+
+/********************************
+ * HTTP Get method for list objects *
+ ********************************/
+app.get('/game-stats/batch', function(req, res) {
+  const queryParams = {
+    RequestItems: {
+      [tableName]: {
+        Keys: [
+          {id: {S: 'brnhcqyxmbcb'}},
+          {id: {S: 'xxxxxxxcqyxmbcb'}}
+        ]
+      }
+    }
+  }
+
+  // use scan to read every item in table
+  dynamodb.batchGetItem(queryParams, (err, data) => {
+    if (err) {
+      res.json({ error: 'Could not load items: ' + err });
+    } else {
+      res.json(data.Responses);
     }
   });
 });
@@ -150,7 +175,7 @@ app.get('/game-stats/object/:id', function(req, res) {
 *************************************/
 
 app.put(path, function(req, res) {
-  
+
   if (userIdPresent) {
     req.body['userId'] = req.apiGateway.event.requestContext.identity.cognitoIdentityId || UNAUTH;
   }
@@ -173,7 +198,7 @@ app.put(path, function(req, res) {
 *************************************/
 
 app.post(path, function(req, res) {
-  
+
   if (userIdPresent) {
     req.body['userId'] = req.apiGateway.event.requestContext.identity.cognitoIdentityId || UNAUTH;
   }
