@@ -1,3 +1,33 @@
+import { mergePlayerStats, mergeGameStats } from './statsCalc';
+
+/**
+ * Write mutations to database
+ * Update player stats and game stats
+ * @param {Array} meetupData - data from meetup api
+ * @param {Array} currentStats - all game stats from current game
+ */
+const updateStats = (meetupData, currentStats) => {
+	// graphql query for all player stats from database
+	const playerStatsFromRecord = listPlayerStats();
+
+	// find historical stats for players who attended the game
+	const historicalStats = currentStats.find((attendee) => {
+		return playerStatsFromRecord.every((player) => player.member.id === attendee.id);
+	});
+
+	// merge existing player stats with current player stats
+	const playerStats = mergePlayerStats(historicalStats, currentStats);
+
+	// append current game stats to existing list of game stats
+	const gameStats = mergeGameStats(meetupData, currentStats);
+
+	// write player stats to database
+	mutatePlayerStats(playerStats);
+
+	// write game stats to database
+	mutateGameStats(gameStats);
+}
+
 const game1Players = [
 	'Vien',
 	'Mike',
@@ -40,15 +70,6 @@ const game2Players = [
 	'Natcha',
 ];
 
-// returns an array of len numbers, starting from 0
-const range = len => {
-	const arr = [];
-	for (let i = 0; i < len; i++) {
-		arr.push(i);
-	}
-	return arr;
-};
-
 const newPerson = (player, index) => {
 	return {
 		id: `${player}${index}`,
@@ -73,7 +94,6 @@ const makeData = (game) => {
 	return players.map((p, idx) => {
 		return {
 			...newPerson(p, idx),
-			//children: range(10).map(newPerson)
 		};
 	});
 };
@@ -106,6 +126,7 @@ const mockGameStats = {
 };
 
 export default {
+	updateStats,
 	makeData,
 	mockGameStats,
 	sortByNameLength,
