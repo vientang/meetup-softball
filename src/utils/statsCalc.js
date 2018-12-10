@@ -1,4 +1,5 @@
-import { get } from "lodash";
+import get from "lodash/get";
+import transform from "lodash/transform";
 
 /**
  * Adaptor to combine data from meetup and current game stats
@@ -7,7 +8,8 @@ import { get } from "lodash";
  * @return {Object} currentGameStats
  */
 const mergeGameStats = (meetupData, currentStats) => {
-	const currentGameStats = {};
+    const currentGameStats = {};
+    currentGameStats.date = meetupData.local_date;
 	currentGameStats.gameId = meetupData.name.split(' ')[1]; // "Game 235 @???";
 	currentGameStats.year = meetupData.local_date.slice(0, 4);
 	currentGameStats.month = meetupData.local_date.slice(5, 7);
@@ -26,34 +28,49 @@ const mergeGameStats = (meetupData, currentStats) => {
  * @return {Object} updatedPlayerStats
  */
 const mergePlayerStats = (existingStats, currentStats) => {
-    //creating new array with map method, which adds or updates data with element.(item)
-    const updatedData = enteredData.map(element => {
-        const hits = getHits(Number(element["1b"]), Number(element["2b"]), Number(element["3b"]), Number(element.hr));
-        element.h = hits.toString();
-        const atBats = getAtBats(hits, Number(element.o));
-        element.ab = atBats.toString();
-        const totalBases = getTotalBases(Number(element["1b"]), Number(element["2b"]), Number(element["3b"]), Number(element.hr));
-        element.tb = totalBases.toString();
-        const runsCreated = getRunsCreated(hits, Number(element.bb), Number(element.cs), totalBases, Number(element.sb), atBats);
-        element.rc = runsCreated.toString();
-        const average = getAverage(hits, atBats);
-        element.avg = average.toString();
-        const onBasePercentage = getonBasePercentage(hits, Number(element.bb), atBats, Number(element.sac));
-        element.obp = onBasePercentage.toString();
-        const slugging = getSlugging(totalBases, atBats);
-        element.slg = slugging.toString();
-        const onBasePlusSlugging = getOPS(onBasePercentage, slugging);
-        element.ops = onBasePlusSlugging.toString();
-        const weightedOnBaseAverage = getWOBA(Number(element.bb), Number(element["1b"]), Number(element["2b"]), Number(element["3b"]), Number(element.hr), atBats, Number(element.sac));
-        element.woba = weightedOnBaseAverage.toString();
+    const currentPlayers = currentStats.winners.players.concat(currentStats.losers.players);
+    const ignoreKeystoTransform = ['id', 'meetupId', 'name', 'avg', 'h', 'ab', 'tb', 'rc'];
+
+    return currentPlayers.map((player, i) => {
+        const hits = getHits(Number(player["1b"]), Number(player["2b"]), Number(player["3b"]), Number(player.hr)) + Number(get(existingStats[i], 'h'));
+        const atBats = getAtBats(hits, Number(player["o"])) + Number(get(existingStats[i], 'ab'));
+        const totalBases = getTotalBases(Number(player["1b"]), Number(player["2b"]), Number(player["3b"]), Number(player.hr)) + Number(get(existingStats[i], 'tb'));
+        const bb = Number(player.bb) + Number(existingStats[i].bb);
+        const sb = Number(player.sb) + Number(existingStats[i].sb);
+        const cs = Number(player.cs) + Number(existingStats[i].cs);
+        const runsCreated = getRunsCreated(hits, bb, cs, totalBases, sb, atBats);
+        const avg = getAverage(hits, atBats);
         
-        return element;
+        const onBasePercentage = getonBasePercentage(hits, Number(element.bb), atBats, Number(element.sac));
+        const slugging = getSlugging(totalBases, atBats);
+        const onBasePlusSlugging = getOPS(onBasePercentage, slugging);
+        const weightedOnBaseAverage = getWOBA(Number(element.bb), Number(element["1b"]), Number(element["2b"]), Number(element["3b"]), Number(element.hr), atBats, Number(element.sac));
+        
+        const updatedStats = transform(player, function(result, value, key) {
+            if (ignoreKeystoTransform.includes(key)) {
+                result[key] = value;    
+            } else {
+                result[key] = (Number(value) + Number(existingStats[i][key])).toString();
+            }
+        }, {});
+        
+        updatedStats.h = hits.toString();
+        updatedStats.ab = atBats.toString();
+        updatedStats.tb = totalBases.toString();
+        updatedStats.rc = runsCreated.toString();
+        updatedStats.avg = avg.toString();
+        element.obp = onBasePercentage.toString();
+        element.slg = slugging.toString();
+        element.ops = onBasePlusSlugging.toString();
+        element.woba = weightedOnBaseAverage.toString();
+
+        return updatedStats;
     });
-    return updatedData;
 }
 
-//Derive hits from user entered data to use in other functions
-
+/**
+ * Functions to calculate stats
+ */
 const getHits = (singles, doubles, triples, homeRuns) => {
    return (singles + doubles + triples + homeRuns);
 }
