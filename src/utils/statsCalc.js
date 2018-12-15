@@ -42,10 +42,10 @@ const mergePlayerStats = (existingStats, currentStats) => {
         const runsCreated = getRunsCreated(hits, bb, cs, totalBases, sb, atBats);
         const avg = getAverage(hits, atBats);
         
-        const onBasePercentage = getonBasePercentage(hits, Number(element.bb), atBats, Number(element.sac));
+        const onBasePercentage = getonBasePercentage(hits, Number(player.bb), atBats, Number(player.sac));
         const slugging = getSlugging(totalBases, atBats);
         const onBasePlusSlugging = getOPS(onBasePercentage, slugging);
-        const weightedOnBaseAverage = getWOBA(Number(element.bb), Number(element["1b"]), Number(element["2b"]), Number(element["3b"]), Number(element.hr), atBats, Number(element.sac));
+        const weightedOnBaseAverage = getWOBA(Number(player.bb), Number(player["1b"]), Number(player["2b"]), Number(player["3b"]), Number(player.hr), atBats, Number(player.sac));
         
         const updatedStats = transform(player, function(result, value, key) {
             if (ignoreKeystoTransform.includes(key)) {
@@ -60,10 +60,10 @@ const mergePlayerStats = (existingStats, currentStats) => {
         updatedStats.tb = totalBases.toString();
         updatedStats.rc = runsCreated.toString();
         updatedStats.avg = avg.toString();
-        element.obp = onBasePercentage.toString();
-        element.slg = slugging.toString();
-        element.ops = onBasePlusSlugging.toString();
-        element.woba = weightedOnBaseAverage.toString();
+        updatedStats.obp = onBasePercentage.toString();
+        updatedStats.slg = slugging.toString();
+        updatedStats.ops = onBasePlusSlugging.toString();
+        updatedStats.woba = weightedOnBaseAverage.toString();
 
         return updatedStats;
     });
@@ -135,7 +135,7 @@ const getWOBA = (walks, singles, doubles, triples, homeRuns, atBats, sacrifices)
 export { 
     mergePlayerStats, 
     mergeGameStats, 
-    gethits, 
+    getHits,
     getAtBats, 
     getTotalBases, 
     getRunsCreated,

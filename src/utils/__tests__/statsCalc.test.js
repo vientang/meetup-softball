@@ -5,7 +5,7 @@ import {
     getAtBats, 
     getRunsCreated, 
     getTotalBases, 
-    getAvg 
+    getAverage 
 } from '../statsCalc';
 
 const meetupData = {
@@ -177,7 +177,7 @@ describe('Update player stats', () => {
     });
 
     it ('calculate average', () => {
-        expect(getAvg(1, 5)).toBe(0.2);
+        expect(getAverage(1, 5)).toBe(0.2);
     });
 
     it ('merges existing player stats with stats from current game', () => {
@@ -195,17 +195,21 @@ describe('Update player stats', () => {
                 "hr": "2",
                 "id": "123",
                 "k": "2",
+                "losses": "7",
                 "meetupId": "234078828",
                 "name": "Fresh Basta",
                 "o": "2",
+                "obp": "0.6666666666666666",
+                "ops": "2.238095238095238",
                 "r": "2",
                 "rbi": "2",
                 "rc": "8.066666666666666",
                 "sac": "2",
                 "sb": "2",
+                "slg": "1.5714285714285714",
                 "tb": "11",
                 "wins": "11",
-                "losses": "7"
+                "woba": "0.7295555555555555"
               },
               {
                 "1b": "2",
@@ -220,17 +224,21 @@ describe('Update player stats', () => {
                 "hr": "2",
                 "id": "456",
                 "k": "2",
+                "losses": "4",
                 "meetupId": "254078828",
                 "name": "Steven",
                 "o": "2",
+                "obp": "0.6666666666666666",
+                "ops": "2.238095238095238",
                 "r": "2",
                 "rbi": "2",
                 "rc": "8.066666666666666",
                 "sac": "2",
                 "sb": "2",
+                "slg": "1.5714285714285714",
                 "tb": "11",
                 "wins": "20",
-                "losses": "4"
+                "woba": "0.7295555555555555"
               },
         ];
         expect(mergePlayerStats(existingPlayerStats, currentGameStats)).toEqual(playerStatsResult);
