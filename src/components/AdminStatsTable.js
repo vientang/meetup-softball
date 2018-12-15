@@ -30,9 +30,7 @@ class AdminStatsTable extends React.Component {
 	}
 
 	handleSubmitData = (e) => {
-	  e.preventDefault();
-		// hit the submit button
-		// send state.data to server to update
+	    e.preventDefault();
 		this.props.onSubmit(this.state.data);
 		this.setState(() => ({ dataSubmitted: true }));
 	};
@@ -108,7 +106,7 @@ class AdminStatsTable extends React.Component {
 					columns={[
 						{
 							Header: "PLAYER",
-							accessor: "player",
+							accessor: "name",
 							Cell: this.renderEditableCell,
 							sortMethod: Utils.sortByNameLength,
 							maxWidth: 150,
@@ -117,6 +115,12 @@ class AdminStatsTable extends React.Component {
 						{
 							Header: "O",
 							accessor: "o",
+							Cell: this.renderEditableCell,
+							maxWidth: 50,
+                        },
+                        {
+							Header: "SAC",
+							accessor: "sac",
 							Cell: this.renderEditableCell,
 							maxWidth: 50,
 						},
@@ -179,13 +183,7 @@ class AdminStatsTable extends React.Component {
 							accessor: "cs",
 							Cell: this.renderEditableCell,
 							maxWidth: 50,
-						},
-						{
-							Header: "AB",
-							accessor: "ab",
-							Cell: this.renderEditableCell,
-							maxWidth: 50,
-						},
+						}
 					]}
 					defaultPageSize={data.length}
 					className="-striped -highlight stats-table"

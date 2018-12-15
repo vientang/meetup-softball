@@ -70,22 +70,29 @@ const game2Players = [
 	'Natcha',
 ];
 
+/**
+ * Data model to show on AdminStatsTable
+ * @param {String} player 
+ * @param {Number} index 
+ * @return {Object}
+ */
 const newPerson = (player, index) => {
 	return {
-		id: `${player}${index}`,
-		player,
-		o: '',
-		"1b": '',
+        "1b": '',
 		"2b": '',
-		"3b": '',
-		hr: '',
-		rbi: '',
-		r: '',
+        "3b": '',
 		bb: '',
-		k: '',
-		sb: '',
-		cs: '',
+        cs: '',
+		hr: '',
+		id: `${player}${index}`,
+        k: '',
+        meetupId: '',
+		name: player,
+		o: '',
+		r: '',
+        rbi: '',
 		sac: '',
+        sb: '',
 	};
 };
 

@@ -31,6 +31,7 @@ const currentGameStats = {
                 id: '123',
                 meetupId: '234078828',
                 name: 'Fresh Basta',
+                gamesPlayed: '1',
                 o: '1',
                 "1b": '1',
                 "2b": '1',
@@ -46,7 +47,10 @@ const currentGameStats = {
                 ab: '1',
                 tb: '1',
                 rc: '.800',
-                h: '1'
+                h: '1',
+                sac: '1',
+                wins: '1',
+                losses: '0'
             }
         ]
     },
@@ -59,6 +63,7 @@ const currentGameStats = {
                 id: '456',
                 meetupId: '254078828',
                 name: 'Steven',
+                gamesPlayed: '1',
                 o: '1',
                 "1b": '1',
                 "2b": '1',
@@ -74,7 +79,10 @@ const currentGameStats = {
                 ab: '1',
                 tb: '1',
                 rc: '.400',
-                h: '1'
+                h: '1',
+                sac: '1',
+                wins: '0',
+                losses: '1'
             }
         ]
     }
@@ -85,6 +93,7 @@ const existingPlayerStats = [
         id: '123',
         meetupId: '234078828',
         name: 'Fresh Basta',
+        gamesPlayed: '3',
         o: '1',
         "1b": '1',
         "2b": '1',
@@ -100,12 +109,16 @@ const existingPlayerStats = [
         ab: '1',
         tb: '1',
         rc: '.800',
-        h: '1'
+        h: '1',
+        sac: '1',
+        wins: '10',
+        losses: '7'
     },
     {
         id: '456',
         meetupId: '254078828',
         name: 'Steven',
+        gamesPlayed: '5',
         o: '1',
         "1b": '1',
         "2b": '1',
@@ -121,7 +134,10 @@ const existingPlayerStats = [
         ab: '1',
         tb: '1',
         rc: '.800',
-        h: '1'
+        h: '1',
+        sac: '1',
+        wins: '20',
+        losses: '3'
     }
 ];
 
@@ -170,11 +186,11 @@ describe('Update player stats', () => {
                 "1b": "2",
                 "2b": "2",
                 "3b": "2",
-                "avg": ".600",
                 "ab": "7",
                 "avg": "0.7142857142857143",
                 "bb": "2",
                 "cs": "1",
+                "gamesPlayed": '4',
                 "h": "5",
                 "hr": "2",
                 "id": "123",
@@ -185,18 +201,21 @@ describe('Update player stats', () => {
                 "r": "2",
                 "rbi": "2",
                 "rc": "8.066666666666666",
+                "sac": "2",
                 "sb": "2",
                 "tb": "11",
+                "wins": "11",
+                "losses": "7"
               },
               {
                 "1b": "2",
                 "2b": "2",
                 "3b": "2",
-                "avg": ".600",
                 "ab": "7",
                 "avg": "0.7142857142857143",
                 "bb": "2",
                 "cs": "1",
+                "gamesPlayed": '6',
                 "h": "5",
                 "hr": "2",
                 "id": "456",
@@ -207,8 +226,11 @@ describe('Update player stats', () => {
                 "r": "2",
                 "rbi": "2",
                 "rc": "8.066666666666666",
+                "sac": "2",
                 "sb": "2",
                 "tb": "11",
+                "wins": "20",
+                "losses": "4"
               },
         ];
         expect(mergePlayerStats(existingPlayerStats, currentGameStats)).toEqual(playerStatsResult);

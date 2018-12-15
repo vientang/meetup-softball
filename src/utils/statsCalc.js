@@ -28,7 +28,8 @@ const mergeGameStats = (meetupData, currentStats) => {
  * @return {Object} updatedPlayerStats
  */
 const mergePlayerStats = (existingStats, currentStats) => {
-    const currentPlayers = currentStats.winners.players.concat(currentStats.losers.players);
+    const currentPlayers = mergeAllCurrentPlayers(currentStats);
+    // const currentPlayers = currentStats.winners.players.concat(currentStats.losers.players);
     const ignoreKeystoTransform = ['id', 'meetupId', 'name', 'avg', 'h', 'ab', 'tb', 'rc'];
 
     return currentPlayers.map((player, i) => {
@@ -48,7 +49,7 @@ const mergePlayerStats = (existingStats, currentStats) => {
         
         const updatedStats = transform(player, function(result, value, key) {
             if (ignoreKeystoTransform.includes(key)) {
-                result[key] = value;    
+                result[key] = value;
             } else {
                 result[key] = (Number(value) + Number(existingStats[i][key])).toString();
             }
@@ -67,6 +68,30 @@ const mergePlayerStats = (existingStats, currentStats) => {
         return updatedStats;
     });
 }
+
+/**
+ * Merge all players, winners and losers, into one list
+ * @param {Object} gameStats
+ * @return {Array} winners and losers
+ */
+const mergeAllCurrentPlayers = (gameStats) => {
+    const winners = addDefaultStats(gameStats.winners.players, true);
+    const losers = addDefaultStats(gameStats.losers.players, false);
+    return winners.concat(losers);
+}
+
+/**
+ * Add stats that can be derived from playing a game
+ * @param {Array} players
+ * @param {Boolean} winner
+ * @return {Array}
+ */
+const addDefaultStats = (players, winner) => players.map((player) => {
+    player.wins = winner ? '1' : '0';
+    player.losses = winner ? '0' : '1';
+    player.gamesPlayed = '1';
+    return player;
+});
 
 /**
  * Functions to calculate stats
