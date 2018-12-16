@@ -1,7 +1,7 @@
 import React from 'react'
 import Amplify from 'aws-amplify'
 
-import Layout from '../components/layout'
+import Layout from '../components/Layout'
 import Image from '../components/image'
 import configuration from '../aws-exports'
 

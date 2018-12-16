@@ -1,7 +1,7 @@
 import React from 'react'
 import { withAuthenticator } from 'aws-amplify-react';
 
-import Layout from '../components/layout'
+import Layout from '../components/Layout'
 import AdminSideMenu from '../components/AdminSideMenu';
 import AdminStatsTable from '../components/AdminStatsTable';
 import { Utils } from "../utils";
@@ -95,4 +95,4 @@ class Admin extends React.Component {
     }
 }
 
-export default withAuthenticator(Admin);
+export default withAuthenticator(Admin, true);
