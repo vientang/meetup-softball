@@ -1,0 +1,17 @@
+projects:
+  GameStats:
+    schemaPath: src/graphql/schema.json
+    includes:
+      - src/graphql/**/*.js
+    excludes:
+      - ./amplify/**
+    extensions:
+      amplify:
+        graphQLApiId: t622zt2pczgphevy6aavhdhhfy
+        codeGenTarget: javascript
+        generatedFileName: ''
+        docsFilePath: src/graphql
+        region: us-west-2
+      endpoints:
+        prod: >-
+          https://p4765dhahnalpkmwnlrj72yl6y.appsync-api.us-west-2.amazonaws.com/graphql

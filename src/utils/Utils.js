@@ -1,4 +1,4 @@
-import { mergePlayerStats, mergeGameStats } from './statsCalc';
+// import { mergePlayerStats, mergeGameStats } from './statsCalc';
 
 /**
  * Write mutations to database
@@ -6,27 +6,27 @@ import { mergePlayerStats, mergeGameStats } from './statsCalc';
  * @param {Array} meetupData - data from meetup api
  * @param {Array} currentStats - all game stats from current game
  */
-const updateStats = (meetupData, currentStats) => {
-	// graphql query for all player stats from database
-	const playerStatsFromRecord = listPlayerStats();
+// const updateStats = (meetupData, currentStats) => {
+// 	// graphql query for all player stats from database
+// 	const playerStatsFromRecord = listPlayerStats();
 
-	// find historical stats for players who attended the game
-	const historicalStats = currentStats.find((attendee) => {
-		return playerStatsFromRecord.every((player) => player.member.id === attendee.id);
-	});
+// 	// find historical stats for players who attended the game
+// 	const historicalStats = currentStats.find((attendee) => {
+// 		return playerStatsFromRecord.every((player) => player.member.id === attendee.id);
+// 	});
 
-	// merge existing player stats with current player stats
-	const playerStats = mergePlayerStats(historicalStats, currentStats);
+// 	// merge existing player stats with current player stats
+// 	const playerStats = mergePlayerStats(historicalStats, currentStats);
 
-	// append current game stats to existing list of game stats
-	const gameStats = mergeGameStats(meetupData, currentStats);
+// 	// append current game stats to existing list of game stats
+// 	const gameStats = mergeGameStats(meetupData, currentStats);
 
-	// write player stats to database
-	mutatePlayerStats(playerStats);
+// 	// write player stats to database
+// 	mutatePlayerStats(playerStats);
 
-	// write game stats to database
-	mutateGameStats(gameStats);
-}
+// 	// write game stats to database
+// 	mutateGameStats(gameStats);
+// }
 
 const game1Players = [
 	'Vien',
@@ -133,7 +133,7 @@ const mockGameStats = {
 };
 
 export default {
-	updateStats,
+	// updateStats,
 	makeData,
 	mockGameStats,
 	sortByNameLength,

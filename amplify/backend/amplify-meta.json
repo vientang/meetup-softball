@@ -1,0 +1,26 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "meetupsoftball-20181215225844-authRole",
+      "UnauthRoleArn": "arn:aws:iam::312743227043:role/meetupsoftball-20181215225844-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::312743227043:role/meetupsoftball-20181215225844-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "meetupsoftball-20181215225844-deployment",
+      "UnauthRoleName": "meetupsoftball-20181215225844-unauthRole",
+      "StackName": "meetupsoftball-20181215225844",
+      "StackId": "arn:aws:cloudformation:us-east-2:312743227043:stack/meetupsoftball-20181215225844/07618490-0100-11e9-92ec-02a5f2ca138c"
+    }
+  },
+  "api": {
+    "GameStats": {
+      "service": "AppSync",
+      "output": {
+        "securityType": "API_KEY",
+        "GraphQLAPIIdOutput": "t622zt2pczgphevy6aavhdhhfy",
+        "GraphQLAPIEndpointOutput": "https://p4765dhahnalpkmwnlrj72yl6y.appsync-api.us-west-2.amazonaws.com/graphql",
+        "GraphQLAPIKeyOutput": "da2-lrav3fca3ngwthubutzorkkkfq"
+      },
+      "lastPushTimeStamp": "2018-12-16T07:13:01.443Z"
+    }
+  }
+}

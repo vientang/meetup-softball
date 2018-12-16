@@ -4,13 +4,12 @@
   "version": "1.0.0",
   "author": "Vien Tang <vientang@gmail.com>",
   "scripts": {
-    "pull": "git pull && awsmobile pull",
-    "push": "git push && awsmobile push",
+    "setup": "npm run test && npm run build",  
     "start": "gatsby develop",
     "build": "gatsby build",
     "format": "prettier --write \"src/**/*.js\"",
     "test": "jest",
-    "testwatch": "jest --watchAll"
+    "test:watch": "jest --watchAll"
   },
   "dependencies": {
     "antd": "^3.10.3",

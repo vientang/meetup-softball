@@ -2,7 +2,7 @@ import get from "lodash/get";
 import transform from "lodash/transform";
 
 /**
- * Adaptor to combine data from meetup and current game stats
+ * GAMESTATS Adaptor to combine data from meetup and current game stats
  * @param {Array} meetupData - data from meetup api
  * @param {Array} currentStats - all game stats from current game
  * @return {Object} currentGameStats
@@ -22,14 +22,13 @@ const mergeGameStats = (meetupData, currentStats) => {
 }
 
 /**
- * Adaptor to merge current player stats into existing player stats
+ * PLAYERSTATS Adaptor to merge current player stats into existing player stats
  * @param {Array} existingStats - existing player stats from meetup api
  * @param {Array} currentStats - player stats from current game
  * @return {Object} updatedPlayerStats
  */
 const mergePlayerStats = (existingStats, currentStats) => {
     const currentPlayers = mergeAllCurrentPlayers(currentStats);
-    // const currentPlayers = currentStats.winners.players.concat(currentStats.losers.players);
     const ignoreKeystoTransform = ['id', 'meetupId', 'name', 'avg', 'h', 'ab', 'tb', 'rc'];
 
     return currentPlayers.map((player, i) => {
@@ -82,6 +81,7 @@ const mergeAllCurrentPlayers = (gameStats) => {
 
 /**
  * Add stats that can be derived from playing a game
+ * Admins do not need to enter these
  * @param {Array} players
  * @param {Boolean} winner
  * @return {Array}
@@ -132,7 +132,7 @@ const getWOBA = (walks, singles, doubles, triples, homeRuns, atBats, sacrifices)
     return ((.69 * walks + .888 * singles + 1.271 * doubles + 1.616 * triples + 2.101 * homeRuns) / (atBats + walks + sacrifices));
 }
 
-export { 
+export default { 
     mergePlayerStats, 
     mergeGameStats, 
     getHits,

@@ -1,4 +1,5 @@
-import { 
+import statsCalc from '../statsCalc';
+const { 
     mergeGameStats, 
     mergePlayerStats, 
     getHits, 
@@ -6,7 +7,7 @@ import {
     getRunsCreated, 
     getTotalBases, 
     getAverage 
-} from '../statsCalc';
+} = statsCalc;
 
 const meetupData = {
     id: "brnhcqyxmbcb",

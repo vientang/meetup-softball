@@ -1,5 +1,4 @@
 import React from 'react'
-import { API } from 'aws-amplify';
 import { withAuthenticator } from 'aws-amplify-react';
 
 import Layout from '../components/layout'
@@ -61,7 +60,7 @@ class Admin extends React.Component {
      * Write GraphQL mutations
      */
     handleSubmitData = async (currentStats) => {
-        Utils.updateStats(meetupData, currentStats);
+        // Utils.updateStats(meetupData, currentStats);
     };
 
     /**
