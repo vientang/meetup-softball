@@ -9,14 +9,21 @@ import transform from "lodash/transform";
  */
 const mergeGameStats = (meetupData, currentStats) => {
     const currentGameStats = {};
-    currentGameStats.date = meetupData.local_date;
-	currentGameStats.gameId = meetupData.name.split(' ')[1]; // "Game 235 @???";
-	currentGameStats.year = meetupData.local_date.slice(0, 4);
-	currentGameStats.month = meetupData.local_date.slice(5, 7);
-	currentGameStats.fieldName = meetupData.venue.name;
-	currentGameStats.tournamentName = currentStats.tournamentName;
-	currentGameStats.winners = currentStats.winners;
-	currentGameStats.losers = currentStats.losers;
+
+    if (meetupData) {
+        currentGameStats.meetupId = meetupData.meetupId;
+        currentGameStats.date = meetupData.local_date;
+        currentGameStats.gameId = meetupData.name.split(' ')[1]; // "Game 235 @???";
+        currentGameStats.year = meetupData.local_date.slice(0, 4);
+        currentGameStats.month = meetupData.local_date.slice(5, 7);
+        currentGameStats.name = meetupData.venue.name;
+        currentGameStats.fieldName = meetupData.venue.name;
+        currentGameStats.tournamentName = meetupData.tournamentName;
+    }
+    
+	// currentGameStats.tournamentName = currentStats.tournamentName;
+	currentGameStats.winners = JSON.stringify(currentStats.slice(0, 10));
+	currentGameStats.losers = JSON.stringify(currentStats.slice(10));
 
 	return currentGameStats;
 }

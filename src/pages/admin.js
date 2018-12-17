@@ -24,58 +24,73 @@ class Admin extends React.Component {
         // send to AdminSideMenu
         // here's an example
         const game247 = {
-            gameNumber: 'Game 247',
+            gameId: '247',
             location: 'Westlake Park, Daly City',
             date: 'November 11th, 2018',
             time: '10:30am',
+            players: Utils.makeData(1),
         }
         const game248 = {
-            gameNumber: 'Game 248',
+            gameId: '248',
             location: 'Westlake Park, Daly City',
             date: 'November 11th, 2018',
             time: '12:30pm',
+            players: Utils.makeData(2),
         }
         
         // get list of players who attended the game from meetup api
         // merge each player name and meetup id with the stats categories
         // send to AdminStatsTable
-        const playersAttended = Utils.makeData(1);
 
         this.setState(() => ({ 
+            currentGame: game247,
             games: [game247, game248],
-            selectedPlayers: playersAttended,
+            selectedGame: game247.gameId,
         }));
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        // if (this.state.dataSubmitted) {
-        //   API.get('game-statsCRUD', '/game-stats').then(stats => {
-        //     console.log('game stats updated', stats);
-        //     this.setState(() => ({ dataSubmitted: false }));
-        //   }).catch(error => console.log(error));
-        // }
     }
 
     /**
      * Write GraphQL mutations
      */
-    handleSubmitData = async (currentStats) => {
-        // Utils.updateStats(meetupData, currentStats);
+    handleSubmitData = async (currentStats, selectedGame) => {
+        const meetupData = {
+            meetupId: 'x1u3sjj99I',
+            name: 'Game 247 Westlake Park, Daly City',
+            venue: { name: 'Westlake Park, Daly City' },
+            local_date: '2018-10-11',
+            tournamentName: 'Halloween',
+        };
+
+        this.setState((prevState) => {
+            const games = prevState.games.filter((game) => game.gameId !== selectedGame );
+            const currentGame = games[0];
+            
+            return { 
+                selectedGame: currentGame ? currentGame.gameId : '',
+                games,
+                currentGame,
+            };
+        });
+
+        Utils.updateStats(meetupData, currentStats);
     };
 
     /**
-     * Toggle player list for games 1 or 2
+     * Toggle players between the games
      */
-    handleSelectGame = (e) => {
-        this.setState(() => ({ 
-            selectedGame: e.key,
-            selectedPlayers: e.key === '0' ? Utils.makeData(1) : Utils.makeData(2),
-        }))
+    handleSelectGame = (selectedGame) => {
+        this.setState((prevState) => {
+            const currentGame = prevState.games.find((game) => game.gameId === selectedGame);
+            return {
+                currentGame,
+                selectedGame,
+            } 
+        });
     };
 
     render() {
-        const { selectedPlayers, games, selectedGame } = this.state;
-
+        const { currentGame, games, selectedGame } = this.state;
+        
         return (
             <>
                 <Layout className={styles.adminPage}>
@@ -85,11 +100,12 @@ class Admin extends React.Component {
                     onGameSelection={this.handleSelectGame}
                 />
                 <AdminStatsTable 
-                    data={selectedPlayers} 
+                    data={currentGame} 
                     onSubmit={this.handleSubmitData} 
+                    selectedGame={selectedGame} 
                 />
                 </Layout>
-                <pre>{JSON.stringify(selectedPlayers)}</pre>
+                {/* <pre>{JSON.stringify(selectedPlayers)}</pre> */}
             </>
         );
     }

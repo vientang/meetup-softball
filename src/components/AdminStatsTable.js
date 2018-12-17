@@ -10,29 +10,20 @@ class AdminStatsTable extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			data: props.data,
+			players: props.data.players,
 			dataSubmitted: false,
 		};
 	}
 
 	static getDerivedStateFromProps(props) {
 		return {
-			data: props.data,
-		}
-	}
-
-	componentDidUpdate(prevProps, prevState, snapshot) {
-		// after submitting the data, we need to reset this back to false
-		// to prevent unnecessary updates in shouldComponentUpdate
-		if (this.state.dataSubmitted) {
-			this.setState(() => ({ dataSubmitted: false, data: this.props.data }));
+            players: props.data.players,
 		}
 	}
 
 	handleSubmitData = (e) => {
-	    e.preventDefault();
-		this.props.onSubmit(this.state.data);
-		this.setState(() => ({ dataSubmitted: true }));
+        e.preventDefault();
+		this.props.onSubmit(this.state.players, this.props.selectedGame);        
 	};
 
 	makeContentEditable = (cellInfo) => {
@@ -75,15 +66,16 @@ class AdminStatsTable extends React.Component {
 			return false;
 		}
 
-		const data = [...this.state.data];
-		data[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;
-		this.setState(() => ({ data }));
+		const players = [...this.state.players];
+        players[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;
+        
+		this.setState(() => ({ players }));
 	};
 
 	renderEditableCell = (cellInfo) => {
-		const makeContentEditable = this.makeContentEditable(cellInfo);
+        const makeContentEditable = this.makeContentEditable(cellInfo);
 
-		return (
+        return (
 			<div
 				className="stat-cell"
 				contentEditable={makeContentEditable}
@@ -91,18 +83,22 @@ class AdminStatsTable extends React.Component {
 				onKeyDown={this.handleNonNumericKeys}
 				onKeyUp={this.handleDataEntry(cellInfo)}
 			>
-				{this.state.data[cellInfo.index][cellInfo.column.id]}
+				{this.state.players[cellInfo.index][cellInfo.column.id]}
 			</div>
 		);
 	};
 
 	render() {
-		const { data } = this.state;
-
+        const { players } = this.state;
+    
+        if (!players || players.length < 1) {
+            return null;
+        }
+        
 		return (
 			<div className="stats-table-container">
 				<ReactTable
-					data={data}
+					data={players}
 					columns={[
 						{
 							Header: "PLAYER",
@@ -118,12 +114,6 @@ class AdminStatsTable extends React.Component {
 							Cell: this.renderEditableCell,
 							maxWidth: 50,
                         },
-                        {
-							Header: "SAC",
-							accessor: "sac",
-							Cell: this.renderEditableCell,
-							maxWidth: 50,
-						},
 						{
 							Header: "1b",
 							accessor: "1b",
@@ -183,9 +173,15 @@ class AdminStatsTable extends React.Component {
 							accessor: "cs",
 							Cell: this.renderEditableCell,
 							maxWidth: 50,
-						}
+                        },
+                        {
+							Header: "SAC",
+							accessor: "sac",
+							Cell: this.renderEditableCell,
+							maxWidth: 50,
+						},
 					]}
-					defaultPageSize={data.length}
+					defaultPageSize={players.length}
 					className="-striped -highlight stats-table"
 					showPaginationBottom={false}
 				/>
@@ -204,12 +200,19 @@ class AdminStatsTable extends React.Component {
 }
 
 AdminStatsTable.propTypes = {
-	data: PropTypes.array,
-	onSubmit: PropTypes.func,
+	data: PropTypes.shape({
+        gameId: PropTypes.string,
+        location: PropTypes.string,
+        date: PropTypes.string,
+        time: PropTypes.string,
+        players: PropTypes.array,
+    }),
+    onSubmit: PropTypes.func,
+    selectedGame: PropTypes.string,
 };
 
 AdminStatsTable.defaultProps = {
-	data: [],
+	data: {},
 };
 
 export default AdminStatsTable;

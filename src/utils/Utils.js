@@ -1,4 +1,6 @@
-// import { mergePlayerStats, mergeGameStats } from './statsCalc';
+import { API, graphqlOperation } from 'aws-amplify';
+import { createGameStats } from '../graphql/mutations';
+import StatsCalc from './statsCalc';
 
 /**
  * Write mutations to database
@@ -6,27 +8,32 @@
  * @param {Array} meetupData - data from meetup api
  * @param {Array} currentStats - all game stats from current game
  */
-// const updateStats = (meetupData, currentStats) => {
-// 	// graphql query for all player stats from database
-// 	const playerStatsFromRecord = listPlayerStats();
+const updateStats = (meetupData, currentStats) => {
+	// graphql query for all player stats from database
+	// const playerStatsFromRecord = listPlayerStats();
 
-// 	// find historical stats for players who attended the game
-// 	const historicalStats = currentStats.find((attendee) => {
-// 		return playerStatsFromRecord.every((player) => player.member.id === attendee.id);
-// 	});
+	// find historical stats for players who attended the game
+	// const historicalStats = currentStats.find((attendee) => {
+	// 	return playerStatsFromRecord.every((player) => player.member.id === attendee.id);
+	// });
 
-// 	// merge existing player stats with current player stats
-// 	const playerStats = mergePlayerStats(historicalStats, currentStats);
+	// merge existing player stats with current player stats
+	// const playerStats = mergePlayerStats(historicalStats, currentStats);
 
-// 	// append current game stats to existing list of game stats
-// 	const gameStats = mergeGameStats(meetupData, currentStats);
+	// append current game stats to existing list of game stats
+	const gameStats = StatsCalc.mergeGameStats(meetupData, currentStats);
+    
+	// write player stats to database
+	// mutatePlayerStats(playerStats);
 
-// 	// write player stats to database
-// 	mutatePlayerStats(playerStats);
-
-// 	// write game stats to database
-// 	mutateGameStats(gameStats);
-// }
+	// write game stats to database
+    // mutateGameStats(gameStats);
+    API.graphql(graphqlOperation(createGameStats, { input: gameStats })).then(response => {
+        console.log('response', response);
+    }).catch(error => {
+        console.log('error', error);
+    });
+};
 
 const game1Players = [
 	'Vien',
@@ -78,21 +85,21 @@ const game2Players = [
  */
 const newPerson = (player, index) => {
 	return {
-        "1b": '',
-		"2b": '',
-        "3b": '',
-		bb: '',
-        cs: '',
-		hr: '',
+        "1b": null,
+		"2b": null,
+        "3b": null,
+		bb: null,
+        cs: null,
+		hr: null,
 		id: `${player}${index}`,
-        k: '',
-        meetupId: '',
+        k: null,
+        meetupId: null,
 		name: player,
-		o: '',
-		r: '',
-        rbi: '',
-		sac: '',
-        sb: '',
+		o: null,
+		r: null,
+        rbi: null,
+		sac: null,
+        sb: null,
 	};
 };
 
@@ -133,7 +140,7 @@ const mockGameStats = {
 };
 
 export default {
-	// updateStats,
+	updateStats,
 	makeData,
 	mockGameStats,
 	sortByNameLength,
