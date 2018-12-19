@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Menu } from 'antd';
 import 'antd/dist/antd.css';
 
@@ -17,8 +18,12 @@ const menuItemStyle = {
 
 class AdminSideMenu extends React.Component {
 
+    handleGameSelection = () => {
+        this.props.onGameSelection(this.props.selectedGame);
+    }
+
 	render() {
-		const { games, onGameSelection } = this.props;
+		const { games } = this.props;
 
 		return (
 			<Menu
@@ -32,7 +37,7 @@ class AdminSideMenu extends React.Component {
 						<Menu.Item 
 							key={i}
 							style={menuItemStyle}
-							onClick={onGameSelection}
+							onClick={this.handleGameSelection}
 						>
 							<h4>{game.gameNumber}</h4>
 							<span>{game.location}</span>
@@ -44,5 +49,15 @@ class AdminSideMenu extends React.Component {
 		);
 	}
 }
+
+AdminSideMenu.propTypes = {
+	games: PropTypes.array,
+    onGameSelection: PropTypes.func,
+    selectedGame: PropTypes.string,
+};
+
+AdminSideMenu.defaultProps = {
+	games: [],
+};
 
 export default AdminSideMenu;
