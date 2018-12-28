@@ -11,8 +11,10 @@ const {
 
 const meetupData = {
     id: "brnhcqyxmbcb",
+    meetupId: 'mu-123',
     name: "Game 235 @???? @ 1030am",
     local_date: "2018-09-01",
+    tournamentName: "Halloween",
     venue: {
         name: "Westlake Park",
         address_1: "95 Lake Merced Blvd",
@@ -21,71 +23,72 @@ const meetupData = {
     }
 };
 
+const playerStats = [
+    {
+        id: '123',
+        meetupId: '234078828',
+        name: 'Fresh Basta',
+        gamesPlayed: '1',
+        o: '1',
+        "1b": '1',
+        "2b": '1',
+        "3b": '1',
+        hr: '1',
+        rbi: '1',
+        r: '1',
+        sb: '1',
+        cs: '0',
+        k: '1',
+        bb: '1',
+        avg: '.600',
+        ab: '1',
+        tb: '1',
+        rc: '.800',
+        h: '1',
+        sac: '1',
+        wins: '1',
+        losses: '0'
+    },
+    {
+        id: '456',
+        meetupId: '254078828',
+        name: 'Steven',
+        gamesPlayed: '1',
+        o: '1',
+        "1b": '1',
+        "2b": '1',
+        "3b": '1',
+        hr: '1',
+        rbi: '1',
+        r: '1',
+        sb: '1',
+        cs: '0',
+        k: '1',
+        bb: '1',
+        avg: '.200',
+        ab: '1',
+        tb: '1',
+        rc: '.400',
+        h: '1',
+        sac: '1',
+        wins: '0',
+        losses: '1'
+    }
+];
+
 const currentGameStats = {
     tournamentName: null,
     winners: {
         name: 'Winners',
         runs: '10',
         homeField: true,
-        players: [
-            {
-                id: '123',
-                meetupId: '234078828',
-                name: 'Fresh Basta',
-                gamesPlayed: '1',
-                o: '1',
-                "1b": '1',
-                "2b": '1',
-                "3b": '1',
-                hr: '1',
-                rbi: '1',
-                r: '1',
-                sb: '1',
-                cs: '0',
-                k: '1',
-                bb: '1',
-                avg: '.600',
-                ab: '1',
-                tb: '1',
-                rc: '.800',
-                h: '1',
-                sac: '1',
-                wins: '1',
-                losses: '0'
-            }
-        ]
+        players: [playerStats[0]],
     },
     losers: {
         name: 'Losers',
         runs: '9',
         homeField: false,
-        players: [
-            {
-                id: '456',
-                meetupId: '254078828',
-                name: 'Steven',
-                gamesPlayed: '1',
-                o: '1',
-                "1b": '1',
-                "2b": '1',
-                "3b": '1',
-                hr: '1',
-                rbi: '1',
-                r: '1',
-                sb: '1',
-                cs: '0',
-                k: '1',
-                bb: '1',
-                avg: '.200',
-                ab: '1',
-                tb: '1',
-                rc: '.400',
-                h: '1',
-                sac: '1',
-                wins: '0',
-                losses: '1'
-            }
-        ]
+        players: [playerStats[1]]
     }
 };
 
@@ -145,17 +148,19 @@ const existingPlayerStats = [
 describe('Update game stats', () => {
     it ('appends current game stats to existing game stats', () => {
         const gameStats = {
+            meetupId: meetupData.meetupId,
             gameId: '235',
+            name: meetupData.venue.name,
             date: meetupData.local_date,
             year: '2018',
             month: '09',
             fieldName: meetupData.venue.name,
-            tournamentName: null,
-            winners: currentGameStats.winners,
-            losers: currentGameStats.losers,
+            tournamentName: meetupData.tournamentName,
+            winners: JSON.stringify(currentGameStats.winners.players),
+            losers: JSON.stringify(currentGameStats.losers.players),
         };
         
-        expect(mergeGameStats(meetupData, currentGameStats)).toEqual(gameStats);
+        expect(mergeGameStats(meetupData, playerStats)).toEqual(gameStats);
     });
 });
 

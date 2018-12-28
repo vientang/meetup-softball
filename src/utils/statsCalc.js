@@ -9,6 +9,7 @@ import transform from "lodash/transform";
  */
 const mergeGameStats = (meetupData, currentStats) => {
     const currentGameStats = {};
+    const midPoint = Math.floor(currentStats.length / 2);
 
     if (meetupData) {
         currentGameStats.meetupId = meetupData.meetupId;
@@ -22,8 +23,8 @@ const mergeGameStats = (meetupData, currentStats) => {
     }
     
 	// currentGameStats.tournamentName = currentStats.tournamentName;
-	currentGameStats.winners = JSON.stringify(currentStats.slice(0, 10));
-	currentGameStats.losers = JSON.stringify(currentStats.slice(10));
+	currentGameStats.winners = JSON.stringify(currentStats.slice(0, midPoint));
+	currentGameStats.losers = JSON.stringify(currentStats.slice(midPoint));
 
 	return currentGameStats;
 }
