@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import ReactTable from "react-table";
 import { Button } from 'antd';
-import { Utils } from "../utils";
-import "react-table/react-table.css";
+import { Utils } from '../utils';
+import StatsTable from './StatsTable';
+import 'react-table/react-table.css';
 import './components.css';
 
 class AdminStatsTable extends React.Component {
@@ -97,94 +97,13 @@ class AdminStatsTable extends React.Component {
         
 		return (
 			<div className="stats-table-container">
-				<ReactTable
-					data={players}
-					columns={[
-						{
-							Header: "PLAYER",
-							accessor: "name",
-							Cell: this.renderEditableCell,
-							sortMethod: Utils.sortByNameLength,
-							maxWidth: 150,
-							width: 150,
-						},
-						{
-							Header: "O",
-							accessor: "o",
-							Cell: this.renderEditableCell,
-							maxWidth: 50,
-                        },
-						{
-							Header: "1b",
-							accessor: "1b",
-							Cell: this.renderEditableCell,
-							maxWidth: 50,
-						},
-						{
-							Header: "2b",
-							accessor: "2b",
-							Cell: this.renderEditableCell,
-							maxWidth: 50,
-						},
-						{
-							Header: "3b",
-							accessor: "3b",
-							Cell: this.renderEditableCell,
-							maxWidth: 50,
-						},
-						{
-							Header: "HR",
-							accessor: "hr",
-							Cell: this.renderEditableCell,
-							maxWidth: 50,
-						},
-						{
-							Header: "RBI",
-							accessor: "rbi",
-							Cell: this.renderEditableCell,
-							maxWidth: 50,
-						},
-						{
-							Header: "R",
-							accessor: "r",
-							Cell: this.renderEditableCell,
-							maxWidth: 50,
-						},
-						{
-							Header: "BB",
-							accessor: "bb",
-							Cell: this.renderEditableCell,
-							maxWidth: 50,
-						},
-						{
-							Header: "K",
-							accessor: "k",
-							Cell: this.renderEditableCell,
-							maxWidth: 50,
-						},
-						{
-							Header: "SB",
-							accessor: "sb",
-							Cell: this.renderEditableCell,
-							maxWidth: 50,
-						},
-						{
-							Header: "CS",
-							accessor: "cs",
-							Cell: this.renderEditableCell,
-							maxWidth: 50,
-                        },
-                        {
-							Header: "SAC",
-							accessor: "sac",
-							Cell: this.renderEditableCell,
-							maxWidth: 50,
-						},
-					]}
-					defaultPageSize={players.length}
-					className="-striped -highlight stats-table"
-					showPaginationBottom={false}
-				/>
+                <StatsTable 
+                    players={players} 
+                    cellRenderer={this.renderEditableCell} 
+                    showPagination={false}
+                    sortMethod={Utils.sortByNameLength}
+                />
+				
 				<div className="submit-button">
 					<Button
 						type="primary"
