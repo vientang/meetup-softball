@@ -1,14 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ReactTable from "react-table";
+import componentStyles from './components.module.css';
 import "react-table/react-table.css";
-import './components.css';
 
 class StatsTable extends React.Component {
 
     renderColumns = () => {
         const { cellRenderer, players, sortMethod } = this.props;
-        let categories = Object.keys(players[0]).filter(cat => cat !== 'id' && cat !== 'meetupId');
+        let categories = Object.keys(players[0]).filter(cat => cat !== 'id' && cat !== 'meetupId' && cat !== 'key');
         const nameIndex = categories.findIndex(cat => cat === 'name');
         const playerColumn = categories.splice(nameIndex, 1)[0];
         categories.unshift(playerColumn);
@@ -20,8 +20,8 @@ class StatsTable extends React.Component {
                 Header: isPlayerCat ? 'Player' : category.toUpperCase(),
                 accessor: category,
                 sortMethod: isPlayerCat && sortMethod ? sortMethod : null,
-                maxWidth: isPlayerCat ? 150 : 50,
-                width: isPlayerCat ? 150 : 50,
+                maxWidth: isPlayerCat ? 200 : 50,
+                width: isPlayerCat ? 200 : 50,
             }
         
             if (cellRenderer) {
@@ -34,20 +34,21 @@ class StatsTable extends React.Component {
     }
 
 	render() {
-        const { players, showPagination } = this.props;
+        const { players, showPagination, style } = this.props;
     
         if (!players || players.length < 1) {
             return null;
         }
 
         return (
-			<div>
+			<div className={componentStyles.statsTable}>
 				<ReactTable
 					data={players}
-					className="-striped -highlight stats-table"
+					className="-striped -highlight"
 					columns={this.renderColumns()}
 					defaultPageSize={players.length}
-					showPaginationBottom={showPagination}
+                    showPaginationBottom={showPagination}
+                    style={style}
 				/>
 			</div>
 		);

@@ -3,7 +3,7 @@ import { API, graphqlOperation } from 'aws-amplify';
 import { listGameStats } from '../graphql/queries';
 import Layout from '../components/Layout';
 import StatsTable from '../components/StatsTable';
-import { Utils, statsCalc } from "../utils";
+import { statsCalc } from "../utils";
 import styles from './pages.module.css';
 class Stats extends React.Component {
     constructor(props) {
@@ -18,7 +18,8 @@ class Stats extends React.Component {
             let playerStats = [];
 
             const stats = response.data.listGameStats.items.filter(game => game.year === '2018');            
-            stats.forEach((game) => {                
+            stats.forEach((game) => {
+                // combine winners and losers of 1 game into 1 list
                 const allPlayers = statsCalc.mergeAllCurrentPlayers(game);
                 playerStats = playerStats.concat(allPlayers);
             });
@@ -31,11 +32,12 @@ class Stats extends React.Component {
 
     render() {
         const { playerStats } = this.state;
-
+        const style = { height: '800px' };
+        
         return (
             <>
                 <Layout className={styles.adminPage}>
-                    <StatsTable players={playerStats} />
+                    <StatsTable players={playerStats} style={style} />
                 </Layout>
             </>
         );

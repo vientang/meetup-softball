@@ -3,58 +3,65 @@ import { API, graphqlOperation } from 'aws-amplify';
 import { withAuthenticator } from 'aws-amplify-react';
 
 import Layout from '../components/Layout';
+import SuccessImage from '../components/SuccessImage';
 import AdminSideMenu from '../components/AdminSideMenu';
 import AdminStatsTable from '../components/AdminStatsTable';
+import SortTeams from '../components/SortTeams';
 import { createGameStats } from '../graphql/mutations';
 import { Utils, statsCalc } from "../utils";
 import styles from './pages.module.css';
+
+// get game info from meetup api
+// we need game name, venue name, date, and time
+// send to AdminSideMenu
+// here's an example
+const game247 = {
+    gameId: '247',
+    location: 'Westlake Park, Daly City',
+    date: 'November 11th, 2018',
+    time: '10:30am',
+    players: Utils.makeData(1),
+}
+const game248 = {
+    gameId: '248',
+    location: 'Westlake Park, Daly City',
+    date: 'November 11th, 2018',
+    time: '12:30pm',
+    players: Utils.makeData(2),
+}
 
 class Admin extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            areTeamsSet: false,
+            currentGame: game247,
             dataSubmitted: false,
-            games: [],
-            selectedGame: '0',
+            finishedStatEntry: false,
+            games: [game247, game248],
+            losers: [],
+            selectedGame: game247.gameId,
             selectedPlayers: [],
+            winners: [],
         };
     }
 
-    async componentDidMount() {
-        // get game info from meetup api
-        // we need game name, venue name, date, and time
-        // send to AdminSideMenu
-        // here's an example
-        const game247 = {
-            gameId: '247',
-            location: 'Westlake Park, Daly City',
-            date: 'November 11th, 2018',
-            time: '10:30am',
-            players: Utils.makeData(1),
-        }
-        const game248 = {
-            gameId: '248',
-            location: 'Westlake Park, Daly City',
-            date: 'November 11th, 2018',
-            time: '12:30pm',
-            players: Utils.makeData(2),
-        }
-        
-        // get list of players who attended the game from meetup api
-        // merge each player name and meetup id with the stats categories
-        // send to AdminStatsTable
+    // async componentDidMount() {
+    //     // get list of players who attended the game from meetup api
+    //     // merge each player name and meetup id with the stats categories
+    //     // send to AdminStatsTable
 
-        this.setState(() => ({ 
-            currentGame: game247,
-            games: [game247, game248],
-            selectedGame: game247.gameId,
-        }));
-    }
+    //     this.setState(() => ({ 
+    //         currentGame: game247,
+    //         games: [game247, game248],
+    //         selectedGame: game247.gameId,
+    //     }));
+    // }
 
     /**
      * Write GraphQL mutations
      */
-    handleSubmitData = async (currentStats, selectedGame) => {
+    handleSubmitData = (winners, losers, selectedGame) => {
         const meetupData = {
             meetupId: 'x1u3sjj99I',
             name: 'Game 247 Westlake Park, Daly City',
@@ -63,7 +70,7 @@ class Admin extends React.Component {
             tournamentName: 'Halloween',
         };
 
-        const gameStats = statsCalc.mergeGameStats(meetupData, currentStats);
+        const gameStats = statsCalc.mergeGameStats(meetupData, winners.concat(losers));
         
         API.graphql(graphqlOperation(createGameStats, { input: gameStats })).then(response => {
             this.setState((prevState) => {
@@ -71,9 +78,11 @@ class Admin extends React.Component {
                 const currentGame = games[0];
                 
                 return { 
+                    areTeamsSet: false,
+                    finishedStatEntry: currentGame ? false : true,
                     selectedGame: currentGame ? currentGame.gameId : '',
-                    games,
                     currentGame,
+                    games,
                 };
             });
         }).catch(error => {
@@ -94,9 +103,22 @@ class Admin extends React.Component {
         });
     };
 
+    handleSetTeams = (winners, losers) => {
+        this.setState(() => ({ areTeamsSet: true, winners, losers }));
+    };
+
     render() {
-        const { currentGame, games, selectedGame } = this.state;
-        
+        const { currentGame, finishedStatEntry, games, losers, selectedGame, areTeamsSet, winners } = this.state;
+
+        if (finishedStatEntry) {
+            return (
+                <Layout className={styles.adminPageSuccess}>
+                    <SuccessImage />
+                    <h3>You're done! Enjoy the day!</h3>
+                </Layout>
+            )
+        }
+
         return (
             <>
                 <Layout className={styles.adminPage}>
@@ -105,13 +127,21 @@ class Admin extends React.Component {
                         selectedGame={selectedGame} 
                         onGameSelection={this.handleSelectGame}
                     />
-                    <AdminStatsTable 
-                        data={currentGame} 
-                        onSubmit={this.handleSubmitData} 
-                        selectedGame={selectedGame} 
-                    />
+                    {!areTeamsSet && (
+                        <SortTeams 
+                            data={currentGame} 
+                            setTeams={this.handleSetTeams}
+                        />
+                    )}
+                    {areTeamsSet && (
+                        <AdminStatsTable 
+                            winners={winners} 
+                            losers={losers} 
+                            onSubmit={this.handleSubmitData} 
+                            selectedGame={selectedGame} 
+                        />
+                    )}
                 </Layout>
-                {/* <pre>{JSON.stringify(selectedPlayers)}</pre> */}
             </>
         );
     }

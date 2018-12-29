@@ -13,35 +13,37 @@ const menuItemStyle = {
 	display: 'flex', 
 	flexDirection: 'column', 
 	height: 'auto', 
-	lineHeight: '25px' 
+    lineHeight: '25px',
+    padding: '1rem',
+    margin: 0,
 };
 
 class AdminSideMenu extends React.Component {
 
-    handleGameSelection = () => {
-        this.props.onGameSelection(this.props.selectedGame);
+    handleGameSelection = (e) => {
+        this.props.onGameSelection(e.key);
     }
 
 	render() {
 		const { games } = this.props;
-
+        
 		return (
 			<Menu
 				style={sideMenuStyle}
 				defaultSelectedKeys={[this.props.selectedGame]}
-				defaultOpenKeys={['sub1']}
 				mode="inline"
 			>
 				{games.map((game, i) => {
 					return (
 						<Menu.Item 
-							key={i}
+							key={game.gameId}
 							style={menuItemStyle}
 							onClick={this.handleGameSelection}
 						>
-							<h4>{game.gameNumber}</h4>
+							<h4>{game.gameId}</h4>
 							<span>{game.location}</span>
 							<span>{game.date}</span>
+                            <span>{game.time}</span>
 						</Menu.Item>
 					)
 				})}

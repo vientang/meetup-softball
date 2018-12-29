@@ -3,27 +3,23 @@ import PropTypes from 'prop-types';
 import { Button } from 'antd';
 import { Utils } from '../utils';
 import StatsTable from './StatsTable';
+import componentStyles from './components.module.css';
 import 'react-table/react-table.css';
-import './components.css';
 
 class AdminStatsTable extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			players: props.data.players,
+            winners: props.winners,
+            losers: props.losers,
 			dataSubmitted: false,
 		};
 	}
 
-	static getDerivedStateFromProps(props) {
-		return {
-            players: props.data.players,
-		}
-	}
-
 	handleSubmitData = (e) => {
+        const { winners, losers } = this.state;
         e.preventDefault();
-		this.props.onSubmit(this.state.players, this.props.selectedGame);        
+		this.props.onSubmit(winners, losers, this.props.selectedGame);        
 	};
 
 	makeContentEditable = (cellInfo) => {
@@ -55,10 +51,10 @@ class AdminStatsTable extends React.Component {
 	};
 
 	/**
-	 * Save number entries to state
+	 * Save winner entries to state
 	 * @param cellInfo - meta data for each cell
 	 */
-	handleDataEntry = (cellInfo) => (e) => {
+	handleWinnerEntry = (cellInfo) => (e) => {
 		let value = Number(e.key);
 
 		// do not save any values that are not numbers
@@ -66,45 +62,86 @@ class AdminStatsTable extends React.Component {
 			return false;
 		}
 
-		const players = [...this.state.players];
-        players[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;
+		const winners = [...this.state.winners];
+        winners[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;
         
-		this.setState(() => ({ players }));
+		this.setState(() => ({ winners }));
 	};
 
-	renderEditableCell = (cellInfo) => {
-        const makeContentEditable = this.makeContentEditable(cellInfo);
+    /**
+	 * Save loser entries to state
+	 * @param cellInfo - meta data for each cell
+	 */
+    handleLoserEntry = (cellInfo) => (e) => {
+		let value = Number(e.key);
 
+		// do not save any values that are not numbers
+		if (isNaN(value)) {
+			return false;
+		}
+
+		const losers = [...this.state.losers];
+        losers[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;
+        
+		this.setState(() => ({ losers }));
+    };
+    
+	renderWinnerEditableCell = (cellInfo) => {
+        const makeContentEditable = this.makeContentEditable(cellInfo);
+        
         return (
 			<div
-				className="stat-cell"
+                className={componentStyles.statCell}
 				contentEditable={makeContentEditable}
 				suppressContentEditableWarning
 				onKeyDown={this.handleNonNumericKeys}
-				onKeyUp={this.handleDataEntry(cellInfo)}
+				onKeyUp={this.handleWinnerEntry(cellInfo)}
 			>
-				{this.state.players[cellInfo.index][cellInfo.column.id]}
+				{this.state.winners[cellInfo.index][cellInfo.column.id]}
 			</div>
 		);
 	};
 
-	render() {
-        const { players } = this.state;
+    renderLoserEditableCell = (cellInfo) => {
+        const makeContentEditable = this.makeContentEditable(cellInfo);
+        
+        return (
+			<div
+				className={componentStyles.statCell}
+				contentEditable={makeContentEditable}
+				suppressContentEditableWarning
+				onKeyDown={this.handleNonNumericKeys}
+				onKeyUp={this.handleLoserEntry(cellInfo)}
+			>
+				{this.state.losers[cellInfo.index][cellInfo.column.id]}
+			</div>
+		);
+    };
     
-        if (!players || players.length < 1) {
+	render() {
+        const { winners, losers } = this.state;
+    
+        if (!winners || winners.length < 1) {
             return null;
         }
         
 		return (
-			<div className="stats-table-container">
+			<div className={componentStyles.adminStatsTable}>
+                <h3>Winners</h3>
                 <StatsTable 
-                    players={players} 
-                    cellRenderer={this.renderEditableCell} 
+                    players={winners} 
+                    cellRenderer={this.renderWinnerEditableCell} 
                     showPagination={false}
                     sortMethod={Utils.sortByNameLength}
                 />
-				
-				<div className="submit-button">
+                <h3>Losers</h3>
+				<StatsTable 
+                    players={losers} 
+                    cellRenderer={this.renderLoserEditableCell} 
+                    showPagination={false}
+                    sortMethod={Utils.sortByNameLength}
+                />
+				<div className={componentStyles.submitButton}>
 					<Button
 						type="primary"
 						htmlType="button"
@@ -113,25 +150,21 @@ class AdminStatsTable extends React.Component {
 						Submit
 					</Button>
 				</div>
-			</div>
+            </div>
 		);
 	}
 }
 
 AdminStatsTable.propTypes = {
-	data: PropTypes.shape({
-        gameId: PropTypes.string,
-        location: PropTypes.string,
-        date: PropTypes.string,
-        time: PropTypes.string,
-        players: PropTypes.array,
-    }),
+    winners: PropTypes.array,
+    losers: PropTypes.array,
     onSubmit: PropTypes.func,
     selectedGame: PropTypes.string,
 };
 
 AdminStatsTable.defaultProps = {
-	data: {},
+    winners: [],
+    losers: [],
 };
 
 export default AdminStatsTable;

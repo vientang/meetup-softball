@@ -2,7 +2,7 @@ import React from 'react'
 import Amplify from 'aws-amplify'
 
 import Layout from '../components/Layout'
-import Image from '../components/image'
+import Image from '../components/Image'
 import configuration from '../aws-exports'
 
 const appSyncConfig = {
@@ -27,14 +27,14 @@ const imageStyle = {
 };
 
 const IndexPage = () => (
-  <Layout style={layoutStyle}>
-    <h1>Hi aliens</h1>
-    <p>Welcome to your new Gatsby site.</p>
-    <p>Now go build something great.</p>
-    <div style={imageStyle}>
-        <Image />
-    </div>
-  </Layout>
+    <Layout style={layoutStyle}>
+        <h1>Hi aliens</h1>
+        <p>Welcome to your new Gatsby site.</p>
+        <p>Now go build something great.</p>
+        <div style={imageStyle}>
+            <Image />
+        </div>
+    </Layout>
 )
 
 export default IndexPage
