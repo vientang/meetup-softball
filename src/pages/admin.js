@@ -1,10 +1,12 @@
-import React from 'react'
+import React from 'react';
+import { API, graphqlOperation } from 'aws-amplify';
 import { withAuthenticator } from 'aws-amplify-react';
 
-import Layout from '../components/Layout'
+import Layout from '../components/Layout';
 import AdminSideMenu from '../components/AdminSideMenu';
 import AdminStatsTable from '../components/AdminStatsTable';
-import { Utils } from "../utils";
+import { createGameStats } from '../graphql/mutations';
+import { Utils, statsCalc } from "../utils";
 import styles from './pages.module.css';
 
 class Admin extends React.Component {
@@ -61,18 +63,22 @@ class Admin extends React.Component {
             tournamentName: 'Halloween',
         };
 
-        this.setState((prevState) => {
-            const games = prevState.games.filter((game) => game.gameId !== selectedGame );
-            const currentGame = games[0];
-            
-            return { 
-                selectedGame: currentGame ? currentGame.gameId : '',
-                games,
-                currentGame,
-            };
+        const gameStats = statsCalc.mergeGameStats(meetupData, currentStats);
+        
+        API.graphql(graphqlOperation(createGameStats, { input: gameStats })).then(response => {
+            this.setState((prevState) => {
+                const games = prevState.games.filter((game) => game.gameId !== selectedGame );
+                const currentGame = games[0];
+                
+                return { 
+                    selectedGame: currentGame ? currentGame.gameId : '',
+                    games,
+                    currentGame,
+                };
+            });
+        }).catch(error => {
+            console.log('error', error);
         });
-
-        Utils.updateStats(meetupData, currentStats);
     };
 
     /**
@@ -94,16 +100,16 @@ class Admin extends React.Component {
         return (
             <>
                 <Layout className={styles.adminPage}>
-                <AdminSideMenu 
-                    games={games} 
-                    selectedGame={selectedGame} 
-                    onGameSelection={this.handleSelectGame}
-                />
-                <AdminStatsTable 
-                    data={currentGame} 
-                    onSubmit={this.handleSubmitData} 
-                    selectedGame={selectedGame} 
-                />
+                    <AdminSideMenu 
+                        games={games} 
+                        selectedGame={selectedGame} 
+                        onGameSelection={this.handleSelectGame}
+                    />
+                    <AdminStatsTable 
+                        data={currentGame} 
+                        onSubmit={this.handleSubmitData} 
+                        selectedGame={selectedGame} 
+                    />
                 </Layout>
                 {/* <pre>{JSON.stringify(selectedPlayers)}</pre> */}
             </>

@@ -39,8 +39,8 @@ class StatsTable extends React.Component {
         if (!players || players.length < 1) {
             return null;
         }
-        
-		return (
+
+        return (
 			<div>
 				<ReactTable
 					data={players}

@@ -5,7 +5,14 @@ import Layout from '../components/Layout'
 import Image from '../components/image'
 import configuration from '../aws-exports'
 
-Amplify.configure(configuration);
+const appSyncConfig = {
+    "aws_appsync_graphqlEndpoint": "https://uczx5jb4rrcm5ec4ng7p4zhjiq.appsync-api.us-east-1.amazonaws.com/graphql",
+    "aws_appsync_region": "us-east-1",
+    "aws_appsync_authenticationType": "API_KEY",
+    "aws_appsync_apiKey": "da2-egyzgqrabfctlh4qoqb7grabdy",
+};
+
+Amplify.configure({ ...configuration, ...appSyncConfig });
 
 const layoutStyle = {
     margin: '0 auto',

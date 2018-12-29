@@ -28,7 +28,7 @@ const playerStats = [
         id: '123',
         meetupId: '234078828',
         name: 'Fresh Basta',
-        gamesPlayed: '1',
+        gp: '1',
         o: '1',
         "1b": '1',
         "2b": '1',
@@ -46,14 +46,14 @@ const playerStats = [
         rc: '.800',
         h: '1',
         sac: '1',
-        wins: '1',
-        losses: '0'
+        w: '1',
+        l: '0'
     },
     {
         id: '456',
         meetupId: '254078828',
         name: 'Steven',
-        gamesPlayed: '1',
+        gp: '1',
         o: '1',
         "1b": '1',
         "2b": '1',
@@ -71,25 +71,23 @@ const playerStats = [
         rc: '.400',
         h: '1',
         sac: '1',
-        wins: '0',
-        losses: '1'
+        w: '0',
+        l: '1'
     }
 ];
 
 const currentGameStats = {
     tournamentName: null,
-    winners: {
+    winners: JSON.stringify({
         name: 'Winners',
-        runs: '10',
         homeField: true,
         players: [playerStats[0]],
-    },
-    losers: {
+    }),
+    losers: JSON.stringify({
         name: 'Losers',
-        runs: '9',
         homeField: false,
-        players: [playerStats[1]]
-    }
+        players: [playerStats[1]],
+    }),
 };
 
 const existingPlayerStats = [
@@ -97,7 +95,7 @@ const existingPlayerStats = [
         id: '123',
         meetupId: '234078828',
         name: 'Fresh Basta',
-        gamesPlayed: '3',
+        gp: '3',
         o: '1',
         "1b": '1',
         "2b": '1',
@@ -115,14 +113,14 @@ const existingPlayerStats = [
         rc: '.800',
         h: '1',
         sac: '1',
-        wins: '10',
-        losses: '7'
+        w: '10',
+        l: '7'
     },
     {
         id: '456',
         meetupId: '254078828',
         name: 'Steven',
-        gamesPlayed: '5',
+        gp: '5',
         o: '1',
         "1b": '1',
         "2b": '1',
@@ -140,8 +138,8 @@ const existingPlayerStats = [
         rc: '.800',
         h: '1',
         sac: '1',
-        wins: '20',
-        losses: '3'
+        w: '20',
+        l: '3'
     }
 ];
 
@@ -156,8 +154,8 @@ describe('Update game stats', () => {
             month: '09',
             fieldName: meetupData.venue.name,
             tournamentName: meetupData.tournamentName,
-            winners: JSON.stringify(currentGameStats.winners.players),
-            losers: JSON.stringify(currentGameStats.losers.players),
+            winners: currentGameStats.winners,
+            losers: currentGameStats.losers,
         };
         
         expect(mergeGameStats(meetupData, playerStats)).toEqual(gameStats);
@@ -196,12 +194,12 @@ describe('Update player stats', () => {
                 "avg": "0.7142857142857143",
                 "bb": "2",
                 "cs": "1",
-                "gamesPlayed": '4',
+                "gp": '4',
                 "h": "5",
                 "hr": "2",
                 "id": "123",
                 "k": "2",
-                "losses": "7",
+                "l": "7",
                 "meetupId": "234078828",
                 "name": "Fresh Basta",
                 "o": "2",
@@ -214,7 +212,7 @@ describe('Update player stats', () => {
                 "sb": "2",
                 "slg": "1.5714285714285714",
                 "tb": "11",
-                "wins": "11",
+                "w": "11",
                 "woba": "0.7295555555555555"
               },
               {
@@ -225,12 +223,12 @@ describe('Update player stats', () => {
                 "avg": "0.7142857142857143",
                 "bb": "2",
                 "cs": "1",
-                "gamesPlayed": '6',
+                "gp": '6',
                 "h": "5",
                 "hr": "2",
                 "id": "456",
                 "k": "2",
-                "losses": "4",
+                "l": "4",
                 "meetupId": "254078828",
                 "name": "Steven",
                 "o": "2",
@@ -243,7 +241,7 @@ describe('Update player stats', () => {
                 "sb": "2",
                 "slg": "1.5714285714285714",
                 "tb": "11",
-                "wins": "20",
+                "w": "20",
                 "woba": "0.7295555555555555"
               },
         ];

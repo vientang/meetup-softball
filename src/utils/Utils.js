@@ -30,6 +30,7 @@ const updateStats = (meetupData, currentStats) => {
     // mutateGameStats(gameStats);
     API.graphql(graphqlOperation(createGameStats, { input: gameStats })).then(response => {
         console.log('response', response);
+        return response;
     }).catch(error => {
         console.log('error', error);
     });

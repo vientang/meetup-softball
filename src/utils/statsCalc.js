@@ -4,7 +4,7 @@ import transform from "lodash/transform";
 /**
  * GAMESTATS Adaptor to combine data from meetup and current game stats
  * @param {Array} meetupData - data from meetup api
- * @param {Array} currentStats - all game stats from current game
+ * @param {Array} currentStats - all player stats from current game
  * @return {Object} currentGameStats
  */
 const mergeGameStats = (meetupData, currentStats) => {
@@ -23,8 +23,19 @@ const mergeGameStats = (meetupData, currentStats) => {
     }
     
 	// currentGameStats.tournamentName = currentStats.tournamentName;
-	currentGameStats.winners = JSON.stringify(currentStats.slice(0, midPoint));
-	currentGameStats.losers = JSON.stringify(currentStats.slice(midPoint));
+    const winners = {
+        name: 'Winners', // swap with data from the admin
+        homeField: true, // swap with data from the admin 
+        players: currentStats.slice(0, midPoint),
+    };
+    const losers = {
+        name: 'Losers', // swap with data from the admin
+        homeField: false, // swap with data from the admin
+        players: currentStats.slice(midPoint),
+    };
+    
+    currentGameStats.winners = JSON.stringify(winners);
+    currentGameStats.losers = JSON.stringify(losers);
 
 	return currentGameStats;
 }
@@ -37,6 +48,7 @@ const mergeGameStats = (meetupData, currentStats) => {
  */
 const mergePlayerStats = (existingStats, currentStats) => {
     const currentPlayers = mergeAllCurrentPlayers(currentStats);
+    
     const ignoreKeystoTransform = ['id', 'meetupId', 'name', 'avg', 'h', 'ab', 'tb', 'rc'];
 
     return currentPlayers.map((player, i) => {
@@ -82,8 +94,12 @@ const mergePlayerStats = (existingStats, currentStats) => {
  * @return {Array} winners and losers
  */
 const mergeAllCurrentPlayers = (gameStats) => {
-    const winners = addDefaultStats(gameStats.winners.players, true);
-    const losers = addDefaultStats(gameStats.losers.players, false);
+    const gameWinners = JSON.parse(gameStats.winners);
+    const gameLosers = JSON.parse(gameStats.losers);
+    
+    const winners = addDefaultStats(gameWinners.players, true);    
+    const losers = addDefaultStats(gameLosers.players, false);
+    
     return winners.concat(losers);
 }
 
@@ -95,9 +111,9 @@ const mergeAllCurrentPlayers = (gameStats) => {
  * @return {Array}
  */
 const addDefaultStats = (players, winner) => players.map((player) => {
-    player.wins = winner ? '1' : '0';
-    player.losses = winner ? '0' : '1';
-    player.gamesPlayed = '1';
+    player.w = winner ? '1' : '0';
+    player.l = winner ? '0' : '1';
+    player.gp = '1';
     return player;
 });
 
@@ -142,7 +158,8 @@ const getWOBA = (walks, singles, doubles, triples, homeRuns, atBats, sacrifices)
 
 export default { 
     mergePlayerStats, 
-    mergeGameStats, 
+    mergeGameStats,
+    mergeAllCurrentPlayers, 
     getHits,
     getAtBats, 
     getTotalBases, 
