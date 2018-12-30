@@ -1,10 +1,10 @@
-import React from 'react'
+import React from 'react';
 import { API, graphqlOperation } from 'aws-amplify';
 import { listGameStats } from '../graphql/queries';
 import Layout from '../components/Layout';
 import NotFoundImage from '../components/NotFoundImage';
 import StatsTable from '../components/StatsTable';
-import { statsCalc } from "../utils";
+import { statsCalc, Utils } from "../utils";
 import styles from './pages.module.css';
 
 const categories = ['player', 'gp', 'h', '1b', '2b', '3b', 'r', 'rbi', 'hr', 'avg', 'sb', 'cs', 'bb', 'k', 'rc', 'tb', 'ab'];
@@ -28,7 +28,6 @@ class Stats extends React.Component {
                     const updatedStats = statsCalc.filterPlayerStats(game, playerStats);                    
                     playerStats = Array.from(updatedStats.values());
                 });
-            console.log('players', response.data.listGameStats);
             
             this.setState(() => ({ playerStats, noDataFound: playerStats.length < 1 }));
             statsCalc.clearMasterList();
@@ -57,6 +56,7 @@ class Stats extends React.Component {
                     <StatsTable 
                         categories={categories}
                         players={playerStats} 
+                        sortMethod={Utils.sortHighToLow}
                         style={style} 
                     />
                 </Layout>

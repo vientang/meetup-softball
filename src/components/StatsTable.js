@@ -17,7 +17,7 @@ class StatsTable extends React.Component {
             const column = {
                 Header: isPlayerCat ? 'Player' : category.toUpperCase(),
                 accessor: category === 'player' ? 'name' : category,
-                sortMethod: isPlayerCat && sortMethod ? sortMethod : null,
+                sortMethod,
                 maxWidth: isPlayerCat ? 180 : 60,
                 width: isPlayerCat ? 180 : 60,
             }

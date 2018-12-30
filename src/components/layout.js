@@ -11,9 +11,9 @@ const Layout = ({ className, children, style }) => (
         query={graphql`
         query SiteTitleQuery {
             site {
-            siteMetadata {
-                title
-            }
+                siteMetadata {
+                    title
+                }
             }
         }
         `}
@@ -22,8 +22,8 @@ const Layout = ({ className, children, style }) => (
                 <Helmet
                     title={data.site.siteMetadata.title}
                     meta={[
-                        { name: 'description', content: 'Sample' },
-                        { name: 'keywords', content: 'sample, something' },
+                        { name: 'description', content: 'San Francisco Meetup Softball website' },
+                        { name: 'keywords', content: 'meetup, softball, meetupsoftball, meetup-softball' },
                     ]}
                 >
                     <html lang="en" />

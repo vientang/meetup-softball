@@ -10,8 +10,11 @@ const Header = () => ({ siteTitle }) => (
                     {siteTitle}
                 </Link>
             </h1>
+            <Link to="/stats" className={componentStyles.siteTitle}>
+                Stats
+            </Link>
             <Link to="/admin" className={componentStyles.siteTitle}>
-                Sign in
+                Admin
             </Link>
         </div>
   </div>

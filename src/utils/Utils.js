@@ -120,6 +120,13 @@ const sortByNameLength = (a, b) => {
 	return a.length > b.length ? 1 : -1;
 };
 
+const sortHighToLow = (a, b) => {
+    const aa = Number(a);
+    const bb = Number(b);
+
+	return aa < bb ? 1 : -1;
+};
+
 const mockGameStats = {
 	id: 'xxxxxxxcqyxmbcb', // name.toLowerCase().slice(0, 7).split(' ').join('')_${meetup.id}
 	date: new Date(), // meetup.local_date
@@ -144,5 +151,6 @@ export default {
 	updateStats,
 	makeData,
 	mockGameStats,
-	sortByNameLength,
+    sortByNameLength,
+    sortHighToLow,
 }
