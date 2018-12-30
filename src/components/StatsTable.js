@@ -5,16 +5,11 @@ import ErrorBoundary from './ErrorBoundary';
 import componentStyles from './components.module.css';
 import 'react-table/react-table.css';
 
+const defaultCategories = ['player', 'o', '1b', '2b', '3b', 'hr', 'bb', 'sb', 'cs', 'k', 'rbi', 'r', 'sac'];
 class StatsTable extends React.Component {
 
     renderColumns = () => {
-        const { categories, cellRenderer, players, sortMethod } = this.props;
-        // let categories = Array.from(players.keys()).filter(cat => cat !== 'id' && cat !== 'meetupId' && cat !== 'key');
-        console.log('renderColumns', categories);
-        // let categories = Object.keys(players[0]).filter(cat => cat !== 'id' && cat !== 'meetupId' && cat !== 'key');
-        // const nameIndex = categories.findIndex(cat => cat === 'name');
-        // const playerColumn = categories.splice(nameIndex, 1)[0];
-        // categories.unshift(playerColumn);
+        const { categories, cellRenderer, sortMethod } = this.props;
         
         const columns = categories.map(category => {
             const isPlayerCat = category === 'player';
@@ -61,6 +56,7 @@ class StatsTable extends React.Component {
 }
 
 StatsTable.propTypes = {
+    categories: PropTypes.array,
     cellRenderer: PropTypes.func,
     players: PropTypes.array,
     showPagination: PropTypes.bool,
@@ -68,6 +64,7 @@ StatsTable.propTypes = {
 };
 
 StatsTable.defaultProps = {
+    categories: defaultCategories,
     players: [],
     showPagination: false,
 };

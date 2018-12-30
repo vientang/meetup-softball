@@ -10,12 +10,33 @@ const locale = {
     notFoundContent: 'No losers yet', 
 };
 
+const setPlayerList = (players) => {
+    const playerListWithKeys = players.map((player, i) => {
+        const playerCopy = {...player};
+        playerCopy.key = i.toString();
+        return playerCopy;
+    });
+
+    return playerListWithKeys;        
+};
+
 class SortTeams extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            players: this.setPlayerList(props.data.players) || [],
+            gameId: props.data.gameId,
+            players: setPlayerList(props.data.players) || [],
             targetKeys: [],
+        };
+    }
+    
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.data.gameId === prevState.gameId) {
+            return null;
+        }
+        return { 
+            gameId: nextProps.data.gameId,
+            players: setPlayerList(nextProps.data.players),
         };
     }
     
@@ -26,17 +47,7 @@ class SortTeams extends Component {
         this.setState(() => ({ targetKeys }));
     }
 
-    setPlayerList = (players) => {
-        const playerListWithKeys = players.map((player, i) => {
-            const playerCopy = {...player};
-            playerCopy.key = i.toString();
-            return playerCopy;
-        });
-
-        return playerListWithKeys;        
-    }
-
-    submitList = (e) => {
+    submitList = () => {
         const { players, targetKeys } = this.state;
         const losers = players.filter((p, i) => targetKeys.includes(i.toString()));
         const winners = players.filter((p, i) => !targetKeys.includes(i.toString()));
@@ -44,17 +55,8 @@ class SortTeams extends Component {
         this.props.setTeams(winners, losers);
     }
 
-    renderFooter = () => (
-        <Button
-            size="small"
-            style={{ float: 'right', margin: 5 }}
-            onClick={this.submitList}
-        >
-            Set teams
-        </Button>
-    )
-
     render() {
+        const { teamTitles } = this.props;
         const { players, targetKeys } = this.state;
 
         return (
@@ -63,15 +65,21 @@ class SortTeams extends Component {
                     dataSource={players}
                     onChange={this.handleChange}
                     render={item => `${item.name}`}
-                    footer={this.renderFooter}
                     locale={locale}
                     targetKeys={targetKeys}
-                    titles={['Winners', 'Losers']}
+                    titles={teamTitles}
                     listStyle={{
                         width: '47%',
                         height: 500,
                     }}
                 />
+                <Button
+                    size="small"
+                    style={{ float: 'right', margin: 5 }}
+                    onClick={this.submitList}
+                >
+                    Set teams
+                </Button>
             </div>
         );
     }
@@ -82,13 +90,15 @@ SortTeams.propTypes = {
         gameId: PropTypes.string,
         location: PropTypes.string,
         date: PropTypes.string,
-        time: PropTypes.string,
+        time: PropTypes.string,        
         players: PropTypes.array,
     }),
+    teamTitles: PropTypes.array,
 };
 
 SortTeams.defaultProps = {
     data: {},
+    teamTitles: ['Winners', 'Losers'],
 };
 
 export default SortTeams;

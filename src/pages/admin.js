@@ -11,6 +11,7 @@ import { createGameStats } from '../graphql/mutations';
 import { Utils, statsCalc } from "../utils";
 import styles from './pages.module.css';
 
+const categories = ['player', 'o', '1b', '2b', '3b', 'hr', 'bb', 'sb', 'cs', 'k', 'rbi', 'r', 'sac'];
 // get game info from meetup api
 // we need game name, venue name, date, and time
 // send to AdminSideMenu
@@ -94,7 +95,7 @@ class Admin extends React.Component {
      * Toggle players between the games
      */
     handleSelectGame = (selectedGame) => {
-        this.setState((prevState) => {
+        this.setState((prevState) => {            
             const currentGame = prevState.games.find((game) => game.gameId === selectedGame);
             return {
                 currentGame,
@@ -108,7 +109,15 @@ class Admin extends React.Component {
     };
 
     render() {
-        const { currentGame, finishedStatEntry, games, losers, selectedGame, areTeamsSet, winners } = this.state;
+        const { 
+            areTeamsSet, 
+            currentGame, 
+            finishedStatEntry, 
+            games, 
+            losers, 
+            selectedGame, 
+            winners,
+        } = this.state;
 
         if (finishedStatEntry) {
             return (
@@ -137,6 +146,7 @@ class Admin extends React.Component {
                         <AdminStatsTable 
                             winners={winners} 
                             losers={losers} 
+                            categories={categories}
                             onSubmit={this.handleSubmitData} 
                             selectedGame={selectedGame} 
                         />

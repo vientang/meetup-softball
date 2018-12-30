@@ -119,6 +119,7 @@ class AdminStatsTable extends React.Component {
     };
     
 	render() {
+        const { categories } = this.props;
         const { winners, losers } = this.state;
     
         if (!winners || winners.length < 1) {
@@ -130,6 +131,7 @@ class AdminStatsTable extends React.Component {
                 <h3>Winners</h3>
                 <StatsTable 
                     players={winners} 
+                    categories={categories}
                     cellRenderer={this.renderWinnerEditableCell} 
                     showPagination={false}
                     sortMethod={Utils.sortByNameLength}
@@ -137,6 +139,7 @@ class AdminStatsTable extends React.Component {
                 <h3>Losers</h3>
 				<StatsTable 
                     players={losers} 
+                    categories={categories}
                     cellRenderer={this.renderLoserEditableCell} 
                     showPagination={false}
                     sortMethod={Utils.sortByNameLength}
@@ -158,6 +161,7 @@ class AdminStatsTable extends React.Component {
 AdminStatsTable.propTypes = {
     winners: PropTypes.array,
     losers: PropTypes.array,
+    categories: PropTypes.array,
     onSubmit: PropTypes.func,
     selectedGame: PropTypes.string,
 };
@@ -165,6 +169,7 @@ AdminStatsTable.propTypes = {
 AdminStatsTable.defaultProps = {
     winners: [],
     losers: [],
+    categories: [],
 };
 
 export default AdminStatsTable;
