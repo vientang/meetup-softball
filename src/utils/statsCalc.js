@@ -118,6 +118,114 @@ const addDefaultStats = (players, winner) => players.map((player) => {
 });
 
 /**
+ * LIST OF PLAYER STATS
+ * HOLDS ALL OF THE RESOLVED STATS BASED ON A SPECIFIC FILTER
+ */
+const masterList = new Map();
+const clearMasterList = () => {    
+    masterList.clear();
+};
+
+/**
+ * Combines winners and losers
+ * @return {Array} list of updated player stats
+ */
+const filterPlayerStats = (gameData, allPlayers) => {
+    const winners = JSON.parse(gameData.winners);
+    const losers = JSON.parse(gameData.losers);
+    const gamePlayers = winners.players.concat(losers.players);
+    
+    return updateEntries(gamePlayers, allPlayers);
+};
+
+/**
+ * Build up master list with updated player stats
+ * @return {Map} map of player stats
+ */
+const updateEntries = (gamePlayers, allPlayers) => {
+    gamePlayers.forEach((playerStats) => {
+        if (masterList.has(playerStats.name)) {
+            const existingStats = allPlayers.find(player => player.name === playerStats.name);
+            const newStats = mergePlayerStatsForView(existingStats, playerStats);
+            masterList.set(playerStats.name, newStats);
+        } else {
+            masterList.set(playerStats.name, playerStats);
+        }
+    });
+    return masterList;
+}
+
+/**
+ * Calculate cumulative stats from current game and the running total
+ * This can be used generically after filtering data from database
+ * @return {Object} updated stats for an individual player
+ */
+const mergePlayerStatsForView = (existingStats, currentStats) => {
+    const ignoreKeystoTransform = ['id', 'meetupId', 'name', 'avg', 'h', 'ab', 'tb', 'rc', 'key', 'obp', 'ops', 'slg', 'woba'];
+
+    // only add existing stats if it's there
+    // otherwise, we'll get NaN
+    let hits = getHits(Number(currentStats["1b"]), Number(currentStats["2b"]), Number(currentStats["3b"]), Number(currentStats.hr));
+    if (existingStats.h) {
+        hits += Number(existingStats.h);
+    }
+
+    let atBats = getAtBats(hits, Number(currentStats["o"]));    
+    if (existingStats.ab && Number(get(existingStats, 'ab')) > 0) {        
+        atBats += Number(get(existingStats, 'ab'));
+    }
+    
+    // rounded to the third digit
+    // slice off the leading zero if necessary
+    let avg = atBats > 0 ? getAverage(hits, atBats) : getAverage(hits, 1);
+    avg = avg.toFixed(3);
+    if (avg[0] === "0") {
+        avg = avg.slice(1);
+    }
+    
+    let totalBases = getTotalBases(Number(currentStats["1b"]), Number(currentStats["2b"]), Number(currentStats["3b"]), Number(currentStats.hr));
+    if (Number(get(existingStats, 'tb'))) {
+        totalBases += Number(get(existingStats, 'tb'));
+    }
+
+    const bb = Number(currentStats.bb) + Number(existingStats.bb);
+    const sb = Number(currentStats.sb) + Number(existingStats.sb);
+    const cs = Number(currentStats.cs) + Number(existingStats.cs);
+
+    // total bases and atBats need to be greater than 0
+    // otherwise we get NaN
+    let runsCreated = 0;
+    if (totalBases > 0 && atBats > 0) {
+        runsCreated = getRunsCreated(hits, bb, cs, totalBases, sb, atBats);
+    }
+
+    const onBasePercentage = getonBasePercentage(hits, Number(currentStats.bb), atBats, Number(currentStats.sac));
+    const slugging = getSlugging(totalBases, atBats);
+    const onBasePlusSlugging = getOPS(onBasePercentage, slugging);
+    const weightedOnBaseAverage = getWOBA(Number(currentStats.bb), Number(currentStats["1b"]), Number(currentStats["2b"]), Number(currentStats["3b"]), Number(currentStats.hr), atBats, Number(currentStats.sac));
+    
+    const updatedStats = transform(currentStats, function(result, value, key) {
+        if (ignoreKeystoTransform.includes(key)) {
+            result[key] = value;
+        } else {
+            result[key] = (Number(value) + Number(existingStats[key])).toString();
+        }
+    }, {});
+    
+    updatedStats.h = hits.toString();
+    updatedStats.ab = atBats.toString();
+    updatedStats.tb = totalBases.toString();
+    updatedStats.rc = runsCreated.toString();
+    updatedStats.avg = avg;
+    updatedStats.obp = onBasePercentage.toString();
+    updatedStats.slg = slugging.toString();
+    updatedStats.ops = onBasePlusSlugging.toString();
+    updatedStats.woba = weightedOnBaseAverage.toString();
+
+    return updatedStats;
+}
+
+/**
  * Functions to calculate stats
  */
 const getHits = (singles, doubles, triples, homeRuns) => {
@@ -169,4 +277,6 @@ export default {
     getSlugging,
     getOPS,
     getWOBA,
+    filterPlayerStats,
+    clearMasterList,
 };
