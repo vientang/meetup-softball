@@ -2,15 +2,19 @@ import React from 'react'
 import { API, graphqlOperation } from 'aws-amplify';
 import { listGameStats } from '../graphql/queries';
 import Layout from '../components/Layout';
+import NotFoundImage from '../components/NotFoundImage';
 import StatsTable from '../components/StatsTable';
 import { statsCalc } from "../utils";
 import styles from './pages.module.css';
+
 const categories = ['player', 'gp', 'h', '1b', '2b', '3b', 'r', 'rbi', 'hr', 'avg', 'sb', 'cs', 'bb', 'k', 'rc', 'tb', 'ab'];
+
 class Stats extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             playerStats: [],
+            noDataFound: false,
         };
     }
 
@@ -24,8 +28,9 @@ class Stats extends React.Component {
                     const updatedStats = statsCalc.filterPlayerStats(game, playerStats);                    
                     playerStats = Array.from(updatedStats.values());
                 });
+            console.log('players', response.data.listGameStats);
             
-            this.setState(() => ({ playerStats }));
+            this.setState(() => ({ playerStats, noDataFound: playerStats.length < 1 }));
             statsCalc.clearMasterList();
         }).catch(error => {
             console.log('error', error);
@@ -34,8 +39,17 @@ class Stats extends React.Component {
     }
 
     render() {
-        const { playerStats } = this.state;
+        const { playerStats, noDataFound } = this.state;
         const style = { height: '800px' };
+
+        if (noDataFound) {
+            return (
+                <Layout className={styles.adminPageSuccess}>
+                    <NotFoundImage />
+                    <h3>There's no data!</h3>
+                </Layout>
+            );
+        }
 
         return (
             <>
