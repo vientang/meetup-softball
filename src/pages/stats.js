@@ -30,7 +30,7 @@ class Stats extends React.Component {
                 });
             
             this.setState(() => ({ playerStats, noDataFound: playerStats.length < 1 }));
-            statsCalc.clearMasterList();
+            // statsCalc.clearMasterList();
         }).catch(error => {
             console.log('error', error);
             throw new Error(error);

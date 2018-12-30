@@ -47,17 +47,21 @@ class Admin extends React.Component {
         };
     }
 
-    // async componentDidMount() {
-    //     // get list of players who attended the game from meetup api
-    //     // merge each player name and meetup id with the stats categories
-    //     // send to AdminStatsTable
+    async componentDidMount() {
+        // get list of players who attended the game from meetup api
+        // merge each player name and meetup id with the stats categories
+        // send to AdminStatsTable
 
-    //     this.setState(() => ({ 
-    //         currentGame: game247,
-    //         games: [game247, game248],
-    //         selectedGame: game247.gameId,
-    //     }));
-    // }
+        // After getting meetup data, check if any of those games have
+        // already been entered. This can happen when admin enters stats 
+        // for one game but not the other. We should find out which games
+        // should be entered.
+        this.setState(() => ({ 
+            currentGame: game247,
+            games: [game247, game248],
+            selectedGame: game247.gameId,
+        }));
+    }
 
     /**
      * Write GraphQL mutations
@@ -71,7 +75,7 @@ class Admin extends React.Component {
             tournamentName: 'Halloween',
         };
 
-        const gameStats = statsCalc.mergeGameStats(meetupData, winners.concat(losers));
+        const gameStats = statsCalc.mergeGameStats(meetupData, winners, losers);
         
         API.graphql(graphqlOperation(createGameStats, { input: gameStats })).then(response => {
             this.setState((prevState) => {

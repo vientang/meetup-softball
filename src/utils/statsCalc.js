@@ -1,5 +1,5 @@
-import get from "lodash/get";
-import transform from "lodash/transform";
+import get from 'lodash/get';
+import transform from 'lodash/transform';
 
 /**
  * GAMESTATS Adaptor to combine data from meetup and current game stats
@@ -7,9 +7,10 @@ import transform from "lodash/transform";
  * @param {Array} currentStats - all player stats from current game
  * @return {Object} currentGameStats
  */
-const mergeGameStats = (meetupData, currentStats) => {
+const mergeGameStats = (meetupData, w, l) => {
     const currentGameStats = {};
-    const midPoint = Math.floor(currentStats.length / 2);
+    const winningTeam = addDefaultStats(w, true);
+    const losingTeam = addDefaultStats(l);
 
     if (meetupData) {
         currentGameStats.meetupId = meetupData.meetupId;
@@ -26,12 +27,12 @@ const mergeGameStats = (meetupData, currentStats) => {
     const winners = {
         name: 'Winners', // swap with data from the admin
         homeField: true, // swap with data from the admin 
-        players: currentStats.slice(0, midPoint),
+        players: winningTeam,
     };
     const losers = {
         name: 'Losers', // swap with data from the admin
         homeField: false, // swap with data from the admin
-        players: currentStats.slice(midPoint),
+        players: losingTeam,
     };
     
     currentGameStats.winners = JSON.stringify(winners);
@@ -143,16 +144,51 @@ const filterPlayerStats = (gameData, allPlayers) => {
  * @return {Map} map of player stats
  */
 const updateEntries = (gamePlayers, allPlayers) => {
-    gamePlayers.forEach((playerStats) => {
-        if (masterList.has(playerStats.name)) {
-            const existingStats = allPlayers.find(player => player.name === playerStats.name);
-            const newStats = mergePlayerStatsForView(existingStats, playerStats);
-            masterList.set(playerStats.name, newStats);
+    gamePlayers.forEach((player) => {
+        const stats = {
+            first: Number(player["1b"]),
+            second: Number(player["2b"]),
+            third: Number(player["3b"]),
+            hr: Number(player.hr),
+            o: Number(player.o),
+            bb: Number(player.bb),
+            cs: Number(player.cs),
+            sb: Number(player.sb),
+        };
+        
+        if (masterList.has(player.name)) {
+            const existingStats = allPlayers.find(prevPlayerStat => prevPlayerStat.name === player.name);
+            const newStats = mergePlayerStatsForView(existingStats, player);
+            masterList.set(player.name, newStats);
         } else {
+            const { bb, cs, first, second, sb, third, hr, o } = stats;
+
+            const h = getHits(first, second, third, hr);
+            const ab = getAtBats(h, o); 
+            const avg = getAverage(h, ab);
+            const tb = getTotalBases(first, second, third, hr);
+            const rc = getRunsCreated(h, bb, cs, tb, sb, ab);
+        
+            const playerStats = combineDerivedStats(player, { h, ab, avg, tb, rc });
             masterList.set(playerStats.name, playerStats);
         }
     });
+
     return masterList;
+}
+
+/**
+ * Stringify values and combine into one object
+ * @param {*} adminStats 
+ * @param {*} derivedStats 
+ * @return {Object}
+ */
+const combineDerivedStats = (adminStats, derivedStats) => {
+    const derivedWithStrings = {};
+    for (let key in derivedStats) {
+        derivedWithStrings[key] = String(derivedStats[key]);
+    }
+    return Object.assign(adminStats, derivedWithStrings);
 }
 
 /**
@@ -160,69 +196,69 @@ const updateEntries = (gamePlayers, allPlayers) => {
  * This can be used generically after filtering data from database
  * @return {Object} updated stats for an individual player
  */
-const mergePlayerStatsForView = (existingStats, currentStats) => {
+const mergePlayerStatsForView = (existingStats = {}, currentStats) => {
     const ignoreKeystoTransform = ['id', 'meetupId', 'name', 'avg', 'h', 'ab', 'tb', 'rc', 'key', 'obp', 'ops', 'slg', 'woba'];
+    const stats = {
+        first: Number(currentStats["1b"]),
+        second: Number(currentStats["2b"]),
+        third: Number(currentStats["3b"]),
+        hr: Number(currentStats.hr),
+        o: Number(currentStats.o),
+        bb: Number(currentStats.bb),
+        cs: Number(currentStats.cs),
+        sb: Number(currentStats.sb),
+        sac: Number(currentStats.sac),
+    };
 
+    const { bb, cs, first, second, sb, third, hr, o, sac } = stats;
     // only add existing stats if it's there
     // otherwise, we'll get NaN
-    let hits = getHits(Number(currentStats["1b"]), Number(currentStats["2b"]), Number(currentStats["3b"]), Number(currentStats.hr));
+    let hits = getHits(first, second, third, hr);
     if (existingStats.h) {
         hits += Number(existingStats.h);
     }
-
-    let atBats = getAtBats(hits, Number(currentStats["o"]));    
+    
+    let atBats = getAtBats(hits, o);
     if (existingStats.ab && Number(get(existingStats, 'ab')) > 0) {        
         atBats += Number(get(existingStats, 'ab'));
     }
+        
+    const avg = getAverage(hits, atBats);
     
-    // rounded to the third digit
-    // slice off the leading zero if necessary
-    let avg = atBats > 0 ? getAverage(hits, atBats) : getAverage(hits, 1);
-    avg = avg.toFixed(3);
-    if (avg[0] === "0") {
-        avg = avg.slice(1);
-    }
-    
-    let totalBases = getTotalBases(Number(currentStats["1b"]), Number(currentStats["2b"]), Number(currentStats["3b"]), Number(currentStats.hr));
+    let totalBases = getTotalBases(first, second, third, hr);
     if (Number(get(existingStats, 'tb'))) {
         totalBases += Number(get(existingStats, 'tb'));
     }
 
-    const bb = Number(currentStats.bb) + Number(existingStats.bb);
-    const sb = Number(currentStats.sb) + Number(existingStats.sb);
-    const cs = Number(currentStats.cs) + Number(existingStats.cs);
+    const walks = bb + Number(existingStats.bb);
+    const stolenBases = sb + Number(existingStats.sb);
+    const caughtStealing = cs + Number(existingStats.cs);
+    const runsCreated = getRunsCreated(hits, walks, caughtStealing, totalBases, stolenBases, atBats);
 
-    // total bases and atBats need to be greater than 0
-    // otherwise we get NaN
-    let runsCreated = 0;
-    if (totalBases > 0 && atBats > 0) {
-        runsCreated = getRunsCreated(hits, bb, cs, totalBases, sb, atBats);
-    }
-
-    const onBasePercentage = getonBasePercentage(hits, Number(currentStats.bb), atBats, Number(currentStats.sac));
+    const onBasePercentage = getonBasePercentage(hits, bb, atBats, sac);
     const slugging = getSlugging(totalBases, atBats);
     const onBasePlusSlugging = getOPS(onBasePercentage, slugging);
-    const weightedOnBaseAverage = getWOBA(Number(currentStats.bb), Number(currentStats["1b"]), Number(currentStats["2b"]), Number(currentStats["3b"]), Number(currentStats.hr), atBats, Number(currentStats.sac));
+    const weightedOnBaseAverage = getWOBA(bb, first, second, third, hr, atBats, sac);
     
-    const updatedStats = transform(currentStats, function(result, value, key) {
+    let updatedStats = transform(currentStats, function(result, value, key) {
         if (ignoreKeystoTransform.includes(key)) {
             result[key] = value;
         } else {
             result[key] = (Number(value) + Number(existingStats[key])).toString();
         }
     }, {});
-    
-    updatedStats.h = hits.toString();
-    updatedStats.ab = atBats.toString();
-    updatedStats.tb = totalBases.toString();
-    updatedStats.rc = runsCreated.toString();
-    updatedStats.avg = avg;
-    updatedStats.obp = onBasePercentage.toString();
-    updatedStats.slg = slugging.toString();
-    updatedStats.ops = onBasePlusSlugging.toString();
-    updatedStats.woba = weightedOnBaseAverage.toString();
 
-    return updatedStats;
+    return combineDerivedStats(updatedStats, { 
+        h: hits, 
+        ab: atBats, 
+        avg, 
+        tb: totalBases, 
+        rc: runsCreated, 
+        obp: onBasePercentage, 
+        slg: slugging, 
+        ops: onBasePlusSlugging, 
+        woba: weightedOnBaseAverage,
+    });    
 }
 
 /**
@@ -241,11 +277,23 @@ const getTotalBases = (singles, doubles, triples, homeRuns) => {
 }
 
 const getRunsCreated = (hits, walks, caughtStealing, totalBases, stolenBases, atBats) => {
-    return (((hits + walks - caughtStealing) * (totalBases + (stolenBases * .55)) / (atBats + walks)));
+    return totalBases > 0 && atBats > 0 
+        ? (((hits + walks - caughtStealing) * (totalBases + (stolenBases * .55)) / (atBats + walks))) 
+        : 0;
 }
 
 const getAverage = (hits, atBats) => {
-    return (hits / atBats);
+    let average = atBats > 0 ? hits / atBats : hits / 1;
+    
+    // rounded to the third digit
+    average = average.toFixed(3);
+    
+    // slice off the leading zero if necessary
+    if (average[0] === "0") {
+        average = average.slice(1);
+    }
+
+    return average;
 }
 
 const getonBasePercentage = (hits, walks, atBats, sacrifices) => {

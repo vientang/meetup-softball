@@ -158,7 +158,7 @@ describe('Update game stats', () => {
             losers: currentGameStats.losers,
         };
         
-        expect(mergeGameStats(meetupData, playerStats)).toEqual(gameStats);
+        expect(mergeGameStats(meetupData, [playerStats[0]], [playerStats[1]])).toEqual(gameStats);
     });
 });
 
@@ -181,7 +181,7 @@ describe('Update player stats', () => {
     });
 
     it ('calculate average', () => {
-        expect(getAverage(1, 5)).toBe(0.2);
+        expect(getAverage(1, 5)).toBe(".200");
     });
 
     it ('merges existing player stats with stats from current game', () => {
@@ -191,7 +191,7 @@ describe('Update player stats', () => {
                 "2b": "2",
                 "3b": "2",
                 "ab": "7",
-                "avg": "0.7142857142857143",
+                "avg": ".714",
                 "bb": "2",
                 "cs": "1",
                 "gp": '4',
@@ -220,7 +220,7 @@ describe('Update player stats', () => {
                 "2b": "2",
                 "3b": "2",
                 "ab": "7",
-                "avg": "0.7142857142857143",
+                "avg": ".714",
                 "bb": "2",
                 "cs": "1",
                 "gp": '6',
