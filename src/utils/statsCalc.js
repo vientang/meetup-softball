@@ -47,7 +47,7 @@ const mergeGameStats = (meetupData, w, l) => {
  * @param {Array} currentStats - player stats from current game
  * @return {Object} updatedPlayerStats
  */
-const mergePlayerStats = (existingStats, currentStats) => {
+const mergeAndSavePlayerStats = (existingStats, currentStats) => {
     const currentPlayers = mergeAllCurrentPlayers(currentStats);
     
     const ignoreKeystoTransform = ['id', 'meetupId', 'name', 'avg', 'h', 'ab', 'tb', 'rc'];
@@ -161,15 +161,19 @@ const updateEntries = (gamePlayers, allPlayers) => {
             const newStats = mergePlayerStatsForView(existingStats, player);
             masterList.set(player.name, newStats);
         } else {
-            const { bb, cs, first, second, sb, third, hr, o } = stats;
+            const { bb, cs, first, second, sb, third, hr, o, sac } = stats;
 
             const h = getHits(first, second, third, hr);
             const ab = getAtBats(h, o); 
             const avg = getAverage(h, ab);
             const tb = getTotalBases(first, second, third, hr);
             const rc = getRunsCreated(h, bb, cs, tb, sb, ab);
+            const obp = getonBasePercentage(h, bb, ab, sac);
+            const slg = getSlugging(tb, ab);
+            const ops = getOPS(obp, slg);
+            const woba = getWOBA(bb, first, second, third, hr, ab, sac);
         
-            const playerStats = combineDerivedStats(player, { h, ab, avg, tb, rc });
+            const playerStats = combineDerivedStats(player, { h, ab, avg, tb, rc, slg, obp, ops, woba });
             
             masterList.set(playerStats.name, playerStats);
         }
@@ -300,11 +304,12 @@ const getAverage = (hits, atBats) => {
 }
 
 const getonBasePercentage = (hits, walks, atBats, sacrifices) => {
-    return ((hits + walks) / (atBats + walks + sacrifices));
+    const denominator = atBats + walks + sacrifices;
+    return denominator > 0 ? ((hits + walks) / denominator) : ((hits + walks) / 1);
 }
 
 const getSlugging = (totalBases, atBats) => {
-    return (totalBases / atBats);
+    return atBats > 0 ? (totalBases / atBats) : (totalBases / 1).toFixed(3);
 }
 
 const getOPS = (onBase, slugging) => {
@@ -312,11 +317,14 @@ const getOPS = (onBase, slugging) => {
 }
 
 const getWOBA = (walks, singles, doubles, triples, homeRuns, atBats, sacrifices) => {
-    return ((.69 * walks + .888 * singles + 1.271 * doubles + 1.616 * triples + 2.101 * homeRuns) / (atBats + walks + sacrifices));
+    const denominator = atBats + walks + sacrifices;
+    return denominator > 0
+        ? ((.69 * walks + .888 * singles + 1.271 * doubles + 1.616 * triples + 2.101 * homeRuns) / denominator).toFixed(3)
+        : ((.69 * walks + .888 * singles + 1.271 * doubles + 1.616 * triples + 2.101 * homeRuns) / 1).toFixed(3);
 }
 
 export default { 
-    mergePlayerStats, 
+    mergeAndSavePlayerStats, 
     mergeGameStats,
     mergeAllCurrentPlayers, 
     getHits,
