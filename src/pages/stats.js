@@ -7,7 +7,7 @@ import StatsTable from '../components/StatsTable';
 import { statsCalc, Utils } from "../utils";
 import styles from './pages.module.css';
 
-const categories = ['player', 'gp', 'h', '1b', '2b', '3b', 'r', 'rbi', 'hr', 'avg', 'sb', 'cs', 'bb', 'k', 'rc', 'tb', 'ab'];
+const categories = ['player', 'gp', 'ab', 'h', '1b', '2b', '3b', 'r', 'rbi', 'hr', 'avg', 'sb', 'cs', 'bb', 'k', 'rc', 'tb'];
 
 class Stats extends React.Component {
     constructor(props) {
@@ -28,9 +28,10 @@ class Stats extends React.Component {
                     const updatedStats = statsCalc.filterPlayerStats(game, playerStats);                    
                     playerStats = Array.from(updatedStats.values());
                 });
+            console.log('stats', playerStats);
             
             this.setState(() => ({ playerStats, noDataFound: playerStats.length < 1 }));
-            // statsCalc.clearMasterList();
+            statsCalc.clearMasterList();
         }).catch(error => {
             console.log('error', error);
             throw new Error(error);

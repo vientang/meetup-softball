@@ -170,6 +170,7 @@ const updateEntries = (gamePlayers, allPlayers) => {
             const rc = getRunsCreated(h, bb, cs, tb, sb, ab);
         
             const playerStats = combineDerivedStats(player, { h, ab, avg, tb, rc });
+            
             masterList.set(playerStats.name, playerStats);
         }
     });
@@ -244,10 +245,12 @@ const mergePlayerStatsForView = (existingStats = {}, currentStats) => {
         if (ignoreKeystoTransform.includes(key)) {
             result[key] = value;
         } else {
-            result[key] = (Number(value) + Number(existingStats[key])).toString();
+            result[key] = existingStats[key] 
+                ? (Number(value) + Number(existingStats[key])).toString() 
+                : (Number(value)).toString();
         }
     }, {});
-
+    
     return combineDerivedStats(updatedStats, { 
         h: hits, 
         ab: atBats, 
