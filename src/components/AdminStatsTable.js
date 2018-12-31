@@ -141,7 +141,7 @@ class AdminStatsTable extends React.Component {
                     showPagination={false}
                     sortMethod={Utils.sortByNameLength}
                 />
-                <h3>Losers</h3>m
+                <h3>Losers</h3>
 				<StatsTable 
                     players={losers} 
                     categories={categories}

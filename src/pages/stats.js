@@ -28,7 +28,6 @@ class Stats extends React.Component {
                     const updatedStats = statsCalc.filterPlayerStats(game, playerStats);                    
                     playerStats = Array.from(updatedStats.values());
                 });
-            console.log('stats', playerStats);
             
             this.setState(() => ({ playerStats, noDataFound: playerStats.length < 1 }));
             statsCalc.clearMasterList();
