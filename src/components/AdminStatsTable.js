@@ -16,10 +16,15 @@ class AdminStatsTable extends React.Component {
 		};
 	}
 
+    shouldComponentUpdate(nextProps, nextState) {
+        return nextState.dataSubmitted;
+    }
+    
 	handleSubmitData = (e) => {
         const { winners, losers } = this.state;
         e.preventDefault();
-		this.props.onSubmit(winners, losers, this.props.selectedGame);        
+        this.props.onSubmit(winners, losers, this.props.selectedGame);
+        this.setState(() => ({ dataSubmitted: true }));
 	};
 
 	makeContentEditable = (cellInfo) => {
@@ -55,8 +60,8 @@ class AdminStatsTable extends React.Component {
 	 * @param cellInfo - meta data for each cell
 	 */
 	handleWinnerEntry = (cellInfo) => (e) => {
-		let value = Number(e.key);
-
+        let value = Number(e.key);
+        
 		// do not save any values that are not numbers
 		if (isNaN(value)) {
 			return false;
@@ -65,7 +70,7 @@ class AdminStatsTable extends React.Component {
 		const winners = [...this.state.winners];
         winners[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;
         
-		this.setState(() => ({ winners }));
+        this.setState(() => ({ winners }));
 	};
 
     /**
@@ -136,7 +141,7 @@ class AdminStatsTable extends React.Component {
                     showPagination={false}
                     sortMethod={Utils.sortByNameLength}
                 />
-                <h3>Losers</h3>
+                <h3>Losers</h3>m
 				<StatsTable 
                     players={losers} 
                     categories={categories}
