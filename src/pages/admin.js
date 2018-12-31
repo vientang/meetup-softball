@@ -1,6 +1,6 @@
 import React from 'react';
 import { API, graphqlOperation } from 'aws-amplify';
-import { withAuthenticator } from 'aws-amplify-react';
+import { withAuthenticator, SignUp, SignIn, Greetings } from 'aws-amplify-react';
 
 import Layout from '../components/Layout';
 import SuccessImage from '../components/SuccessImage';
@@ -161,4 +161,8 @@ class Admin extends React.Component {
     }
 }
 
-export default withAuthenticator(Admin, true);
+/**
+ * Admin | Display sign out button | Only include these Authenticator components | Federated configurations | Theme styling
+ * @param { Element, Boolean, Array, Object, Object }
+ */
+export default withAuthenticator(Admin, true, [<Greetings />, <SignIn />]);
