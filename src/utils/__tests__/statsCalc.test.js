@@ -1,7 +1,7 @@
 import statsCalc from '../statsCalc';
 const { 
     mergeGameStats, 
-    mergePlayerStats, 
+    mergeAndSavePlayerStats, 
     getHits, 
     getAtBats, 
     getRunsCreated, 
@@ -213,7 +213,7 @@ describe('Update player stats', () => {
                 "slg": "1.5714285714285714",
                 "tb": "11",
                 "w": "11",
-                "woba": "0.7295555555555555"
+                "woba": "0.730"
               },
               {
                 "1b": "2",
@@ -242,9 +242,9 @@ describe('Update player stats', () => {
                 "slg": "1.5714285714285714",
                 "tb": "11",
                 "w": "20",
-                "woba": "0.7295555555555555"
+                "woba": "0.730"
               },
         ];
-        expect(mergePlayerStats(existingPlayerStats, currentGameStats)).toEqual(playerStatsResult);
+        expect(mergeAndSavePlayerStats(existingPlayerStats, currentGameStats)).toEqual(playerStatsResult);
     });
 });
