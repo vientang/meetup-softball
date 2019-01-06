@@ -166,3 +166,4 @@ class Admin extends React.Component {
  * @param { Element, Boolean, Array, Object, Object }
  */
 export default withAuthenticator(Admin, true, [<Greetings />, <SignIn />]);
+// export default withAuthenticator(Admin, true);

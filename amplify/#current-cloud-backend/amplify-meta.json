@@ -1,66 +1,35 @@
 {
-	"providers": {
-		"awscloudformation": {
-			"AuthRoleName": "meetupsoftball-20181215225844-authRole",
-			"UnauthRoleArn": "arn:aws:iam::312743227043:role/meetupsoftball-20181215225844-unauthRole",
-			"AuthRoleArn": "arn:aws:iam::312743227043:role/meetupsoftball-20181215225844-authRole",
-			"Region": "us-east-2",
-			"DeploymentBucketName": "meetupsoftball-20181215225844-deployment",
-			"UnauthRoleName": "meetupsoftball-20181215225844-unauthRole",
-			"StackName": "meetupsoftball-20181215225844",
-			"StackId": "arn:aws:cloudformation:us-east-2:312743227043:stack/meetupsoftball-20181215225844/07618490-0100-11e9-92ec-02a5f2ca138c"
-		}
-	},
-	"api": {
-		"GameStats": {
-			"service": "AppSync",
-			"output": {
-				"securityType": "API_KEY",
-				"GraphQLAPIIdOutput": "t622zt2pczgphevy6aavhdhhfy",
-				"GraphQLAPIEndpointOutput": "https://p4765dhahnalpkmwnlrj72yl6y.appsync-api.us-west-2.amazonaws.com/graphql",
-				"GraphQLAPIKeyOutput": "da2-lrav3fca3ngwthubutzorkkkfq"
-			},
-			"lastPushTimeStamp": "2018-12-16T07:13:01.443Z"
-		}
-	},
-	"auth": {
-		"cognito1fcdc847": {
-			"service": "Cognito",
-			"providerPlugin": "awscloudformation",
-			"providerMetadata": {
-				"s3TemplateURL": "https://s3.amazonaws.com/meetupsoftball-20181215225844-deployment/amplify-cfn-templates/auth/cognito1fcdc847-cloudformation-template.yml",
-				"logicalId": "authcognito1fcdc847"
-			},
-			"lastPushTimeStamp": "2018-12-16T20:20:17.402Z",
-			"output": {
-				"AppClientSecret": "1oov02ebrc65bkbnsd576g2cr47oeekdr9th3b7v1shbdpall6es",
-				"UserPoolId": "us-east-2_2lpOKUxx2",
-				"AppClientIDWeb": "3oopv5lersc1uqpe649lq93jl5",
-				"AppClientID": "5utqmd74qn3ancd1dk7jci0dui",
-				"IdentityPoolId": "us-east-2:9470e9b5-356a-43a5-85b6-be79b90aee8c",
-				"IdentityPoolName": "cognito1fcdc847_identitypool_1fcdc847",
-				"UserPoolName": "cognito1fcdc847_userpool_1fcdc847"
-			},
-			"lastPushDirHash": "btCx3OGzUlvH6pxpRJ6t3YMWU/w=",
-			"[object Object]": {}
-		}
-	},
-	"hosting": {
-		"S3AndCloudFront": {
-			"service": "S3AndCloudFront",
-			"providerPlugin": "awscloudformation",
-			"providerMetadata": {
-				"s3TemplateURL": "https://s3.amazonaws.com/meetupsoftball-20181215225844-deployment/amplify-cfn-templates/hosting/template.json",
-				"logicalId": "hostingS3AndCloudFront"
-			},
-			"lastPushTimeStamp": "2018-12-16T20:20:17.400Z",
-			"output": {
-				"S3BucketSecureURL": "https://meetupsoftball-20181216120323--hostingbucket.s3.amazonaws.com",
-				"WebsiteURL": "http://meetupsoftball-20181216120323--hostingbucket.s3-website.us-east-2.amazonaws.com",
-				"Region": "us-east-2",
-				"HostingBucketName": "meetupsoftball-20181216120323--hostingbucket"
-			},
-			"lastPushDirHash": "6UlddFzKay7srO+1gHOuD7x/TzY="
-		}
-	}
+    "providers": {
+        "awscloudformation": {
+            "AuthRoleName": "meetupsoftball-20190106004126-authRole",
+            "UnauthRoleArn": "arn:aws:iam::312743227043:role/meetupsoftball-20190106004126-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::312743227043:role/meetupsoftball-20190106004126-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "meetupsoftball-20190106004126-deployment",
+            "UnauthRoleName": "meetupsoftball-20190106004126-unauthRole",
+            "StackName": "meetupsoftball-20190106004126",
+            "StackId": "arn:aws:cloudformation:us-east-1:312743227043:stack/meetupsoftball-20190106004126/db2ae340-118e-11e9-9ac3-1298ca2ea00e"
+        }
+    },
+    "auth": {
+        "cognito065ac83c": {
+            "service": "Cognito",
+            "providerPlugin": "awscloudformation",
+            "providerMetadata": {
+                "s3TemplateURL": "https://s3.amazonaws.com/meetupsoftball-20190106004126-deployment/amplify-cfn-templates/auth/cognito065ac83c-cloudformation-template.yml",
+                "logicalId": "authcognito065ac83c"
+            },
+            "lastPushTimeStamp": "2019-01-06T08:46:31.651Z",
+            "output": {
+                "AppClientSecret": "19mq05giu0fk799167bef0lsipuaukk47q95st67ojehkg2n9a1b",
+                "UserPoolId": "us-east-1_ZI2nXIWMK",
+                "AppClientIDWeb": "2shq6jtco4n3c6pq40t2gajfbh",
+                "AppClientID": "21ohskldhq30lne2i5960glm01",
+                "IdentityPoolId": "us-east-1:890ca034-b4ef-4b29-8452-7f657f4fc936",
+                "IdentityPoolName": "cognito065ac83c_identitypool_065ac83c",
+                "UserPoolName": "cognito065ac83c_userpool_065ac83c"
+            },
+            "lastPushDirHash": "yRKQxmtfgvwso1jhiX1rvvkjRLc="
+        }
+    }
 }

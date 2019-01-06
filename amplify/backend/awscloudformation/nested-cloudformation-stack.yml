@@ -78,20 +78,26 @@
 				}
 			}
 		},
-		"authcognito1fcdc847": {
+		"authcognito065ac83c": {
 			"Type": "AWS::CloudFormation::Stack",
 			"Properties": {
-				"TemplateURL": "https://s3.amazonaws.com/meetupsoftball-20181215225844-deployment/amplify-cfn-templates/auth/cognito1fcdc847-cloudformation-template.yml",
+				"TemplateURL": "https://s3.amazonaws.com/meetupsoftball-20190106004126-deployment/amplify-cfn-templates/auth/cognito065ac83c-cloudformation-template.yml",
 				"Parameters": {
-					"resourceName": "cognito1fcdc847",
-					"authSelections": "identityPoolAndUserPool",
-					"userPoolName": "cognito1fcdc847_userpool_1fcdc847",
+					"identityPoolName": "cognito065ac83c_identitypool_065ac83c",
+					"allowUnauthenticatedIdentities": false,
+					"thirdPartyAuth": false,
+					"lambdaLogPolicy": "cognito065ac83c_lambda_log_policy",
+					"openIdLambdaRoleName": "cognito065ac83c_openid_lambda_role",
+					"openIdRolePolicy": "cognito065ac83c_openid_pass_role_policy",
+					"openIdLambdaIAMPolicy": "cognito065ac83c_openid_lambda_iam_policy",
+					"openIdLogPolicy": "cognito065ac83c_openid_lambda_log_policy",
+					"userPoolName": "cognito065ac83c_userpool_065ac83c",
 					"autoVerifiedAttributes": "email",
 					"mfaConfiguration": "OFF",
 					"mfaTypes": "SMS Text Message",
-					"roleName": "cognito1fcdc847_sns-role",
-					"roleExternalId": "cognito1fcdc847_role_external_id",
-					"policyName": "cognito1fcdc847-sns-policy",
+					"roleName": "cognito065ac83c_sns-role",
+					"roleExternalId": "cognito065ac83c_role_external_id",
+					"policyName": "cognito065ac83c-sns-policy",
 					"smsAuthenticationMessage": "Your authentication code is {####}",
 					"smsVerificationMessage": "Your verification code is {####}",
 					"emailVerificationSubject": "Your verification code",
@@ -100,39 +106,26 @@
 					"passwordPolicyMinLength": 8,
 					"passwordPolicyCharacters": "Requires Lowercase,Requires Uppercase,Requires Numbers,Requires Symbols",
 					"requiredAttributes": "email",
-					"userpoolClientName": "cognito1fcdc847_app_client",
+					"userpoolClientName": "cognito065ac83c_app_client",
 					"userpoolClientGenerateSecret": true,
 					"userpoolClientRefreshTokenValidity": 30,
 					"userpoolClientReadAttributes": "email",
-					"mfaLambdaRole": "cognito1fcdc847_totp_lambda_role",
-					"mfaLambdaLogPolicy": "cognito1fcdc847_totp_lambda_log_policy",
-					"mfaPassRolePolicy": "cognito1fcdc847_totp_pass_role_policy",
-					"mfaLambdaIAMPolicy": "cognito1fcdc847_totp_lambda_iam_policy",
-					"userpoolClientLambdaRole": "cognito1fcdc847_userpoolclient_lambda_role",
-					"userpoolClientLogPolicy": "cognito1fcdc847_userpoolclient_lambda_log_policy",
-					"userpoolClientLambdaPolicy": "cognito1fcdc847_userpoolclient_lambda_iam_policy",
+					"mfaLambdaRole": "cognito065ac83c_totp_lambda_role",
+					"mfaLambdaLogPolicy": "cognito065ac83c_totp_lambda_log_policy",
+					"mfaPassRolePolicy": "cognito065ac83c_totp_pass_role_policy",
+					"mfaLambdaIAMPolicy": "cognito065ac83c_totp_lambda_iam_policy",
+					"userpoolClientLambdaRole": "cognito065ac83c_userpoolclient_lambda_role",
+					"userpoolClientLogPolicy": "cognito065ac83c_userpoolclient_lambda_log_policy",
+					"userpoolClientLambdaPolicy": "cognito065ac83c_userpoolclient_lambda_iam_policy",
 					"userpoolClientSetAttributes": false,
-					"identityPoolName": "cognito1fcdc847_identitypool_1fcdc847",
-					"allowUnauthenticatedIdentities": false,
-					"thirdPartyAuth": false,
-					"lambdaLogPolicy": "cognito1fcdc847_lambda_log_policy",
-					"openIdLambdaRoleName": "cognito1fcdc847_openid_lambda_role",
-					"openIdRolePolicy": "cognito1fcdc847_openid_pass_role_policy",
-					"openIdLambdaIAMPolicy": "cognito1fcdc847_openid_lambda_iam_policy",
-					"openIdLogPolicy": "cognito1fcdc847_openid_lambda_log_policy",
 					"useDefault": "default",
-					"unAuthRoleName": "meetupsoftball-20181215225844-unauthRole",
-					"authRoleName": "meetupsoftball-20181215225844-authRole",
-					"unAuthRoleArn": "arn:aws:iam::312743227043:role/meetupsoftball-20181215225844-unauthRole",
-					"authRoleArn": "arn:aws:iam::312743227043:role/meetupsoftball-20181215225844-authRole"
+					"unAuthRoleName": "meetupsoftball-20190106004126-unauthRole",
+					"authRoleName": "meetupsoftball-20190106004126-authRole",
+					"unAuthRoleArn": "arn:aws:iam::312743227043:role/meetupsoftball-20190106004126-unauthRole",
+					"authRoleArn": "arn:aws:iam::312743227043:role/meetupsoftball-20190106004126-authRole",
+					"resourceName": "cognito065ac83c",
+					"authSelections": "identityPoolAndUserPool"
 				}
-			}
-		},
-		"hostingS3AndCloudFront": {
-			"Type": "AWS::CloudFormation::Stack",
-			"Properties": {
-				"TemplateURL": "https://s3.amazonaws.com/meetupsoftball-20181215225844-deployment/amplify-cfn-templates/hosting/template.json",
-				"Parameters": {}
 			}
 		}
 	},
