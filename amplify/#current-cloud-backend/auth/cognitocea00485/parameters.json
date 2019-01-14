@@ -1,0 +1,57 @@
+{
+    "identityPoolName": "cognitocea00485_identitypool_cea00485",
+    "allowUnauthenticatedIdentities": false,
+    "thirdPartyAuth": false,
+    "lambdaLogPolicy": "cognitocea00485_lambda_log_policy",
+    "openIdLambdaRoleName": "cognitocea00485_openid_lambda_role",
+    "openIdRolePolicy": "cognitocea00485_openid_pass_role_policy",
+    "openIdLambdaIAMPolicy": "cognitocea00485_openid_lambda_iam_policy",
+    "openIdLogPolicy": "cognitocea00485_openid_lambda_log_policy",
+    "userPoolName": "cognitocea00485_userpool_cea00485",
+    "autoVerifiedAttributes": [
+        "email"
+    ],
+    "mfaConfiguration": "OFF",
+    "mfaTypes": [
+        "SMS Text Message"
+    ],
+    "roleName": "cognitocea00485_sns-role",
+    "roleExternalId": "cognitocea00485_role_external_id",
+    "policyName": "cognitocea00485-sns-policy",
+    "smsAuthenticationMessage": "Your authentication code is {####}",
+    "smsVerificationMessage": "Your verification code is {####}",
+    "emailVerificationSubject": "Your verification code",
+    "emailVerificationMessage": "Your verification code is {####}",
+    "defaultPasswordPolicy": false,
+    "passwordPolicyMinLength": 8,
+    "passwordPolicyCharacters": [
+        "Requires Lowercase",
+        "Requires Uppercase",
+        "Requires Numbers",
+        "Requires Symbols"
+    ],
+    "requiredAttributes": [
+        "email"
+    ],
+    "userpoolClientName": "cognitocea00485_app_client",
+    "userpoolClientGenerateSecret": true,
+    "userpoolClientRefreshTokenValidity": 30,
+    "userpoolClientReadAttributes": [
+        "email"
+    ],
+    "mfaLambdaRole": "cognitocea00485_totp_lambda_role",
+    "mfaLambdaLogPolicy": "cognitocea00485_totp_lambda_log_policy",
+    "mfaPassRolePolicy": "cognitocea00485_totp_pass_role_policy",
+    "mfaLambdaIAMPolicy": "cognitocea00485_totp_lambda_iam_policy",
+    "userpoolClientLambdaRole": "cognitocea00485_userpoolclient_lambda_role",
+    "userpoolClientLogPolicy": "cognitocea00485_userpoolclient_lambda_log_policy",
+    "userpoolClientLambdaPolicy": "cognitocea00485_userpoolclient_lambda_iam_policy",
+    "userpoolClientSetAttributes": false,
+    "useDefault": "default",
+    "unAuthRoleName": "meetupsoftball-20190113144455-unauthRole",
+    "authRoleName": "meetupsoftball-20190113144455-authRole",
+    "unAuthRoleArn": "arn:aws:iam::312743227043:role/meetupsoftball-20190113144455-unauthRole",
+    "authRoleArn": "arn:aws:iam::312743227043:role/meetupsoftball-20190113144455-authRole",
+    "resourceName": "cognitocea00485",
+    "authSelections": "identityPoolAndUserPool"
+}

@@ -1,0 +1,13 @@
+{
+    "AppSyncApiName": "SoftballStats",
+    "AuthCognitoUserPoolId": {
+        "Fn::GetAtt": [
+            "authcognitocea00485",
+            "Outputs.UserPoolId"
+        ]
+    },
+    "schemaGraphql": "s3://meetupsoftball-20190113144455-deployment/amplify-appsync-files/schema.graphql.1547438786119",
+    "ResolverBucket": "meetupsoftball-20190113144455-deployment",
+    "ResolverRootKey": "amplify-appsync-files",
+    "DeploymentTimestamp": "1547438786119"
+}

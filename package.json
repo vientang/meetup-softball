@@ -1,7 +1,7 @@
 {
   "name": "meetup-softball",
   "description": "Meetup Softball Site",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "author": "Vien Tang <vientang@gmail.com>",
   "scripts": {
     "setup": "npm run test && npm run build",

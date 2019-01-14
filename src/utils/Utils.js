@@ -1,5 +1,5 @@
 import { API, graphqlOperation } from 'aws-amplify';
-import { createGameStats } from '../graphql/mutations';
+// import { createGameStats } from '../graphql/mutations';
 import StatsCalc from './statsCalc';
 
 /**
@@ -28,12 +28,12 @@ const updateStats = (meetupData, currentStats) => {
 
 	// write game stats to database
     // mutateGameStats(gameStats);
-    API.graphql(graphqlOperation(createGameStats, { input: gameStats })).then(response => {
-        console.log('response', response);
-        return response;
-    }).catch(error => {
-        console.log('error', error);
-    });
+    // API.graphql(graphqlOperation(createGameStats, { input: gameStats })).then(response => {
+    //     console.log('response', response);
+    //     return response;
+    // }).catch(error => {
+    //     console.log('error', error);
+    // });
 };
 
 const game1Players = [
