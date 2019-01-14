@@ -1,6 +1,6 @@
 import React from 'react';
 import { API, graphqlOperation } from 'aws-amplify';
-import { listGameStats } from '../graphql/queries';
+import { listGameStatss } from '../graphql/queries';
 import Layout from '../components/Layout';
 import NotFoundImage from '../components/NotFoundImage';
 import StatsTable from '../components/StatsTable';
@@ -19,10 +19,10 @@ class Stats extends React.Component {
     }
 
     async componentDidMount() {
-        await API.graphql(graphqlOperation(listGameStats)).then(response => {
+        await API.graphql(graphqlOperation(listGameStatss)).then(response => {
             let playerStats = [];
             
-            response.data.listGameStats.items
+            response.data.listGameStatss.items
                 .filter(game => game.year === '2018') 
                 .forEach((game) => {
                     const updatedStats = statsCalc.filterPlayerStats(game, playerStats);                    

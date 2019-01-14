@@ -7,7 +7,8 @@ import SuccessImage from '../components/SuccessImage';
 import AdminSideMenu from '../components/AdminSideMenu';
 import AdminStatsTable from '../components/AdminStatsTable';
 import SortTeams from '../components/SortTeams';
-import { createGameStats } from '../graphql/mutations';
+import { createGameStats, createPlayerStats } from '../graphql/mutations';
+import { listGameStatss } from '../graphql/queries';
 import { Utils, statsCalc } from "../utils";
 import styles from './pages.module.css';
 
@@ -48,6 +49,13 @@ class Admin extends React.Component {
     }
 
     async componentDidMount() {
+        // await API.graphql(graphqlOperation(listGameStatss)).then(response => {
+        //     console.log('admin response from query', response);            
+        // }).catch(error => {
+        //     console.log('error', error);
+        //     throw new Error(error);
+        // });
+        
         // get list of players who attended the game from meetup api
         // merge each player name and meetup id with the stats categories
         // send to AdminStatsTable
@@ -64,7 +72,7 @@ class Admin extends React.Component {
     }
 
     /**
-     * Write GraphQL mutations
+     * Submit updated stats to PlayerStats and GameStats table
      */
     handleSubmitData = (winners, losers, selectedGame) => {
         const meetupData = {
@@ -74,6 +82,12 @@ class Admin extends React.Component {
             local_date: '2018-10-11',
             tournamentName: 'Halloween',
         };
+
+        // API.graphql(graphqlOperation(createPlayerStats, { input: playerStats })).then(response => {
+        //     console.log('mutate player stats', response);            
+        // }).catch(error => {
+        //     console.log('error', error);
+        // });
 
         const gameStats = statsCalc.mergeGameStats(meetupData, winners, losers);
         
@@ -166,4 +180,4 @@ class Admin extends React.Component {
  * @param { Element, Boolean, Array, Object, Object }
  */
 export default withAuthenticator(Admin, true, [<Greetings />, <SignIn />]);
-// export default withAuthenticator(Admin, true);
+// export default withAuthenticator(Admin);

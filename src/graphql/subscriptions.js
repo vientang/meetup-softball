@@ -1,20 +1,8 @@
 // eslint-disable
 // this is an auto generated file. This will be overwritten
 
-export const onCreateGameStats = `subscription OnCreateGameStats(
-  $id: ID
-  $meetupId: String
-  $name: String
-  $date: String
-  $gameId: String
-) {
-  onCreateGameStats(
-    id: $id
-    meetupId: $meetupId
-    name: $name
-    date: $date
-    gameId: $gameId
-  ) {
+export const onCreateGameStats = `subscription OnCreateGameStats {
+  onCreateGameStats {
     id
     meetupId
     name
@@ -29,20 +17,8 @@ export const onCreateGameStats = `subscription OnCreateGameStats(
   }
 }
 `;
-export const onUpdateGameStats = `subscription OnUpdateGameStats(
-  $id: ID
-  $meetupId: String
-  $name: String
-  $date: String
-  $gameId: String
-) {
-  onUpdateGameStats(
-    id: $id
-    meetupId: $meetupId
-    name: $name
-    date: $date
-    gameId: $gameId
-  ) {
+export const onUpdateGameStats = `subscription OnUpdateGameStats {
+  onUpdateGameStats {
     id
     meetupId
     name
@@ -57,20 +33,8 @@ export const onUpdateGameStats = `subscription OnUpdateGameStats(
   }
 }
 `;
-export const onDeleteGameStats = `subscription OnDeleteGameStats(
-  $id: ID
-  $meetupId: String
-  $name: String
-  $date: String
-  $gameId: String
-) {
-  onDeleteGameStats(
-    id: $id
-    meetupId: $meetupId
-    name: $name
-    date: $date
-    gameId: $gameId
-  ) {
+export const onDeleteGameStats = `subscription OnDeleteGameStats {
+  onDeleteGameStats {
     id
     meetupId
     name
@@ -82,6 +46,99 @@ export const onDeleteGameStats = `subscription OnDeleteGameStats(
     tournamentName
     winners
     losers
+  }
+}
+`;
+export const onCreatePlayerStats = `subscription OnCreatePlayerStats {
+  onCreatePlayerStats {
+    id
+    name
+    meetupId
+    gamesPlayed
+    o
+    singles
+    doubles
+    triples
+    rbi
+    r
+    hr
+    sb
+    cs
+    bb
+    k
+    sac
+    ab
+    h
+    tb
+    rc
+    woba
+    ops
+    obp
+    avg
+    w
+    l
+  }
+}
+`;
+export const onUpdatePlayerStats = `subscription OnUpdatePlayerStats {
+  onUpdatePlayerStats {
+    id
+    name
+    meetupId
+    gamesPlayed
+    o
+    singles
+    doubles
+    triples
+    rbi
+    r
+    hr
+    sb
+    cs
+    bb
+    k
+    sac
+    ab
+    h
+    tb
+    rc
+    woba
+    ops
+    obp
+    avg
+    w
+    l
+  }
+}
+`;
+export const onDeletePlayerStats = `subscription OnDeletePlayerStats {
+  onDeletePlayerStats {
+    id
+    name
+    meetupId
+    gamesPlayed
+    o
+    singles
+    doubles
+    triples
+    rbi
+    r
+    hr
+    sb
+    cs
+    bb
+    k
+    sac
+    ab
+    h
+    tb
+    rc
+    woba
+    ops
+    obp
+    avg
+    w
+    l
   }
 }
 `;
