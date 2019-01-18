@@ -62,7 +62,7 @@ const mergeAndSavePlayerStats = (existingStats, currentStats) => {
         const runsCreated = getRunsCreated(hits, bb, cs, totalBases, sb, atBats);
         const avg = getAverage(hits, atBats);
         
-        const onBasePercentage = getonBasePercentage(hits, Number(player.bb), atBats, Number(player.sac));
+        const onBasePercentage = getOnBasePercentage(hits, Number(player.bb), atBats, Number(player.sac));
         const slugging = getSlugging(totalBases, atBats);
         const onBasePlusSlugging = getOPS(onBasePercentage, slugging);
         const weightedOnBaseAverage = getWOBA(Number(player.bb), Number(player["1b"]), Number(player["2b"]), Number(player["3b"]), Number(player.hr), atBats, Number(player.sac));
@@ -168,7 +168,7 @@ const updateEntries = (gamePlayers, allPlayers) => {
             const avg = getAverage(h, ab);
             const tb = getTotalBases(first, second, third, hr);
             const rc = getRunsCreated(h, bb, cs, tb, sb, ab);
-            const obp = getonBasePercentage(h, bb, ab, sac);
+            const obp = getOnBasePercentage(h, bb, ab, sac);
             const slg = getSlugging(tb, ab);
             const ops = getOPS(obp, slg);
             const woba = getWOBA(bb, first, second, third, hr, ab, sac);
@@ -240,7 +240,7 @@ const mergePlayerStatsForView = (existingStats = {}, currentStats) => {
     const caughtStealing = cs + Number(existingStats.cs);
     const runsCreated = getRunsCreated(hits, walks, caughtStealing, totalBases, stolenBases, atBats);
 
-    const onBasePercentage = getonBasePercentage(hits, bb, atBats, sac);
+    const onBasePercentage = getOnBasePercentage(hits, bb, atBats, sac);
     const slugging = getSlugging(totalBases, atBats);
     const onBasePlusSlugging = getOPS(onBasePercentage, slugging);
     const weightedOnBaseAverage = getWOBA(bb, first, second, third, hr, atBats, sac);
@@ -284,32 +284,37 @@ const getTotalBases = (singles, doubles, triples, homeRuns) => {
 }
 
 const getRunsCreated = (hits, walks, caughtStealing, totalBases, stolenBases, atBats) => {
-    return totalBases > 0 && atBats > 0 
-        ? (((hits + walks - caughtStealing) * (totalBases + (stolenBases * .55)) / (atBats + walks))) 
-        : 0;
+    //check to ensure denominator isn't 0 before dividing
+    if (atBats + walks === 0) {
+        return 0;
+    }
+    return +(Math.round((((hits + walks - caughtStealing) * (totalBases + (stolenBases * .55)) / (atBats + walks))) + "e+3") + "e-3");
 }
 
 const getAverage = (hits, atBats) => {
-    let average = atBats > 0 ? hits / atBats : hits / 1;
-    
-    // rounded to the third digit
-    average = average.toFixed(3);
-    
-    // slice off the leading zero if necessary
-    if (average[0] === "0") {
-        average = average.slice(1);
+    if (atBats === 0){
+        return .000;
     }
-
-    return average;
+    
+    return +(Math.round((hits / atBats) + "e+3") + "e-3"); 
 }
 
-const getonBasePercentage = (hits, walks, atBats, sacrifices) => {
-    const denominator = atBats + walks + sacrifices;
-    return denominator > 0 ? ((hits + walks) / denominator) : ((hits + walks) / 1);
+const getOnBasePercentage = (hits, walks, atBats, sacrifices) => {
+    if (atBats + walks + sacrifices > 0) {
+        return +(Math.round((hits + walks) / (atBats + walks + sacrifices) + "e+3") + "e-3");
+    }
+    else {
+        return .000;
+    }
+    //const denominator = atBats + walks + sacrifices;
+    //return denominator > 0 ? ((hits + walks) / denominator) : ((hits + walks) / 1);
 }
 
 const getSlugging = (totalBases, atBats) => {
-    return atBats > 0 ? (totalBases / atBats) : (totalBases / 1).toFixed(3);
+    if (atBats === 0){
+        return .000;
+    }
+    return +(Math.round((totalBases / atBats) + "e+3") + "e-3");
 }
 
 const getOPS = (onBase, slugging) => {
@@ -317,10 +322,11 @@ const getOPS = (onBase, slugging) => {
 }
 
 const getWOBA = (walks, singles, doubles, triples, homeRuns, atBats, sacrifices) => {
-    const denominator = atBats + walks + sacrifices;
-    return denominator > 0
-        ? ((.69 * walks + .888 * singles + 1.271 * doubles + 1.616 * triples + 2.101 * homeRuns) / denominator).toFixed(3)
-        : ((.69 * walks + .888 * singles + 1.271 * doubles + 1.616 * triples + 2.101 * homeRuns) / 1).toFixed(3);
+    if (atBats + walks + sacrifices === 0){
+        return .000;
+    }
+    return +(Math.round(((.69 * walks + .888 * singles + 1.271 * doubles + 1.616 * triples + 2.101 * homeRuns) / (atBats + walks + sacrifices)) + "e+3") + "e-3");
+        
 }
 
 export default { 
@@ -332,7 +338,7 @@ export default {
     getTotalBases, 
     getRunsCreated,
     getAverage,
-    getonBasePercentage,
+    getOnBasePercentage,
     getSlugging,
     getOPS,
     getWOBA,
