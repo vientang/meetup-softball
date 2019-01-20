@@ -1,6 +1,6 @@
 import React from 'react';
 import { API, graphqlOperation } from 'aws-amplify';
-import { withAuthenticator, SignUp, SignIn, Greetings } from 'aws-amplify-react';
+import { withAuthenticator, SignIn, Greetings } from 'aws-amplify-react';
 
 import Layout from '../components/Layout';
 import SuccessImage from '../components/SuccessImage';
@@ -8,7 +8,8 @@ import AdminSideMenu from '../components/AdminSideMenu';
 import AdminStatsTable from '../components/AdminStatsTable';
 import SortTeams from '../components/SortTeams';
 import { createGameStats } from '../graphql/mutations';
-import { Utils, statsCalc } from "../utils";
+import { getPlayerStats } from '../graphql/queries';
+import { Utils, apiService } from "../utils";
 import styles from './pages.module.css';
 
 const categories = ['player', 'o', '1b', '2b', '3b', 'hr', 'bb', 'sb', 'cs', 'k', 'rbi', 'r', 'sac'];
@@ -47,10 +48,21 @@ class Admin extends React.Component {
         };
     }
 
+    /**
+     * Get list of players who attended the game from meetup api
+     * Find those players in our API to get existing stats
+     * Merge each player name and meetup id with the stats categories
+     */
     async componentDidMount() {
-        // get list of players who attended the game from meetup api
-        // merge each player name and meetup id with the stats categories
-        // send to AdminStatsTable
+        // await API.graphql(graphqlOperation(getPlayerStats, { id: player.id }))
+        //     .then(response => {
+        //         console.log('response in getPlayerStats', response);
+        //     })
+        //     .catch(error => {
+        //         console.log('error in getPlayerStats', error);
+        //         throw new Error(error);
+        //     });
+        
 
         // After getting meetup data, check if any of those games have
         // already been entered. This can happen when admin enters stats 
@@ -64,9 +76,9 @@ class Admin extends React.Component {
     }
 
     /**
-     * Write GraphQL mutations
+     * Submit updated stats to PlayerStats and GameStats table
      */
-    handleSubmitData = (winners, losers, selectedGame) => {
+    handleSubmitData = async (winners, losers, selectedGame) => {
         const meetupData = {
             meetupId: 'x1u3sjj99I',
             name: 'Game 247 Westlake Park, Daly City',
@@ -75,7 +87,12 @@ class Admin extends React.Component {
             tournamentName: 'Halloween',
         };
 
-        const gameStats = statsCalc.mergeGameStats(meetupData, winners, losers);
+        // const playerStats = apiService.updateMergedPlayerStats(existingStats, winners, losers);
+        // playerStats.forEach(player => {
+        //     API.graphql(graphqlOperation(updatePlayerStats, { input: player }));
+        // });
+
+        const gameStats = await apiService.mergeGameStats(meetupData, winners, losers);
         
         API.graphql(graphqlOperation(createGameStats, { input: gameStats })).then(response => {
             this.setState((prevState) => {
@@ -91,7 +108,7 @@ class Admin extends React.Component {
                 };
             });
         }).catch(error => {
-            console.log('error', error);
+            console.log('error in createGameStats', error);
         });
     };
 
@@ -166,3 +183,4 @@ class Admin extends React.Component {
  * @param { Element, Boolean, Array, Object, Object }
  */
 export default withAuthenticator(Admin, true, [<Greetings />, <SignIn />]);
+// export default withAuthenticator(Admin);

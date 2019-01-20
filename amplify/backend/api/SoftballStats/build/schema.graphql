@@ -1,0 +1,280 @@
+type GameStats {
+  id: ID!
+  meetupId: String
+  name: String
+  date: String
+  gameId: String
+  year: String
+  month: String
+  fieldName: String
+  tournamentName: String
+  winners: AWSJSON
+  losers: AWSJSON
+}
+
+type PlayerStats {
+  id: ID!
+  name: String!
+  meetupId: String
+  gamesPlayed: String
+  o: String
+  singles: String
+  doubles: String
+  triples: String
+  rbi: String
+  r: String
+  hr: String
+  sb: String
+  cs: String
+  bb: String
+  k: String
+  sac: String
+  ab: String
+  h: String
+  tb: String
+  rc: String
+  woba: String
+  ops: String
+  obp: String
+  avg: String
+  w: String
+  l: String
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelGameStatsConnection {
+  items: [GameStats]
+  nextToken: String
+}
+
+input ModelStringFilterInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+}
+
+input ModelIDFilterInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+}
+
+input ModelIntFilterInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  contains: Int
+  notContains: Int
+  between: [Int]
+}
+
+input ModelFloatFilterInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  contains: Float
+  notContains: Float
+  between: [Float]
+}
+
+input ModelBooleanFilterInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelGameStatsFilterInput {
+  id: ModelIDFilterInput
+  meetupId: ModelStringFilterInput
+  name: ModelStringFilterInput
+  date: ModelStringFilterInput
+  gameId: ModelStringFilterInput
+  year: ModelStringFilterInput
+  month: ModelStringFilterInput
+  fieldName: ModelStringFilterInput
+  tournamentName: ModelStringFilterInput
+  winners: ModelStringFilterInput
+  losers: ModelStringFilterInput
+  and: [ModelGameStatsFilterInput]
+  or: [ModelGameStatsFilterInput]
+  not: ModelGameStatsFilterInput
+}
+
+type Query {
+  getGameStats(id: ID!): GameStats
+  listGameStatss(filter: ModelGameStatsFilterInput, limit: Int, nextToken: String): ModelGameStatsConnection
+  getPlayerStats(id: ID!): PlayerStats
+  listPlayerStatss(filter: ModelPlayerStatsFilterInput, limit: Int, nextToken: String): ModelPlayerStatsConnection
+}
+
+input CreateGameStatsInput {
+  id: ID
+  meetupId: String
+  name: String
+  date: String
+  gameId: String
+  year: String
+  month: String
+  fieldName: String
+  tournamentName: String
+  winners: AWSJSON
+  losers: AWSJSON
+}
+
+input UpdateGameStatsInput {
+  id: ID!
+  meetupId: String
+  name: String
+  date: String
+  gameId: String
+  year: String
+  month: String
+  fieldName: String
+  tournamentName: String
+  winners: AWSJSON
+  losers: AWSJSON
+}
+
+input DeleteGameStatsInput {
+  id: ID
+}
+
+type Mutation {
+  createGameStats(input: CreateGameStatsInput!): GameStats
+  updateGameStats(input: UpdateGameStatsInput!): GameStats
+  deleteGameStats(input: DeleteGameStatsInput!): GameStats
+  createPlayerStats(input: CreatePlayerStatsInput!): PlayerStats
+  updatePlayerStats(input: UpdatePlayerStatsInput!): PlayerStats
+  deletePlayerStats(input: DeletePlayerStatsInput!): PlayerStats
+}
+
+type Subscription {
+  onCreateGameStats: GameStats @aws_subscribe(mutations: ["createGameStats"])
+  onUpdateGameStats: GameStats @aws_subscribe(mutations: ["updateGameStats"])
+  onDeleteGameStats: GameStats @aws_subscribe(mutations: ["deleteGameStats"])
+  onCreatePlayerStats: PlayerStats @aws_subscribe(mutations: ["createPlayerStats"])
+  onUpdatePlayerStats: PlayerStats @aws_subscribe(mutations: ["updatePlayerStats"])
+  onDeletePlayerStats: PlayerStats @aws_subscribe(mutations: ["deletePlayerStats"])
+}
+
+type ModelPlayerStatsConnection {
+  items: [PlayerStats]
+  nextToken: String
+}
+
+input ModelPlayerStatsFilterInput {
+  id: ModelIDFilterInput
+  name: ModelStringFilterInput
+  meetupId: ModelStringFilterInput
+  gamesPlayed: ModelStringFilterInput
+  o: ModelStringFilterInput
+  singles: ModelStringFilterInput
+  doubles: ModelStringFilterInput
+  triples: ModelStringFilterInput
+  rbi: ModelStringFilterInput
+  r: ModelStringFilterInput
+  hr: ModelStringFilterInput
+  sb: ModelStringFilterInput
+  cs: ModelStringFilterInput
+  bb: ModelStringFilterInput
+  k: ModelStringFilterInput
+  sac: ModelStringFilterInput
+  ab: ModelStringFilterInput
+  h: ModelStringFilterInput
+  tb: ModelStringFilterInput
+  rc: ModelStringFilterInput
+  woba: ModelStringFilterInput
+  ops: ModelStringFilterInput
+  obp: ModelStringFilterInput
+  avg: ModelStringFilterInput
+  w: ModelStringFilterInput
+  l: ModelStringFilterInput
+  and: [ModelPlayerStatsFilterInput]
+  or: [ModelPlayerStatsFilterInput]
+  not: ModelPlayerStatsFilterInput
+}
+
+input CreatePlayerStatsInput {
+  id: ID
+  name: String!
+  meetupId: String
+  gamesPlayed: String
+  o: String
+  singles: String
+  doubles: String
+  triples: String
+  rbi: String
+  r: String
+  hr: String
+  sb: String
+  cs: String
+  bb: String
+  k: String
+  sac: String
+  ab: String
+  h: String
+  tb: String
+  rc: String
+  woba: String
+  ops: String
+  obp: String
+  avg: String
+  w: String
+  l: String
+}
+
+input UpdatePlayerStatsInput {
+  id: ID!
+  name: String
+  meetupId: String
+  gamesPlayed: String
+  o: String
+  singles: String
+  doubles: String
+  triples: String
+  rbi: String
+  r: String
+  hr: String
+  sb: String
+  cs: String
+  bb: String
+  k: String
+  sac: String
+  ab: String
+  h: String
+  tb: String
+  rc: String
+  woba: String
+  ops: String
+  obp: String
+  avg: String
+  w: String
+  l: String
+}
+
+input DeletePlayerStatsInput {
+  id: ID
+}

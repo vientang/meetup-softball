@@ -49,3 +49,96 @@ export const deleteGameStats = `mutation DeleteGameStats($input: DeleteGameStats
   }
 }
 `;
+export const createPlayerStats = `mutation CreatePlayerStats($input: CreatePlayerStatsInput!) {
+  createPlayerStats(input: $input) {
+    id
+    name
+    meetupId
+    gamesPlayed
+    o
+    singles
+    doubles
+    triples
+    rbi
+    r
+    hr
+    sb
+    cs
+    bb
+    k
+    sac
+    ab
+    h
+    tb
+    rc
+    woba
+    ops
+    obp
+    avg
+    w
+    l
+  }
+}
+`;
+export const updatePlayerStats = `mutation UpdatePlayerStats($input: UpdatePlayerStatsInput!) {
+  updatePlayerStats(input: $input) {
+    id
+    name
+    meetupId
+    gamesPlayed
+    o
+    singles
+    doubles
+    triples
+    rbi
+    r
+    hr
+    sb
+    cs
+    bb
+    k
+    sac
+    ab
+    h
+    tb
+    rc
+    woba
+    ops
+    obp
+    avg
+    w
+    l
+  }
+}
+`;
+export const deletePlayerStats = `mutation DeletePlayerStats($input: DeletePlayerStatsInput!) {
+  deletePlayerStats(input: $input) {
+    id
+    name
+    meetupId
+    gamesPlayed
+    o
+    singles
+    doubles
+    triples
+    rbi
+    r
+    hr
+    sb
+    cs
+    bb
+    k
+    sac
+    ab
+    h
+    tb
+    rc
+    woba
+    ops
+    obp
+    avg
+    w
+    l
+  }
+}
+`;

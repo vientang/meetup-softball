@@ -1,17 +1,16 @@
 projects:
-  GameStats:
+  SoftballStats:
     schemaPath: src/graphql/schema.json
     includes:
       - src/graphql/**/*.js
     excludes:
-      - ./amplify/**
+      - amplify/**
     extensions:
       amplify:
-        graphQLApiId: t622zt2pczgphevy6aavhdhhfy
         codeGenTarget: javascript
         generatedFileName: ''
         docsFilePath: src/graphql
-        region: us-west-2
+        graphQLApiId: hrah63qjtvafnpciaowuhdduwm
       endpoints:
         prod: >-
-          https://p4765dhahnalpkmwnlrj72yl6y.appsync-api.us-west-2.amazonaws.com/graphql
+          https://kn54uugqqzbbrnqt6jyyxufwq4.appsync-api.us-east-1.amazonaws.com/graphql
