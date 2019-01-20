@@ -4,7 +4,7 @@ import { listGameStatss } from '../graphql/queries';
 import Layout from '../components/Layout';
 import NotFoundImage from '../components/NotFoundImage';
 import StatsTable from '../components/StatsTable';
-import { statsCalc, Utils } from "../utils";
+import { statsCalc, Utils, apiService } from '../utils';
 import styles from './pages.module.css';
 
 const categories = ['player', 'gp', 'ab', 'h', '1b', '2b', '3b', 'r', 'rbi', 'hr', 'avg', 'sb', 'cs', 'bb', 'k', 'rc', 'tb'];
@@ -25,12 +25,12 @@ class Stats extends React.Component {
             response.data.listGameStatss.items
                 .filter(game => game.year === '2018') 
                 .forEach((game) => {
-                    const updatedStats = statsCalc.filterPlayerStats(game, playerStats);                    
+                    const updatedStats = apiService.filterPlayerStats(game, playerStats);
                     playerStats = Array.from(updatedStats.values());
                 });
             
             this.setState(() => ({ playerStats, noDataFound: playerStats.length < 1 }));
-            statsCalc.clearMasterList();
+            apiService.clearMasterList();
         }).catch(error => {
             console.log('error', error);
             throw new Error(error);

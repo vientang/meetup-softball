@@ -1,15 +1,15 @@
 import React from 'react';
 import { API, graphqlOperation } from 'aws-amplify';
-import { withAuthenticator, SignUp, SignIn, Greetings } from 'aws-amplify-react';
+import { withAuthenticator, SignIn, Greetings } from 'aws-amplify-react';
 
 import Layout from '../components/Layout';
 import SuccessImage from '../components/SuccessImage';
 import AdminSideMenu from '../components/AdminSideMenu';
 import AdminStatsTable from '../components/AdminStatsTable';
 import SortTeams from '../components/SortTeams';
-import { createGameStats, createPlayerStats } from '../graphql/mutations';
-import { listGameStatss } from '../graphql/queries';
-import { Utils, statsCalc } from "../utils";
+import { createGameStats } from '../graphql/mutations';
+import { getPlayerStats } from '../graphql/queries';
+import { Utils, apiService } from "../utils";
 import styles from './pages.module.css';
 
 const categories = ['player', 'o', '1b', '2b', '3b', 'hr', 'bb', 'sb', 'cs', 'k', 'rbi', 'r', 'sac'];
@@ -48,17 +48,21 @@ class Admin extends React.Component {
         };
     }
 
+    /**
+     * Get list of players who attended the game from meetup api
+     * Find those players in our API to get existing stats
+     * Merge each player name and meetup id with the stats categories
+     */
     async componentDidMount() {
-        // await API.graphql(graphqlOperation(listGameStatss)).then(response => {
-        //     console.log('admin response from query', response);            
-        // }).catch(error => {
-        //     console.log('error', error);
-        //     throw new Error(error);
-        // });
+        // await API.graphql(graphqlOperation(getPlayerStats, { id: player.id }))
+        //     .then(response => {
+        //         console.log('response in getPlayerStats', response);
+        //     })
+        //     .catch(error => {
+        //         console.log('error in getPlayerStats', error);
+        //         throw new Error(error);
+        //     });
         
-        // get list of players who attended the game from meetup api
-        // merge each player name and meetup id with the stats categories
-        // send to AdminStatsTable
 
         // After getting meetup data, check if any of those games have
         // already been entered. This can happen when admin enters stats 
@@ -74,7 +78,7 @@ class Admin extends React.Component {
     /**
      * Submit updated stats to PlayerStats and GameStats table
      */
-    handleSubmitData = (winners, losers, selectedGame) => {
+    handleSubmitData = async (winners, losers, selectedGame) => {
         const meetupData = {
             meetupId: 'x1u3sjj99I',
             name: 'Game 247 Westlake Park, Daly City',
@@ -83,13 +87,12 @@ class Admin extends React.Component {
             tournamentName: 'Halloween',
         };
 
-        // API.graphql(graphqlOperation(createPlayerStats, { input: playerStats })).then(response => {
-        //     console.log('mutate player stats', response);            
-        // }).catch(error => {
-        //     console.log('error', error);
+        // const playerStats = apiService.updateMergedPlayerStats(existingStats, winners, losers);
+        // playerStats.forEach(player => {
+        //     API.graphql(graphqlOperation(updatePlayerStats, { input: player }));
         // });
 
-        const gameStats = statsCalc.mergeGameStats(meetupData, winners, losers);
+        const gameStats = await apiService.mergeGameStats(meetupData, winners, losers);
         
         API.graphql(graphqlOperation(createGameStats, { input: gameStats })).then(response => {
             this.setState((prevState) => {
@@ -105,7 +108,7 @@ class Admin extends React.Component {
                 };
             });
         }).catch(error => {
-            console.log('error', error);
+            console.log('error in createGameStats', error);
         });
     };
 
