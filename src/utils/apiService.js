@@ -54,7 +54,7 @@ const updateEntries = (gamePlayers, allPlayers) => {
             const avg = statsCalc.getAverage(h, ab);
             const tb = statsCalc.getTotalBases(first, second, third, hr);
             const rc = statsCalc.getRunsCreated(h, bb, cs, tb, sb, ab);
-            const obp = statsCalc.getonBasePercentage(h, bb, ab, sac);
+            const obp = statsCalc.getOnBasePercentage(h, bb, ab, sac);
             const slg = statsCalc.getSlugging(tb, ab);
             const ops = statsCalc.getOPS(obp, slg);
             const woba = statsCalc.getWOBA(bb, first, second, third, hr, ab, sac);
@@ -119,7 +119,7 @@ const mergePlayerStatsForView = (existingStats = {}, currentStats) => {
         atBats
     );
 
-    const onBasePercentage = statsCalc.getonBasePercentage(hits, bb, atBats, sac);
+    const onBasePercentage = statsCalc.getOnBasePercentage(hits, bb, atBats, sac);
     const slugging = statsCalc.getSlugging(totalBases, atBats);
     const onBasePlusSlugging = statsCalc.getOPS(onBasePercentage, slugging);
     const weightedOnBaseAverage = statsCalc.getWOBA(bb, first, second, third, hr, atBats, sac);
@@ -259,7 +259,7 @@ const mergeAndSavePlayerStats = (existingStats, currentStats) => {
         const runsCreated = statsCalc.getRunsCreated(hits, bb, cs, totalBases, sb, atBats);
         const avg = statsCalc.getAverage(hits, atBats);
 
-        const onBasePercentage = statsCalc.getonBasePercentage(
+        const onBasePercentage = statsCalc.getOnBasePercentage(
             hits, 
             Number(player.bb), 
             atBats, 
