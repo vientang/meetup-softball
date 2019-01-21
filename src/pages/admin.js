@@ -1,14 +1,13 @@
 import React from 'react';
 import { API, graphqlOperation } from 'aws-amplify';
 import { withAuthenticator, SignIn, Greetings } from 'aws-amplify-react';
-
+import fetchJsonp from 'fetch-jsonp';
 import Layout from '../components/Layout';
 import SuccessImage from '../components/SuccessImage';
 import AdminSideMenu from '../components/AdminSideMenu';
 import AdminStatsTable from '../components/AdminStatsTable';
 import SortTeams from '../components/SortTeams';
 import { createGameStats } from '../graphql/mutations';
-import { getPlayerStats } from '../graphql/queries';
 import { Utils, apiService } from "../utils";
 import styles from './pages.module.css';
 
@@ -32,6 +31,8 @@ const game248 = {
     players: Utils.makeData(2),
 }
 
+const GAMES_URL = 'https://api.meetup.com/San-Francisco-Softball-Players/events?&sign=true&photo-host=public&page=5';
+
 class Admin extends React.Component {
     constructor(props) {
         super(props);
@@ -49,21 +50,37 @@ class Admin extends React.Component {
     }
 
     /**
+     * Get the games to be entered
      * Get list of players who attended the game from meetup api
      * Find those players in our API to get existing stats
      * Merge each player name and meetup id with the stats categories
      */
     async componentDidMount() {
-        // await API.graphql(graphqlOperation(getPlayerStats, { id: player.id }))
-        //     .then(response => {
-        //         console.log('response in getPlayerStats', response);
-        //     })
-        //     .catch(error => {
-        //         console.log('error in getPlayerStats', error);
-        //         throw new Error(error);
-        //     });
-        
+        const games = [];
 
+        await fetchJsonp(GAMES_URL)
+            .then(response => response.json())
+            .then(resJson => {
+                resJson.data.forEach(game => {
+                    const dates = game.local_date.split('-');
+                    const gameId = game.name.split(' ')[1];
+                    const newGame = {};
+                    newGame.meetupId = game.id;
+                    newGame.name = game.name;
+                    newGame.gameId = gameId;
+                    newGame.date = game.local_date;
+                    newGame.time = game.local_time;
+                    newGame.year = dates[0];
+                    newGame.month = dates[1];
+                    newGame.field = game.venue.name;
+                    
+                    games.push(newGame);
+                });
+            })
+            .catch((error) => {
+                console.log('meetup request error', error);
+            });
+        
         // After getting meetup data, check if any of those games have
         // already been entered. This can happen when admin enters stats 
         // for one game but not the other. We should find out which games
