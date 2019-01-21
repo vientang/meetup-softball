@@ -57,11 +57,11 @@ class Admin extends React.Component {
      */
     async componentDidMount() {
         const games = [];
-
+        let players = [];
         await fetchJsonp(GAMES_URL)
             .then(response => response.json())
-            .then(resJson => {
-                resJson.data.forEach(game => {
+            .then(result => {
+                result.data.forEach(game => {
                     const dates = game.local_date.split('-');
                     const gameId = game.name.split(' ')[1];
                     const newGame = {};
@@ -73,13 +73,28 @@ class Admin extends React.Component {
                     newGame.year = dates[0];
                     newGame.month = dates[1];
                     newGame.field = game.venue.name;
+                    newGame.rsvps = game.yes_rsvp_count;
                     
                     games.push(newGame);
                 });
             })
             .catch((error) => {
-                console.log('meetup request error', error);
+                console.log('meetup games request error', error);
             });
+        
+        const currentGame = games[0];
+        const PLAYERS_URL = `https://api.meetup.com/2/rsvps?&sign=true&photo-host=public&event_id=${currentGame.meetupId}&page=${currentGame.rsvps}&key=${process.env.MEETUP_KEY}`;
+
+        await fetchJsonp(PLAYERS_URL)
+            .then(response => response.json())
+            .then(result => {
+                players = result.results.map(player => Utils.createPlayer(player));
+            })
+            .catch(error => {
+                console.log('meetup player request error', error);
+            });
+            
+        currentGame.players = players;
         
         // After getting meetup data, check if any of those games have
         // already been entered. This can happen when admin enters stats 

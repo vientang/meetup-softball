@@ -19,6 +19,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# env
+.env.development
+.env.production
+
 #awsmobilejs
 appsync-info.json
 aws-info.json
