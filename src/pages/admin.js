@@ -8,6 +8,7 @@ import AdminSideMenu from '../components/AdminSideMenu';
 import AdminStatsTable from '../components/AdminStatsTable';
 import SortTeams from '../components/SortTeams';
 import { createGameStats } from '../graphql/mutations';
+import { listPlayerStatss } from '../graphql/queries';
 import { Utils, apiService } from "../utils";
 import styles from './pages.module.css';
 
@@ -40,6 +41,7 @@ class Admin extends React.Component {
             areTeamsSet: false,
             currentGame: game247,
             dataSubmitted: false,
+            existingPlayerStats: [],
             finishedStatEntry: false,
             games: [game247, game248],
             losers: [],
@@ -95,16 +97,30 @@ class Admin extends React.Component {
             });
             
         currentGame.players = players;
-        
-        // After getting meetup data, check if any of those games have
-        // already been entered. This can happen when admin enters stats 
-        // for one game but not the other. We should find out which games
-        // should be entered.
-        this.setState(() => ({ 
-            currentGame: game247,
-            games: [game247, game248],
-            selectedGame: game247.gameId,
-        }));
+        if (players.length > 0) {
+            API.graphql(graphqlOperation(listPlayerStatss))
+                .then(result => {
+                    const allPlayers = result.data.listPlayerStatss.items;
+                    const currentPlayers = allPlayers.filter((player) => (
+                        players.some(currPlayer => player.meetupId === currPlayer.meetupId)
+                    ));
+                    players = currentPlayers.length > 0 ? currentPlayers : players;
+                    console.log('current players', currentPlayers);
+                    // After getting meetup data, check if any of those games have
+                    // already been entered. This can happen when admin enters stats 
+                    // for one game but not the other. We should find out which games
+                    // should be entered.
+                    this.setState(() => ({
+                        currentGame: game247,
+                        existingPlayerStats: players,
+                        games: [game247, game248],
+                        selectedGame: game247.gameId,
+                    }));
+                })
+                .catch(error => {
+                    console.log('player query error', error);
+                })
+        }
     }
 
     /**
