@@ -83,6 +83,24 @@
 			"Properties": {
 				"TemplateURL": "https://s3.amazonaws.com/meetupsoftball-20190113144455-deployment/amplify-cfn-templates/auth/cognitocea00485-cloudformation-template.yml",
 				"Parameters": {
+					"authRoleName": {
+						"Ref": "AuthRoleName"
+					},
+					"unauthRoleName": {
+						"Ref": "UnauthRoleName"
+					},
+					"authRoleArn": {
+						"Fn::GetAtt": [
+							"AuthRole",
+							"Arn"
+						]
+					},
+					"unauthRoleArn": {
+						"Fn::GetAtt": [
+							"UnauthRole",
+							"Arn"
+						]
+					},
 					"identityPoolName": "cognitocea00485_identitypool_cea00485",
 					"allowUnauthenticatedIdentities": false,
 					"thirdPartyAuth": false,
@@ -120,11 +138,10 @@
 					"userpoolClientSetAttributes": false,
 					"useDefault": "default",
 					"unAuthRoleName": "meetupsoftball-20190113144455-unauthRole",
-					"authRoleName": "meetupsoftball-20190113144455-authRole",
 					"unAuthRoleArn": "arn:aws:iam::312743227043:role/meetupsoftball-20190113144455-unauthRole",
-					"authRoleArn": "arn:aws:iam::312743227043:role/meetupsoftball-20190113144455-authRole",
 					"resourceName": "cognitocea00485",
-					"authSelections": "identityPoolAndUserPool"
+					"authSelections": "identityPoolAndUserPool",
+					"env": "NONE"
 				}
 			}
 		},
@@ -132,7 +149,10 @@
 			"Type": "AWS::CloudFormation::Stack",
 			"Properties": {
 				"TemplateURL": "https://s3.amazonaws.com/meetupsoftball-20190113144455-deployment/amplify-cfn-templates/hosting/template.json",
-				"Parameters": {}
+				"Parameters": {
+					"bucketName": "meetupsoftball-20190113160400--hostingbucket",
+					"env": "NONE"
+				}
 			}
 		},
 		"apiSoftballStats": {
@@ -147,10 +167,11 @@
 							"Outputs.UserPoolId"
 						]
 					},
-					"schemaGraphql": "s3://meetupsoftball-20190113144455-deployment/amplify-appsync-files/schema.graphql.1547438786119",
+					"schemaGraphql": "s3://meetupsoftball-20190113144455-deployment/amplify-appsync-files/schema.graphql.1548301787302",
 					"ResolverBucket": "meetupsoftball-20190113144455-deployment",
 					"ResolverRootKey": "amplify-appsync-files",
-					"DeploymentTimestamp": "1547438786119"
+					"DeploymentTimestamp": "1548301787302",
+					"env": "NONE"
 				}
 			}
 		}

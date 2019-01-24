@@ -32,19 +32,31 @@ First of all, you're going to need to have the following installed to contribute
 - [Gatsby CLI](https://www.gatsbyjs.org/tutorial/part-zero/#install-the-gatsby-cli): `npm install -g gatsby-cli`
 - [AWS Amplify CLI](https://aws-amplify.github.io/docs/): `npm install -g @aws-amplify/cli`
 
-**Set up AWS Amplify backend configurations (just once).**
-You'll need some configuration for Amplify to work in your project. This file is ignored in the the checkin process so I'll connect with you about it. Hit me up.
+
 
 1. Fork the repo
 2. Clone your fork
 3. Create a branch
-4. Run `npm install`
-5. Run `npm run setup`. If everything works, then you're ready to make changes.
-6. Run `npm run test:watch`
-7. Run `npm run start`
-7. Make your changes and review them at `localhost:8000`
-8. If you get things working, add your changed files with `git add .` and then commit your changes with `git commit`. You'll get an interactive prompt for creating a commit message. Alternatively, you can write your commit message with the `-m ` flag, like so `git commit -m "...some commit message"`
-9. Push your changes to your fork with `git push`
-10. Create a pull request from your repo
-11. Look over the code review and iterate on the solution, if needed
-12. Your code is merged! 🎉 🎊
+
+**Set up AWS Amplify backend configurations (just once).**
+You'll need some configuration for Amplify to work in your project. This file is ignored in the the checkin process so I'll connect with you about it. Hit me up.
+
+### Amplify setup
+
+1. Run `amplify configure` to set up local machine with AWS backend [Amplfy Configure Documentation](https://aws-amplify.github.io/docs/cli/init#amplify-configure) 
+2. Run `amplify configure project` 
+3. Run `amplify push`
+
+### Project setup
+
+
+1. Run `npm install`
+2. Run `npm run setup`. If everything works, then you're ready to make changes.
+3. Run `npm run test:watch` (optional)
+4. Run `npm run start`
+5. Make your changes and review them at `localhost:8000`
+6. If you get things working, add your changed files with `git add .` and then commit your changes with `git commit`. You'll get an interactive prompt for creating a commit message. Alternatively, you can write your commit message with the `-m ` flag, like so `git commit -m "...some commit message"`
+7. Push your changes to your fork with `git push`
+8. Create a pull request from your repo
+9. Look over the code review and iterate on the solution, if needed
+10. Your code is merged! 🎉 🎊

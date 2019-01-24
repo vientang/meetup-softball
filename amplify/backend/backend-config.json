@@ -1,0 +1,20 @@
+{
+    "auth": {
+        "cognitocea00485": {
+            "service": "Cognito",
+            "providerPlugin": "awscloudformation"
+        }
+    },
+    "hosting": {
+        "S3AndCloudFront": {
+            "service": "S3AndCloudFront",
+            "providerPlugin": "awscloudformation"
+        }
+    },
+    "api": {
+        "SoftballStats": {
+            "service": "AppSync",
+            "providerPlugin": "awscloudformation"
+        }
+    }
+}
