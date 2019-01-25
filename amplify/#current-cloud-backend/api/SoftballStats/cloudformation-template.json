@@ -42,6 +42,11 @@
             "Description": "The time limit, in days, after which the refresh token is no longer valid.",
             "Default": 30
         },
+        "env": {
+            "Type": "String",
+            "Description": "The environment name. e.g. Dev, Test, or Production",
+            "Default": "NONE"
+        },
         "ResolverBucket": {
             "Type": "String",
             "Description": "The name of the bucket containing the resolver templates"
@@ -269,7 +274,10 @@
                     }
                 }
             },
-            "DependsOn": "GameStatsIAMRole"
+            "DependsOn": [
+                "GameStatsTable",
+                "GameStatsIAMRole"
+            ]
         },
         "GetGameStatsResolver": {
             "Type": "AWS::AppSync::Resolver",
@@ -869,7 +877,10 @@
                     }
                 }
             },
-            "DependsOn": "PlayerStatsIAMRole"
+            "DependsOn": [
+                "PlayerStatsTable",
+                "PlayerStatsIAMRole"
+            ]
         },
         "GetPlayerStatsResolver": {
             "Type": "AWS::AppSync::Resolver",
@@ -1558,6 +1569,18 @@
         }
     },
     "Conditions": {
+        "HasEnvironmentParameter": {
+            "Fn::Not": [
+                {
+                    "Fn::Equals": [
+                        {
+                            "Ref": "env"
+                        },
+                        "NONE"
+                    ]
+                }
+            ]
+        },
         "AuthShouldCreateUserPool": {
             "Fn::Equals": [
                 {

@@ -9,6 +9,11 @@
 			"UnauthRoleName": "meetupsoftball-20190113144455-unauthRole",
 			"StackName": "meetupsoftball-20190113144455",
 			"StackId": "arn:aws:cloudformation:us-east-1:312743227043:stack/meetupsoftball-20190113144455/d9890bb0-1784-11e9-ac5d-0a82639e0346"
+		},
+		"categories": {
+			"auth": {
+				"cognitocea00485": {}
+			}
 		}
 	},
 	"auth": {
@@ -19,7 +24,7 @@
 				"s3TemplateURL": "https://s3.amazonaws.com/meetupsoftball-20190113144455-deployment/amplify-cfn-templates/auth/cognitocea00485-cloudformation-template.yml",
 				"logicalId": "authcognitocea00485"
 			},
-			"lastPushTimeStamp": "2019-01-14T04:08:44.603Z",
+			"lastPushTimeStamp": "2019-01-24T03:51:57.254Z",
 			"output": {
 				"AppClientSecret": "m95q3oiu4f1l8d6fq4o59o068k9dvso7ei1r8rgahitveaa20r7",
 				"UserPoolId": "us-east-1_TvPpbhz0O",
@@ -29,7 +34,7 @@
 				"IdentityPoolName": "cognitocea00485_identitypool_cea00485",
 				"UserPoolName": "cognitocea00485_userpool_cea00485"
 			},
-			"lastPushDirHash": "GNj3Ps6A/MLgGWgEqnq117J9BMA="
+			"lastPushDirHash": "H5DEpgKXmSzuNVRpV3g7Ro+xlH4="
 		}
 	},
 	"hosting": {
@@ -40,14 +45,14 @@
 				"s3TemplateURL": "https://s3.amazonaws.com/meetupsoftball-20190113144455-deployment/amplify-cfn-templates/hosting/template.json",
 				"logicalId": "hostingS3AndCloudFront"
 			},
-			"lastPushTimeStamp": "2019-01-14T04:08:44.604Z",
+			"lastPushTimeStamp": "2019-01-24T03:51:57.254Z",
 			"output": {
 				"S3BucketSecureURL": "https://meetupsoftball-20190113160400--hostingbucket.s3.amazonaws.com",
 				"WebsiteURL": "http://meetupsoftball-20190113160400--hostingbucket.s3-website-us-east-1.amazonaws.com",
 				"Region": "us-east-1",
 				"HostingBucketName": "meetupsoftball-20190113160400--hostingbucket"
 			},
-			"lastPushDirHash": "7fRBMHk4laFZmxqXt763O+vBVrQ="
+			"lastPushDirHash": "vQNQnYT62SBLZyAFBjFzpXDT0TY="
 		}
 	},
 	"api": {
@@ -67,8 +72,8 @@
 				"s3TemplateURL": "https://s3.amazonaws.com/meetupsoftball-20190113144455-deployment/amplify-cfn-templates/api/cloudformation-template.json",
 				"logicalId": "apiSoftballStats"
 			},
-			"lastPushTimeStamp": "2019-01-14T04:08:46.308Z",
-			"lastPushDirHash": "NN/KAu+TuwgK/Pq4uwy+hXUv54I="
+			"lastPushTimeStamp": "2019-01-24T03:51:57.254Z",
+			"lastPushDirHash": "te9Iju237oBdWC5VkjLfz1ZGjJE="
 		}
 	}
 }

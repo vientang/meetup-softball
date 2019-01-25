@@ -1,5 +1,5 @@
 {
-    "providers": {
+    "NONE": {
         "awscloudformation": {
             "AuthRoleName": "meetupsoftball-20190113144455-authRole",
             "UnauthRoleArn": "arn:aws:iam::312743227043:role/meetupsoftball-20190113144455-unauthRole",
@@ -9,6 +9,11 @@
             "UnauthRoleName": "meetupsoftball-20190113144455-unauthRole",
             "StackName": "meetupsoftball-20190113144455",
             "StackId": "arn:aws:cloudformation:us-east-1:312743227043:stack/meetupsoftball-20190113144455/d9890bb0-1784-11e9-ac5d-0a82639e0346"
+        },
+        "categories": {
+            "auth": {
+                "cognitocea00485": {}
+            }
         }
     }
 }
