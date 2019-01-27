@@ -32,7 +32,7 @@ const game248 = {
     players: Utils.makeData(2),
 }
 
-const GAMES_URL = 'https://api.meetup.com/San-Francisco-Softball-Players/events?&sign=true&photo-host=public&page=5';
+const GAMES_URL = 'https://api.meetup.com/San-Francisco-Softball-Players/events?&sign=true&photo-host=public&status=past&desc=true&page=5';
 
 class Admin extends React.Component {
     constructor(props) {
@@ -44,6 +44,7 @@ class Admin extends React.Component {
             existingPlayerStats: [],
             finishedStatEntry: false,
             games: [game247, game248],
+            lastGameRecorded: null,
             losers: [],
             selectedGame: game247.gameId,
             selectedPlayers: [],
@@ -60,10 +61,14 @@ class Admin extends React.Component {
     async componentDidMount() {
         const games = [];
         let players = [];
+        let lastGameRecorded = '';
         await fetchJsonp(GAMES_URL)
             .then(response => response.json())
             .then(result => {
-                result.data.forEach(game => {
+                result.data.forEach((game, i) => {
+                    if (i === 0) {
+                        lastGameRecorded = new Date(game.time);
+                    }
                     const dates = game.local_date.split('-');
                     const gameId = game.name.split(' ')[1];
                     const newGame = {};
@@ -85,6 +90,7 @@ class Admin extends React.Component {
             });
         
         const currentGame = games[0];
+        
         const PLAYERS_URL = `https://api.meetup.com/2/rsvps?&sign=true&photo-host=public&event_id=${currentGame.meetupId}&page=${currentGame.rsvps}&key=${process.env.MEETUP_KEY}`;
 
         await fetchJsonp(PLAYERS_URL)
@@ -105,7 +111,6 @@ class Admin extends React.Component {
                         players.some(currPlayer => player.meetupId === currPlayer.meetupId)
                     ));
                     players = currentPlayers.length > 0 ? currentPlayers : players;
-                    console.log('current players', currentPlayers);
                     // After getting meetup data, check if any of those games have
                     // already been entered. This can happen when admin enters stats 
                     // for one game but not the other. We should find out which games
@@ -115,6 +120,7 @@ class Admin extends React.Component {
                         existingPlayerStats: players,
                         games: [game247, game248],
                         selectedGame: game247.gameId,
+                        lastGameRecorded,
                     }));
                 })
                 .catch(error => {

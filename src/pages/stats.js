@@ -4,7 +4,7 @@ import { listGameStatss } from '../graphql/queries';
 import Layout from '../components/Layout';
 import NotFoundImage from '../components/NotFoundImage';
 import StatsTable from '../components/StatsTable';
-import { statsCalc, Utils, apiService } from '../utils';
+import { Utils, apiService } from '../utils';
 import styles from './pages.module.css';
 
 const categories = ['player', 'gp', 'ab', 'h', '1b', '2b', '3b', 'r', 'rbi', 'hr', 'avg', 'sb', 'cs', 'bb', 'k', 'rc', 'tb'];
