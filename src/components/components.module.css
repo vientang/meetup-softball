@@ -56,3 +56,13 @@
 .submit-button {
     text-align: right;
 }
+
+.side-menu-name {
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+
+.side-menu-text {
+    font-size: 0.8rem;
+    white-space: nowrap;
+}

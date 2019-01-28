@@ -10,7 +10,7 @@ const locale = {
     notFoundContent: 'No losers yet', 
 };
 
-const setPlayerList = (players) => {
+const setPlayerList = (players = []) => {
     const playerListWithKeys = players.map((player, i) => {
         const playerCopy = {...player};
         playerCopy.key = i.toString();
@@ -88,7 +88,7 @@ class SortTeams extends Component {
 SortTeams.propTypes = {
     data: PropTypes.shape({
         gameId: PropTypes.string,
-        location: PropTypes.string,
+        field: PropTypes.string,
         date: PropTypes.string,
         time: PropTypes.string,        
         players: PropTypes.array,

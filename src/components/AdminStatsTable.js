@@ -6,6 +6,7 @@ import StatsTable from './StatsTable';
 import componentStyles from './components.module.css';
 import 'react-table/react-table.css';
 
+const categories = ['player', 'o', '1b', '2b', '3b', 'hr', 'bb', 'sb', 'cs', 'k', 'rbi', 'r', 'sac'];
 class AdminStatsTable extends React.Component {
 	constructor(props) {
 		super(props);
@@ -124,7 +125,6 @@ class AdminStatsTable extends React.Component {
     };
     
 	render() {
-        const { categories } = this.props;
         const { winners, losers } = this.state;
     
         if (!winners || winners.length < 1) {
@@ -166,7 +166,6 @@ class AdminStatsTable extends React.Component {
 AdminStatsTable.propTypes = {
     winners: PropTypes.array,
     losers: PropTypes.array,
-    categories: PropTypes.array,
     onSubmit: PropTypes.func,
     selectedGame: PropTypes.string,
 };
@@ -174,7 +173,6 @@ AdminStatsTable.propTypes = {
 AdminStatsTable.defaultProps = {
     winners: [],
     losers: [],
-    categories: [],
 };
 
 export default AdminStatsTable;

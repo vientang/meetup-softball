@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Menu } from 'antd';
 import 'antd/dist/antd.css';
+import componentStyles from './components.module.css';
 
 const sideMenuStyle = {
 	width: 250,
@@ -16,39 +17,41 @@ const menuItemStyle = {
     lineHeight: '25px',
     padding: '1rem',
     margin: 0,
+    whiteSpace: 'normal',
 };
 
 class AdminSideMenu extends React.Component {
-
     handleGameSelection = (e) => {
         this.props.onGameSelection(e.key);
     }
 
 	render() {
-		const { games } = this.props;
-        
-		return (
-			<Menu
-				style={sideMenuStyle}
-				defaultSelectedKeys={[this.props.selectedGame]}
-				mode="inline"
-			>
-				{games.map((game, i) => {
-					return (
-						<Menu.Item 
-							key={game.gameId}
-							style={menuItemStyle}
-							onClick={this.handleGameSelection}
-						>
-							<h4>{game.gameId}</h4>
-							<span>{game.location}</span>
-							<span>{game.date}</span>
-                            <span>{game.time}</span>
-						</Menu.Item>
-					)
-				})}
-			</Menu>
-		);
+        const { games, selectedGame } = this.props;
+
+        if (selectedGame) {
+            return (
+                <Menu
+                    style={sideMenuStyle}
+                    defaultSelectedKeys={[selectedGame]}
+                    mode="inline"
+                >
+                    {games.map((game, i) => {
+                        return (
+                            <Menu.Item
+                                key={game.gameId}
+                                style={menuItemStyle}
+                                onClick={this.handleGameSelection}
+                            >
+                                <h4 className={componentStyles.sideMenuName}>{game.name}</h4>
+                                <span className={componentStyles.sideMenuText}>{game.field}</span>
+                                <span className={componentStyles.sideMenuText}>{game.date} @ {game.time}</span>
+                            </Menu.Item>
+                        )
+                    })}
+                </Menu>
+            );
+        }
+		return null;
 	}
 }
 
