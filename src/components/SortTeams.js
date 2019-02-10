@@ -4,20 +4,20 @@ import { Button, Transfer } from 'antd';
 import componentStyles from './components.module.css';
 import 'antd/dist/antd.css';
 
-const locale = { 
-    itemUnit: 'Player', 
-    itemsUnit: 'Players', 
-    notFoundContent: 'No losers yet', 
+const locale = {
+    itemUnit: 'Player',
+    itemsUnit: 'Players',
+    notFoundContent: 'No losers yet',
 };
 
 const setPlayerList = (players = []) => {
     const playerListWithKeys = players.map((player, i) => {
-        const playerCopy = {...player};
+        const playerCopy = { ...player };
         playerCopy.key = i.toString();
         return playerCopy;
     });
 
-    return playerListWithKeys;        
+    return playerListWithKeys;
 };
 
 class SortTeams extends Component {
@@ -29,31 +29,31 @@ class SortTeams extends Component {
             targetKeys: [],
         };
     }
-    
+
     static getDerivedStateFromProps(nextProps, prevState) {
         if (nextProps.data.gameId === prevState.gameId) {
             return null;
         }
-        return { 
+        return {
             gameId: nextProps.data.gameId,
             players: setPlayerList(nextProps.data.players),
         };
     }
-    
+
     /**
      * @param {Array} targetKeys - items on the right transfer box
      */
     handleChange = (targetKeys) => {
         this.setState(() => ({ targetKeys }));
-    }
+    };
 
     submitList = () => {
         const { players, targetKeys } = this.state;
         const losers = players.filter((p, i) => targetKeys.includes(i.toString()));
         const winners = players.filter((p, i) => !targetKeys.includes(i.toString()));
-        
+
         this.props.setTeams(winners, losers);
-    }
+    };
 
     render() {
         const { teamTitles } = this.props;
@@ -61,10 +61,10 @@ class SortTeams extends Component {
 
         return (
             <div className={componentStyles.teamTransferBox}>
-                <Transfer 
+                <Transfer
                     dataSource={players}
                     onChange={this.handleChange}
-                    render={item => `${item.name}`}
+                    render={(item) => `${item.name}`}
                     locale={locale}
                     targetKeys={targetKeys}
                     titles={teamTitles}
@@ -90,7 +90,7 @@ SortTeams.propTypes = {
         gameId: PropTypes.string,
         field: PropTypes.string,
         date: PropTypes.string,
-        time: PropTypes.string,        
+        time: PropTypes.string,
         players: PropTypes.array,
     }),
     teamTitles: PropTypes.array,

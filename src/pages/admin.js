@@ -9,10 +9,11 @@ import AdminStatsTable from '../components/AdminStatsTable';
 import SortTeams from '../components/SortTeams';
 import { createGameStats } from '../graphql/mutations';
 import { listPlayerStatss } from '../graphql/queries';
-import { Utils, apiService } from "../utils";
+import { Utils, apiService } from '../utils';
 import styles from './pages.module.css';
 
-const GAMES_URL = 'https://api.meetup.com/San-Francisco-Softball-Players/events?&sign=true&photo-host=public&status=past&desc=true&page=5';
+const GAMES_URL =
+    'https://api.meetup.com/San-Francisco-Softball-Players/events?&sign=true&photo-host=public&status=past&desc=true&page=5';
 
 class Admin extends React.Component {
     constructor(props) {
@@ -42,8 +43,8 @@ class Admin extends React.Component {
         let players = [];
         let lastGameRecorded = '';
         await fetchJsonp(GAMES_URL)
-            .then(response => response.json())
-            .then(result => {
+            .then((response) => response.json())
+            .then((result) => {
                 result.data.forEach((game, i) => {
                     if (i === 0) {
                         lastGameRecorded = new Date(game.time);
@@ -61,35 +62,37 @@ class Admin extends React.Component {
                     newGame.month = dates[1];
                     newGame.field = game.venue.name;
                     newGame.rsvps = game.yes_rsvp_count;
-                    
+
                     games.push(newGame);
                 });
             })
             .catch((error) => {
                 console.log('meetup games request error', error);
             });
-        
+
         const currentGame = games[0];
-        
-        const PLAYERS_URL = `https://api.meetup.com/2/rsvps?&sign=true&photo-host=public&event_id=${currentGame.meetupId}&page=${currentGame.rsvps}&key=${process.env.MEETUP_KEY}`;
+
+        const PLAYERS_URL = `https://api.meetup.com/2/rsvps?&sign=true&photo-host=public&event_id=${
+            currentGame.meetupId
+        }&page=${currentGame.rsvps}&key=${process.env.MEETUP_KEY}`;
 
         await fetchJsonp(PLAYERS_URL)
-            .then(response => response.json())
-            .then(result => {
-                players = result.results.map(player => Utils.createPlayer(player));
+            .then((response) => response.json())
+            .then((result) => {
+                players = result.results.map((player) => Utils.createPlayer(player));
             })
-            .catch(error => {
+            .catch((error) => {
                 console.log('meetup player request error', error);
             });
-            
+
         currentGame.players = players;
         if (players.length > 0) {
             API.graphql(graphqlOperation(listPlayerStatss))
-                .then(result => {
+                .then((result) => {
                     const allPlayers = result.data.listPlayerStatss.items;
-                    const currentPlayers = allPlayers.filter((player) => (
-                        players.some(currPlayer => player.meetupId === currPlayer.meetupId)
-                    ));
+                    const currentPlayers = allPlayers.filter((player) =>
+                        players.some((currPlayer) => player.meetupId === currPlayer.meetupId),
+                    );
                     // players = currentPlayers.length > 0 ? currentPlayers : players;
 
                     this.setState(() => ({
@@ -100,9 +103,9 @@ class Admin extends React.Component {
                         lastGameRecorded,
                     }));
                 })
-                .catch(error => {
+                .catch((error) => {
                     console.log('player query error', error);
-                })
+                });
         }
     }
 
@@ -114,11 +117,11 @@ class Admin extends React.Component {
         // playerStats.forEach(player => {
         //     API.graphql(graphqlOperation(updatePlayerStats, { input: player }));
         // });
-        
+
         const gameStats = await apiService.mergeGameStats(this.state.currentGame, winners, losers);
 
         await API.graphql(graphqlOperation(createGameStats, { input: gameStats }));
-        
+
         this.setState((prevState) => {
             const games = prevState.games.filter((game) => game.gameId !== selectedGameId);
             const currentGame = games[0];
@@ -142,7 +145,7 @@ class Admin extends React.Component {
             return {
                 currentGame,
                 selectedGameId,
-            } 
+            };
         });
     };
 
@@ -151,13 +154,13 @@ class Admin extends React.Component {
     };
 
     render() {
-        const { 
-            areTeamsSet, 
-            currentGame, 
-            finishedStatEntry, 
-            games, 
-            losers, 
-            selectedGameId, 
+        const {
+            areTeamsSet,
+            currentGame,
+            finishedStatEntry,
+            games,
+            losers,
+            selectedGameId,
             winners,
         } = this.state;
 
@@ -167,29 +170,26 @@ class Admin extends React.Component {
                     <SuccessImage />
                     <h3>You're done! Enjoy the day!</h3>
                 </Layout>
-            )
+            );
         }
 
         return (
             <>
                 <Layout className={styles.adminPage}>
-                    <AdminSideMenu 
-                        games={games} 
-                        selectedGame={selectedGameId} 
+                    <AdminSideMenu
+                        games={games}
+                        selectedGame={selectedGameId}
                         onGameSelection={this.handleSelectGame}
                     />
                     {!areTeamsSet && (
-                        <SortTeams 
-                            data={currentGame} 
-                            setTeams={this.handleSetTeams}
-                        />
+                        <SortTeams data={currentGame} setTeams={this.handleSetTeams} />
                     )}
                     {areTeamsSet && (
-                        <AdminStatsTable 
-                            winners={winners} 
-                            losers={losers} 
-                            onSubmit={this.handleSubmitData} 
-                            selectedGame={selectedGameId} 
+                        <AdminStatsTable
+                            winners={winners}
+                            losers={losers}
+                            onSubmit={this.handleSubmitData}
+                            selectedGame={selectedGameId}
                         />
                     )}
                 </Layout>

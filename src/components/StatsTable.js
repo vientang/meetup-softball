@@ -5,13 +5,26 @@ import ErrorBoundary from './ErrorBoundary';
 import componentStyles from './components.module.css';
 import 'react-table/react-table.css';
 
-const defaultCategories = ['player', 'o', '1b', '2b', '3b', 'hr', 'bb', 'sb', 'cs', 'k', 'rbi', 'r', 'sac'];
+const defaultCategories = [
+    'player',
+    'o',
+    '1b',
+    '2b',
+    '3b',
+    'hr',
+    'bb',
+    'sb',
+    'cs',
+    'k',
+    'rbi',
+    'r',
+    'sac',
+];
 class StatsTable extends React.Component {
-
     renderColumns = () => {
         const { categories, cellRenderer, sortMethod } = this.props;
-        
-        const columns = categories.map(category => {
+
+        const columns = categories.map((category) => {
             const isPlayerCat = category === 'player';
 
             const column = {
@@ -20,8 +33,8 @@ class StatsTable extends React.Component {
                 sortMethod,
                 maxWidth: isPlayerCat ? 180 : 60,
                 width: isPlayerCat ? 180 : 60,
-            }
-        
+            };
+
             if (cellRenderer) {
                 column.Cell = cellRenderer;
             }
@@ -29,17 +42,17 @@ class StatsTable extends React.Component {
             return column;
         });
         return columns;
-    }
+    };
 
-	render() {
+    render() {
         const { players, showPagination, style } = this.props;
-    
+
         if (!players || players.length < 1) {
             return null;
         }
-        
+
         return (
-			<div className={componentStyles.statsTable}>
+            <div className={componentStyles.statsTable}>
                 <ErrorBoundary>
                     <ReactTable
                         data={players}
@@ -50,9 +63,9 @@ class StatsTable extends React.Component {
                         style={style}
                     />
                 </ErrorBoundary>
-			</div>
-		);
-	}
+            </div>
+        );
+    }
 }
 
 StatsTable.propTypes = {

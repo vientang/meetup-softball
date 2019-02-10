@@ -5,9 +5,4 @@ import apiService from './apiService';
 
 export default Utils;
 
-export {
-	Keys,
-	Utils,
-    statsCalc,
-    apiService,
-}
+export { Keys, Utils, statsCalc, apiService };

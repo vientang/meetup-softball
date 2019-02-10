@@ -12,10 +12,10 @@ const layoutStyle = {
     padding: '0px 1.0875rem 1.45rem',
 };
 
-const imageStyle = { 
-    width: 100, 
-    maxWidth: 300, 
-    marginBottom: '1.45rem' 
+const imageStyle = {
+    width: 100,
+    maxWidth: 300,
+    marginBottom: '1.45rem',
 };
 
 const IndexPage = () => (
@@ -27,6 +27,6 @@ const IndexPage = () => (
             <Image />
         </div>
     </Layout>
-)
+);
 
-export default IndexPage
+export default IndexPage;

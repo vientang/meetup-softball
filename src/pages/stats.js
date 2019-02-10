@@ -7,7 +7,25 @@ import StatsTable from '../components/StatsTable';
 import { Utils, apiService } from '../utils';
 import styles from './pages.module.css';
 
-const categories = ['player', 'gp', 'ab', 'h', '1b', '2b', '3b', 'r', 'rbi', 'hr', 'avg', 'sb', 'cs', 'bb', 'k', 'rc', 'tb'];
+const categories = [
+    'player',
+    'gp',
+    'ab',
+    'h',
+    '1b',
+    '2b',
+    '3b',
+    'r',
+    'rbi',
+    'hr',
+    'avg',
+    'sb',
+    'cs',
+    'bb',
+    'k',
+    'rc',
+    'tb',
+];
 
 class Stats extends React.Component {
     constructor(props) {
@@ -19,22 +37,24 @@ class Stats extends React.Component {
     }
 
     async componentDidMount() {
-        await API.graphql(graphqlOperation(listGameStatss)).then(response => {
-            let playerStats = [];
-            
-            response.data.listGameStatss.items
-                .filter(game => game.year === '2018') 
-                .forEach((game) => {
-                    const updatedStats = apiService.filterPlayerStats(game, playerStats);
-                    playerStats = Array.from(updatedStats.values());
-                });
-            
-            this.setState(() => ({ playerStats, noDataFound: playerStats.length < 1 }));
-            apiService.clearMasterList();
-        }).catch(error => {
-            console.log('error', error);
-            throw new Error(error);
-        });
+        await API.graphql(graphqlOperation(listGameStatss))
+            .then((response) => {
+                let playerStats = [];
+
+                response.data.listGameStatss.items
+                    .filter((game) => game.year === '2018')
+                    .forEach((game) => {
+                        const updatedStats = apiService.filterPlayerStats(game, playerStats);
+                        playerStats = Array.from(updatedStats.values());
+                    });
+
+                this.setState(() => ({ playerStats, noDataFound: playerStats.length < 1 }));
+                apiService.clearMasterList();
+            })
+            .catch((error) => {
+                console.log('error', error);
+                throw new Error(error);
+            });
     }
 
     render() {
@@ -53,11 +73,11 @@ class Stats extends React.Component {
         return (
             <>
                 <Layout className={styles.adminPage}>
-                    <StatsTable 
+                    <StatsTable
                         categories={categories}
-                        players={playerStats} 
+                        players={playerStats}
                         sortMethod={Utils.sortHighToLow}
-                        style={style} 
+                        style={style}
                     />
                 </Layout>
             </>
