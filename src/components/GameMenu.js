@@ -5,8 +5,8 @@ import 'antd/dist/antd.css';
 import componentStyles from './components.module.css';
 
 const sideMenuStyle = {
-    width: 250,
-    height: 400,
+    // width: 250,
+    // height: 400,
     border: '1px solid rgba(0, 0, 0, .1)',
 };
 
@@ -20,7 +20,7 @@ const menuItemStyle = {
     whiteSpace: 'normal',
 };
 
-class AdminSideMenu extends React.Component {
+class GameMenu extends React.Component {
     handleGameSelection = (e) => {
         this.props.onGameSelection(e.key);
     };
@@ -30,8 +30,8 @@ class AdminSideMenu extends React.Component {
 
         if (selectedGame) {
             return (
-                <Menu style={sideMenuStyle} defaultSelectedKeys={[selectedGame]} mode="inline">
-                    {games.map((game, i) => {
+                <Menu style={sideMenuStyle} defaultSelectedKeys={[selectedGame]} mode="horizontal">
+                    {games.map((game) => {
                         return (
                             <Menu.Item
                                 key={game.gameId}
@@ -53,14 +53,14 @@ class AdminSideMenu extends React.Component {
     }
 }
 
-AdminSideMenu.propTypes = {
+GameMenu.propTypes = {
     games: PropTypes.array,
     onGameSelection: PropTypes.func,
     selectedGame: PropTypes.string,
 };
 
-AdminSideMenu.defaultProps = {
+GameMenu.defaultProps = {
     games: [],
 };
 
-export default AdminSideMenu;
+export default GameMenu;

@@ -1,8 +1,11 @@
 .admin-page {
     display: flex;
+    flex-direction: column;
     max-width: 100%;
+    flex: 1 0 1050px;
     margin: 0 6.0875rem;
     padding: 0 1.0875rem 1.45rem;
+    box-sizing: border-box;
 }
 
 .admin-page-success {

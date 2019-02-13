@@ -4,7 +4,7 @@ import { withAuthenticator, SignIn, Greetings } from 'aws-amplify-react';
 import fetchJsonp from 'fetch-jsonp';
 import Layout from '../components/Layout';
 import SuccessImage from '../components/SuccessImage';
-import AdminSideMenu from '../components/AdminSideMenu';
+import GameMenu from '../components/GameMenu';
 import AdminStatsTable from '../components/AdminStatsTable';
 import SortTeams from '../components/SortTeams';
 import { createGameStats } from '../graphql/mutations';
@@ -176,7 +176,7 @@ class Admin extends React.Component {
         return (
             <>
                 <Layout className={styles.adminPage}>
-                    <AdminSideMenu
+                    <GameMenu
                         games={games}
                         selectedGame={selectedGameId}
                         onGameSelection={this.handleSelectGame}

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Transfer } from 'antd';
+import { Transfer } from 'antd';
 import componentStyles from './components.module.css';
 import 'antd/dist/antd.css';
 
@@ -8,6 +8,18 @@ const locale = {
     itemUnit: 'Player',
     itemsUnit: 'Players',
     notFoundContent: 'No losers yet',
+};
+
+const transferBoxStyle = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '1.45rem',
+};
+
+const listStyle = {
+    width: '47%',
+    height: 500,
 };
 
 const setPlayerList = (players = []) => {
@@ -51,7 +63,7 @@ class SortTeams extends Component {
         const { players, targetKeys } = this.state;
         const losers = players.filter((p, i) => targetKeys.includes(i.toString()));
         const winners = players.filter((p, i) => !targetKeys.includes(i.toString()));
-
+        
         this.props.setTeams(winners, losers);
     };
 
@@ -66,20 +78,17 @@ class SortTeams extends Component {
                     onChange={this.handleChange}
                     render={(item) => `${item.name}`}
                     locale={locale}
+                    style={transferBoxStyle}
                     targetKeys={targetKeys}
                     titles={teamTitles}
-                    listStyle={{
-                        width: '47%',
-                        height: 500,
-                    }}
+                    listStyle={listStyle}
                 />
-                <Button
-                    size="small"
-                    style={{ float: 'right', margin: 5 }}
+                <p
+                    className={componentStyles.setTeams}
                     onClick={this.submitList}
                 >
-                    Set teams
-                </Button>
+                    SET TEAMS
+                </p>
             </div>
         );
     }

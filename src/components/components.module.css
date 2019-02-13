@@ -1,3 +1,7 @@
+:root {
+    --primary-color: #1890ff;
+}
+
 /* HEADER */
 .header-container {
     background-color: rebeccapurple;
@@ -30,8 +34,23 @@
 }
 
 .team-transfer-box {
+    position: relative;
     width: 100%;
-    margin: 0 0 0 3rem;
+    margin-top: 1.45rem;
+}
+
+.set-teams {
+    position: absolute;
+    display: inline-block;
+    right: 0;
+    font-size: 2rem;
+    font-weight: bold;
+    transition: color 150ms ease-in-out;
+}
+
+.set-teams:hover {
+    color: var(--primary-color);
+    cursor: pointer;
 }
 
 .admin-stats-table {
