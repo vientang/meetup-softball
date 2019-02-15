@@ -45,24 +45,39 @@ class Admin extends React.Component {
             .then((response) => response.json())
             .then((result) => {
                 result.data.forEach((game, i) => {
+                    const {
+                        id,
+                        local_date,
+                        local_time,
+                        time,
+                        venue,
+                        waitlist_count,
+                        yes_rsvp_count,
+                    } = game;
+
                     if (i === 0) {
-                        lastGameRecorded = new Date(game.time);
+                        lastGameRecorded = new Date(time);
                     }
-                    const gameDate = new Date(game.time).toDateString();
-                    const [year, month] = game.local_date.split('-');
+
+                    const gameDate = new Date(time).toDateString();
+                    const [year, month] = local_date.split('-');
+                    const { lat, lon, name } = venue;
                     const gameId = game.name.split(' ')[1];
 
                     const newGame = {};
-                    newGame.meetupId = game.id;
+                    newGame.meetupId = id;
                     newGame.name = game.name;
                     newGame.gameId = gameId;
                     newGame.date = gameDate;
-                    newGame.time = game.local_time;
+                    newGame.time = local_time;
                     newGame.year = year;
                     newGame.month = month;
-                    newGame.field = game.venue.name;
-                    newGame.rsvps = game.yes_rsvp_count;
-                    newGame.timeStamp = game.time;
+                    newGame.field = name;
+                    newGame.rsvps = yes_rsvp_count;
+                    newGame.timeStamp = time;
+                    newGame.waitListCount = waitlist_count;
+                    newGame.lat = lat;
+                    newGame.lon = lon;
 
                     games.push(newGame);
                 });
@@ -71,10 +86,8 @@ class Admin extends React.Component {
                 throw new Error(error);
             });
 
-        const sortedGames = games.sort((a, b) => {
-            return new Date(a.timeStamp) - new Date(b.timeStamp);
-        });
-        console.log('games', sortedGames);
+        // sort games by time for GamesMenu
+        games.sort((a, b) => new Date(a.timeStamp) - new Date(b.timeStamp));
 
         const currentGame = games[0];
 
