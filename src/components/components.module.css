@@ -2,6 +2,12 @@
     --primary-color: #1890ff;
 }
 
+.header,
+.admin-form,
+.admin-stats-table {
+    display: flex;
+}
+
 /* HEADER */
 .header-container {
     background-color: rebeccapurple;
@@ -9,7 +15,6 @@
 }
 
 .header {
-    display: flex;
     justify-content: space-between;
     margin: 0 6.0875rem;
     max-width: 100%;
@@ -27,7 +32,6 @@
 
 /* ADMIN FORM */
 .admin-form {
-    display: flex;
     justify-content: space-between;
     flex-wrap: nowrap;
     width: 100%;
@@ -54,10 +58,9 @@
 }
 
 .admin-stats-table {
-    display: flex;
     flex-direction: column;
     width: 100%;
-    margin-left: 3rem;
+    margin-top: 1.45rem;
 }
 
 .stats-table {

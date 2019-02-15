@@ -12,8 +12,7 @@ import { listPlayerStatss } from '../graphql/queries';
 import { Utils, apiService } from '../utils';
 import styles from './pages.module.css';
 
-const GAMES_URL =
-    'https://api.meetup.com/San-Francisco-Softball-Players/events?&sign=true&photo-host=public&status=past&desc=true&page=5';
+const { GAMES_URL } = process.env;
 
 class Admin extends React.Component {
     constructor(props) {
@@ -50,25 +49,32 @@ class Admin extends React.Component {
                         lastGameRecorded = new Date(game.time);
                     }
                     const gameDate = new Date(game.time).toDateString();
-                    const dates = game.local_date.split('-');
+                    const [year, month] = game.local_date.split('-');
                     const gameId = game.name.split(' ')[1];
+
                     const newGame = {};
                     newGame.meetupId = game.id;
                     newGame.name = game.name;
                     newGame.gameId = gameId;
                     newGame.date = gameDate;
                     newGame.time = game.local_time;
-                    newGame.year = dates[0];
-                    newGame.month = dates[1];
+                    newGame.year = year;
+                    newGame.month = month;
                     newGame.field = game.venue.name;
                     newGame.rsvps = game.yes_rsvp_count;
+                    newGame.timeStamp = game.time;
 
                     games.push(newGame);
                 });
             })
             .catch((error) => {
-                console.log('meetup games request error', error);
+                throw new Error(error);
             });
+
+        const sortedGames = games.sort((a, b) => {
+            return new Date(a.timeStamp) - new Date(b.timeStamp);
+        });
+        console.log('games', sortedGames);
 
         const currentGame = games[0];
 
@@ -82,7 +88,7 @@ class Admin extends React.Component {
                 players = result.results.map((player) => Utils.createPlayer(player));
             })
             .catch((error) => {
-                console.log('meetup player request error', error);
+                throw new Error(error);
             });
 
         currentGame.players = players;
@@ -98,13 +104,13 @@ class Admin extends React.Component {
                     this.setState(() => ({
                         currentGame,
                         existingPlayerStats: players,
-                        games: [currentGame],
-                        selectedGameId: currentGame.gameId,
+                        games: games.slice(0, 2),
+                        selectedGameId: currentGame.meetupId,
                         lastGameRecorded,
                     }));
                 })
                 .catch((error) => {
-                    console.log('player query error', error);
+                    throw new Error(error);
                 });
         }
     }
@@ -128,7 +134,7 @@ class Admin extends React.Component {
 
             return {
                 areTeamsSet: false,
-                finishedStatEntry: currentGame ? false : true,
+                finishedStatEntry: !!currentGame,
                 selectedGame: currentGame ? currentGame.gameId : '',
                 currentGame,
                 games,
@@ -139,7 +145,8 @@ class Admin extends React.Component {
     /**
      * Toggle players between the games
      */
-    handleSelectGame = (selectedGameId) => {
+    handleSelectGame = (e) => {
+        const selectedGameId = e.key;
         this.setState((prevState) => {
             const currentGame = prevState.games.find((game) => game.gameId === selectedGameId);
             return {

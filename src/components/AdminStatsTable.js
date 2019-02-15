@@ -7,6 +7,7 @@ import componentStyles from './components.module.css';
 import 'react-table/react-table.css';
 
 const categories = [
+    'order',
     'player',
     'o',
     '1b',
