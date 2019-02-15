@@ -13,6 +13,9 @@ const Header = () => ({ siteTitle }) => (
             <Link to="/stats" className={componentStyles.siteTitle}>
                 Stats
             </Link>
+            <Link to="/leaderboard" className={componentStyles.siteTitle}>
+                Leaderboard
+            </Link>
             <Link to="/admin" className={componentStyles.siteTitle}>
                 Admin
             </Link>
