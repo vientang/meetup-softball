@@ -24,22 +24,33 @@ class StatsTable extends React.Component {
     renderColumns = () => {
         const { categories, cellRenderer, sortMethod } = this.props;
 
-        const columns = categories.map((category) => {
+        const columns = categories.map((category, i) => {
+            const isBattingOrder = category === 'order';
             const isPlayerCat = category === 'player';
-
-            const column = {
-                Header: isPlayerCat ? 'Player' : category.toUpperCase(),
-                accessor: category === 'player' ? 'name' : category,
-                sortMethod,
-                maxWidth: isPlayerCat ? 180 : 60,
-                width: isPlayerCat ? 180 : 60,
-            };
-
-            if (cellRenderer) {
-                column.Cell = cellRenderer;
+            let header = category.toUpperCase();
+            let width = 60;
+            let maxWidth = 60;
+            
+            if (isPlayerCat) {
+                header = 'Player';
+                width = 180;
+                maxWidth = 180;
             }
 
-            return column;
+            if (isBattingOrder) {
+                header = '';
+                width = 40;
+                maxWidth = 40;
+            }
+
+            return {
+                Header: header,
+                Cell: isBattingOrder ? i : cellRenderer,
+                accessor: category === 'player' ? 'name' : category,
+                sortMethod,
+                maxWidth,
+                width,
+            };
         });
         return columns;
     };

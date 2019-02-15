@@ -13,6 +13,7 @@ const createPlayer = (player) => {
         hr: null,
         k: null,
         meetupId: player.member.member_id,
+        photos: player.member_photo,
         name: player.member.name,
         o: null,
         r: null,
