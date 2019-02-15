@@ -99,6 +99,8 @@ class Admin extends React.Component {
             .then((response) => response.json())
             .then((result) => {
                 players = result.results.map((player) => Utils.createPlayer(player));
+                console.log('players', result);
+                
             })
             .catch((error) => {
                 throw new Error(error);
