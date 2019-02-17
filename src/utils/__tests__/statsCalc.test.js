@@ -1,13 +1,17 @@
+/* eslint-disable no-undef */
 import statsCalc from '../statsCalc';
+
 const {
-    getHits,
     getAtBats,
-    getRunsCreated,
-    getTotalBases,
     getAverage,
+    getHits,
     getOnBasePercentage,
-    getSlugging,
     getOPS,
+    getRunsCreated,
+    getSlugging,
+    getTeamRunsScored,
+    getTeamTotalHits,
+    getTotalBases,
     getWOBA,
 } = statsCalc;
 
@@ -62,5 +66,22 @@ describe('Stats calculations', () => {
     it('calculate wOBA', () => {
         expect(getWOBA(1, 1, 1, 1, 1, 4, 1)).toBe(1.094);
         expect(getWOBA(0, 0, 0, 0, 0, 0, 0)).toBe(0.0);
+    });
+
+    it('calculate total team runs scored', () => {
+        const players = [{ r: '1' }, { r: '1' }, { r: '1' }];
+        expect(getTeamRunsScored(players)).toBe(3);
+        expect(getTeamRunsScored([...players, { r: null }])).toBe(3);
+    });
+
+    it('calculate total team hits', () => {
+        const players = [
+            { singles: '1', doubles: '1', triples: '1', hr: '1' },
+            { singles: '1', doubles: '1', triples: '1', hr: '1' },
+        ];
+        expect(getTeamTotalHits(players)).toBe(8);
+
+        players.push({ singles: null, doubles: 0, triples: undefined, hr: '' });
+        expect(getTeamTotalHits(players)).toBe(8);
     });
 });

@@ -1,15 +1,54 @@
 import get from 'lodash/get';
+import pick from 'lodash/pick';
 import transform from 'lodash/transform';
 import statsCalc from './statsCalc';
 
-/**
- * LIST OF PLAYER STATS
- * HOLDS ALL OF THE RESOLVED STATS BASED ON A SPECIFIC FILTER
- */
-const masterList = new Map();
-const clearMasterList = () => {
-    masterList.clear();
-};
+const {
+    getAtBats,
+    getAverage,
+    getHits,
+    getOnBasePercentage,
+    getOPS,
+    getRunsCreated,
+    getSlugging,
+    getTeamRunsScored,
+    getTeamTotalHits,
+    getTotalBases,
+    getWOBA,
+} = statsCalc;
+
+const stats = [
+    'battingOrder',
+    'bb',
+    'cs',
+    'doubles',
+    'gp',
+    'hr',
+    'k',
+    'l',
+    'o',
+    'r',
+    'rbi',
+    'sac',
+    'sb',
+    'singles',
+    'triples',
+    'w',
+];
+
+const gameProperties = [
+    'date',
+    'field',
+    'lat',
+    'lon',
+    'month',
+    'name',
+    'time',
+    'timeStamp',
+    'tournamentName',
+    'year',
+];
+
 const ignoreKeystoTransform = [
     'id',
     'meetupId',
@@ -25,6 +64,15 @@ const ignoreKeystoTransform = [
     'slg',
     'woba',
 ];
+
+/**
+ * LIST OF PLAYER STATS
+ * HOLDS ALL OF THE RESOLVED STATS BASED ON A SPECIFIC FILTER
+ */
+const masterList = new Map();
+const clearMasterList = () => {
+    masterList.clear();
+};
 
 /**
  * Stringify values and combine into one object
@@ -46,7 +94,7 @@ const combineDerivedStats = (adminStats, derivedStats) => {
  * @return {Object} updated stats for an individual player
  */
 const mergePlayerStatsForView = (existingStats = {}, currentStats) => {
-    const stats = {
+    const countingStats = {
         first: Number(currentStats['1b']),
         second: Number(currentStats['2b']),
         third: Number(currentStats['3b']),
@@ -58,22 +106,22 @@ const mergePlayerStatsForView = (existingStats = {}, currentStats) => {
         sac: Number(currentStats.sac),
     };
 
-    const { bb, cs, first, second, sb, third, hr, o, sac } = stats;
+    const { bb, cs, first, second, sb, third, hr, o, sac } = countingStats;
     // only add existing stats if it's there
     // otherwise, we'll get NaN
-    let hits = statsCalc.getHits(first, second, third, hr);
+    let hits = getHits(first, second, third, hr);
     if (existingStats.h) {
         hits += Number(existingStats.h);
     }
 
-    let atBats = statsCalc.getAtBats(hits, o);
+    let atBats = getAtBats(hits, o);
     if (existingStats.ab && Number(get(existingStats, 'ab')) > 0) {
         atBats += Number(get(existingStats, 'ab'));
     }
 
-    const avg = statsCalc.getAverage(hits, atBats);
+    const avg = getAverage(hits, atBats);
 
-    let totalBases = statsCalc.getTotalBases(first, second, third, hr);
+    let totalBases = getTotalBases(first, second, third, hr);
     if (Number(get(existingStats, 'tb'))) {
         totalBases += Number(get(existingStats, 'tb'));
     }
@@ -81,7 +129,7 @@ const mergePlayerStatsForView = (existingStats = {}, currentStats) => {
     const walks = bb + Number(existingStats.bb);
     const stolenBases = sb + Number(existingStats.sb);
     const caughtStealing = cs + Number(existingStats.cs);
-    const runsCreated = statsCalc.getRunsCreated(
+    const runsCreated = getRunsCreated(
         hits,
         walks,
         caughtStealing,
@@ -90,10 +138,10 @@ const mergePlayerStatsForView = (existingStats = {}, currentStats) => {
         atBats,
     );
 
-    const onBasePercentage = statsCalc.getOnBasePercentage(hits, bb, atBats, sac);
-    const slugging = statsCalc.getSlugging(totalBases, atBats);
-    const onBasePlusSlugging = statsCalc.getOPS(onBasePercentage, slugging);
-    const weightedOnBaseAverage = statsCalc.getWOBA(bb, first, second, third, hr, atBats, sac);
+    const onBasePercentage = getOnBasePercentage(hits, bb, atBats, sac);
+    const slugging = getSlugging(totalBases, atBats);
+    const onBasePlusSlugging = getOPS(onBasePercentage, slugging);
+    const weightedOnBaseAverage = getWOBA(bb, first, second, third, hr, atBats, sac);
 
     const transformStats = (result, value, key) => {
         /* eslint-disable no-param-reassign */
@@ -111,13 +159,13 @@ const mergePlayerStatsForView = (existingStats = {}, currentStats) => {
     return combineDerivedStats(updatedStats, {
         h: hits,
         ab: atBats,
-        avg,
         tb: totalBases,
         rc: runsCreated,
         obp: onBasePercentage,
         slg: slugging,
         ops: onBasePlusSlugging,
         woba: weightedOnBaseAverage,
+        avg,
     });
 };
 
@@ -127,7 +175,7 @@ const mergePlayerStatsForView = (existingStats = {}, currentStats) => {
  */
 const updateEntries = (gamePlayers, allPlayers) => {
     gamePlayers.forEach((player) => {
-        const stats = {
+        const countingStats = {
             first: Number(player['1b']),
             second: Number(player['2b']),
             third: Number(player['3b']),
@@ -145,17 +193,17 @@ const updateEntries = (gamePlayers, allPlayers) => {
             const newStats = mergePlayerStatsForView(existingStats, player);
             masterList.set(player.name, newStats);
         } else {
-            const { bb, cs, first, second, sb, third, hr, o, sac } = stats;
+            const { bb, cs, first, second, sb, third, hr, o, sac } = countingStats;
 
-            const h = statsCalc.getHits(first, second, third, hr);
-            const ab = statsCalc.getAtBats(h, o);
-            const avg = statsCalc.getAverage(h, ab);
-            const tb = statsCalc.getTotalBases(first, second, third, hr);
-            const rc = statsCalc.getRunsCreated(h, bb, cs, tb, sb, ab);
-            const obp = statsCalc.getOnBasePercentage(h, bb, ab, sac);
-            const slg = statsCalc.getSlugging(tb, ab);
-            const ops = statsCalc.getOPS(obp, slg);
-            const woba = statsCalc.getWOBA(bb, first, second, third, hr, ab, sac);
+            const h = getHits(first, second, third, hr);
+            const ab = getAtBats(h, o);
+            const avg = getAverage(h, ab);
+            const tb = getTotalBases(first, second, third, hr);
+            const rc = getRunsCreated(h, bb, cs, tb, sb, ab);
+            const obp = getOnBasePercentage(h, bb, ab, sac);
+            const slg = getSlugging(tb, ab);
+            const ops = getOPS(obp, slg);
+            const woba = getWOBA(bb, first, second, third, hr, ab, sac);
 
             const playerStats = combineDerivedStats(player, {
                 h,
@@ -204,159 +252,26 @@ const addDerivedStats = (players, winner) =>
     });
 
 /**
- * PLAYERSTATS Adaptor to merge current player stats into existing player stats
- * @param {Array} existingStats - existing player stats from meetup api
- * @param {Array} currentStats - player stats from current game
- * @return {Object} updatedPlayerStats
- */
-const mergeAndSavePlayerStats = (existingPlayerStats, currentPlayerStats) => {
-    const ignoreKeys = ['id', 'meetupId', 'name', 'avg', 'h', 'ab', 'tb', 'rc'];
-
-    return currentPlayerStats.map((player, i) => {
-        let hits = statsCalc.getHits(
-            Number(player.singles),
-            Number(player.doubles),
-            Number(player.triples),
-            Number(player.hr),
-        );
-        if (existingPlayerStats[i].h) {
-            hits += Number(get(existingPlayerStats[i], 'h'));
-        }
-
-        let atBats = statsCalc.getAtBats(hits, Number(player['o']));
-        if (existingPlayerStats[i].ab) {
-            atBats += Number(get(existingPlayerStats[i], 'ab'));
-        }
-
-        let totalBases = statsCalc.getTotalBases(
-            Number(player.singles),
-            Number(player.doubles),
-            Number(player.triples),
-            Number(player.hr),
-        );
-        if (existingPlayerStats[i].tb) {
-            totalBases += Number(get(existingPlayerStats[i], 'tb'));
-        }
-
-        let bb = Number(player.bb);
-        if (existingPlayerStats[i].bb) {
-            bb += Number(existingPlayerStats[i].bb);
-        }
-
-        let sb = Number(player.sb);
-        if (existingPlayerStats[i].sb) {
-            sb += Number(existingPlayerStats[i].sb);
-        }
-
-        let cs = Number(player.cs);
-        if (existingPlayerStats[i].cs) {
-            cs += Number(existingPlayerStats[i].cs);
-        }
-
-        let w = Number(player.w);
-        if (existingPlayerStats[i].w) {
-            w += Number(existingPlayerStats[i].w);
-        }
-
-        let l = Number(player.l);
-        if (existingPlayerStats[i].l) {
-            l += Number(existingPlayerStats[i].l);
-        }
-
-        let gp = Number(player.gp);
-        if (existingPlayerStats[i].gp) {
-            gp += Number(existingPlayerStats[i].gp);
-        }
-
-        const runsCreated = statsCalc.getRunsCreated(hits, bb, cs, totalBases, sb, atBats);
-        const avg = statsCalc.getAverage(hits, atBats);
-
-        const onBasePercentage = statsCalc.getOnBasePercentage(
-            hits,
-            Number(player.bb),
-            atBats,
-            Number(player.sac),
-        );
-
-        const slugging = statsCalc.getSlugging(totalBases, atBats);
-        const onBasePlusSlugging = statsCalc.getOPS(onBasePercentage, slugging);
-        const weightedOnBaseAverage = statsCalc.getWOBA(
-            Number(player.bb),
-            Number(player.singles),
-            Number(player.doubles),
-            Number(player.triples),
-            Number(player.hr),
-            atBats,
-            Number(player.sac),
-        );
-
-        const transformStats = (result, value, key) => {
-            /* eslint-disable no-param-reassign */
-            if (ignoreKeys.includes(key)) {
-                result[key] = value;
-            } else {
-                result[key] = Number(value);
-                if (existingPlayerStats[i][key]) {
-                    result[key] += Number(existingPlayerStats[i][key]);
-                }
-                result[key] = result[key].toString();
-            }
-        };
-
-        const updatedStats = transform(player, transformStats, {});
-
-        updatedStats.h = hits.toString();
-        updatedStats.ab = atBats.toString();
-        updatedStats.tb = totalBases.toString();
-        updatedStats.rc = runsCreated.toString();
-        updatedStats.avg = avg.toString();
-        updatedStats.obp = onBasePercentage.toString();
-        updatedStats.slg = slugging.toString();
-        updatedStats.ops = onBasePlusSlugging.toString();
-        updatedStats.woba = weightedOnBaseAverage.toString();
-
-        return updatedStats;
-    });
-};
-
-const updateMergedPlayerStats = (existingPlayerStats, w, l) => {
-    const winners = addDerivedStats(w, true);
-    const losers = addDerivedStats(l);
-    const currentPlayerStats = winners.concat(losers);
-    return mergeAndSavePlayerStats(existingPlayerStats, currentPlayerStats);
-};
-
-/**
  * GAMESTATS Adaptor to combine data from meetup and current game stats
  * @param {Array} meetupData - data from meetup api
  * @param {Array} currentStats - all player stats from current game
  * @return {Object} currentGameStats
  */
 const mergeGameStats = (meetupData, w, l) => {
-    const currentGameStats = {};
+    const currentGameStats = { ...meetupData };
     const winningTeam = addDerivedStats(w, true);
     const losingTeam = addDerivedStats(l);
 
-    if (meetupData) {
-        currentGameStats.meetupId = meetupData.meetupId;
-        currentGameStats.date = meetupData.date;
-        currentGameStats.gameId = meetupData.gameId; // "Game 235 @???";
-        currentGameStats.year = meetupData.year;
-        currentGameStats.month = meetupData.month;
-        currentGameStats.name = meetupData.name;
-        currentGameStats.field = meetupData.field;
-        currentGameStats.tournamentName = meetupData.tournamentName;
-    }
-
-    // currentGameStats.tournamentName = currentStats.tournamentName;
     const winners = {
         name: 'Winners', // swap with data from the admin
-        homeField: true, // swap with data from the admin
+        runsScored: getTeamRunsScored(winningTeam),
+        totalHits: getTeamTotalHits(winningTeam),
         players: winningTeam,
     };
     const losers = {
         name: 'Losers', // swap with data from the admin
-        homeField: false, // swap with data from the admin
+        runsScored: getTeamRunsScored(losingTeam),
+        totalHits: getTeamTotalHits(losingTeam),
         players: losingTeam,
     };
 
@@ -367,16 +282,35 @@ const mergeGameStats = (meetupData, w, l) => {
 };
 
 /**
- * Merge all players, winners and losers, into one list
- * @param {Object} gameStats
- * @return {Array} winners and losers
+ * Create a game log for each player
+ * @param {*} players
+ * @param {*} currentGameStats
  */
-const mergeAllCurrentPlayers = (gameStats) => {
-    const gameWinners = JSON.parse(gameStats.winners);
-    const gameLosers = JSON.parse(gameStats.losers);
+const createPlayerGameLog = (players, currentGameStats) => {
+    return players.map((player) => {
+        const gameStats = pick(player, stats);
+        const playerStats = {};
+        playerStats.name = player.name;
+        playerStats.meetupId = player.meetupId;
+        playerStats.photos = player.photos;
+        playerStats.games = [];
+        playerStats.games.push({ ...currentGameStats, ...gameStats });
+        return playerStats;
+    });
+};
 
-    const winners = addDerivedStats(gameWinners.players, true);
-    const losers = addDerivedStats(gameLosers.players, false);
+/**
+ * PLAYERSTATS Adaptor to combine data from meetup and current game stats
+ * @param {Array} currentGame - data from meetup api
+ * @param {Array} currentStats - all player stats from current game
+ * @return {Object} currentGameStats
+ */
+const mergePlayerStats = (currentGame, w, l) => {
+    const currentGameStats = pick(currentGame, gameProperties);
+    const winningTeam = addDerivedStats(w, true);
+    const winners = createPlayerGameLog(winningTeam, currentGameStats);
+    const losingTeam = addDerivedStats(l);
+    const losers = createPlayerGameLog(losingTeam, currentGameStats);
 
     return winners.concat(losers);
 };
@@ -385,8 +319,6 @@ export default {
     addDerivedStats,
     clearMasterList,
     filterPlayerStats,
-    mergeAllCurrentPlayers,
-    mergeAndSavePlayerStats,
     mergeGameStats,
-    updateMergedPlayerStats,
+    mergePlayerStats,
 };

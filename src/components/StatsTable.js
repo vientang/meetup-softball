@@ -24,13 +24,13 @@ class StatsTable extends React.Component {
     renderColumns = () => {
         const { categories, cellRenderer, sortMethod } = this.props;
 
-        const columns = categories.map((category, i) => {
-            const isBattingOrder = category === 'order';
+        const columns = categories.map((category) => {
+            const isBattingOrder = category === 'battingOrder';
             const isPlayerCat = category === 'player';
             let header = category.toUpperCase();
             let width = 60;
             let maxWidth = 60;
-            
+
             if (isPlayerCat) {
                 header = 'Player';
                 width = 180;
@@ -45,7 +45,7 @@ class StatsTable extends React.Component {
 
             return {
                 Header: header,
-                Cell: isBattingOrder ? i : cellRenderer,
+                Cell: cellRenderer,
                 accessor: category === 'player' ? 'name' : category,
                 sortMethod,
                 maxWidth,
@@ -80,11 +80,12 @@ class StatsTable extends React.Component {
 }
 
 StatsTable.propTypes = {
-    categories: PropTypes.array,
+    categories: PropTypes.arrayOf(PropTypes.string),
     cellRenderer: PropTypes.func,
-    players: PropTypes.array,
+    players: PropTypes.arrayOf(PropTypes.object),
     showPagination: PropTypes.bool,
     sortMethod: PropTypes.func,
+    style: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
 };
 
 StatsTable.defaultProps = {

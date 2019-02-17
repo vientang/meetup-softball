@@ -20,7 +20,6 @@ class Admin extends React.Component {
         this.state = {
             areTeamsSet: false,
             currentGame: {},
-            dataSubmitted: false,
             existingPlayerStats: [],
             finishedStatEntry: false,
             games: [],
@@ -65,19 +64,20 @@ class Admin extends React.Component {
                     const gameId = game.name.split(' ')[1];
 
                     const newGame = {};
-                    newGame.meetupId = id;
-                    newGame.name = game.name;
-                    newGame.gameId = gameId;
                     newGame.date = gameDate;
-                    newGame.time = local_time;
-                    newGame.year = year;
-                    newGame.month = month;
                     newGame.field = name;
-                    newGame.rsvps = yes_rsvp_count;
-                    newGame.timeStamp = time;
-                    newGame.waitListCount = waitlist_count;
+                    newGame.gameId = gameId;
                     newGame.lat = lat;
                     newGame.lon = lon;
+                    newGame.meetupId = id;
+                    newGame.month = month;
+                    newGame.name = game.name;
+                    newGame.rsvps = yes_rsvp_count;
+                    newGame.time = local_time;
+                    newGame.timeStamp = time;
+                    newGame.tournamentName = game.name;
+                    newGame.waitListCount = waitlist_count;
+                    newGame.year = year;
 
                     games.push(newGame);
                 });
@@ -99,8 +99,6 @@ class Admin extends React.Component {
             .then((response) => response.json())
             .then((result) => {
                 players = result.results.map((player) => Utils.createPlayer(player));
-                console.log('players', result);
-                
             })
             .catch((error) => {
                 throw new Error(error);
@@ -134,14 +132,13 @@ class Admin extends React.Component {
      * Submit updated stats to PlayerStats, GameStats and Metadata tables
      */
     handleSubmitData = async (winners, losers, selectedGameId) => {
-        // const playerStats = apiService.updateMergedPlayerStats(existingStats, winners, losers);
+        const players = await apiService.mergePlayerStats(this.state.currentGame, winners, losers);
+        const gameStats = await apiService.mergeGameStats(this.state.currentGame, winners, losers);
+
+        // await API.graphql(graphqlOperation(createGameStats, { input: gameStats }));
         // playerStats.forEach(player => {
         //     API.graphql(graphqlOperation(updatePlayerStats, { input: player }));
         // });
-
-        const gameStats = await apiService.mergeGameStats(this.state.currentGame, winners, losers);
-
-        await API.graphql(graphqlOperation(createGameStats, { input: gameStats }));
 
         this.setState((prevState) => {
             const games = prevState.games.filter((game) => game.gameId !== selectedGameId);

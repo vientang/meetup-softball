@@ -7,7 +7,7 @@ import componentStyles from './components.module.css';
 import 'react-table/react-table.css';
 
 const categories = [
-    'order',
+    'battingOrder',
     'player',
     'o',
     '1b',
@@ -76,7 +76,7 @@ class AdminStatsTable extends React.Component {
      * @param cellInfo - meta data for each cell
      */
     handleWinnerEntry = (cellInfo) => (e) => {
-        let value = Number(e.key);
+        const value = Number(e.key);
 
         // do not save any values that are not numbers
         if (isNaN(value)) {
@@ -94,7 +94,7 @@ class AdminStatsTable extends React.Component {
      * @param cellInfo - meta data for each cell
      */
     handleLoserEntry = (cellInfo) => (e) => {
-        let value = Number(e.key);
+        const value = Number(e.key);
 
         // do not save any values that are not numbers
         if (isNaN(value)) {
@@ -175,8 +175,8 @@ class AdminStatsTable extends React.Component {
 }
 
 AdminStatsTable.propTypes = {
-    winners: PropTypes.array,
-    losers: PropTypes.array,
+    winners: PropTypes.arrayOf(PropTypes.object),
+    losers: PropTypes.arrayOf(PropTypes.object),
     onSubmit: PropTypes.func,
     selectedGame: PropTypes.string,
 };

@@ -52,7 +52,6 @@ class Stats extends React.Component {
                 apiService.clearMasterList();
             })
             .catch((error) => {
-                console.log('error', error);
                 throw new Error(error);
             });
     }

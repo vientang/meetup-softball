@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Transfer } from 'antd';
+import { Button, Transfer } from 'antd';
 import componentStyles from './components.module.css';
 import 'antd/dist/antd.css';
 
@@ -59,11 +59,25 @@ class SortTeams extends Component {
         this.setState(() => ({ targetKeys }));
     };
 
+    filterPlayers = (players, targetKeys, winners) => {
+        return players
+            .filter((p, i) => {
+                return winners
+                    ? !targetKeys.includes(i.toString())
+                    : targetKeys.includes(i.toString());
+            })
+            .map((p, i) => {
+                const player = { ...p };
+                player.battingOrder = (i + 1).toString();
+                return player;
+            });
+    };
+
     submitList = () => {
         const { players, targetKeys } = this.state;
-        const losers = players.filter((p, i) => targetKeys.includes(i.toString()));
-        const winners = players.filter((p, i) => !targetKeys.includes(i.toString()));
-        
+        const losers = this.filterPlayers(players, targetKeys, false);
+        const winners = this.filterPlayers(players, targetKeys, true);
+
         this.props.setTeams(winners, losers);
     };
 
@@ -83,12 +97,13 @@ class SortTeams extends Component {
                     titles={teamTitles}
                     listStyle={listStyle}
                 />
-                <p
+                <Button
+                    type="primary"
                     className={componentStyles.setTeams}
                     onClick={this.submitList}
                 >
                     SET TEAMS
-                </p>
+                </Button>
             </div>
         );
     }
@@ -102,7 +117,8 @@ SortTeams.propTypes = {
         time: PropTypes.string,
         players: PropTypes.array,
     }),
-    teamTitles: PropTypes.array,
+    setTeams: PropTypes.func,
+    teamTitles: PropTypes.arrayOf(PropTypes.string),
 };
 
 SortTeams.defaultProps = {

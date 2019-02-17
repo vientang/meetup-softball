@@ -63,14 +63,33 @@ const getWOBA = (walks, singles, doubles, triples, homeRuns, atBats, sacrifices)
     return Number(`${Math.round(`${calcHits / plateApp}e+3`)}e-3`);
 };
 
+const getTeamRunsScored = (players) => {
+    return players.reduce((total, player) => {
+        return total + Number(player.r);
+    }, 0);
+};
+
+const getTeamTotalHits = (players) => {
+    return players.reduce((total, player) => {
+        const { singles, doubles, triples, hr } = player;
+        const sing = Number(singles) || 0;
+        const doub = Number(doubles) || 0;
+        const trip = Number(triples) || 0;
+        const homeRuns = Number(hr) || 0;
+        return total + getHits(sing, doub, trip, homeRuns);
+    }, 0);
+};
+
 export default {
-    getHits,
     getAtBats,
-    getTotalBases,
-    getRunsCreated,
     getAverage,
+    getHits,
     getOnBasePercentage,
-    getSlugging,
     getOPS,
+    getRunsCreated,
+    getSlugging,
+    getTeamRunsScored,
+    getTeamTotalHits,
+    getTotalBases,
     getWOBA,
 };
