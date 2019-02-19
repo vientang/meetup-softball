@@ -33,7 +33,6 @@ First of all, you're going to need to have the following installed to contribute
 - [AWS Amplify CLI](https://aws-amplify.github.io/docs/): `npm install -g @aws-amplify/cli`
 
 
-
 1. Fork the repo
 2. Clone your fork
 3. Create a branch
@@ -42,13 +41,9 @@ First of all, you're going to need to have the following installed to contribute
 You'll need some configuration for Amplify to work in your project. This file is ignored in the the checkin process so I'll connect with you about it. Hit me up.
 
 ### Amplify setup
-
-1. Run `amplify configure` to set up local machine with AWS backend [Amplfy Configure Documentation](https://aws-amplify.github.io/docs/cli/init#amplify-configure) 
-2. Run `amplify configure project` 
-3. Run `amplify push`
+AWS Amplify has a different setup for [multi-environment](https://aws-amplify.github.io/docs/cli/multienv?sdk=js) development. Contact me if you'd like to work on the backend part of this project.
 
 ### Project setup
-
 
 1. Run `npm install`
 2. Run `npm run setup`. If everything works, then you're ready to make changes.

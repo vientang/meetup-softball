@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React from 'react';
 import { API, graphqlOperation } from 'aws-amplify';
 import { withAuthenticator, SignIn, Greetings } from 'aws-amplify-react';
@@ -7,12 +8,12 @@ import SuccessImage from '../components/SuccessImage';
 import GameMenu from '../components/GameMenu';
 import AdminStatsTable from '../components/AdminStatsTable';
 import SortTeams from '../components/SortTeams';
-import { createGameStats } from '../graphql/mutations';
+import { createGameStats, updatePlayerStats } from '../graphql/mutations';
 import { listPlayerStatss } from '../graphql/queries';
 import { Utils, apiService } from '../utils';
 import styles from './pages.module.css';
 
-const { GAMES_URL } = process.env;
+const { MEETUP_KEY, GAMES_URL, PLAYER_URL, RSVP_URL } = process.env;
 
 class Admin extends React.Component {
     constructor(props) {
@@ -20,12 +21,10 @@ class Admin extends React.Component {
         this.state = {
             areTeamsSet: false,
             currentGame: {},
-            existingPlayerStats: [],
             finishedStatEntry: false,
             games: [],
-            lastGameRecorded: null, // used to prevent over fetching games
             losers: [],
-            selectedGame: '',
+            selectedGameId: '',
             selectedPlayers: [],
             winners: [],
         };
@@ -40,6 +39,8 @@ class Admin extends React.Component {
         const games = [];
         let players = [];
         let lastGameRecorded = '';
+        const cachedTimeRecord = localStorage.getItem(lastGameRecorded);
+
         await fetchJsonp(GAMES_URL)
             .then((response) => response.json())
             .then((result) => {
@@ -54,8 +55,16 @@ class Admin extends React.Component {
                         yes_rsvp_count,
                     } = game;
 
+                    if (cachedTimeRecord) {
+                        // prevent over fetching games
+                        // get timestamp of last game recorded from GameStats API
+                        // compare time stamps
+                        // break out of loop if cached time record is
+                        // equal to or less than last game recorded
+                    }
+
                     if (i === 0) {
-                        lastGameRecorded = new Date(time);
+                        lastGameRecorded = time;
                     }
 
                     const gameDate = new Date(time).toDateString();
@@ -91,41 +100,39 @@ class Admin extends React.Component {
 
         const currentGame = games[0];
 
-        const PLAYERS_URL = `https://api.meetup.com/2/rsvps?&sign=true&photo-host=public&event_id=${
-            currentGame.meetupId
-        }&page=${currentGame.rsvps}&key=${process.env.MEETUP_KEY}`;
+        // get rsvp's then get player data
+        const RSVPS = `${RSVP_URL}${currentGame.meetupId}&page=${
+            currentGame.rsvps
+        }&key=${MEETUP_KEY}`;
 
-        await fetchJsonp(PLAYERS_URL)
+        let rsvpList = await fetchJsonp(RSVPS)
             .then((response) => response.json())
-            .then((result) => {
-                players = result.results.map((player) => Utils.createPlayer(player));
-            })
+            .then((result) => result.results)
             .catch((error) => {
                 throw new Error(error);
             });
 
-        currentGame.players = players;
-        if (players.length > 0) {
-            API.graphql(graphqlOperation(listPlayerStatss))
-                .then((result) => {
-                    const allPlayers = result.data.listPlayerStatss.items;
-                    const currentPlayers = allPlayers.filter((player) =>
-                        players.some((currPlayer) => player.meetupId === currPlayer.meetupId),
-                    );
-                    // players = currentPlayers.length > 0 ? currentPlayers : players;
+        rsvpList = await rsvpList.map((player) =>
+            fetchJsonp(`${PLAYER_URL}${player.member.member_id}?&sign=true&photo-host=public`)
+                .then((response) => response.json())
+                .then((playerResult) => playerResult),
+        );
 
-                    this.setState(() => ({
-                        currentGame,
-                        existingPlayerStats: players,
-                        games: games.slice(0, 2),
-                        selectedGameId: currentGame.meetupId,
-                        lastGameRecorded,
-                    }));
-                })
-                .catch((error) => {
-                    throw new Error(error);
-                });
-        }
+        players = await Promise.all(rsvpList).then((result) =>
+            result.map((player) => Utils.createPlayer(player)),
+        );
+
+        currentGame.players = players;
+
+        this.setState(() => ({
+            games: games.slice(0, 2),
+            selectedGameId: currentGame.meetupId,
+            currentGame,
+        }));
+    }
+
+    componentWillUnmount() {
+        localStorage.removeItem('lastGameRecorded');
     }
 
     /**
@@ -140,6 +147,8 @@ class Admin extends React.Component {
         //     API.graphql(graphqlOperation(updatePlayerStats, { input: player }));
         // });
 
+        // update local storage cached time record with current game time stamp
+        // localStorage.setItem(lastGameRecorded, this.state.currentGame.time);
         this.setState((prevState) => {
             const games = prevState.games.filter((game) => game.gameId !== selectedGameId);
             const currentGame = games[0];
@@ -147,7 +156,7 @@ class Admin extends React.Component {
             return {
                 areTeamsSet: false,
                 finishedStatEntry: !!currentGame,
-                selectedGame: currentGame ? currentGame.gameId : '',
+                selectedGameId: currentGame ? currentGame.gameId : '',
                 currentGame,
                 games,
             };

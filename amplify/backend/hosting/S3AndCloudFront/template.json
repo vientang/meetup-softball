@@ -6,28 +6,7 @@
             "Type": "AWS::S3::Bucket",
             "DeletionPolicy": "Retain",
             "Properties": {
-                "BucketName": {
-                    "Fn::If": [
-                        "ShouldNotCreateEnvResources",
-                        {
-                            "Ref": "bucketName"
-                        },
-                        {
-                            "Fn::Join": [
-                                "",
-                                [
-                                    {
-                                        "Ref": "bucketName"
-                                    },
-                                    "-",
-                                    {
-                                        "Ref": "env"
-                                    }
-                                ]
-                            ]
-                        }
-                    ]
-                },
+                "BucketName": "meetupsoftball-20190217180444-hostingbucket",
                 "AccessControl": "PublicRead",
                 "WebsiteConfiguration": {
                     "IndexDocument": "index.html",
@@ -122,24 +101,6 @@
                 ]
             },
             "Description": "Name of S3 bucket to hold website content"
-        }
-    },
-    "Parameters": {
-        "env": {
-            "Type": "String"
-        },
-        "bucketName": {
-            "Type": "String"
-        }
-    },
-    "Conditions": {
-        "ShouldNotCreateEnvResources": {
-            "Fn::Equals": [
-                {
-                    "Ref": "env"
-                },
-                "NONE"
-            ]
         }
     }
 }

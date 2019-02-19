@@ -4,14 +4,20 @@
 export const onCreateGameStats = `subscription OnCreateGameStats {
   onCreateGameStats {
     id
-    meetupId
     name
-    date
+    meetupId
     gameId
+    date
     year
     month
-    fieldName
+    field
     tournamentName
+    lat
+    lon
+    time
+    timeStamp
+    rsvps
+    waitListCount
     winners
     losers
   }
@@ -20,14 +26,20 @@ export const onCreateGameStats = `subscription OnCreateGameStats {
 export const onUpdateGameStats = `subscription OnUpdateGameStats {
   onUpdateGameStats {
     id
-    meetupId
     name
-    date
+    meetupId
     gameId
+    date
     year
     month
-    fieldName
+    field
     tournamentName
+    lat
+    lon
+    time
+    timeStamp
+    rsvps
+    waitListCount
     winners
     losers
   }
@@ -36,14 +48,20 @@ export const onUpdateGameStats = `subscription OnUpdateGameStats {
 export const onDeleteGameStats = `subscription OnDeleteGameStats {
   onDeleteGameStats {
     id
-    meetupId
     name
-    date
+    meetupId
     gameId
+    date
     year
     month
-    fieldName
+    field
     tournamentName
+    lat
+    lon
+    time
+    timeStamp
+    rsvps
+    waitListCount
     winners
     losers
   }
@@ -54,29 +72,8 @@ export const onCreatePlayerStats = `subscription OnCreatePlayerStats {
     id
     name
     meetupId
-    gamesPlayed
-    o
-    singles
-    doubles
-    triples
-    rbi
-    r
-    hr
-    sb
-    cs
-    bb
-    k
-    sac
-    ab
-    h
-    tb
-    rc
-    woba
-    ops
-    obp
-    avg
-    w
-    l
+    photos
+    games
   }
 }
 `;
@@ -85,29 +82,8 @@ export const onUpdatePlayerStats = `subscription OnUpdatePlayerStats {
     id
     name
     meetupId
-    gamesPlayed
-    o
-    singles
-    doubles
-    triples
-    rbi
-    r
-    hr
-    sb
-    cs
-    bb
-    k
-    sac
-    ab
-    h
-    tb
-    rc
-    woba
-    ops
-    obp
-    avg
-    w
-    l
+    photos
+    games
   }
 }
 `;
@@ -116,29 +92,8 @@ export const onDeletePlayerStats = `subscription OnDeletePlayerStats {
     id
     name
     meetupId
-    gamesPlayed
-    o
-    singles
-    doubles
-    triples
-    rbi
-    r
-    hr
-    sb
-    cs
-    bb
-    k
-    sac
-    ab
-    h
-    tb
-    rc
-    woba
-    ops
-    obp
-    avg
-    w
-    l
+    photos
+    games
   }
 }
 `;

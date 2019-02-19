@@ -17,6 +17,11 @@
             "Description": "The number of write IOPS the table should support.",
             "Default": 5
         },
+        "APIKeyExpirationEpoch": {
+            "Type": "Number",
+            "Description": "The epoch time in seconds when the API Key should expire. Setting this to 0 will default to 1 week from the deployment date. Setting this to -1 will not create an API Key.",
+            "Default": 0
+        },
         "AuthCognitoUserPoolId": {
             "Type": "String",
             "Description": "The id of an existing User Pool to connect. If this is changed, a user pool will not be created for you.",
@@ -41,11 +46,6 @@
             "Type": "Number",
             "Description": "The time limit, in days, after which the refresh token is no longer valid.",
             "Default": 30
-        },
-        "env": {
-            "Type": "String",
-            "Description": "The environment name. e.g. Dev, Test, or Production",
-            "Default": "NONE"
         },
         "ResolverBucket": {
             "Type": "String",
@@ -113,8 +113,18 @@
                         "GraphQLAPI",
                         "ApiId"
                     ]
+                },
+                "Expires": {
+                    "Fn::If": [
+                        "APIKeyExpirationEpochIsPositive",
+                        {
+                            "Ref": "APIKeyExpirationEpoch"
+                        },
+                        1551195370
+                    ]
                 }
-            }
+            },
+            "Condition": "APIKeyExpirationEpochIsNotNegOne"
         },
         "GameStatsTable": {
             "Type": "AWS::DynamoDB::Table",
@@ -1468,7 +1478,8 @@
                         ]
                     ]
                 }
-            }
+            },
+            "Condition": "APIKeyExpirationEpochIsNotNegOne"
         },
         "AuthCognitoUserPoolNativeClientId": {
             "Description": "Amazon Cognito UserPools native client ID",
@@ -1569,14 +1580,50 @@
         }
     },
     "Conditions": {
-        "HasEnvironmentParameter": {
+        "APIKeyExpirationEpochIsNotNegOne": {
             "Fn::Not": [
                 {
                     "Fn::Equals": [
                         {
-                            "Ref": "env"
+                            "Ref": "APIKeyExpirationEpoch"
                         },
-                        "NONE"
+                        -1
+                    ]
+                }
+            ]
+        },
+        "APIKeyExpirationEpochIsZero": {
+            "Fn::Equals": [
+                {
+                    "Ref": "APIKeyExpirationEpoch"
+                },
+                0
+            ]
+        },
+        "APIKeyExpirationEpochIsPositive": {
+            "Fn::And": [
+                {
+                    "Fn::Not": [
+                        {
+                            "Fn::Equals": [
+                                {
+                                    "Ref": "APIKeyExpirationEpoch"
+                                },
+                                -1
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Fn::Not": [
+                        {
+                            "Fn::Equals": [
+                                {
+                                    "Ref": "APIKeyExpirationEpoch"
+                                },
+                                0
+                            ]
+                        }
                     ]
                 }
             ]

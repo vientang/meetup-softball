@@ -4,14 +4,20 @@
 export const getGameStats = `query GetGameStats($id: ID!) {
   getGameStats(id: $id) {
     id
-    meetupId
     name
-    date
+    meetupId
     gameId
+    date
     year
     month
-    fieldName
+    field
     tournamentName
+    lat
+    lon
+    time
+    timeStamp
+    rsvps
+    waitListCount
     winners
     losers
   }
@@ -25,14 +31,20 @@ export const listGameStatss = `query ListGameStatss(
   listGameStatss(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
-      meetupId
       name
-      date
+      meetupId
       gameId
+      date
       year
       month
-      fieldName
+      field
       tournamentName
+      lat
+      lon
+      time
+      timeStamp
+      rsvps
+      waitListCount
       winners
       losers
     }
@@ -45,29 +57,8 @@ export const getPlayerStats = `query GetPlayerStats($id: ID!) {
     id
     name
     meetupId
-    gamesPlayed
-    o
-    singles
-    doubles
-    triples
-    rbi
-    r
-    hr
-    sb
-    cs
-    bb
-    k
-    sac
-    ab
-    h
-    tb
-    rc
-    woba
-    ops
-    obp
-    avg
-    w
-    l
+    photos
+    games
   }
 }
 `;
@@ -81,29 +72,8 @@ export const listPlayerStatss = `query ListPlayerStatss(
       id
       name
       meetupId
-      gamesPlayed
-      o
-      singles
-      doubles
-      triples
-      rbi
-      r
-      hr
-      sb
-      cs
-      bb
-      k
-      sac
-      ab
-      h
-      tb
-      rc
-      woba
-      ops
-      obp
-      avg
-      w
-      l
+      photos
+      games
     }
     nextToken
   }
