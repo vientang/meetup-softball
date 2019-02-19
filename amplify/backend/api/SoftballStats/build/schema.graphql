@@ -26,7 +26,7 @@ type PlayerStats {
   profile: AWSJSON
   admin: Boolean
   photos: String
-  status: Boolean
+  status: String
   gender: String
   games: AWSJSON
 }
@@ -201,7 +201,7 @@ input ModelPlayerStatsFilterInput {
   profile: ModelStringFilterInput
   admin: ModelBooleanFilterInput
   photos: ModelStringFilterInput
-  status: ModelBooleanFilterInput
+  status: ModelStringFilterInput
   gender: ModelStringFilterInput
   games: ModelStringFilterInput
   and: [ModelPlayerStatsFilterInput]
@@ -217,7 +217,7 @@ input CreatePlayerStatsInput {
   profile: AWSJSON
   admin: Boolean
   photos: String
-  status: Boolean
+  status: String
   gender: String
   games: AWSJSON
 }
@@ -230,7 +230,7 @@ input UpdatePlayerStatsInput {
   profile: AWSJSON
   admin: Boolean
   photos: String
-  status: Boolean
+  status: String
   gender: String
   games: AWSJSON
 }
