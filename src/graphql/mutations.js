@@ -71,8 +71,13 @@ export const createPlayerStats = `mutation CreatePlayerStats($input: CreatePlaye
   createPlayerStats(input: $input) {
     id
     name
+    joined
     meetupId
+    profile
+    admin
     photos
+    status
+    gender
     games
   }
 }
@@ -81,8 +86,13 @@ export const updatePlayerStats = `mutation UpdatePlayerStats($input: UpdatePlaye
   updatePlayerStats(input: $input) {
     id
     name
+    joined
     meetupId
+    profile
+    admin
     photos
+    status
+    gender
     games
   }
 }
@@ -91,8 +101,13 @@ export const deletePlayerStats = `mutation DeletePlayerStats($input: DeletePlaye
   deletePlayerStats(input: $input) {
     id
     name
+    joined
     meetupId
+    profile
+    admin
     photos
+    status
+    gender
     games
   }
 }

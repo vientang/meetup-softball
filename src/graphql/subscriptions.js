@@ -71,8 +71,13 @@ export const onCreatePlayerStats = `subscription OnCreatePlayerStats {
   onCreatePlayerStats {
     id
     name
+    joined
     meetupId
+    profile
+    admin
     photos
+    status
+    gender
     games
   }
 }
@@ -81,8 +86,13 @@ export const onUpdatePlayerStats = `subscription OnUpdatePlayerStats {
   onUpdatePlayerStats {
     id
     name
+    joined
     meetupId
+    profile
+    admin
     photos
+    status
+    gender
     games
   }
 }
@@ -91,8 +101,13 @@ export const onDeletePlayerStats = `subscription OnDeletePlayerStats {
   onDeletePlayerStats {
     id
     name
+    joined
     meetupId
+    profile
+    admin
     photos
+    status
+    gender
     games
   }
 }

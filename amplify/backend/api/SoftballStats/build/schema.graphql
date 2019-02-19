@@ -21,8 +21,13 @@ type GameStats {
 type PlayerStats {
   id: ID!
   name: String!
+  joined: String
   meetupId: String
+  profile: AWSJSON
+  admin: Boolean
   photos: String
+  status: Boolean
+  gender: String
   games: AWSJSON
 }
 
@@ -191,8 +196,13 @@ type ModelPlayerStatsConnection {
 input ModelPlayerStatsFilterInput {
   id: ModelIDFilterInput
   name: ModelStringFilterInput
+  joined: ModelStringFilterInput
   meetupId: ModelStringFilterInput
+  profile: ModelStringFilterInput
+  admin: ModelBooleanFilterInput
   photos: ModelStringFilterInput
+  status: ModelBooleanFilterInput
+  gender: ModelStringFilterInput
   games: ModelStringFilterInput
   and: [ModelPlayerStatsFilterInput]
   or: [ModelPlayerStatsFilterInput]
@@ -202,16 +212,26 @@ input ModelPlayerStatsFilterInput {
 input CreatePlayerStatsInput {
   id: ID
   name: String!
+  joined: String
   meetupId: String
+  profile: AWSJSON
+  admin: Boolean
   photos: String
+  status: Boolean
+  gender: String
   games: AWSJSON
 }
 
 input UpdatePlayerStatsInput {
   id: ID!
   name: String
+  joined: String
   meetupId: String
+  profile: AWSJSON
+  admin: Boolean
   photos: String
+  status: Boolean
+  gender: String
   games: AWSJSON
 }
 

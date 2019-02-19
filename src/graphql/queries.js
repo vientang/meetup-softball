@@ -56,8 +56,13 @@ export const getPlayerStats = `query GetPlayerStats($id: ID!) {
   getPlayerStats(id: $id) {
     id
     name
+    joined
     meetupId
+    profile
+    admin
     photos
+    status
+    gender
     games
   }
 }
@@ -71,8 +76,13 @@ export const listPlayerStatss = `query ListPlayerStatss(
     items {
       id
       name
+      joined
       meetupId
+      profile
+      admin
       photos
+      status
+      gender
       games
     }
     nextToken

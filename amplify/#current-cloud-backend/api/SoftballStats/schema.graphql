@@ -21,7 +21,12 @@ type GameStats @model {
 type PlayerStats @model {
     id: ID!
     name: String!
+    joined: String
     meetupId: String
+    profile: AWSJSON
+    admin: Boolean
     photos: String
+    status: Boolean
+    gender: String
     games: AWSJSON
 }
