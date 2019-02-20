@@ -3,6 +3,19 @@
  * @param {Object} player data from meetup
  * @return {Object}
  */
+import statsCalc from './statsCalc';
+
+const {
+    getAtBats,
+    getAverage,
+    getHits,
+    getOnBasePercentage,
+    getOPS,
+    getSlugging,
+    getTotalBases,
+    getWOBA,
+} = statsCalc;
+
 const createPlayer = (player) => {
     const { name, id, joined, group_profile, is_pro_admin, photo, status } = player.data;
     return {
@@ -58,14 +71,54 @@ const getCountingStatTotal = (games, statToCount) => {
     }, 0);
 };
 
+const getRateStatTotal = (games, statToCount) => {
+    // switch case for each rate stat and calculate for setTopLeaders
+    // think about how to involve getCountingStatTotal
+    // test in utils.test.js
+    const hits = getHits(
+        getCountingStatTotal(games, games.singles),
+        getCountingStatTotal(games, games.doubles),
+        getCountingStatTotal(games, games.triples),
+        getCountingStatTotal(games, games.hr),
+    );
+    const atBats = getAtBats(hits, games.o);
+
+    switch (statToCount) {
+        case 'avg':
+            return getAverage(hits, atBats); // needs hits and atBats
+        case 'obp':
+            return getOnBasePercentage(hits, games.bb, atBats, games.sac);
+        // needs hits, walks, atBats, and sacrifices
+        case 'ops':
+            return getOPS(
+                getOnBasePercentage(hits, games.bb, atBats, games.sac),
+                getSlugging(getTotalBases(games.singles, games.doubles, games.triples, games.hr)),
+            ); // needs hits, walks, atBats, sacrifices, and totalBases
+        case 'woba':
+            return getWOBA(
+                games.bb,
+                games.singles,
+                games.doubles,
+                games.triples,
+                games.hr,
+                atBats,
+                games.sac,
+            ); // needs walks, singles, doubles, triples, homeRuns, atBats, // and sacrifices
+        default:
+            return 0;
+    }
+};
+
 const setTopLeaders = (players, stat) => {
     // return an array of 5 objects
-    // describing the player name and their hr total
+    // describing the player name and their stat total
     let topLeaders = [];
     let comparison = [];
 
     players.forEach((element) => {
         const playerName = element.name;
+        //add if statement here to check for rate or counting stat,
+        //maybe look for decimal point
         const total = getCountingStatTotal(element.games, stat);
         comparison.push({ playerName, total });
     });

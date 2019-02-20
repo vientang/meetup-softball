@@ -65,4 +65,6 @@ describe('Leaderboard Stats', () => {
             { playerName: 'earl', total: 12 },
         ]);
     });
+
+    //test rate stats here
 });
