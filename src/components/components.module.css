@@ -89,6 +89,11 @@
     white-space: nowrap;
 }
 
+.leader-board {
+    display: flex;
+    flex-wrap: wrap;
+}
+
 .leader-card {
     width: 250px;
     height: 330px;

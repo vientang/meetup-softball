@@ -1,19 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Icon } from 'antd';
 import componentStyles from './components.module.css';
-const propTypes = {
-    players: PropTypes.array,
-    stat: PropTypes.string,
-};
-const LeaderCard = (props) => {
+
+const LeaderCard = ({ players, title }) => {
     return (
         <ul className={componentStyles.leaderCard}>
-            <li className={componentStyles.leaderStatTitle}>{props.stat}</li>
-            {props.players.map((player, i) => {
+            <li className={componentStyles.leaderStatTitle}>{title}</li>
+            {players.map((player, i) => {
                 if (i === 0) {
                     return (
                         <li className={componentStyles.leaderCardItem}>
-                            <img className={componentStyles.leaderAvatar} />
+                            <Icon type="crown" />
                             <span>{player.name}</span>
                             <span className={componentStyles.leaderCardStat}>{player.value}</span>
                         </li>
@@ -30,6 +28,13 @@ const LeaderCard = (props) => {
     );
 };
 
-LeaderCard.propTypes = propTypes;
+LeaderCard.propTypes = {
+    players: PropTypes.arrayOf(PropTypes.object),
+    title: PropTypes.string,
+};
+
+LeaderCard.defaultProps = {
+    players: [],
+};
 
 export default LeaderCard;

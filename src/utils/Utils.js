@@ -42,8 +42,52 @@ const sortHighToLow = (a, b) => {
     return aa < bb ? 1 : -1;
 };
 
+// Loop through all players
+// Calculate their counting stat totals
+// Check if it belongs in the top 5
+// If yes, save the player name and stat total
+// If no, don't save
+const getCountingStatTotal = (games, statToCount) => {
+    return games.reduce((acc, cur) => {
+        if (typeof cur[statToCount] === 'number') {
+            acc += cur[statToCount];
+        } else {
+            acc += 0;
+        }
+        return acc;
+    }, 0);
+};
+
+const setTopLeaders = (players, stat) => {
+    // return an array of 5 objects
+    // describing the player name and their hr total
+    let topLeaders = [];
+    let comparison = [];
+
+    players.forEach((element) => {
+        const playerName = element.name;
+        const total = getCountingStatTotal(element.games, stat);
+        comparison.push({ playerName, total });
+    });
+
+    comparison = comparison.sort((a, b) => (a.total > b.total ? -1 : 1));
+
+    topLeaders = comparison.slice(0, 5);
+
+    // comparison = comparison.slice(5);
+    comparison.slice(5).some((player) => {
+        if (player.total === topLeaders[4].total) {
+            topLeaders.push(player);
+        } else {
+            return true;
+        }
+    });
+    return topLeaders;
+};
+
 export default {
     createPlayer,
     sortByNameLength,
     sortHighToLow,
+    setTopLeaders,
 };

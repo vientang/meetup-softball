@@ -1,5 +1,6 @@
 import React from 'react';
 import LeaderCard from '../components/LeaderCard';
+import componentStyles from '../components/components.module.css';
 
 const players = [
     {
@@ -23,10 +24,35 @@ const players = [
         value: 1,
     },
 ];
-const statTitle = 'HOME RUNS';
+
+const cards = [
+    'Home Runs',
+    'Average',
+    'Winning Percentage',
+    'Runs Created',
+    'Runs Batted In',
+    'Runs',
+    'Doubles',
+    'Triples',
+    'Stolen Bases',
+    'OPS',
+    'wOBA',
+];
+
 class LeaderBoard extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {};
+    }
+
     render() {
-        return <LeaderCard players={players} stat={statTitle} />;
+        return (
+            <div className={componentStyles.leaderBoard}>
+                {cards.map((card) => {
+                    return <LeaderCard players={players} title={card} />;
+                })}
+            </div>
+        );
     }
 }
 
