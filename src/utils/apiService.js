@@ -1,5 +1,6 @@
 import get from 'lodash/get';
 import pick from 'lodash/pick';
+import omit from 'lodash/omit';
 import transform from 'lodash/transform';
 import statsCalc from './statsCalc';
 
@@ -258,7 +259,8 @@ const addDerivedStats = (players, winner) =>
  * @return {Object} currentGameStats
  */
 const mergeGameStats = (meetupData, w, l) => {
-    const currentGameStats = { ...meetupData };
+    const currentGameStats = omit(meetupData, ['players']);
+
     const winningTeam = addDerivedStats(w, true);
     const losingTeam = addDerivedStats(l);
 

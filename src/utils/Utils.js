@@ -4,15 +4,15 @@
  * @return {Object}
  */
 const createPlayer = (player) => {
-    const { name, id, joined, group_profile, is_pro_admin, photo, active } = player.data;
+    const { name, id, joined, group_profile, is_pro_admin, photo, status } = player.data;
     return {
         name,
         joined,
+        status,
         meetupId: id,
         profile: group_profile,
         admin: is_pro_admin,
         photos: photo,
-        status: active,
         singles: null,
         doubles: null,
         triples: null,

@@ -9,11 +9,11 @@ import GameMenu from '../components/GameMenu';
 import AdminStatsTable from '../components/AdminStatsTable';
 import SortTeams from '../components/SortTeams';
 import { createGameStats, updatePlayerStats } from '../graphql/mutations';
-import { listPlayerStatss } from '../graphql/queries';
+import { listGameStatss, listPlayerStatss } from '../graphql/queries';
 import { Utils, apiService } from '../utils';
 import styles from './pages.module.css';
 
-const { MEETUP_KEY, GAMES_URL, PLAYER_URL, RSVP_URL } = process.env;
+const { GAMES_URL, PLAYER_URL, RSVP_URL } = process.env;
 
 class Admin extends React.Component {
     constructor(props) {
@@ -36,10 +36,9 @@ class Admin extends React.Component {
      * Merge each player name and meetup id with the stats categories
      */
     async componentDidMount() {
+        const lastGameTimeStamp = await this.getLastGameRecorded();
+
         const games = [];
-        let players = [];
-        let lastGameRecorded = '';
-        const cachedTimeRecord = localStorage.getItem(lastGameRecorded);
 
         await fetchJsonp(GAMES_URL)
             .then((response) => response.json())
@@ -49,22 +48,15 @@ class Admin extends React.Component {
                         id,
                         local_date,
                         local_time,
+                        rsvp_limit,
                         time,
                         venue,
                         waitlist_count,
-                        yes_rsvp_count,
                     } = game;
 
-                    if (cachedTimeRecord) {
-                        // prevent over fetching games
-                        // get timestamp of last game recorded from GameStats API
-                        // compare time stamps
-                        // break out of loop if cached time record is
-                        // equal to or less than last game recorded
-                    }
-
-                    if (i === 0) {
-                        lastGameRecorded = time;
+                    // prevent overfetching games from meetup
+                    if (lastGameTimeStamp >= time) {
+                        return;
                     }
 
                     const gameDate = new Date(time).toDateString();
@@ -81,7 +73,7 @@ class Admin extends React.Component {
                     newGame.meetupId = id;
                     newGame.month = month;
                     newGame.name = game.name;
-                    newGame.rsvps = yes_rsvp_count;
+                    newGame.rsvps = rsvp_limit;
                     newGame.time = local_time;
                     newGame.timeStamp = time;
                     newGame.tournamentName = game.name;
@@ -99,30 +91,24 @@ class Admin extends React.Component {
         games.sort((a, b) => new Date(a.timeStamp) - new Date(b.timeStamp));
 
         const currentGame = games[0];
-
-        // get rsvp's then get player data
-        const RSVPS = `${RSVP_URL}${currentGame.meetupId}&page=${
-            currentGame.rsvps
-        }&key=${MEETUP_KEY}`;
+        const RSVPS = `${RSVP_URL}${currentGame.meetupId}/attendance?&sign=true&photo-host=public`;
 
         let rsvpList = await fetchJsonp(RSVPS)
             .then((response) => response.json())
-            .then((result) => result.results)
+            .then((result) => result.data.filter((player) => player.rsvp.response === 'yes'))
             .catch((error) => {
                 throw new Error(error);
             });
 
         rsvpList = await rsvpList.map((player) =>
-            fetchJsonp(`${PLAYER_URL}${player.member.member_id}?&sign=true&photo-host=public`)
+            fetchJsonp(`${PLAYER_URL}${player.member.id}?&sign=true&photo-host=public`)
                 .then((response) => response.json())
                 .then((playerResult) => playerResult),
         );
 
-        players = await Promise.all(rsvpList).then((result) =>
+        currentGame.players = await Promise.all(rsvpList).then((result) =>
             result.map((player) => Utils.createPlayer(player)),
         );
-
-        currentGame.players = players;
 
         this.setState(() => ({
             games: games.slice(0, 2),
@@ -131,9 +117,10 @@ class Admin extends React.Component {
         }));
     }
 
-    componentWillUnmount() {
-        localStorage.removeItem('lastGameRecorded');
-    }
+    getLastGameRecorded = async () => {
+        const games = await API.graphql(graphqlOperation(listGameStatss, { limit: 1 }));
+        return Number(games.data.listGameStatss.items[0].timeStamp);
+    };
 
     /**
      * Submit updated stats to PlayerStats, GameStats and Metadata tables
@@ -142,13 +129,11 @@ class Admin extends React.Component {
         const players = await apiService.mergePlayerStats(this.state.currentGame, winners, losers);
         const gameStats = await apiService.mergeGameStats(this.state.currentGame, winners, losers);
 
-        // await API.graphql(graphqlOperation(createGameStats, { input: gameStats }));
+        await API.graphql(graphqlOperation(createGameStats, { input: gameStats }));
         // playerStats.forEach(player => {
         //     API.graphql(graphqlOperation(updatePlayerStats, { input: player }));
         // });
 
-        // update local storage cached time record with current game time stamp
-        // localStorage.setItem(lastGameRecorded, this.state.currentGame.time);
         this.setState((prevState) => {
             const games = prevState.games.filter((game) => game.gameId !== selectedGameId);
             const currentGame = games[0];
