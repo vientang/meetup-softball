@@ -4,14 +4,20 @@
 export const onCreateGameStats = `subscription OnCreateGameStats {
   onCreateGameStats {
     id
-    meetupId
     name
-    date
+    meetupId
     gameId
+    date
     year
     month
-    fieldName
+    field
     tournamentName
+    lat
+    lon
+    time
+    timeStamp
+    rsvps
+    waitListCount
     winners
     losers
   }
@@ -20,14 +26,20 @@ export const onCreateGameStats = `subscription OnCreateGameStats {
 export const onUpdateGameStats = `subscription OnUpdateGameStats {
   onUpdateGameStats {
     id
-    meetupId
     name
-    date
+    meetupId
     gameId
+    date
     year
     month
-    fieldName
+    field
     tournamentName
+    lat
+    lon
+    time
+    timeStamp
+    rsvps
+    waitListCount
     winners
     losers
   }
@@ -36,14 +48,20 @@ export const onUpdateGameStats = `subscription OnUpdateGameStats {
 export const onDeleteGameStats = `subscription OnDeleteGameStats {
   onDeleteGameStats {
     id
-    meetupId
     name
-    date
+    meetupId
     gameId
+    date
     year
     month
-    fieldName
+    field
     tournamentName
+    lat
+    lon
+    time
+    timeStamp
+    rsvps
+    waitListCount
     winners
     losers
   }
@@ -53,30 +71,14 @@ export const onCreatePlayerStats = `subscription OnCreatePlayerStats {
   onCreatePlayerStats {
     id
     name
+    joined
     meetupId
-    gamesPlayed
-    o
-    singles
-    doubles
-    triples
-    rbi
-    r
-    hr
-    sb
-    cs
-    bb
-    k
-    sac
-    ab
-    h
-    tb
-    rc
-    woba
-    ops
-    obp
-    avg
-    w
-    l
+    profile
+    admin
+    photos
+    status
+    gender
+    games
   }
 }
 `;
@@ -84,30 +86,14 @@ export const onUpdatePlayerStats = `subscription OnUpdatePlayerStats {
   onUpdatePlayerStats {
     id
     name
+    joined
     meetupId
-    gamesPlayed
-    o
-    singles
-    doubles
-    triples
-    rbi
-    r
-    hr
-    sb
-    cs
-    bb
-    k
-    sac
-    ab
-    h
-    tb
-    rc
-    woba
-    ops
-    obp
-    avg
-    w
-    l
+    profile
+    admin
+    photos
+    status
+    gender
+    games
   }
 }
 `;
@@ -115,30 +101,14 @@ export const onDeletePlayerStats = `subscription OnDeletePlayerStats {
   onDeletePlayerStats {
     id
     name
+    joined
     meetupId
-    gamesPlayed
-    o
-    singles
-    doubles
-    triples
-    rbi
-    r
-    hr
-    sb
-    cs
-    bb
-    k
-    sac
-    ab
-    h
-    tb
-    rc
-    woba
-    ops
-    obp
-    avg
-    w
-    l
+    profile
+    admin
+    photos
+    status
+    gender
+    games
   }
 }
 `;

@@ -4,14 +4,20 @@
 export const createGameStats = `mutation CreateGameStats($input: CreateGameStatsInput!) {
   createGameStats(input: $input) {
     id
-    meetupId
     name
-    date
+    meetupId
     gameId
+    date
     year
     month
-    fieldName
+    field
     tournamentName
+    lat
+    lon
+    time
+    timeStamp
+    rsvps
+    waitListCount
     winners
     losers
   }
@@ -20,14 +26,20 @@ export const createGameStats = `mutation CreateGameStats($input: CreateGameStats
 export const updateGameStats = `mutation UpdateGameStats($input: UpdateGameStatsInput!) {
   updateGameStats(input: $input) {
     id
-    meetupId
     name
-    date
+    meetupId
     gameId
+    date
     year
     month
-    fieldName
+    field
     tournamentName
+    lat
+    lon
+    time
+    timeStamp
+    rsvps
+    waitListCount
     winners
     losers
   }
@@ -36,14 +48,20 @@ export const updateGameStats = `mutation UpdateGameStats($input: UpdateGameStats
 export const deleteGameStats = `mutation DeleteGameStats($input: DeleteGameStatsInput!) {
   deleteGameStats(input: $input) {
     id
-    meetupId
     name
-    date
+    meetupId
     gameId
+    date
     year
     month
-    fieldName
+    field
     tournamentName
+    lat
+    lon
+    time
+    timeStamp
+    rsvps
+    waitListCount
     winners
     losers
   }
@@ -53,30 +71,14 @@ export const createPlayerStats = `mutation CreatePlayerStats($input: CreatePlaye
   createPlayerStats(input: $input) {
     id
     name
+    joined
     meetupId
-    gamesPlayed
-    o
-    singles
-    doubles
-    triples
-    rbi
-    r
-    hr
-    sb
-    cs
-    bb
-    k
-    sac
-    ab
-    h
-    tb
-    rc
-    woba
-    ops
-    obp
-    avg
-    w
-    l
+    profile
+    admin
+    photos
+    status
+    gender
+    games
   }
 }
 `;
@@ -84,30 +86,14 @@ export const updatePlayerStats = `mutation UpdatePlayerStats($input: UpdatePlaye
   updatePlayerStats(input: $input) {
     id
     name
+    joined
     meetupId
-    gamesPlayed
-    o
-    singles
-    doubles
-    triples
-    rbi
-    r
-    hr
-    sb
-    cs
-    bb
-    k
-    sac
-    ab
-    h
-    tb
-    rc
-    woba
-    ops
-    obp
-    avg
-    w
-    l
+    profile
+    admin
+    photos
+    status
+    gender
+    games
   }
 }
 `;
@@ -115,30 +101,14 @@ export const deletePlayerStats = `mutation DeletePlayerStats($input: DeletePlaye
   deletePlayerStats(input: $input) {
     id
     name
+    joined
     meetupId
-    gamesPlayed
-    o
-    singles
-    doubles
-    triples
-    rbi
-    r
-    hr
-    sb
-    cs
-    bb
-    k
-    sac
-    ab
-    h
-    tb
-    rc
-    woba
-    ops
-    obp
-    avg
-    w
-    l
+    profile
+    admin
+    photos
+    status
+    gender
+    games
   }
 }
 `;
