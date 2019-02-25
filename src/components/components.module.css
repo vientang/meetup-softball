@@ -1,24 +1,57 @@
 :root {
     --primary-color: #1890ff;
+    --background-color: #ffffff;
+    --border-color: #ffcccc;
+    --pad-0: 0.25rem;
+    --pad-1: 0.5rem;
+    --pad-2: 0.75rem;
+    --pad-3: 1rem;
+    --pad-5: 1.5rem;
+    --margin-0: 0.25rem;
+    --margin-1: 0.5rem;
+    --margin-2: 0.75rem;
+    --margin-3: 1rem;
+    --margin-5: 1.5rem;
+    --grey-2: #e1e1e166;
+    --grey-3: #555555;
+    --grey-4: #3a3a3a;
+    --grey-5: #393939;
+    --white-1: #ffffff;
+    --white-2: #ededed;
+    --blue-0: rgba(0, 220, 255, 0.3);
+    --blue-1: #00dcff;
+    --blue-2: #00bdff;
+    --blue-3: #1c85f5;
+    --blue-4: #137bc2;
 }
 
 .header,
 .admin-form,
-.admin-stats-table {
+.admin-stats-table,
+.leader-board,
+.leader-stat-title,
+.team-transfer,
+.team-transfer-box-container,
+.team-transfer-box-count,
+.team-transfer-list,
+.team-transfer-header,
+.team-transfer-item-name,
+.team-transfer-operations {
     display: flex;
+    box-sizing: border-box;
 }
 
 /* HEADER */
 .header-container {
     background-color: rebeccapurple;
-    margin-bottom: 1.45rem;
+    margin-bottom: var(--margin-5);
 }
 
 .header {
     justify-content: space-between;
     margin: 0 6.0875rem;
     max-width: 100%;
-    padding: 1.45rem 1.0875rem;
+    padding: var(--pad-5) var(--pad-3);
 }
 
 .header-h1 {
@@ -26,7 +59,7 @@
 }
 
 .site-title {
-    color: white;
+    color: var(--white-1);
     text-decoration: none;
 }
 
@@ -37,30 +70,10 @@
     width: 100%;
 }
 
-.team-transfer-box {
-    position: relative;
-    width: 100%;
-    margin-top: 1.45rem;
-}
-
-.set-teams {
-    position: absolute;
-    display: inline-block;
-    right: 0;
-    font-size: 2rem;
-    font-weight: bold;
-    transition: color 150ms ease-in-out;
-}
-
-.set-teams:hover {
-    color: var(--primary-color);
-    cursor: pointer;
-}
-
 .admin-stats-table {
     flex-direction: column;
     width: 100%;
-    margin-top: 1.45rem;
+    margin-top: var(--margin-5);
 }
 
 .stats-table {
@@ -89,15 +102,15 @@
     white-space: nowrap;
 }
 
+/* LEADER BOARD & LEADER CARD */
 .leader-board {
-    display: flex;
     flex-wrap: wrap;
 }
 
 .leader-card {
     width: 250px;
     height: 330px;
-    margin: 1rem;
+    margin: var(--margin-3);
     border: 1px solid cornflowerblue;
     border-radius: 3px;
     list-style: none;
@@ -105,7 +118,6 @@
 }
 
 .leader-stat-title {
-    display: flex;
     align-items: center;
     justify-content: center;
     height: 30px;
@@ -120,8 +132,8 @@
     display: grid;
     grid-template-columns: 70% 1fr;
     align-items: center;
-    padding: 1rem;
-    border-bottom: 1px solid slategray;
+    padding: var(--pad-3);
+    border-bottom: 1px solid var(--border-color);
     width: 100%;
     height: 50px;
     margin: 0;
@@ -133,7 +145,7 @@
     align-items: flex-start;
     align-content: flex-start;
     grid-template-columns: 40px 1fr 40px;
-    grid-gap: 1rem;
+    grid-gap: var(--pad-3);
     height: 100px;
     font-size: 1.5rem;
     font-weight: bold;
@@ -157,4 +169,117 @@
 
 .leader-card-stat {
     text-align: right;
+}
+
+/* SORT TEAMS - TEAM TRANSFER, TRANSFER BOX, TRANSFER LIST ITEM */
+.set-teams-btn {
+    position: absolute;
+    display: inline-block;
+    right: 0;
+    font-size: 2rem;
+    font-weight: bold;
+    transition: color 150ms ease-in-out;
+}
+
+.set-teams-btn:hover {
+    color: var(--primary-color);
+    cursor: pointer;
+}
+
+.team-transfer {
+    flex-direction: column;
+    white-space: nowrap;
+}
+
+.team-transfer-box-container {
+    position: relative;
+    margin: var(--margin-5) 0;
+}
+
+.team-transfer-box {
+    background-color: var(--background-color);
+    color: var(--primary-color);
+}
+
+.team-transfer-list {
+    position: relative;
+    flex-direction: column;
+    width: 50%;
+    height: 26.25rem;
+    border: 1px solid var(--border-color);
+}
+
+.team-transfer-list-items {
+    position: relative;
+    flex: 1;
+    overflow: auto;
+    outline: none;
+}
+
+.team-transfer-list-item {
+    padding: var(--pad-1);
+    cursor: pointer;
+    transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
+    outline: none;
+}
+
+.team-transfer-list-item:not(.team-transfer-list-item-focused):hover {
+    background-color: var(--blue-0);
+}
+
+.team-transfer-list-item-focused {
+    background-color: var(--blue-3);
+    color: var(--white-2);
+}
+
+.team-transfer-batting-order::after {
+    content: '. ';
+    position: relative;
+    margin-right: var(--margin-0);
+}
+
+.team-transfer-header {
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--pad-1) var(--pad-2);
+    background-color: var(--grey-2);
+    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.09);
+    color: var(--grey-5);
+    font-weight: bold;
+}
+
+.team-transfer-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.team-transfer-box-count {
+    font-style: italic;
+    font-weight: normal;
+}
+
+.team-transfer-operations {
+    flex-direction: column;
+    margin: auto var(--margin-3);
+}
+
+.team-transfer-operations > *:not(:last-child),
+.team-transfer-sort-operations > *:not(:last-child) {
+    margin-bottom: var(--margin-3);
+}
+
+.team-transfer-sort-operations {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    right: 0;
+    top: calc(21.5rem / 2);
+    margin: auto var(--margin-3);
+    opacity: 0;
+    transition: opacity 200ms ease-in-out;
+}
+
+.team-transfer-list:hover .team-transfer-sort-operations {
+    opacity: 1;
 }

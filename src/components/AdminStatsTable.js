@@ -43,9 +43,8 @@ class AdminStatsTable extends React.Component {
         this.setState(() => ({ dataSubmitted: true }));
     };
 
-    makeContentEditable = (cellInfo) => {
-        return !isNaN(cellInfo.value);
-    };
+    makeContentEditable = (cellInfo) =>
+        cellInfo.column.id !== 'battingOrder' && cellInfo.column.id !== 'name';
 
     /**
      * Prevent non numeric keys from being triggered
@@ -148,6 +147,7 @@ class AdminStatsTable extends React.Component {
 
         return (
             <div className={componentStyles.adminStatsTable}>
+                <h2>{this.props.game}</h2>
                 <h3>Winners</h3>
                 <StatsTable
                     players={winners}
@@ -175,6 +175,7 @@ class AdminStatsTable extends React.Component {
 }
 
 AdminStatsTable.propTypes = {
+    game: PropTypes.string,
     winners: PropTypes.arrayOf(PropTypes.object),
     losers: PropTypes.arrayOf(PropTypes.object),
     onSubmit: PropTypes.func,

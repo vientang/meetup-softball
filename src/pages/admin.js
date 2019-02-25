@@ -19,13 +19,11 @@ class Admin extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            areTeamsSet: false,
+            areTeamsSorted: false,
             currentGame: {},
-            finishedStatEntry: false,
             games: [],
             losers: [],
             selectedGameId: '',
-            selectedPlayers: [],
             winners: [],
         };
     }
@@ -43,44 +41,12 @@ class Admin extends React.Component {
         await fetchJsonp(GAMES_URL)
             .then((response) => response.json())
             .then((result) => {
-                result.data.forEach((game, i) => {
-                    const {
-                        id,
-                        local_date,
-                        local_time,
-                        rsvp_limit,
-                        time,
-                        venue,
-                        waitlist_count,
-                    } = game;
-
+                result.data.forEach((game) => {
                     // prevent overfetching games from meetup
-                    if (lastGameTimeStamp >= time) {
+                    if (lastGameTimeStamp >= game.time) {
                         return;
                     }
-
-                    const gameDate = new Date(time).toDateString();
-                    const [year, month] = local_date.split('-');
-                    const { lat, lon, name } = venue;
-                    const gameId = game.name.split(' ')[1];
-
-                    const newGame = {};
-                    newGame.date = gameDate;
-                    newGame.field = name;
-                    newGame.gameId = gameId;
-                    newGame.lat = lat;
-                    newGame.lon = lon;
-                    newGame.meetupId = id;
-                    newGame.month = month;
-                    newGame.name = game.name;
-                    newGame.rsvps = rsvp_limit;
-                    newGame.time = local_time;
-                    newGame.timeStamp = time;
-                    newGame.tournamentName = game.name;
-                    newGame.waitListCount = waitlist_count;
-                    newGame.year = year;
-
-                    games.push(newGame);
+                    games.push(this.createGame(game));
                 });
             })
             .catch((error) => {
@@ -91,6 +57,48 @@ class Admin extends React.Component {
         games.sort((a, b) => new Date(a.timeStamp) - new Date(b.timeStamp));
 
         const currentGame = games[0];
+        currentGame.players = await this.getCurrentGamePlayers(currentGame);
+
+        this.setState(() => ({
+            selectedGameId: currentGame.meetupId,
+            currentGame,
+            games,
+        }));
+    }
+
+    getLastGameRecorded = async () => {
+        const games = await API.graphql(graphqlOperation(listGameStatss, { limit: 1 }));
+        return Number(games.data.listGameStatss.items[0].timeStamp);
+    };
+
+    createGame = (game) => {
+        const { id, local_date, local_time, rsvp_limit, time, venue, waitlist_count } = game;
+
+        const gameDate = new Date(time).toDateString();
+        const [year, month] = local_date.split('-');
+        const { lat, lon, name } = venue;
+        const gameId = game.name.split(' ')[1];
+
+        const newGame = {};
+        newGame.date = gameDate;
+        newGame.field = name;
+        newGame.gameId = gameId;
+        newGame.lat = lat;
+        newGame.lon = lon;
+        newGame.meetupId = id;
+        newGame.month = month;
+        newGame.name = game.name;
+        newGame.rsvps = rsvp_limit;
+        newGame.time = local_time;
+        newGame.timeStamp = time;
+        newGame.tournamentName = game.name;
+        newGame.waitListCount = waitlist_count;
+        newGame.year = year;
+
+        return newGame;
+    };
+
+    getCurrentGamePlayers = async (currentGame) => {
         const RSVPS = `${RSVP_URL}${currentGame.meetupId}/attendance?&sign=true&photo-host=public`;
 
         let rsvpList = await fetchJsonp(RSVPS)
@@ -106,20 +114,8 @@ class Admin extends React.Component {
                 .then((playerResult) => playerResult),
         );
 
-        currentGame.players = await Promise.all(rsvpList).then((result) =>
-            result.map((player) => Utils.createPlayer(player)),
-        );
-
-        this.setState(() => ({
-            games: games.slice(0, 2),
-            selectedGameId: currentGame.meetupId,
-            currentGame,
-        }));
-    }
-
-    getLastGameRecorded = async () => {
-        const games = await API.graphql(graphqlOperation(listGameStatss, { limit: 1 }));
-        return Number(games.data.listGameStatss.items[0].timeStamp);
+        const results = await Promise.all(rsvpList);
+        return results.map((player) => Utils.createPlayer(player));
     };
 
     /**
@@ -139,8 +135,7 @@ class Admin extends React.Component {
             const currentGame = games[0];
 
             return {
-                areTeamsSet: false,
-                finishedStatEntry: !!currentGame,
+                areTeamsSorted: false,
                 selectedGameId: currentGame ? currentGame.gameId : '',
                 currentGame,
                 games,
@@ -151,10 +146,12 @@ class Admin extends React.Component {
     /**
      * Toggle players between the games
      */
-    handleSelectGame = (e) => {
+    handleSelectGame = async (e) => {
         const selectedGameId = e.key;
-        this.setState((prevState) => {
-            const currentGame = prevState.games.find((game) => game.gameId === selectedGameId);
+        const currentGame = this.state.games.find((game) => game.meetupId === selectedGameId);
+        currentGame.players = await this.getCurrentGamePlayers(currentGame);
+
+        this.setState(() => {
             return {
                 currentGame,
                 selectedGameId,
@@ -163,21 +160,13 @@ class Admin extends React.Component {
     };
 
     handleSetTeams = (winners, losers) => {
-        this.setState(() => ({ areTeamsSet: true, winners, losers }));
+        this.setState(() => ({ areTeamsSorted: true, winners, losers }));
     };
 
     render() {
-        const {
-            areTeamsSet,
-            currentGame,
-            finishedStatEntry,
-            games,
-            losers,
-            selectedGameId,
-            winners,
-        } = this.state;
+        const { areTeamsSorted, currentGame, games, losers, selectedGameId, winners } = this.state;
 
-        if (finishedStatEntry) {
+        if (!currentGame) {
             return (
                 <Layout className={styles.adminPageSuccess}>
                     <SuccessImage />
@@ -189,16 +178,19 @@ class Admin extends React.Component {
         return (
             <>
                 <Layout className={styles.adminPage}>
-                    <GameMenu
-                        games={games}
-                        selectedGame={selectedGameId}
-                        onGameSelection={this.handleSelectGame}
-                    />
-                    {!areTeamsSet && (
-                        <SortTeams data={currentGame} setTeams={this.handleSetTeams} />
+                    {!areTeamsSorted && (
+                        <>
+                            <GameMenu
+                                games={games}
+                                selectedGame={selectedGameId}
+                                onGameSelection={this.handleSelectGame}
+                            />
+                            <SortTeams data={currentGame} setTeams={this.handleSetTeams} />
+                        </>
                     )}
-                    {areTeamsSet && (
+                    {areTeamsSorted && (
                         <AdminStatsTable
+                            game={currentGame.name}
                             winners={winners}
                             losers={losers}
                             onSubmit={this.handleSubmitData}
