@@ -47,6 +47,7 @@ class StatsTable extends React.Component {
                 Header: header,
                 Cell: cellRenderer,
                 accessor: category === 'player' ? 'name' : category,
+                resizable: false,
                 sortMethod,
                 maxWidth,
                 width,
