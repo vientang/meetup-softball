@@ -1,9 +1,13 @@
 import Utils from '../Utils';
 
-const { setTopLeaders } = Utils;
+const { setTopLeaders, getRateStatTotal } = Utils;
 const player1 = {
     name: 'vien',
-    games: [{ hr: 5, rbi: 7 }, { hr: 10, rbi: 20 }, { hr: 15, rbi: 30 }],
+    games: [
+        { singles: 4, doubles: 3, triples: 1, hr: 5, rbi: 22, o: 10, sac: 2, bb: 1 },
+        { singles: 4, doubles: 3, triples: 1, hr: 5, rbi: 22, o: 10, sac: 2, bb: 1 },
+        { singles: 4, doubles: 3, triples: 1, hr: 5, rbi: 22, o: 10, sac: 2, bb: 1 },
+    ],
 };
 
 const player2 = {
@@ -48,7 +52,7 @@ describe('Leaderboard Stats', () => {
         expect(setTopLeaders(players, 'hr')).toEqual([
             { playerName: 'santiago', total: 38 },
             { playerName: 'mike', total: 30 },
-            { playerName: 'vien', total: 30 },
+            { playerName: 'vien', total: 15 },
             { playerName: 'steven', total: 7 },
             { playerName: 'earl', total: 6 },
             { playerName: 'john', total: 6 },
@@ -59,11 +63,15 @@ describe('Leaderboard Stats', () => {
     it('Get top 5 of rbi', () => {
         expect(setTopLeaders(players, 'rbi')).toEqual([
             { playerName: 'santiago', total: 110 },
+            { playerName: 'vien', total: 66 },
             { playerName: 'mike', total: 62 },
-            { playerName: 'vien', total: 57 },
             { playerName: 'john', total: 18 },
             { playerName: 'earl', total: 12 },
         ]);
+    });
+
+    it('Get OPS', () => {
+        expect(getRateStatTotal(player1.games, 'avg')).toEqual(0.5);
     });
 
     //test rate stats here

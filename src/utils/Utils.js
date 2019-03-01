@@ -76,34 +76,55 @@ const getRateStatTotal = (games, statToCount) => {
     // think about how to involve getCountingStatTotal
     // test in utils.test.js
     const hits = getHits(
-        getCountingStatTotal(games, games.singles),
-        getCountingStatTotal(games, games.doubles),
-        getCountingStatTotal(games, games.triples),
-        getCountingStatTotal(games, games.hr),
+        getCountingStatTotal(games, 'singles'),
+        getCountingStatTotal(games, 'doubles'),
+        getCountingStatTotal(games, 'triples'),
+        getCountingStatTotal(games, 'hr'),
     );
-    const atBats = getAtBats(hits, games.o);
+
+    // do you need to call getCountingStatTotal on all games.xxx instances?
+
+    const atBats = getAtBats(hits, getCountingStatTotal(games, 'o'));
 
     switch (statToCount) {
         case 'avg':
-            return getAverage(hits, atBats); // needs hits and atBats
+            return getAverage(hits, atBats);
         case 'obp':
-            return getOnBasePercentage(hits, games.bb, atBats, games.sac);
-        // needs hits, walks, atBats, and sacrifices
+            return getOnBasePercentage(
+                hits,
+                getCountingStatTotal(games, 'bb'),
+                atBats,
+                getCountingStatTotal(games, 'sac'),
+            );
         case 'ops':
             return getOPS(
-                getOnBasePercentage(hits, games.bb, atBats, games.sac),
-                getSlugging(getTotalBases(games.singles, games.doubles, games.triples, games.hr)),
-            ); // needs hits, walks, atBats, sacrifices, and totalBases
+                getOnBasePercentage(
+                    hits,
+                    getCountingStatTotal(games, 'bb'),
+                    atBats,
+                    getCountingStatTotal(games, 'sac'),
+                ),
+                getSlugging(
+                    getTotalBases(
+                        getCountingStatTotal(games, 'singles'),
+                        getCountingStatTotal(games, 'doubles'),
+                        getCountingStatTotal(games, 'triples'),
+                        getCountingStatTotal(games, 'hr'),
+                    ),
+                    atBats,
+                ),
+            );
+
         case 'woba':
             return getWOBA(
-                games.bb,
-                games.singles,
-                games.doubles,
-                games.triples,
-                games.hr,
+                getCountingStatTotal(games, 'bb'),
+                getCountingStatTotal(games, 'singles'),
+                getCountingStatTotal(games, 'doubles'),
+                getCountingStatTotal(games, 'triples'),
+                getCountingStatTotal(games, 'hr'),
                 atBats,
-                games.sac,
-            ); // needs walks, singles, doubles, triples, homeRuns, atBats, // and sacrifices
+                getCountingStatTotal(games, 'sac'),
+            );
         default:
             return 0;
     }
@@ -114,12 +135,23 @@ const setTopLeaders = (players, stat) => {
     // describing the player name and their stat total
     let topLeaders = [];
     let comparison = [];
-
+    let total;
     players.forEach((element) => {
         const playerName = element.name;
-        //add if statement here to check for rate or counting stat,
-        //maybe look for decimal point
-        const total = getCountingStatTotal(element.games, stat);
+
+        // switch on woba/obp/ops/avg to do either rate or counting stat
+        switch (stat) {
+            case 'avg':
+            case 'obp':
+            case 'ops':
+            case 'woba':
+                total = getRateStatTotal(element.games, stat);
+                break;
+            default:
+                total = getCountingStatTotal(element.games, stat);
+                break;
+        }
+
         comparison.push({ playerName, total });
     });
 
@@ -162,4 +194,5 @@ export default {
     sortByNameLength,
     sortHighToLow,
     setTopLeaders,
+    getRateStatTotal,
 };
