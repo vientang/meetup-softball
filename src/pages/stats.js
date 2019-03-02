@@ -37,6 +37,16 @@ class Stats extends React.Component {
     }
 
     async componentDidMount() {
+        // GraphQL filter that could replace client side filter in the response below
+        // await API.graphql(
+        //     graphqlOperation(listGameStatss, {
+        //         filter: {
+        //             year: {
+        //                 eq: '2018',
+        //             },
+        //         },
+        //     }),
+        // );
         await API.graphql(graphqlOperation(listGameStatss))
             .then((response) => {
                 let playerStats = [];

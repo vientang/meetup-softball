@@ -6,7 +6,7 @@ import TransferListItem from './TransferListItem';
 import componentStyles from './components.module.css';
 
 const TransferBox = (props) => {
-    const { header, listItems, focusedItem, onItemFocus, onMoveDown, onMoveUp } = props;
+    const { header, listItems, locale, focusedItem, onItemFocus, onMoveDown, onMoveUp } = props;
     const focusedItemId = focusedItem && focusedItem.meetupId;
     return (
         <div className={componentStyles.teamTransferList}>
@@ -34,8 +34,20 @@ const TransferBox = (props) => {
                 })}
             </div>
             <div className={componentStyles.teamTransferSortOperations}>
-                <Button id={header} icon="caret-up" type="primary" onClick={onMoveUp} />
-                <Button id={header} icon="caret-down" type="primary" onClick={onMoveDown} />
+                <Button
+                    id={header}
+                    icon="caret-up"
+                    type="primary"
+                    onClick={onMoveUp}
+                    title={locale.moveUp}
+                />
+                <Button
+                    id={header}
+                    icon="caret-down"
+                    type="primary"
+                    onClick={onMoveDown}
+                    title={locale.moveDown}
+                />
             </div>
         </div>
     );
@@ -45,6 +57,10 @@ TransferBox.propTypes = {
     focusedItem: PropTypes.shape(),
     header: PropTypes.string,
     listItems: PropTypes.arrayOf(PropTypes.object),
+    locale: PropTypes.shape({
+        moveUp: PropTypes.string,
+        moveDown: PropTypes.string,
+    }),
     onItemFocus: PropTypes.func,
     onMoveDown: PropTypes.func,
     onMoveUp: PropTypes.func,
@@ -53,6 +69,7 @@ TransferBox.propTypes = {
 TransferBox.defaultProps = {
     header: '',
     listItems: [],
+    locale: {},
 };
 
 export default TransferBox;

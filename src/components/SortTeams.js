@@ -45,7 +45,7 @@ class SortTeams extends Component {
                 description: `You have ${winners.length} on the winning team and ${
                     losers.length
                 } on the losing team. Rebalance the teams and try again.`,
-                duration: 5,
+                duration: 3,
                 icon: <Icon type="warning" theme="filled" />,
                 style: { color: 'red' },
             });

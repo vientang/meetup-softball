@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import get from 'lodash/get';
 import { Button } from 'antd';
 import componentStyles from './components.module.css';
 import TransferBox from './TransferBox';
@@ -7,22 +8,21 @@ import TransferBox from './TransferBox';
 const addBattingOrder = (players) =>
     players.map((player, i) => ({ ...player, battingOrder: i + 1 }));
 
-const sortBattingOrder = (listBoxId, direction) => {
-    const { focusedItem, targetList, sourceList } = this.state;
-
-    const listToSort = listBoxId === 'winners' ? [...sourceList] : [...targetList];
+const sortBattingOrder = ({ focusedItem, list, direction }) => {
+    const listToSort = [...list];
     const currIndex = listToSort.findIndex((target) => target.meetupId === focusedItem.meetupId);
     const playerToMove = listToSort[currIndex];
 
-    // swap players in a list
-    if (direction === 'up') {
+    // sort players inside a list
+    // account for boundaries
+    if (direction === 'up' && currIndex > 0) {
         const playerToSwap = listToSort[currIndex - 1];
         listToSort[currIndex - 1] = playerToMove;
         listToSort[currIndex] = playerToSwap;
 
         return addBattingOrder(listToSort);
     }
-    if (direction === 'down') {
+    if (direction === 'down' && currIndex < list.length - 1) {
         const playerToSwap = listToSort[currIndex + 1];
         listToSort[currIndex + 1] = playerToMove;
         listToSort[currIndex] = playerToSwap;
@@ -32,7 +32,6 @@ const sortBattingOrder = (listBoxId, direction) => {
 
     return listToSort;
 };
-
 class TeamTransfer extends React.Component {
     constructor(props) {
         super(props);
@@ -57,14 +56,27 @@ class TeamTransfer extends React.Component {
     }
 
     /**
-     * Updates the new focused item when up and down keys are pressed.
-     * @param focusedItem
+     * Set focused item on click
+     * Deselect focused item if previous === current
      */
     setFocusedItem = (e) => {
         e.preventDefault();
         const focusedItem = e.currentTarget.getAttribute('data-id');
         const selectedPlayer = this.props.players.find((value) => value.name === focusedItem);
-        this.setState(() => ({ focusedItem: selectedPlayer }));
+        this.setState((prevState) => {
+            const prevFocused = get(prevState, 'focusedItem.name', null);
+            return { focusedItem: prevFocused === selectedPlayer.name ? null : selectedPlayer };
+        });
+    };
+
+    getListToSort = (id) => {
+        const {
+            locale: { source },
+        } = this.props;
+
+        const { targetList, sourceList } = this.state;
+
+        return id === source ? [...sourceList] : [...targetList];
     };
 
     handleChange = () => {
@@ -78,18 +90,20 @@ class TeamTransfer extends React.Component {
     handleAdd = () => {
         const { focusedItem, targetList, sourceList } = this.state;
 
-        const newSourceList = addBattingOrder(
-            sourceList.filter((player) => player.name !== focusedItem.name),
-        );
-        const newTargetList = addBattingOrder([...targetList, focusedItem]);
+        if (focusedItem) {
+            const newSourceList = addBattingOrder(
+                sourceList.filter((player) => player.name !== focusedItem.name),
+            );
+            const newTargetList = addBattingOrder([...targetList, focusedItem]);
 
-        this.setState(
-            () => ({
-                sourceList: newSourceList,
-                targetList: newTargetList,
-            }),
-            this.handleChange,
-        );
+            this.setState(
+                () => ({
+                    sourceList: newSourceList,
+                    targetList: newTargetList,
+                }),
+                this.handleChange,
+            );
+        }
     };
 
     /**
@@ -98,50 +112,80 @@ class TeamTransfer extends React.Component {
     handleRemove = () => {
         const { focusedItem, targetList, sourceList } = this.state;
 
-        const newSourceList = addBattingOrder([...sourceList, focusedItem]);
-        const newTargetList = addBattingOrder(
-            targetList.filter((player) => player.name !== focusedItem.name),
-        );
+        if (focusedItem) {
+            const newSourceList = addBattingOrder([...sourceList, focusedItem]);
+            const newTargetList = addBattingOrder(
+                targetList.filter((player) => player.name !== focusedItem.name),
+            );
 
-        this.setState(
-            () => ({
-                sourceList: newSourceList,
-                targetList: newTargetList,
-            }),
-            this.handleChange,
-        );
+            this.setState(
+                () => ({
+                    sourceList: newSourceList,
+                    targetList: newTargetList,
+                }),
+                this.handleChange,
+            );
+        }
     };
 
     /**
      * Move items up by one space
      */
     handleUp = (e) => {
-        const listBoxId = e.target.id;
-        const sortedList = sortBattingOrder(listBoxId, 'up');
+        const {
+            locale: { source, target },
+        } = this.props;
 
-        this.setState(
-            (prevState) => ({
-                sourceList: listBoxId === 'WINNERS' ? sortedList : prevState.sourceList,
-                targetList: listBoxId !== 'WINNERS' ? sortedList : prevState.targetList,
-            }),
-            this.handleChange,
-        );
+        const { focusedItem } = this.state;
+
+        if (focusedItem) {
+            const listBoxId = e.target.id;
+            const list = this.getListToSort(listBoxId);
+
+            const sortedList = sortBattingOrder({
+                direction: 'up',
+                focusedItem,
+                list,
+            });
+
+            this.setState(
+                (prevState) => ({
+                    sourceList: listBoxId === source ? sortedList : prevState.sourceList,
+                    targetList: listBoxId === target ? sortedList : prevState.targetList,
+                }),
+                this.handleChange,
+            );
+        }
     };
 
     /**
      * Move items down by one space
      */
     handleDown = (e) => {
-        const listBoxId = e.target.id;
-        const sortedList = sortBattingOrder(listBoxId, 'down');
+        const {
+            locale: { source, target },
+        } = this.props;
 
-        this.setState(
-            (prevState) => ({
-                sourceList: listBoxId === 'WINNERS' ? sortedList : prevState.sourceList,
-                targetList: listBoxId !== 'WINNERS' ? sortedList : prevState.targetList,
-            }),
-            this.handleChange,
-        );
+        const { focusedItem } = this.state;
+        const listBoxId = e.target.id;
+
+        if (focusedItem) {
+            const list = this.getListToSort(listBoxId);
+
+            const sortedList = sortBattingOrder({
+                direction: 'down',
+                focusedItem,
+                list,
+            });
+
+            this.setState(
+                (prevState) => ({
+                    sourceList: listBoxId === source ? sortedList : prevState.sourceList,
+                    targetList: listBoxId === target ? sortedList : prevState.targetList,
+                }),
+                this.handleChange,
+            );
+        }
     };
 
     render() {
@@ -151,8 +195,9 @@ class TeamTransfer extends React.Component {
         return (
             <div className={componentStyles.teamTransferBoxContainer}>
                 <TransferBox
-                    listItems={sourceList}
                     focusedItem={focusedItem}
+                    listItems={sourceList}
+                    locale={locale}
                     header={locale.source}
                     onItemFocus={this.setFocusedItem}
                     onMoveUp={this.handleUp}
@@ -163,8 +208,9 @@ class TeamTransfer extends React.Component {
                     <Button onClick={this.handleRemove} title={locale.moveToSource} icon="left" />
                 </div>
                 <TransferBox
-                    listItems={targetList}
                     focusedItem={focusedItem}
+                    listItems={targetList}
+                    locale={locale}
                     header={locale.target}
                     onItemFocus={this.setFocusedItem}
                     onMoveUp={this.handleUp}
@@ -202,17 +248,8 @@ TeamTransfer.defaultProps = {
     locale: {
         source: 'WINNERS',
         target: 'LOSERS',
-        restoreButton: 'Restore defaults',
-        moveAllToTarget: 'Move all to Target',
-        moveToTarget: 'Move to Losers',
-        moveToSource: 'Move to Winners',
-        moveAllToSource: 'Move all to Source',
-        moveTop: 'Move to Top',
         moveUp: 'Move Up',
         moveDown: 'Move Down',
-        moveBottom: 'Move to Bottom',
-        searchPlaceholder: 'Search Source',
-        locales: 'en-US',
     },
     players: [],
 };
