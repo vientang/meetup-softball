@@ -14,6 +14,7 @@ const {
     getSlugging,
     getTotalBases,
     getWOBA,
+    getRunsCreated,
 } = statsCalc;
 
 const createPlayer = (player) => {
@@ -69,6 +70,32 @@ const getCountingStatTotal = (games, statToCount) => {
         }
         return acc;
     }, 0);
+};
+
+const getRunsCreatedTotal = (games) => {
+    const hits = getHits(
+        getCountingStatTotal(games, 'singles'),
+        getCountingStatTotal(games, 'doubles'),
+        getCountingStatTotal(games, 'triples'),
+        getCountingStatTotal(games, 'hr'),
+    );
+
+    const atBats = getAtBats(hits, getCountingStatTotal(games, 'o'));
+    const totalBases = getTotalBases(
+        getCountingStatTotal(games, 'singles'),
+        getCountingStatTotal(games, 'doubles'),
+        getCountingStatTotal(games, 'triples'),
+        getCountingStatTotal(games, 'hr'),
+    );
+
+    return getRunsCreated(
+        hits,
+        getCountingStatTotal(games, 'bb'),
+        getCountingStatTotal(games, 'cs'),
+        totalBases,
+        getCountingStatTotal(games, 'sb'),
+        atBats,
+    );
 };
 
 const getRateStatTotal = (games, statToCount) => {
@@ -147,6 +174,9 @@ const setTopLeaders = (players, stat) => {
             case 'woba':
                 total = getRateStatTotal(element.games, stat);
                 break;
+            case 'rc':
+                total = getRunsCreatedTotal(element.games);
+                break;
             default:
                 total = getCountingStatTotal(element.games, stat);
                 break;
@@ -159,7 +189,7 @@ const setTopLeaders = (players, stat) => {
 
     topLeaders = comparison.slice(0, 5);
 
-    // comparison = comparison.slice(5);
+    // is there a tie for the 5th spot?
     comparison.slice(5).some((player) => {
         if (player.total === topLeaders[4].total) {
             topLeaders.push(player);
@@ -195,4 +225,5 @@ export default {
     sortHighToLow,
     setTopLeaders,
     getRateStatTotal,
+    getRunsCreatedTotal,
 };
