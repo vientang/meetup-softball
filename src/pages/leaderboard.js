@@ -1,6 +1,8 @@
 import React from 'react';
+import Layout from '../components/Layout';
 import LeaderCard from '../components/LeaderCard';
 import componentStyles from '../components/components.module.css';
+import styles from './pages.module.css';
 
 const players = [
     {
@@ -39,6 +41,8 @@ const cards = [
     'wOBA',
 ];
 
+const rateStats = ['Average', 'Winning Percentage', 'OPS', 'wOBA'];
+
 class LeaderBoard extends React.Component {
     constructor(props) {
         super(props);
@@ -47,11 +51,19 @@ class LeaderBoard extends React.Component {
 
     render() {
         return (
-            <div className={componentStyles.leaderBoard}>
-                {cards.map((card) => {
-                    return <LeaderCard players={players} title={card} />;
-                })}
-            </div>
+            <Layout className={styles.adminPage}>
+                <div className={componentStyles.leaderBoard}>
+                    {cards.map((card) => {
+                        return (
+                            <LeaderCard
+                                players={players}
+                                title={card}
+                                rate={rateStats.includes(card)}
+                            />
+                        );
+                    })}
+                </div>
+            </Layout>
         );
     }
 }

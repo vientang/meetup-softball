@@ -3,6 +3,20 @@
  * @param {Object} player data from meetup
  * @return {Object}
  */
+import statsCalc from './statsCalc';
+
+const {
+    getAtBats,
+    getAverage,
+    getHits,
+    getOnBasePercentage,
+    getOPS,
+    getSlugging,
+    getTotalBases,
+    getWOBA,
+    getRunsCreated,
+} = statsCalc;
+
 const createPlayer = (player) => {
     const { name, id, joined, group_profile, is_pro_admin, photo, status } = player.data;
     return {
@@ -58,15 +72,116 @@ const getCountingStatTotal = (games, statToCount) => {
     }, 0);
 };
 
+const getRunsCreatedTotal = (games) => {
+    const hits = getHits(
+        getCountingStatTotal(games, 'singles'),
+        getCountingStatTotal(games, 'doubles'),
+        getCountingStatTotal(games, 'triples'),
+        getCountingStatTotal(games, 'hr'),
+    );
+
+    const atBats = getAtBats(hits, getCountingStatTotal(games, 'o'));
+    const totalBases = getTotalBases(
+        getCountingStatTotal(games, 'singles'),
+        getCountingStatTotal(games, 'doubles'),
+        getCountingStatTotal(games, 'triples'),
+        getCountingStatTotal(games, 'hr'),
+    );
+
+    return getRunsCreated(
+        hits,
+        getCountingStatTotal(games, 'bb'),
+        getCountingStatTotal(games, 'cs'),
+        totalBases,
+        getCountingStatTotal(games, 'sb'),
+        atBats,
+    );
+};
+
+const getRateStatTotal = (games, statToCount) => {
+    // switch case for each rate stat and calculate for setTopLeaders
+    // think about how to involve getCountingStatTotal
+    // test in utils.test.js
+    const hits = getHits(
+        getCountingStatTotal(games, 'singles'),
+        getCountingStatTotal(games, 'doubles'),
+        getCountingStatTotal(games, 'triples'),
+        getCountingStatTotal(games, 'hr'),
+    );
+
+    // do you need to call getCountingStatTotal on all games.xxx instances?
+
+    const atBats = getAtBats(hits, getCountingStatTotal(games, 'o'));
+
+    switch (statToCount) {
+        case 'avg':
+            return getAverage(hits, atBats);
+        case 'obp':
+            return getOnBasePercentage(
+                hits,
+                getCountingStatTotal(games, 'bb'),
+                atBats,
+                getCountingStatTotal(games, 'sac'),
+            );
+        case 'ops':
+            return getOPS(
+                getOnBasePercentage(
+                    hits,
+                    getCountingStatTotal(games, 'bb'),
+                    atBats,
+                    getCountingStatTotal(games, 'sac'),
+                ),
+                getSlugging(
+                    getTotalBases(
+                        getCountingStatTotal(games, 'singles'),
+                        getCountingStatTotal(games, 'doubles'),
+                        getCountingStatTotal(games, 'triples'),
+                        getCountingStatTotal(games, 'hr'),
+                    ),
+                    atBats,
+                ),
+            );
+
+        case 'woba':
+            return getWOBA(
+                getCountingStatTotal(games, 'bb'),
+                getCountingStatTotal(games, 'singles'),
+                getCountingStatTotal(games, 'doubles'),
+                getCountingStatTotal(games, 'triples'),
+                getCountingStatTotal(games, 'hr'),
+                atBats,
+                getCountingStatTotal(games, 'sac'),
+            );
+        default:
+            return 0;
+    }
+};
+
 const setTopLeaders = (players, stat) => {
     // return an array of 5 objects
-    // describing the player name and their hr total
+    // describing the player name and their stat total
     let topLeaders = [];
     let comparison = [];
-
+    let total;
     players.forEach((element) => {
         const playerName = element.name;
-        const total = getCountingStatTotal(element.games, stat);
+
+        // switch on woba/obp/ops/avg to do either rate or counting stat
+        switch (stat) {
+            case 'avg':
+            case 'obp':
+            case 'ops':
+            case 'woba':
+                total = getRateStatTotal(element.games, stat);
+                break;
+            case 'rc':
+                total = getRunsCreatedTotal(element.games);
+                break;
+            default:
+                total = getCountingStatTotal(element.games, stat);
+                break;
+        }
+
         comparison.push({ playerName, total });
     });
 
@@ -74,7 +189,7 @@ const setTopLeaders = (players, stat) => {
 
     topLeaders = comparison.slice(0, 5);
 
-    // comparison = comparison.slice(5);
+    // is there a tie for the 5th spot?
     comparison.slice(5).some((player) => {
         if (player.total === topLeaders[4].total) {
             topLeaders.push(player);
@@ -109,4 +224,6 @@ export default {
     sortByNameLength,
     sortHighToLow,
     setTopLeaders,
+    getRateStatTotal,
+    getRunsCreatedTotal,
 };
