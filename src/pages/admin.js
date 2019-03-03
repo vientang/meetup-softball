@@ -67,6 +67,9 @@ class Admin extends React.Component {
     }
 
     getLastGameRecorded = async () => {
+        // TODO: Get the actual last game recorded by timeStamp
+        // simply getting the first item doesn't guarantee that it's the
+        // last game recorded
         const games = await API.graphql(graphqlOperation(listGameStatss, { limit: 1 }));
         return Number(games.data.listGameStatss.items[0].timeStamp);
     };

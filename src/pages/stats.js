@@ -4,6 +4,7 @@ import { listGameStatss } from '../graphql/queries';
 import Layout from '../components/Layout';
 import NotFoundImage from '../components/NotFoundImage';
 import StatsTable from '../components/StatsTable';
+import FilterBar from '../components/FilterBar';
 import { Utils, apiService } from '../utils';
 import styles from './pages.module.css';
 
@@ -12,9 +13,9 @@ const categories = [
     'gp',
     'ab',
     'h',
-    '1b',
-    '2b',
-    '3b',
+    'singles',
+    'doubles',
+    'triples',
     'r',
     'rbi',
     'hr',
@@ -82,6 +83,7 @@ class Stats extends React.Component {
         return (
             <>
                 <Layout className={styles.adminPage}>
+                    <FilterBar />
                     <StatsTable
                         categories={categories}
                         players={playerStats}

@@ -1,5 +1,5 @@
 :root {
-    --primary-color: #1890ff;
+    --pblue-4: #1890ff;
     --background-color: #ffffff;
     --border-color: #ffcccc;
     --pad-0: 0.25rem;
@@ -21,7 +21,7 @@
     --blue-0: rgba(0, 220, 255, 0.3);
     --blue-1: #00dcff;
     --blue-2: #00bdff;
-    --blue-3: #1c85f5;
+    --blue-3: #1890ff;
     --blue-4: #137bc2;
 }
 
@@ -187,7 +187,7 @@
 }
 
 .set-teams-btn:hover {
-    color: var(--primary-color);
+    color: var(--blue-3);
     cursor: pointer;
 }
 
@@ -203,7 +203,7 @@
 
 .team-transfer-box {
     background-color: var(--background-color);
-    color: var(--primary-color);
+    color: var(--blue-3);
 }
 
 .team-transfer-list {
@@ -287,4 +287,25 @@
 
 .team-transfer-list:hover .team-transfer-sort-operations {
     opacity: 1;
+}
+
+/* FILTER BAR */
+.filter-bar-label,
+.filter-bar-label-reset {
+    min-width: 112px;
+    color: var(--grey-5);
+    overflow-wrap: normal;
+    transition: color 200ms ease-in-out;
+}
+
+.filter-bar-label:hover,
+.filter-bar-label:hover svg path,
+.filter-bar-label-reset:hover {
+    color: var(--blue-3);
+    cursor: pointer;
+}
+
+.filter-bar-label-reset {
+    font-size: 0.6rem;
+    color: var(--blue-3);
 }

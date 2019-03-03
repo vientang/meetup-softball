@@ -63,12 +63,13 @@ const sortHighToLow = (a, b) => {
 // If no, don't save
 const getCountingStatTotal = (games, statToCount) => {
     return games.reduce((acc, cur) => {
+        let total = acc;
         if (typeof cur[statToCount] === 'number') {
-            acc += cur[statToCount];
+            total += cur[statToCount];
         } else {
-            acc += 0;
+            total += 0;
         }
-        return acc;
+        return total;
     }, 0);
 };
 
@@ -193,13 +194,16 @@ const setTopLeaders = (players, stat) => {
     comparison.slice(5).some((player) => {
         if (player.total === topLeaders[4].total) {
             topLeaders.push(player);
-        } else {
-            return true;
+            return false;
         }
+        return true;
     });
     return topLeaders;
 };
 
+/**
+ * Combine multiple functions into one
+ */
 const chainedFunc = (...funcs) =>
     funcs
         .filter((f) => f != null)

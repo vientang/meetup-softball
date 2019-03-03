@@ -10,9 +10,9 @@ const categories = [
     'battingOrder',
     'player',
     'o',
-    '1b',
-    '2b',
-    '3b',
+    'singles',
+    'doubles',
+    'triples',
     'hr',
     'bb',
     'sb',
@@ -39,6 +39,7 @@ class AdminStatsTable extends React.Component {
     handleSubmitData = (e) => {
         const { winners, losers } = this.state;
         e.preventDefault();
+
         this.props.onSubmit(winners, losers, this.props.selectedGame);
         this.setState(() => ({ dataSubmitted: true }));
     };

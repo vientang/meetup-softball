@@ -96,9 +96,9 @@ const combineDerivedStats = (adminStats, derivedStats) => {
  */
 const mergePlayerStatsForView = (existingStats = {}, currentStats) => {
     const countingStats = {
-        first: Number(currentStats['1b']),
-        second: Number(currentStats['2b']),
-        third: Number(currentStats['3b']),
+        first: Number(currentStats.singles),
+        second: Number(currentStats.doubles),
+        third: Number(currentStats.triples),
         hr: Number(currentStats.hr),
         o: Number(currentStats.o),
         bb: Number(currentStats.bb),
@@ -177,9 +177,9 @@ const mergePlayerStatsForView = (existingStats = {}, currentStats) => {
 const updateEntries = (gamePlayers, allPlayers) => {
     gamePlayers.forEach((player) => {
         const countingStats = {
-            first: Number(player['1b']),
-            second: Number(player['2b']),
-            third: Number(player['3b']),
+            first: Number(player.singles),
+            second: Number(player.doubles),
+            third: Number(player.triples),
             hr: Number(player.hr),
             o: Number(player.o),
             bb: Number(player.bb),

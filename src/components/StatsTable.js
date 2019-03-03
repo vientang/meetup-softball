@@ -8,9 +8,9 @@ import 'react-table/react-table.css';
 const defaultCategories = [
     'player',
     'o',
-    '1b',
-    '2b',
-    '3b',
+    'singles',
+    'doubles',
+    'triples',
     'hr',
     'bb',
     'sb',
@@ -20,6 +20,20 @@ const defaultCategories = [
     'r',
     'sac',
 ];
+
+const convertCategories = (category) => {
+    switch (category) {
+        case 'singles':
+            return '1b';
+        case 'doubles':
+            return '2b';
+        case 'triples':
+            return '3b';
+        default:
+            return category.toUpperCase();
+    }
+};
+
 class StatsTable extends React.Component {
     renderColumns = () => {
         const { categories, cellRenderer, sortMethod } = this.props;
@@ -27,7 +41,7 @@ class StatsTable extends React.Component {
         const columns = categories.map((category) => {
             const isBattingOrder = category === 'battingOrder';
             const isPlayerCat = category === 'player';
-            let header = category.toUpperCase();
+            let header = convertCategories(category);
             let width = 60;
             let maxWidth = 60;
 
