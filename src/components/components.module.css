@@ -290,6 +290,10 @@
 }
 
 /* FILTER BAR */
+.gender-filter-row {
+    margin-bottom: 1.2rem;
+}
+
 .filter-bar-select {
     border: 1px solid red;
 }
@@ -304,6 +308,7 @@
 }
 
 .filter-bar-label,
+.filter-bar-label-gender,
 .filter-bar-label-reset {
     min-width: 112px;
     color: var(--grey-5);
@@ -312,18 +317,28 @@
     transition: color 200ms ease-in-out;
 }
 
+.filter-bar-label-gender,
+.filter-bar-label-reset {
+    font-size: 0.6rem;
+    font-weight: normal;
+}
+
+.filter-bar-label-gender-active {
+    color: var(--blue-3);
+}
+
+.filter-bar-label-reset {
+    color: var(--blue-3);
+}
+
 .filter-bar-label-types:hover,
 .filter-bar-label:hover,
+.filter-bar-label-gender:hover,
+.filter-bar-label-gender:focus,
 .filter-bar-label:hover svg path,
 .filter-bar-label-reset:hover {
     color: var(--blue-3);
     cursor: pointer;
-}
-
-.filter-bar-label-reset {
-    font-size: 0.6rem;
-    font-weight: normal;
-    color: var(--blue-3);
 }
 
 .filter-bar-label-name {

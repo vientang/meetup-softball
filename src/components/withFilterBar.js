@@ -23,6 +23,7 @@ const withFilterBar = (Page) => {
                 fields: ['West Sunset', 'Parkside', 'Westlake'],
                 filterTypes: ['year', 'month', 'field', 'tournament', 'batting'],
                 gameStats: [],
+                gender: 'All',
                 playerStats: [],
                 tournaments: ['MLK'],
                 years: ['2019', '2018', '2017', '2016', '2015', '2014'],
@@ -89,6 +90,11 @@ const withFilterBar = (Page) => {
             });
         };
 
+        handleGenderSelection = (e) => {
+            const gender = e.target.id;
+            this.setState(() => ({ gender }));
+        };
+
         handleMouseEnter = (e) => {
             const currentFilter = e.target.id;
             this.setState(() => ({ currentFilter }));
@@ -109,7 +115,7 @@ const withFilterBar = (Page) => {
         };
 
         render() {
-            const { activeFilters, fields, filterTypes, tournaments, years } = this.state;
+            const { activeFilters, fields, filterTypes, gender, tournaments, years } = this.state;
 
             return (
                 <>
@@ -118,10 +124,12 @@ const withFilterBar = (Page) => {
                             activeFilters={activeFilters}
                             fields={fields}
                             filterTypes={filterTypes}
+                            gender={gender}
                             tournaments={tournaments}
                             years={years}
                             onResetFilters={this.handleResetFilters}
                             onFilterChange={this.handleFilterChange}
+                            onGenderSelection={this.handleGenderSelection}
                             onMouseEnter={this.handleMouseEnter}
                         />
                         <Page />

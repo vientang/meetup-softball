@@ -19,6 +19,28 @@ const ResetFilters = ({ onClick }) => (
     </Col>
 );
 
+const GenderFilter = ({ gender, onGenderSelection }) => {
+    const genderLabels = ['All', 'Men', 'Women'];
+
+    return (
+        <Row className={componentStyles.genderFilterRow}>
+            {genderLabels.map((genderLabel) => {
+                const genderClass = cn({
+                    [componentStyles.filterBarLabelGender]: true,
+                    [componentStyles.filterBarLabelGenderActive]: genderLabel === gender,
+                });
+                return (
+                    <Col key={genderLabel} span={1}>
+                        <span id={genderLabel} onClick={onGenderSelection} className={genderClass}>
+                            {genderLabel}
+                        </span>
+                    </Col>
+                );
+            })}
+        </Row>
+    );
+};
+
 const createMenu = (menus, onFilterChange) => {
     const allStats = 'all';
     return (
@@ -76,11 +98,15 @@ const renderFilterType = (props) => {
 };
 
 const FilterBar = (props) => {
+    const { gender, onGenderSelection, onResetFilters } = props;
     return (
-        <Row gutter={16}>
-            {renderFilterType(props)}
-            <ResetFilters onClick={props.onResetFilters} />
-        </Row>
+        <>
+            <GenderFilter gender={gender} onGenderSelection={onGenderSelection} />
+            <Row gutter={16}>
+                {renderFilterType(props)}
+                <ResetFilters onClick={onResetFilters} />
+            </Row>
+        </>
     );
 };
 
@@ -89,18 +115,21 @@ FilterBar.displayName = 'FilterBar';
 FilterBar.propTypes = {
     activeFilters: PropTypes.shape(),
     filterTypes: PropTypes.arrayOf(PropTypes.string),
+    gender: PropTypes.string,
     years: PropTypes.arrayOf(PropTypes.string),
     months: PropTypes.arrayOf(PropTypes.string),
     fields: PropTypes.arrayOf(PropTypes.string),
     tournaments: PropTypes.arrayOf(PropTypes.string),
     battingPositions: PropTypes.arrayOf(PropTypes.number),
     onFilterChange: PropTypes.func,
+    onGenderSelection: PropTypes.func,
     onMouseEnter: PropTypes.func,
     onResetFilters: PropTypes.func,
 };
 
 FilterBar.defaultProps = {
     filterTypes: ['2019', 'MONTHS', 'FIELDS', 'BATTING', 'TOURNAMENTS'],
+    gender: 'All',
     years: ['2019', '2018', '2017', '2016', '2015', '2014'],
     months: [
         'January',
