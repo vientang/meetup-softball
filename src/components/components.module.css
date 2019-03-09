@@ -290,14 +290,29 @@
 }
 
 /* FILTER BAR */
+.filter-bar-select {
+    border: 1px solid red;
+}
+
+.filter-bar-select:first-child {
+    border: 0;
+}
+
+.filter-bar-label-types {
+    font-size: 0.7rem;
+    color: var(--grey-3);
+}
+
 .filter-bar-label,
 .filter-bar-label-reset {
     min-width: 112px;
     color: var(--grey-5);
+    font-weight: bold;
     overflow-wrap: normal;
     transition: color 200ms ease-in-out;
 }
 
+.filter-bar-label-types:hover,
 .filter-bar-label:hover,
 .filter-bar-label:hover svg path,
 .filter-bar-label-reset:hover {
@@ -307,5 +322,16 @@
 
 .filter-bar-label-reset {
     font-size: 0.6rem;
+    font-weight: normal;
     color: var(--blue-3);
+}
+
+.filter-bar-label-name {
+    margin-right: var(--margin-0);
+}
+
+.filter-menu-all-label {
+    font-style: italic;
+    font-size: 0.6rem;
+    color: var(--grey-3);
 }

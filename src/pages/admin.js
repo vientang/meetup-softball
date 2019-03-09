@@ -68,8 +68,10 @@ class Admin extends React.Component {
 
     getLastGameRecorded = async () => {
         // TODO: Get the actual last game recorded by timeStamp
-        // simply getting the first item doesn't guarantee that it's the
-        // last game recorded
+        // simply getting the first item isn't guarantee to be the last game recorded
+        // TRY: increase the limit to 5 and prevent over fetching by looping through the 5
+        // TRY: save date in local storage - people say this is a bad idea
+        // TRY: as last resort, save last game entered into a different table and query that table
         const games = await API.graphql(graphqlOperation(listGameStatss, { limit: 1 }));
         return Number(games.data.listGameStatss.items[0].timeStamp);
     };

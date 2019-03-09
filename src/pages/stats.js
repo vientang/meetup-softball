@@ -1,12 +1,10 @@
 import React from 'react';
 import { API, graphqlOperation } from 'aws-amplify';
 import { listGameStatss } from '../graphql/queries';
-import Layout from '../components/Layout';
+import withFilterBar from '../components/withFilterBar';
 import NotFoundImage from '../components/NotFoundImage';
 import StatsTable from '../components/StatsTable';
-import FilterBar from '../components/FilterBar';
 import { Utils, apiService } from '../utils';
-import styles from './pages.module.css';
 
 const categories = [
     'player',
@@ -33,38 +31,37 @@ class Stats extends React.Component {
         super(props);
         this.state = {
             playerStats: [],
-            noDataFound: false,
+            noDataFound: true,
         };
     }
 
     async componentDidMount() {
         // GraphQL filter that could replace client side filter in the response below
-        // await API.graphql(
+        // const twenty19 = await API.graphql(
         //     graphqlOperation(listGameStatss, {
         //         filter: {
         //             year: {
-        //                 eq: '2018',
+        //                 eq: '2019',
         //             },
         //         },
         //     }),
         // );
-        await API.graphql(graphqlOperation(listGameStatss))
-            .then((response) => {
-                let playerStats = [];
-
-                response.data.listGameStatss.items
-                    .filter((game) => game.year === '2018')
-                    .forEach((game) => {
-                        const updatedStats = apiService.filterPlayerStats(game, playerStats);
-                        playerStats = Array.from(updatedStats.values());
-                    });
-
-                this.setState(() => ({ playerStats, noDataFound: playerStats.length < 1 }));
-                apiService.clearMasterList();
-            })
-            .catch((error) => {
-                throw new Error(error);
-            });
+        // console.log('2019', twenty19);
+        // await API.graphql(graphqlOperation(listGameStatss))
+        //     .then((response) => {
+        //         let playerStats = [];
+        //         response.data.listGameStatss.items
+        //             .filter((game) => game.year === '2019')
+        //             .forEach((game) => {
+        //                 const updatedStats = apiService.filterPlayerStats(game, playerStats);
+        //                 playerStats = Array.from(updatedStats.values());
+        //             });
+        //         this.setState(() => ({ playerStats, noDataFound: playerStats.length < 1 }));
+        //         apiService.clearMasterList();
+        //     })
+        //     .catch((error) => {
+        //         throw new Error(error);
+        //     });
     }
 
     render() {
@@ -72,28 +69,18 @@ class Stats extends React.Component {
         const style = { height: '800px' };
 
         if (noDataFound) {
-            return (
-                <Layout className={styles.adminPageSuccess}>
-                    <NotFoundImage />
-                    <h3>There's no data!</h3>
-                </Layout>
-            );
+            return <NotFoundImage />;
         }
 
         return (
-            <>
-                <Layout className={styles.adminPage}>
-                    <FilterBar />
-                    <StatsTable
-                        categories={categories}
-                        players={playerStats}
-                        sortMethod={Utils.sortHighToLow}
-                        style={style}
-                    />
-                </Layout>
-            </>
+            <StatsTable
+                categories={categories}
+                players={playerStats}
+                sortMethod={Utils.sortHighToLow}
+                style={style}
+            />
         );
     }
 }
 
-export default Stats;
+export default withFilterBar(Stats);
