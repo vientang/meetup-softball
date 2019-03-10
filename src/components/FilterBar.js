@@ -23,7 +23,7 @@ const GenderFilter = ({ gender, onGenderSelection }) => {
     const genderLabels = ['All', 'Men', 'Women'];
 
     return (
-        <Row className={componentStyles.genderFilterRow}>
+        <Row className={componentStyles.filterRow}>
             {genderLabels.map((genderLabel) => {
                 const genderClass = cn({
                     [componentStyles.filterBarLabelGender]: true,
@@ -102,7 +102,7 @@ const FilterBar = (props) => {
     return (
         <>
             <GenderFilter gender={gender} onGenderSelection={onGenderSelection} />
-            <Row gutter={16}>
+            <Row className={componentStyles.filterRow} gutter={16}>
                 {renderFilterType(props)}
                 <ResetFilters onClick={onResetFilters} />
             </Row>

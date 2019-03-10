@@ -1,8 +1,7 @@
 import React from 'react';
-import Layout from '../components/Layout';
+import withFilterBar from '../components/withFilterBar';
 import LeaderCard from '../components/LeaderCard';
 import componentStyles from '../components/components.module.css';
-import styles from './pages.module.css';
 
 const players = [
     {
@@ -51,21 +50,19 @@ class LeaderBoard extends React.Component {
 
     render() {
         return (
-            <Layout className={styles.adminPage}>
-                <div className={componentStyles.leaderBoard}>
-                    {cards.map((card) => {
-                        return (
-                            <LeaderCard
-                                players={players}
-                                title={card}
-                                rate={rateStats.includes(card)}
-                            />
-                        );
-                    })}
-                </div>
-            </Layout>
+            <div className={componentStyles.leaderBoard}>
+                {cards.map((card) => {
+                    return (
+                        <LeaderCard
+                            players={players}
+                            title={card}
+                            rate={rateStats.includes(card)}
+                        />
+                    );
+                })}
+            </div>
         );
     }
 }
 
-export default LeaderBoard;
+export default withFilterBar(LeaderBoard);

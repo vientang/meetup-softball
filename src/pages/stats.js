@@ -1,6 +1,6 @@
 import React from 'react';
-import { API, graphqlOperation } from 'aws-amplify';
-import { listGameStatss } from '../graphql/queries';
+import PropTypes from 'prop-types';
+import isEqual from 'lodash/isEqual';
 import withFilterBar from '../components/withFilterBar';
 import NotFoundImage from '../components/NotFoundImage';
 import StatsTable from '../components/StatsTable';
@@ -21,9 +21,14 @@ const categories = [
     'sb',
     'cs',
     'bb',
+    'sac',
     'k',
     'rc',
     'tb',
+    'obp',
+    'ops',
+    'slg',
+    'woba',
 ];
 
 class Stats extends React.Component {
@@ -31,45 +36,38 @@ class Stats extends React.Component {
         super(props);
         this.state = {
             playerStats: [],
-            noDataFound: true,
+            noDataFound: false,
         };
     }
 
-    async componentDidMount() {
-        // GraphQL filter that could replace client side filter in the response below
-        // const twenty19 = await API.graphql(
-        //     graphqlOperation(listGameStatss, {
-        //         filter: {
-        //             year: {
-        //                 eq: '2019',
-        //             },
-        //         },
-        //     }),
-        // );
-        // console.log('2019', twenty19);
-        // await API.graphql(graphqlOperation(listGameStatss))
-        //     .then((response) => {
-        //         let playerStats = [];
-        //         response.data.listGameStatss.items
-        //             .filter((game) => game.year === '2019')
-        //             .forEach((game) => {
-        //                 const updatedStats = apiService.filterPlayerStats(game, playerStats);
-        //                 playerStats = Array.from(updatedStats.values());
-        //             });
-        //         this.setState(() => ({ playerStats, noDataFound: playerStats.length < 1 }));
-        //         apiService.clearMasterList();
-        //     })
-        //     .catch((error) => {
-        //         throw new Error(error);
-        //     });
+    componentDidUpdate(prevProps) {
+        let playerStats = [];
+        const receivedNewStats = !isEqual(prevProps.gameData, this.props.gameData);
+        if (prevProps.gameData.length <= 0 || receivedNewStats) {
+            this.props.gameData.forEach((game) => {
+                const updatedStats = apiService.filterPlayerStats(game);
+                playerStats = Array.from(updatedStats.values());
+            });
+            this.updatePlayerStats(playerStats);
+        }
+        apiService.clearMasterList();
     }
 
+    updatePlayerStats = (playerStats) => {
+        this.setState(() => ({ playerStats, noDataFound: playerStats.length < 1 }));
+    };
+
     render() {
+        const { playerData } = this.props;
         const { playerStats, noDataFound } = this.state;
         const style = { height: '800px' };
 
         if (noDataFound) {
             return <NotFoundImage />;
+        }
+
+        if (playerData.length > 0) {
+            console.log('player data', playerData);
         }
 
         return (
@@ -82,5 +80,15 @@ class Stats extends React.Component {
         );
     }
 }
+
+Stats.propTypes = {
+    gameData: PropTypes.arrayOf(PropTypes.shape),
+    playerData: PropTypes.arrayOf(PropTypes.shape),
+};
+
+Stats.defaultProps = {
+    gameData: [],
+    playerData: [],
+};
 
 export default withFilterBar(Stats);

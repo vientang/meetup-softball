@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { API, graphqlOperation } from 'aws-amplify';
-import { listGameStatss } from '../graphql/queries';
+import { listGameStatss, listPlayerStatss } from '../graphql/queries';
 import Layout from './Layout';
 import FilterBar from './FilterBar';
 import styles from '../pages/pages.module.css';
@@ -28,6 +28,27 @@ const withFilterBar = (Page) => {
                 tournaments: ['MLK'],
                 years: ['2019', '2018', '2017', '2016', '2015', '2014'],
             };
+        }
+
+        async componentDidMount() {
+            const gameStats = await API.graphql(
+                graphqlOperation(listGameStatss, {
+                    filter: {
+                        year: {
+                            eq: defaultFilter,
+                        },
+                    },
+                }),
+            );
+            // const playerStats = await API.graphql(graphqlOperation(listPlayerStatss));
+
+            try {
+                this.setState(() => ({
+                    gameStats: gameStats.data.listGameStatss.items,
+                }));
+            } catch (error) {
+                throw new Error(`withFilterBar: ${error}`);
+            }
         }
 
         /**
@@ -115,7 +136,16 @@ const withFilterBar = (Page) => {
         };
 
         render() {
-            const { activeFilters, fields, filterTypes, gender, tournaments, years } = this.state;
+            const {
+                activeFilters,
+                fields,
+                filterTypes,
+                gameStats,
+                gender,
+                playerStats,
+                tournaments,
+                years,
+            } = this.state;
 
             return (
                 <>
@@ -132,7 +162,7 @@ const withFilterBar = (Page) => {
                             onGenderSelection={this.handleGenderSelection}
                             onMouseEnter={this.handleMouseEnter}
                         />
-                        <Page />
+                        <Page gameData={gameStats} playerData={playerStats} />
                     </Layout>
                 </>
             );

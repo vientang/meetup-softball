@@ -89,6 +89,7 @@ const mergedPlayerStats = [
         photos: 'http://photo',
         games: [
             {
+                ab: '1',
                 battingOrder: '1',
                 o: '1',
                 singles: '1',
@@ -124,6 +125,7 @@ const mergedPlayerStats = [
         photos: 'http://photo',
         games: [
             {
+                ab: '1',
                 battingOrder: '1',
                 o: '1',
                 singles: '1',

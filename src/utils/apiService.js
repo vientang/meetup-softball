@@ -19,6 +19,7 @@ const {
 } = statsCalc;
 
 const stats = [
+    'ab',
     'battingOrder',
     'bb',
     'cs',
@@ -27,6 +28,7 @@ const stats = [
     'hr',
     'k',
     'l',
+    'name',
     'o',
     'r',
     'rbi',
@@ -54,39 +56,36 @@ const ignoreKeystoTransform = [
     'id',
     'meetupId',
     'name',
-    'avg',
-    'h',
     'ab',
-    'tb',
-    'rc',
+    'avg',
+    'battingOrder',
+    'h',
+    'joined',
     'key',
     'obp',
     'ops',
+    'photos',
+    'profile',
+    'rc',
     'slg',
+    'status',
+    'tb',
     'woba',
 ];
 
 /**
- * LIST OF PLAYER STATS
- * HOLDS ALL OF THE RESOLVED STATS BASED ON A SPECIFIC FILTER
- */
-const masterList = new Map();
-const clearMasterList = () => {
-    masterList.clear();
-};
-
-/**
  * Stringify values and combine into one object
- * @param {*} adminStats
+ * @param {*} player
  * @param {*} derivedStats
  * @return {Object}
  */
-const combineDerivedStats = (adminStats, derivedStats) => {
+const combineDerivedStats = (player, derivedStats) => {
     const derivedWithStrings = {};
     Object.keys(derivedStats).forEach((key) => {
         derivedWithStrings[key] = String(derivedStats[key]);
     });
-    return Object.assign(adminStats, derivedWithStrings);
+
+    return Object.assign(pick(player, stats), derivedWithStrings);
 };
 
 /**
@@ -158,23 +157,33 @@ const mergePlayerStatsForView = (existingStats = {}, currentStats) => {
     const updatedStats = transform(currentStats, transformStats, {});
 
     return combineDerivedStats(updatedStats, {
-        h: hits,
         ab: atBats,
-        tb: totalBases,
-        rc: runsCreated,
+        battingOrder: updatedStats.battingOrder,
+        h: hits,
         obp: onBasePercentage,
-        slg: slugging,
         ops: onBasePlusSlugging,
+        rc: runsCreated,
+        slg: slugging,
+        tb: totalBases,
         woba: weightedOnBaseAverage,
         avg,
     });
 };
 
 /**
+ * LIST OF PLAYER STATS
+ * HOLDS ALL OF THE RESOLVED STATS BASED ON A SPECIFIC FILTER
+ */
+const masterList = new Map();
+const clearMasterList = () => {
+    masterList.clear();
+};
+
+/**
  * Build up master list with updated player stats
  * @return {Map} map of player stats
  */
-const updateEntries = (gamePlayers, allPlayers) => {
+const updateEntries = (gamePlayers) => {
     gamePlayers.forEach((player) => {
         const countingStats = {
             first: Number(player.singles),
@@ -185,12 +194,11 @@ const updateEntries = (gamePlayers, allPlayers) => {
             bb: Number(player.bb),
             cs: Number(player.cs),
             sb: Number(player.sb),
+            sac: Number(player.sac),
         };
 
         if (masterList.has(player.name)) {
-            const existingStats = allPlayers.find(
-                (prevPlayerStat) => prevPlayerStat.name === player.name,
-            );
+            const existingStats = masterList.get(player.name);
             const newStats = mergePlayerStatsForView(existingStats, player);
             masterList.set(player.name, newStats);
         } else {
@@ -226,15 +234,16 @@ const updateEntries = (gamePlayers, allPlayers) => {
 };
 
 /**
+ * StatsPage
  * Combines winners and losers
  * @return {Array} list of updated player stats
  */
-const filterPlayerStats = (gameData, allPlayers) => {
+const filterPlayerStats = (gameData) => {
     const winners = JSON.parse(gameData.winners);
     const losers = JSON.parse(gameData.losers);
     const gamePlayers = winners.players.concat(losers.players);
 
-    return updateEntries(gamePlayers, allPlayers);
+    return updateEntries(gamePlayers);
 };
 
 /**
@@ -296,7 +305,7 @@ const createPlayerGameLog = (players, currentGameStats) => {
         playerStats.meetupId = player.meetupId;
         playerStats.photos = player.photos;
         playerStats.games = [];
-        playerStats.games.push({ ...currentGameStats, ...gameStats });
+        playerStats.games.push({ ...gameStats, ...currentGameStats });
         return playerStats;
     });
 };
