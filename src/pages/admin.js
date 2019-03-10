@@ -67,13 +67,17 @@ class Admin extends React.Component {
     }
 
     getLastGameRecorded = async () => {
-        // TODO: Get the actual last game recorded by timeStamp
-        // simply getting the first item isn't guarantee to be the last game recorded
-        // TRY: increase the limit to 5 and prevent over fetching by looping through the 5
-        // TRY: save date in local storage - people say this is a bad idea
-        // TRY: as last resort, save last game entered into a different table and query that table
-        const games = await API.graphql(graphqlOperation(listGameStatss, { limit: 1 }));
-        return Number(games.data.listGameStatss.items[0].timeStamp);
+        const lastGameRecorded = localStorage.getItem('lastGameRecorded');
+
+        if (lastGameRecorded) {
+            // might need to parse
+            return lastGameRecorded;
+        }
+
+        const games = await API.graphql(graphqlOperation(listGameStatss));
+        const gamesSorted = games.data.listGameStatss.items.sort(Utils.sortTimeStamp);
+
+        return Number(gamesSorted[0].timeStamp);
     };
 
     createGame = (game) => {
@@ -108,7 +112,9 @@ class Admin extends React.Component {
 
         let rsvpList = await fetchJsonp(RSVPS)
             .then((response) => response.json())
-            .then((result) => result.data.filter((player) => player.rsvp.response === 'yes'))
+            .then((result) =>
+                result.data.filter((player) => player.rsvp && player.rsvp.response === 'yes'),
+            )
             .catch((error) => {
                 throw new Error(error);
             });
@@ -146,6 +152,8 @@ class Admin extends React.Component {
                 games,
             };
         });
+
+        localStorage.setItem('lastGameRecorded', gameStats.timeStamp);
     };
 
     /**
@@ -154,7 +162,10 @@ class Admin extends React.Component {
     handleSelectGame = async (e) => {
         const selectedGameId = e.key;
         const currentGame = this.state.games.find((game) => game.meetupId === selectedGameId);
-        currentGame.players = await this.getCurrentGamePlayers(currentGame);
+
+        if (!currentGame.players) {
+            currentGame.players = await this.getCurrentGamePlayers(currentGame);
+        }
 
         this.setState(() => {
             return {

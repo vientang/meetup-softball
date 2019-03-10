@@ -49,12 +49,9 @@ const sortByNameLength = (a, b) => {
     return a.length > b.length ? 1 : -1;
 };
 
-const sortHighToLow = (a, b) => {
-    const aa = Number(a);
-    const bb = Number(b);
+const sortHighToLow = (a, b) => (Number(a) < Number(b) ? 1 : -1);
 
-    return aa < bb ? 1 : -1;
-};
+const sortTimeStamp = (a, b) => (Number(a.timeStamp) < Number(b.timeStamp) ? 1 : -1);
 
 // Loop through all players
 // Calculate their counting stat totals
@@ -227,6 +224,7 @@ export default {
     createPlayer,
     sortByNameLength,
     sortHighToLow,
+    sortTimeStamp,
     setTopLeaders,
     getRateStatTotal,
     getRunsCreatedTotal,
