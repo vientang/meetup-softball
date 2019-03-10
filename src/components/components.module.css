@@ -317,16 +317,21 @@
     transition: color 200ms ease-in-out;
 }
 
+.filter-bar-label,
 .filter-bar-label-gender,
 .filter-bar-label-reset,
 .filter-bar-label-types {
     display: block;
-    max-width: 110px;
-    font-size: 0.7rem;
-    color: var(--grey-3);
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+}
+
+.filter-bar-label-gender,
+.filter-bar-label-reset,
+.filter-bar-label-types {
+    font-size: 0.7rem;
+    color: var(--grey-3);
 }
 
 .filter-bar-label-reset {

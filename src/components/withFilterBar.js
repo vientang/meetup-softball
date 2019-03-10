@@ -8,6 +8,9 @@ import styles from '../pages/pages.module.css';
 const defaultFilter = '2019';
 
 const withFilterBar = (Page) => {
+    // Store data outside of component context to prevent
+    // excessive network queries in the same app session
+    const dataMap = new Map();
     return class PageWithFilters extends Component {
         constructor(props) {
             super(props);
@@ -20,37 +23,67 @@ const withFilterBar = (Page) => {
                     batting: '',
                 },
                 currentFilter: '',
-                fields: ['West Sunset', 'Parkside', 'Westlake'],
+                fields: [''],
                 filterTypes: ['year', 'month', 'field', 'tournament', 'batting'],
                 gameStats: [],
                 gender: 'All',
                 playerStats: [],
-                tournaments: ['MLK'],
-                years: ['2019', '2018', '2017', '2016', '2015', '2014'],
+                tournaments: [''],
+                years: [''],
             };
         }
 
         async componentDidMount() {
             this.mounted = true;
-            const gameStats = await API.graphql(
-                graphqlOperation(listGameStatss, {
-                    filter: {
-                        year: {
-                            eq: defaultFilter,
-                        },
-                    },
-                }),
-            );
-            // const playerStats = await API.graphql(graphqlOperation(listPlayerStatss));
-
-            try {
+            const gameData = dataMap.get('gameData');
+            const playerData = dataMap.get('playerData');
+            if (gameData && playerData) {
                 if (this.mounted) {
                     this.setState(() => ({
-                        gameStats: gameStats.data.listGameStatss.items,
+                        gameStats: gameData.data.listGameStatss.items,
+                        playerStats: playerData.data.listPlayerStatss.items,
+                        years: dataMap.get('years'),
+                        fields: dataMap.get('fields'),
+                        tournaments: dataMap.get('tournaments'),
                     }));
                 }
-            } catch (error) {
-                throw new Error(`withFilterBar: ${error}`);
+            } else {
+                const gameStats = await API.graphql(
+                    graphqlOperation(listGameStatss, {
+                        filter: {
+                            year: {
+                                eq: defaultFilter,
+                            },
+                        },
+                    }),
+                );
+                const playerStats = await API.graphql(graphqlOperation(listPlayerStatss));
+
+                try {
+                    const years = this.getFilterMenu(gameStats.data.listGameStatss.items, 'year');
+                    const fields = this.getFilterMenu(gameStats.data.listGameStatss.items, 'field');
+                    const tournaments = this.getFilterMenu(
+                        gameStats.data.listGameStatss.items,
+                        'tournamentName',
+                    );
+                    dataMap.set('gameData', gameStats);
+                    dataMap.set('playerData', playerStats);
+                    dataMap.set('years', years);
+                    dataMap.set('fields', fields);
+                    dataMap.set('tournaments', tournaments);
+
+                    if (this.mounted) {
+                        this.setState(() => ({
+                            gameStats: gameStats.data.listGameStatss.items,
+                            playerStats: playerStats.data.listPlayerStatss.items,
+                            fields,
+                            years,
+                            tournaments,
+                        }));
+                    }
+                } catch (error) {
+                    throw new Error(`withFilterBar: ${error}`);
+                }
             }
         }
 
@@ -79,19 +112,17 @@ const withFilterBar = (Page) => {
         getPlayerStats = () => {};
 
         /**
-         * FilterBar fields menu
-         */
-        getAllFields = () => {};
-
-        /**
          * FilterBar years menu
          */
-        getAllYears = () => {};
-
-        /**
-         * FilterBar tournaments menu
-         */
-        getAllTournaments = () => {};
+        getFilterMenu = (gameStats = [], key) => {
+            const storage = {};
+            gameStats.forEach((game) => {
+                if (!storage[game[key]]) {
+                    storage[game[key]] = game[key];
+                }
+            });
+            return Object.values(storage);
+        };
 
         /**
          * LeaderBoard and LeaderCards
@@ -118,28 +149,35 @@ const withFilterBar = (Page) => {
             });
         };
 
+        /**
+         * Validate that we have gameStats before triggering
+         * any user interactions like mouse enter or clicks
+         */
+        updateState = (value) => {
+            if (this.state.gameStats.length > 0) {
+                this.setState(() => value);
+            }
+        };
+
         handleGenderSelection = (e) => {
             const gender = e.target.id;
-            this.setState(() => ({ gender }));
+            this.updateState({ gender });
         };
 
         handleMouseEnter = (e) => {
             const currentFilter = e.target.id;
-            this.setState(() => ({ currentFilter }));
+            this.updateState({ currentFilter });
         };
 
         handleResetFilters = () => {
-            this.setState(() => {
-                return {
-                    activeFilters: {
-                        year: defaultFilter,
-                        month: '',
-                        field: '',
-                        tournament: '',
-                        batting: '',
-                    },
-                };
-            });
+            const activeFilters = {
+                year: defaultFilter,
+                month: '',
+                field: '',
+                tournament: '',
+                batting: '',
+            };
+            this.updateState({ activeFilters });
         };
 
         render() {

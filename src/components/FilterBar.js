@@ -9,6 +9,7 @@ const menuItemStyle = {
     paddingBottom: 0,
 };
 
+const filterRowStyle = { display: 'flex', alignItems: 'center' };
 /* eslint-disable react/prop-types */
 const ResetFilters = ({ onClick }) => (
     <Col span={3}>
@@ -23,7 +24,7 @@ const GenderFilter = ({ gender, onGenderSelection }) => {
     const genderLabels = ['All', 'Men', 'Women'];
 
     return (
-        <Row className={componentStyles.filterRow}>
+        <Row className={componentStyles.filterRow} style={filterRowStyle}>
             {genderLabels.map((genderLabel) => {
                 const genderClass = cn({
                     [componentStyles.filterBarLabelGender]: true,
@@ -60,6 +61,24 @@ const createMenu = (menus, onFilterChange) => {
     );
 };
 
+/**
+ * Dynamic column width based on length of filter string
+ * @param {String} name
+ */
+const getColumnSpan = (name) => {
+    const len = name.length;
+    if (len < 5) {
+        return 3;
+    }
+    if (len < 10) {
+        return 4;
+    }
+    if (len < 15) {
+        return 5;
+    }
+    return 6;
+};
+
 const renderFilterType = (props) => {
     const {
         activeFilters,
@@ -81,9 +100,10 @@ const renderFilterType = (props) => {
             [componentStyles.filterBarLabel]: activeFilters[filter],
             [componentStyles.filterBarLabelTypes]: !activeFilters[filter],
         });
+        const colSpan = getColumnSpan(activeFilters[filter]);
 
         return (
-            <Col key={filter} span={4}>
+            <Col key={filter} span={colSpan}>
                 <Dropdown overlay={createMenu(menus[i], onFilterChange)}>
                     <span className={filterBarClass} onMouseEnter={onMouseEnter} id={filter}>
                         <span className={componentStyles.filterBarLabelName} id={filter}>
@@ -102,7 +122,7 @@ const FilterBar = (props) => {
     return (
         <>
             <GenderFilter gender={gender} onGenderSelection={onGenderSelection} />
-            <Row className={componentStyles.filterRow} gutter={16}>
+            <Row className={componentStyles.filterRow} gutter={16} style={filterRowStyle}>
                 {renderFilterType(props)}
                 <ResetFilters onClick={onResetFilters} />
             </Row>
