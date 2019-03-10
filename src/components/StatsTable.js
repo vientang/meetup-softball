@@ -35,6 +35,11 @@ const convertCategories = (category) => {
 };
 
 class StatsTable extends React.Component {
+    constructor() {
+        super();
+        this.tBodyComponent = null;
+    }
+
     renderColumns = () => {
         const { categories, cellRenderer, sortMethod } = this.props;
 
@@ -42,19 +47,16 @@ class StatsTable extends React.Component {
             const isBattingOrder = category === 'battingOrder';
             const isPlayerCat = category === 'player';
             let header = convertCategories(category);
-            let width = 60;
-            let maxWidth = 60;
+            let width = 50;
 
             if (isPlayerCat) {
                 header = 'Player';
-                width = 180;
-                maxWidth = 180;
+                width = 150;
             }
 
             if (isBattingOrder) {
                 header = '';
                 width = 40;
-                maxWidth = 40;
             }
 
             return {
@@ -63,7 +65,6 @@ class StatsTable extends React.Component {
                 accessor: category === 'player' ? 'name' : category,
                 resizable: false,
                 sortMethod,
-                maxWidth,
                 width,
             };
         });

@@ -31,6 +31,7 @@ const withFilterBar = (Page) => {
         }
 
         async componentDidMount() {
+            this.mounted = true;
             const gameStats = await API.graphql(
                 graphqlOperation(listGameStatss, {
                     filter: {
@@ -43,12 +44,18 @@ const withFilterBar = (Page) => {
             // const playerStats = await API.graphql(graphqlOperation(listPlayerStatss));
 
             try {
-                this.setState(() => ({
-                    gameStats: gameStats.data.listGameStatss.items,
-                }));
+                if (this.mounted) {
+                    this.setState(() => ({
+                        gameStats: gameStats.data.listGameStatss.items,
+                    }));
+                }
             } catch (error) {
                 throw new Error(`withFilterBar: ${error}`);
             }
+        }
+
+        componentWillUnmount() {
+            this.mounted = false;
         }
 
         /**

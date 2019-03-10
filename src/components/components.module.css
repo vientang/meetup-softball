@@ -26,6 +26,7 @@
 }
 
 .header,
+.nav-links,
 .admin-form,
 .admin-stats-table,
 .leader-board,
@@ -49,13 +50,18 @@
 
 .header {
     justify-content: space-between;
-    margin: 0 6.0875rem;
+    padding: var(--pad-5) 5.0875rem;
     max-width: 100%;
-    padding: var(--pad-5) var(--pad-3);
 }
 
 .header-h1 {
     margin: 0;
+}
+
+.nav-links {
+    justify-content: space-between;
+    width: 250px;
+    max-width: 250px;
 }
 
 .site-title {
@@ -302,13 +308,7 @@
     border: 0;
 }
 
-.filter-bar-label-types {
-    font-size: 0.7rem;
-    color: var(--grey-3);
-}
-
 .filter-bar-label,
-.filter-bar-label-gender,
 .filter-bar-label-reset {
     min-width: 112px;
     color: var(--grey-5);
@@ -318,12 +318,24 @@
 }
 
 .filter-bar-label-gender,
+.filter-bar-label-reset,
+.filter-bar-label-types {
+    display: block;
+    max-width: 110px;
+    font-size: 0.7rem;
+    color: var(--grey-3);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
 .filter-bar-label-reset {
     font-size: 0.6rem;
     font-weight: normal;
 }
 
 .filter-bar-label-gender-active {
+    font-weight: bold;
     color: var(--blue-3);
 }
 

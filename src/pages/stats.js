@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import isEqual from 'lodash/isEqual';
+import { Skeleton } from 'antd';
 import withFilterBar from '../components/withFilterBar';
 import NotFoundImage from '../components/NotFoundImage';
 import StatsTable from '../components/StatsTable';
@@ -9,7 +10,6 @@ import { Utils, apiService } from '../utils';
 const categories = [
     'player',
     'gp',
-    'ab',
     'h',
     'singles',
     'doubles',
@@ -58,16 +58,16 @@ class Stats extends React.Component {
     };
 
     render() {
-        const { playerData } = this.props;
+        const { gameData, playerData } = this.props;
         const { playerStats, noDataFound } = this.state;
-        const style = { height: '800px' };
+        const style = { height: 500, fontSize: 12 };
 
         if (noDataFound) {
             return <NotFoundImage />;
         }
 
-        if (playerData.length > 0) {
-            console.log('player data', playerData);
+        if (gameData.length === 0) {
+            return <Skeleton active paragraph={{ rows: 20, width: '100%' }} title={false} />;
         }
 
         return (
