@@ -2,10 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Icon, Tooltip } from 'antd';
 import componentStyles from './components.module.css';
+import { qualifiers } from '../utils/constants';
 
 const LeaderCard = ({ players, title, rate }) => {
     const cardTitle = rate ? (
-        <Tooltip title="prompt text">
+        <Tooltip title={qualifiers.avg}>
             <li className={componentStyles.leaderStatTitle}>
                 <span>{title}</span>
                 <Icon type="question-circle" />
@@ -22,17 +23,17 @@ const LeaderCard = ({ players, title, rate }) => {
             {players.map((player, i) => {
                 if (i === 0) {
                     return (
-                        <li className={componentStyles.leaderCardItem}>
+                        <li key={player.playerName} className={componentStyles.leaderCardItem}>
                             <Icon type="trophy" />
-                            <span>{player.name}</span>
-                            <span className={componentStyles.leaderCardStat}>{player.value}</span>
+                            <span>{player.playerName}</span>
+                            <span className={componentStyles.leaderCardStat}>{player.total}</span>
                         </li>
                     );
                 }
                 return (
-                    <li className={componentStyles.leaderCardItem}>
-                        <span>{player.name}</span>
-                        <span className={componentStyles.leaderCardStat}>{player.value}</span>
+                    <li key={player.playerName} className={componentStyles.leaderCardItem}>
+                        <span>{player.playerName}</span>
+                        <span className={componentStyles.leaderCardStat}>{player.total}</span>
                     </li>
                 );
             })}
