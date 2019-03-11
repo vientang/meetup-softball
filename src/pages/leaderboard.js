@@ -19,6 +19,7 @@ class LeaderBoard extends React.Component {
     // will only render 5 items
 
     componentDidMount() {
+        // console.log(this.props.gameData);
         const stats = cardTitles.map((cardTitle) => {
             return Utils.setTopLeaders(mockLeaderBoard, cardTitle.abbr);
         });

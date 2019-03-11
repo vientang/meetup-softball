@@ -8,13 +8,13 @@ const LeaderCard = ({ players, title, rate }) => {
     const cardTitle = rate ? (
         <Tooltip title={qualifiers.avg}>
             <li className={componentStyles.leaderStatTitle}>
-                <span>{title}</span>
+                <span>{title.name}</span>
                 <Icon type="question-circle" />
             </li>
         </Tooltip>
     ) : (
         <li className={componentStyles.leaderStatTitle}>
-            <span>{title}</span>
+            <span>{title.name}</span>
         </li>
     );
     return (
@@ -43,7 +43,7 @@ const LeaderCard = ({ players, title, rate }) => {
 
 LeaderCard.propTypes = {
     players: PropTypes.arrayOf(PropTypes.object),
-    title: PropTypes.string,
+    title: PropTypes.shape(),
     rate: PropTypes.bool,
 };
 
