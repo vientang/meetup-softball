@@ -40,6 +40,7 @@ const Layout = ({ className, children, style }) => (
     />
 );
 
+Layout.displayName = 'Layout';
 Layout.propTypes = {
     className: PropTypes.string,
     children: PropTypes.node.isRequired,

@@ -177,7 +177,6 @@ const setTopLeaders = (players, stat) => {
                 break;
             default:
                 total = getCountingStatTotal(element.games, stat);
-                console.log('stats', { total, stat });
                 break;
         }
         comparison.push({ playerName, total });

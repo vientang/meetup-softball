@@ -13,8 +13,6 @@ import { listGameStatss, listPlayerStatss } from '../graphql/queries';
 import { Utils, apiService } from '../utils';
 import styles from './pages.module.css';
 
-const { GAMES_URL, PLAYER_URL, RSVP_URL } = process.env;
-
 class Admin extends React.Component {
     constructor(props) {
         super(props);
@@ -34,11 +32,12 @@ class Admin extends React.Component {
      * Merge each player name and meetup id with the stats categories
      */
     async componentDidMount() {
+        this.mounted = true;
         const lastGameTimeStamp = await this.getLastGameRecorded();
 
         const games = [];
 
-        await fetchJsonp(GAMES_URL)
+        await fetchJsonp(process.env.GAMES_URL)
             .then((response) => response.json())
             .then((result) => {
                 result.data.forEach((game) => {
@@ -59,11 +58,17 @@ class Admin extends React.Component {
         const currentGame = games[0];
         currentGame.players = await this.getCurrentGamePlayers(currentGame);
 
-        this.setState(() => ({
-            selectedGameId: currentGame.meetupId,
-            currentGame,
-            games,
-        }));
+        if (this.mounted) {
+            this.setState(() => ({
+                selectedGameId: currentGame.meetupId,
+                currentGame,
+                games,
+            }));
+        }
+    }
+
+    componentWillUnmount() {
+        this.mounted = false;
     }
 
     getLastGameRecorded = async () => {
@@ -108,7 +113,9 @@ class Admin extends React.Component {
     };
 
     getCurrentGamePlayers = async (currentGame) => {
-        const RSVPS = `${RSVP_URL}${currentGame.meetupId}/attendance?&sign=true&photo-host=public`;
+        const RSVPS = `${process.env.RSVP_URL}${
+            currentGame.meetupId
+        }/attendance?&sign=true&photo-host=public`;
 
         let rsvpList = await fetchJsonp(RSVPS)
             .then((response) => response.json())
@@ -120,7 +127,7 @@ class Admin extends React.Component {
             });
 
         rsvpList = await rsvpList.map((player) =>
-            fetchJsonp(`${PLAYER_URL}${player.member.id}?&sign=true&photo-host=public`)
+            fetchJsonp(`${process.env.PLAYER_URL}${player.member.id}?&sign=true&photo-host=public`)
                 .then((response) => response.json())
                 .then((playerResult) => playerResult),
         );

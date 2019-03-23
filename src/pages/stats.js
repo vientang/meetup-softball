@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'gatsby';
 import isEqual from 'lodash/isEqual';
 import { Skeleton } from 'antd';
 import withFilterBar from '../components/withFilterBar';
@@ -57,6 +58,26 @@ class Stats extends React.Component {
         this.setState(() => ({ playerStats, noDataFound: playerStats.length < 1 }));
     };
 
+    renderCell = (cellInfo) => {
+        const { playerStats } = this.state;
+        const cellValue = playerStats[cellInfo.index][cellInfo.column.id];
+        const playerName = playerStats[cellInfo.index].name;
+        if (cellValue === playerName) {
+            return (
+                <Link
+                    to="/player"
+                    state={{
+                        playerName,
+                        playerStats: this.state.playerStats,
+                    }}
+                >
+                    {playerName}
+                </Link>
+            );
+        }
+        return cellValue;
+    };
+
     render() {
         const { gameData, playerData } = this.props;
         const { playerStats, noDataFound } = this.state;
@@ -73,6 +94,7 @@ class Stats extends React.Component {
         return (
             <StatsTable
                 categories={categories}
+                cellRenderer={this.renderCell}
                 players={playerStats}
                 sortMethod={Utils.sortHighToLow}
                 style={style}

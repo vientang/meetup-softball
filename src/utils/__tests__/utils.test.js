@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import Utils from '../Utils';
 import mockData from '../mockData';
 
@@ -6,14 +7,12 @@ const { setTopLeaders, getRateStatTotal, getRunsCreatedTotal } = Utils;
 
 describe('Leaderboard Stats', () => {
     it('Get top 5 of home runs', () => {
-        expect(setTopLeaders(mockLeaderBoard, 'triples')).toEqual([
-            { playerName: 'santiago', total: 3 },
-            { playerName: 'carlos', total: 2 },
-            { playerName: 'mike', total: 2 },
-            { playerName: 'steven', total: 2 },
-            { playerName: 'natcha', total: 1 },
+        expect(setTopLeaders(mockLeaderBoard, 'hr')).toEqual([
+            { playerName: 'carlos', total: 3 },
+            { playerName: 'vien', total: 2 },
+            { playerName: 'steven', total: 1 },
             { playerName: 'laura', total: 1 },
-            { playerName: 'vien', total: 1 },
+            { playerName: 'mike', total: 1 },
         ]);
     });
 
@@ -22,8 +21,8 @@ describe('Leaderboard Stats', () => {
             { playerName: 'carlos', total: 14 },
             { playerName: 'mike', total: 8 },
             { playerName: 'vien', total: 7 },
-            { playerName: 'laura', total: 5 },
             { playerName: 'steven', total: 5 },
+            { playerName: 'laura', total: 5 },
         ]);
     });
 
