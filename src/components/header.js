@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'gatsby';
 import componentStyles from './components.module.css';
 
@@ -24,5 +25,10 @@ const Header = () => ({ siteTitle }) => (
         </div>
     </header>
 );
+
+Header.displayName = 'Header';
+Header.propTypes = {
+    siteTitle: PropTypes.string,
+};
 
 export default Header();

@@ -1,11 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'gatsby';
 import isEqual from 'lodash/isEqual';
+import { Link } from 'gatsby';
 import { Skeleton } from 'antd';
-import withFilterBar from '../components/withFilterBar';
-import NotFoundImage from '../components/NotFoundImage';
-import StatsTable from '../components/StatsTable';
+import { withFilterBar, NotFoundImage, StatsTable } from '../components';
 import { Utils, apiService } from '../utils';
 
 const categories = [
@@ -32,6 +30,8 @@ const categories = [
     'woba',
 ];
 
+const statsTableStyle = { height: 500, fontSize: 12 };
+const skeletonConfig = { rows: 20, width: '100%' };
 class Stats extends React.Component {
     constructor(props) {
         super(props);
@@ -63,9 +63,13 @@ class Stats extends React.Component {
         const cellValue = playerStats[cellInfo.index][cellInfo.column.id];
         const playerName = playerStats[cellInfo.index].name;
         if (cellValue === playerName) {
+            const slug = playerName
+                .split(' ')
+                .join('_')
+                .toLowerCase();
             return (
                 <Link
-                    to="/player"
+                    to={`/player?name=${slug}`}
                     state={{
                         playerName,
                         playerStats: this.state.playerStats,
@@ -81,14 +85,13 @@ class Stats extends React.Component {
     render() {
         const { gameData, playerData } = this.props;
         const { playerStats, noDataFound } = this.state;
-        const style = { height: 500, fontSize: 12 };
 
         if (noDataFound) {
             return <NotFoundImage />;
         }
 
         if (gameData.length === 0) {
-            return <Skeleton active paragraph={{ rows: 20, width: '100%' }} title={false} />;
+            return <Skeleton active paragraph={skeletonConfig} title={false} />;
         }
 
         return (
@@ -97,7 +100,7 @@ class Stats extends React.Component {
                 cellRenderer={this.renderCell}
                 stats={playerStats}
                 sortMethod={Utils.sortHighToLow}
-                style={style}
+                style={statsTableStyle}
             />
         );
     }

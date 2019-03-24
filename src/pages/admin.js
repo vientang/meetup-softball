@@ -1,13 +1,9 @@
 /* eslint-disable no-undef */
 import React from 'react';
+import fetchJsonp from 'fetch-jsonp';
 import { API, graphqlOperation } from 'aws-amplify';
 import { withAuthenticator, SignIn, Greetings } from 'aws-amplify-react';
-import fetchJsonp from 'fetch-jsonp';
-import Layout from '../components/Layout';
-import SuccessImage from '../components/SuccessImage';
-import GameMenu from '../components/GameMenu';
-import AdminStatsTable from '../components/AdminStatsTable';
-import SortTeams from '../components/SortTeams';
+import { AdminStatsTable, GameMenu, Layout, SortTeams, SuccessImage } from '../components';
 import { createGameStats, updatePlayerStats } from '../graphql/mutations';
 import { listGameStatss, listPlayerStatss } from '../graphql/queries';
 import { Utils, apiService } from '../utils';

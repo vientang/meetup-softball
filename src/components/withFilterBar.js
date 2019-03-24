@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { API, graphqlOperation } from 'aws-amplify';
 import { listGameStatss, listPlayerStatss } from '../graphql/queries';
 import Layout from './Layout';
@@ -12,6 +13,10 @@ const withFilterBar = (Page) => {
     // excessive network queries in the same app session
     const dataMap = new Map();
     return class PageWithFilters extends Component {
+        static propTypes = {
+            location: PropTypes.shape(),
+        };
+
         constructor(props) {
             super(props);
             this.state = {
@@ -205,6 +210,7 @@ const withFilterBar = (Page) => {
                 return (
                     <Layout className={styles.adminPage}>
                         <Page
+                            location={this.props.location}
                             gameData={gameStats}
                             playerData={playerStats}
                             filterBar={this.renderFilterBar()}
@@ -216,7 +222,11 @@ const withFilterBar = (Page) => {
                 <>
                     <Layout className={styles.adminPage}>
                         {this.renderFilterBar()}
-                        <Page gameData={gameStats} playerData={playerStats} />
+                        <Page
+                            gameData={gameStats}
+                            playerData={playerStats}
+                            location={this.props.location}
+                        />
                     </Layout>
                 </>
             );

@@ -1,10 +1,9 @@
 import React from 'react';
-import withFilterBar from '../components/withFilterBar';
-import LeaderCard from '../components/LeaderCard';
-import componentStyles from '../components/components.module.css';
-import mockData from '../utils/mockData';
-import { cardTitles } from '../utils/constants';
+import { withFilterBar, LeaderCard } from '../components';
 import { Utils } from '../utils';
+import { cardTitles } from '../utils/constants';
+import mockData from '../utils/mockData';
+import componentStyles from '../components/components.module.css';
 
 const { mockLeaderBoard } = mockData;
 

@@ -2,10 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
-import withFilterBar from '../components/withFilterBar';
-import PlayerInfo from '../components/PlayerInfo';
-import CareerStats from '../components/CareerStats';
-import PlayerGameLog from '../components/PlayerGameLog';
+import { withFilterBar, CareerStats, PlayerGameLog, PlayerInfo } from '../components';
 
 const careerStats = [
     {
