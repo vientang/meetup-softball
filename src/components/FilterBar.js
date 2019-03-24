@@ -121,7 +121,7 @@ const FilterBar = (props) => {
     const { gender, onGenderSelection, onResetFilters } = props;
     return (
         <>
-            <GenderFilter gender={gender} onGenderSelection={onGenderSelection} />
+            {gender && <GenderFilter gender={gender} onGenderSelection={onGenderSelection} />}
             <Row className={componentStyles.filterRow} gutter={16} style={filterRowStyle}>
                 {renderFilterType(props)}
                 <ResetFilters onClick={onResetFilters} />
@@ -149,7 +149,6 @@ FilterBar.propTypes = {
 
 FilterBar.defaultProps = {
     filterTypes: ['2019', 'MONTHS', 'FIELDS', 'BATTING', 'TOURNAMENTS'],
-    gender: 'All',
     years: ['2019', '2018', '2017', '2016', '2015', '2014'],
     months: [
         'January',

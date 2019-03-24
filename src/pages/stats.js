@@ -95,7 +95,7 @@ class Stats extends React.Component {
             <StatsTable
                 categories={categories}
                 cellRenderer={this.renderCell}
-                players={playerStats}
+                stats={playerStats}
                 sortMethod={Utils.sortHighToLow}
                 style={style}
             />

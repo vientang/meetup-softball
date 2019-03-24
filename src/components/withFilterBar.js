@@ -180,33 +180,42 @@ const withFilterBar = (Page) => {
             this.updateState({ activeFilters });
         };
 
-        render() {
-            const {
-                activeFilters,
-                fields,
-                filterTypes,
-                gameStats,
-                gender,
-                playerStats,
-                tournaments,
-                years,
-            } = this.state;
+        renderFilterBar = () => {
+            const { activeFilters, fields, filterTypes, gender, tournaments, years } = this.state;
+            return (
+                <FilterBar
+                    activeFilters={activeFilters}
+                    fields={fields}
+                    filterTypes={filterTypes}
+                    gender={Page.displayName === 'Player' ? null : gender}
+                    tournaments={tournaments}
+                    years={years}
+                    onResetFilters={this.handleResetFilters}
+                    onFilterChange={this.handleFilterChange}
+                    onGenderSelection={this.handleGenderSelection}
+                    onMouseEnter={this.handleMouseEnter}
+                />
+            );
+        };
 
+        render() {
+            const { gameStats, playerStats } = this.state;
+
+            if (Page.displayName === 'Player') {
+                return (
+                    <Layout className={styles.adminPage}>
+                        <Page
+                            gameData={gameStats}
+                            playerData={playerStats}
+                            filterBar={this.renderFilterBar()}
+                        />
+                    </Layout>
+                );
+            }
             return (
                 <>
                     <Layout className={styles.adminPage}>
-                        <FilterBar
-                            activeFilters={activeFilters}
-                            fields={fields}
-                            filterTypes={filterTypes}
-                            gender={gender}
-                            tournaments={tournaments}
-                            years={years}
-                            onResetFilters={this.handleResetFilters}
-                            onFilterChange={this.handleFilterChange}
-                            onGenderSelection={this.handleGenderSelection}
-                            onMouseEnter={this.handleMouseEnter}
-                        />
+                        {this.renderFilterBar()}
                         <Page gameData={gameStats} playerData={playerStats} />
                     </Layout>
                 </>

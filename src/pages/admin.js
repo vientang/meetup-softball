@@ -182,6 +182,21 @@ class Admin extends React.Component {
         });
     };
 
+    handleCancelGame = (e) => {
+        e.stopPropagation();
+        const selectedGameId = e.target.id;
+        const games = this.state.games.filter((game) => game.meetupId !== selectedGameId);
+        const currentGame = games[0];
+
+        this.setState(() => {
+            return {
+                selectedGameId: currentGame ? currentGame.meetupId : '',
+                currentGame,
+                games,
+            };
+        });
+    };
+
     handleSetTeams = (winners, losers) => {
         this.setState(() => ({ areTeamsSorted: true, winners, losers }));
     };
@@ -207,6 +222,7 @@ class Admin extends React.Component {
                                 games={games}
                                 selectedGame={selectedGameId}
                                 onGameSelection={this.handleSelectGame}
+                                onGameCancel={this.handleCancelGame}
                             />
                             <SortTeams data={currentGame} setTeams={this.handleSetTeams} />
                         </>

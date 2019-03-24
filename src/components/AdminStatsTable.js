@@ -151,7 +151,7 @@ class AdminStatsTable extends React.Component {
                 <h2>{this.props.game}</h2>
                 <h3>Winners</h3>
                 <StatsTable
-                    players={winners}
+                    stats={winners}
                     categories={categories}
                     cellRenderer={this.renderWinnerEditableCell}
                     showPagination={false}
@@ -159,7 +159,7 @@ class AdminStatsTable extends React.Component {
                 />
                 <h3>Losers</h3>
                 <StatsTable
-                    players={losers}
+                    stats={losers}
                     categories={categories}
                     cellRenderer={this.renderLoserEditableCell}
                     showPagination={false}

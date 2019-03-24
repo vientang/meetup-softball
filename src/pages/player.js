@@ -4,6 +4,54 @@ import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import withFilterBar from '../components/withFilterBar';
 import PlayerInfo from '../components/PlayerInfo';
+import CareerStats from '../components/CareerStats';
+import PlayerGameLog from '../components/PlayerGameLog';
+
+const careerStats = [
+    {
+        gp: '2',
+        w: '.529',
+        singles: '1',
+        doubles: '1',
+        triples: '1',
+        hr: '1',
+        rbi: '1',
+        r: '1',
+        sb: '1',
+        cs: '0',
+        k: '1',
+        bb: '1',
+        avg: '.600',
+        ab: '1',
+        tb: '1',
+        rc: '.800',
+        h: '1',
+        sac: '1',
+    },
+];
+
+const gameStats = [
+    {
+        game: 'Game 245 WWS',
+        gp: '2',
+        singles: '1',
+        doubles: '1',
+        triples: '1',
+        hr: '1',
+        rbi: '1',
+        r: '1',
+        sb: '1',
+        cs: '0',
+        k: '1',
+        bb: '1',
+        avg: '.600',
+        ab: '1',
+        tb: '1',
+        rc: '.800',
+        h: '1',
+        sac: '1',
+    },
+];
 
 class Player extends React.Component {
     constructor() {
@@ -26,14 +74,12 @@ class Player extends React.Component {
                 // TODO: calculate the players career stats
                 // replace the value with players calculated stats
                 localStorage.setItem('currentPlayer', player);
-                console.log('current player', playerInMemory);
             }
             this.setState(() => ({ playerName: player }));
         } else if (playerInMemory) {
             // if reached, player page was refreshed
             // window.history is gone but we've saved it in localStorage
             // so we're good!
-            console.log('playerInMemory', playerInMemory);
             this.setState(() => ({
                 playerName: playerInMemory,
             }));
@@ -43,7 +89,6 @@ class Player extends React.Component {
     async componentWillUnmount() {
         const playerInMemory = await localStorage.getItem('currentPlayer');
         if (playerInMemory) {
-            console.log('componentWillUnmount', playerInMemory);
             localStorage.removeItem('currentPlayer');
         }
     }
@@ -52,12 +97,16 @@ class Player extends React.Component {
         return (
             <div>
                 <PlayerInfo playerInfo={{ name: this.state.playerName }} />
+                <CareerStats filterBar={this.props.filterBar} stats={careerStats} />
+                <PlayerGameLog stats={gameStats} />
             </div>
         );
     }
 }
 
+Player.displayName = 'Player';
 Player.propTypes = {
+    filterBar: PropTypes.node,
     gameData: PropTypes.arrayOf(PropTypes.shape),
     playerData: PropTypes.arrayOf(PropTypes.shape),
 };

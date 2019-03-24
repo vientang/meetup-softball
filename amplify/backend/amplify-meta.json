@@ -55,7 +55,7 @@
 			"service": "AppSync",
 			"providerPlugin": "awscloudformation",
 			"output": {
-				"securityType": "AMAZON_COGNITO_USER_POOLS",
+				"securityType": "AWS_IAM",
 				"GraphQLAPIIdOutput": "7sbddxnl2vdqba2crb42uo5aba",
 				"GraphQLAPIEndpointOutput": "https://eritvzcjrjhr7lh2yyut6zud2e.appsync-api.us-east-1.amazonaws.com/graphql",
 				"GraphQLAPIKeyOutput": "da2-lingkfqqqjaixnyxmefb57njra",

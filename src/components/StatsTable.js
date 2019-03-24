@@ -6,22 +6,26 @@ import componentStyles from './components.module.css';
 import 'react-table/react-table.css';
 
 const defaultCategories = [
-    'player',
-    'o',
+    '',
+    'gp',
+    'h',
     'singles',
     'doubles',
     'triples',
+    'r',
+    'rbi',
     'hr',
-    'bb',
+    'avg',
     'sb',
     'cs',
-    'k',
-    'rbi',
-    'r',
+    'bb',
     'sac',
+    'k',
+    'rc',
+    'tb',
 ];
 
-const convertCategories = (category) => {
+const convertHeaderLabel = (category) => {
     switch (category) {
         case 'singles':
             return '1b';
@@ -29,8 +33,29 @@ const convertCategories = (category) => {
             return '2b';
         case 'triples':
             return '3b';
+        case 'player':
+            return 'Player';
+        case 'w':
+            return 'WIN %';
+        case '':
+            return '';
         default:
             return category.toUpperCase();
+    }
+};
+
+const convertColumnWidth = (category) => {
+    switch (category) {
+        case 'battingOrder':
+            return '40';
+        case 'player':
+            return 150;
+        case 'w':
+            return 75;
+        case '':
+            return 150;
+        default:
+            return 50;
     }
 };
 
@@ -44,20 +69,8 @@ class StatsTable extends React.Component {
         const { categories, cellRenderer, sortMethod } = this.props;
 
         const columns = categories.map((category) => {
-            const isBattingOrder = category === 'battingOrder';
-            const isPlayerCat = category === 'player';
-            let header = convertCategories(category);
-            let width = 50;
-
-            if (isPlayerCat) {
-                header = 'Player';
-                width = 150;
-            }
-
-            if (isBattingOrder) {
-                header = '';
-                width = 40;
-            }
+            const header = convertHeaderLabel(category);
+            const width = convertColumnWidth(category);
 
             return {
                 Header: header,
@@ -72,9 +85,9 @@ class StatsTable extends React.Component {
     };
 
     render() {
-        const { players, showPagination, style } = this.props;
+        const { stats, showPagination, style } = this.props;
 
-        if (!players || players.length < 1) {
+        if (!stats || stats.length < 1) {
             return null;
         }
 
@@ -82,10 +95,10 @@ class StatsTable extends React.Component {
             <div className={componentStyles.statsTable}>
                 <ErrorBoundary>
                     <ReactTable
-                        data={players}
+                        data={stats}
                         className="-striped -highlight"
                         columns={this.renderColumns()}
-                        defaultPageSize={players.length}
+                        defaultPageSize={stats.length}
                         showPaginationBottom={showPagination}
                         style={style}
                     />
@@ -98,7 +111,7 @@ class StatsTable extends React.Component {
 StatsTable.propTypes = {
     categories: PropTypes.arrayOf(PropTypes.string),
     cellRenderer: PropTypes.func,
-    players: PropTypes.arrayOf(PropTypes.object),
+    stats: PropTypes.arrayOf(PropTypes.object),
     showPagination: PropTypes.bool,
     sortMethod: PropTypes.func,
     style: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
@@ -106,7 +119,7 @@ StatsTable.propTypes = {
 
 StatsTable.defaultProps = {
     categories: defaultCategories,
-    players: [],
+    stats: [],
     showPagination: false,
 };
 
