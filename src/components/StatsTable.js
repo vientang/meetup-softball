@@ -37,6 +37,8 @@ const convertHeaderLabel = (category) => {
             return 'Player';
         case 'w':
             return 'WIN %';
+        case 'battingOrder':
+            return '';
         case '':
             return '';
         default:
@@ -47,7 +49,7 @@ const convertHeaderLabel = (category) => {
 const convertColumnWidth = (category) => {
     switch (category) {
         case 'battingOrder':
-            return '40';
+            return 40;
         case 'player':
             return 150;
         case 'w':

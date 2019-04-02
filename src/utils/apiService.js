@@ -302,10 +302,16 @@ const createPlayerGameLog = (players, currentGameStats) => {
         const gameStats = pick(player, stats);
         const playerStats = {};
         playerStats.name = player.name;
+        playerStats.joined = player.joined;
         playerStats.meetupId = player.meetupId;
-        playerStats.photos = player.photos;
+        playerStats.profile = JSON.stringify(player.profile);
+        playerStats.admin = player.admin;
+        playerStats.photos = JSON.stringify(player.photos);
+        playerStats.status = player.status || 'active';
+        playerStats.gender = player.gender || 'n/a';
         playerStats.games = [];
         playerStats.games.push({ ...gameStats, ...currentGameStats });
+        playerStats.games = playerStats.games;
         return playerStats;
     });
 };
@@ -313,8 +319,9 @@ const createPlayerGameLog = (players, currentGameStats) => {
 /**
  * PLAYERSTATS Adaptor to combine data from meetup and current game stats
  * @param {Array} currentGame - data from meetup api
- * @param {Array} currentStats - all player stats from current game
- * @return {Object} currentGameStats
+ * @param {Array} w - winners
+ * @param {Array} l - losers
+ * @return {Array} list of players and their stats
  */
 const mergePlayerStats = (currentGame, w, l) => {
     const currentGameStats = pick(currentGame, gameProperties);

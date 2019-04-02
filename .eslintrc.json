@@ -1,6 +1,11 @@
 {
     "extends": ["airbnb", "prettier"],
     "plugins": ["prettier"],
+    "globals": {
+        "window": false,
+        "document": false,
+        "localStorage": false
+    },
     "rules": {
         "prettier/prettier": ["error"],
         "camelcase": ["off"],

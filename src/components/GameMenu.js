@@ -10,23 +10,40 @@ const sideMenuStyle = {
     height: 100,
 };
 
-const menuItemStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    height: 'auto',
-    width: 275,
-    lineHeight: 'normal',
-    padding: '1rem',
-    margin: '0 0.5rem',
-    whiteSpace: 'normal',
+const getMenuItemStyles = (meetupId, selectedGame) => {
+    const menuItemStyle = {
+        display: 'flex',
+        flexDirection: 'column',
+        top: 0,
+        height: 'auto',
+        width: 275,
+        padding: '1rem',
+        margin: '0 0.5rem 0 0',
+        lineHeight: 'normal',
+        whiteSpace: 'normal',
+    };
+
+    if (meetupId === selectedGame) {
+        menuItemStyle.backgroundColor = '#FFDEE9';
+        menuItemStyle.backgroundImage = 'linear-gradient(0deg, #FFDEE9 0%, #B5FFFC 100%)';
+        menuItemStyle.borderBottom = 2;
+    }
+
+    return menuItemStyle;
 };
 
 const GameMenu = ({ games, onGameCancel, onGameSelection, selectedGame }) => {
     return (
         <Menu style={sideMenuStyle} defaultSelectedKeys={[selectedGame]} mode="horizontal">
             {games.map((game) => {
+                const menuItemStyle = getMenuItemStyles(game.meetupId, selectedGame);
                 return (
-                    <Menu.Item key={game.meetupId} style={menuItemStyle} onClick={onGameSelection}>
+                    <Menu.Item
+                        key={game.meetupId}
+                        className={componentStyles.gameMenuItem}
+                        style={menuItemStyle}
+                        onClick={onGameSelection}
+                    >
                         <div className={componentStyles.gameMenuTitleSection}>
                             <p className={componentStyles.gameMenuTitle}>{game.name}</p>
                             <span

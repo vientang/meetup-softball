@@ -6,8 +6,9 @@
             "Outputs.UserPoolId"
         ]
     },
-    "schemaGraphql": "s3://meetupsoftball-20190217175319-deployment/amplify-appsync-files/schema.graphql.1550596883590",
+    "schemaGraphql": "s3://meetupsoftball-20190217175319-deployment/amplify-appsync-files/schema.graphql.1554219482380",
     "ResolverBucket": "meetupsoftball-20190217175319-deployment",
     "ResolverRootKey": "amplify-appsync-files",
-    "DeploymentTimestamp": "1550596883590"
+    "DeploymentTimestamp": "1554219482380",
+    "APIKeyExpirationEpoch": "-1"
 }

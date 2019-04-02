@@ -36,6 +36,10 @@ const currentPlayerStats = [
         id: '123',
         meetupId: '234078828',
         name: 'Fresh Basta',
+        joined: 123,
+        admin: false,
+        status: 'active',
+        gender: '',
         photos: 'http://photo',
         battingOrder: '1',
         o: '1',
@@ -60,6 +64,10 @@ const currentPlayerStats = [
         id: '456',
         meetupId: '254078828',
         name: 'Steven',
+        joined: 234,
+        admin: true,
+        status: 'active',
+        gender: '',
         photos: 'http://photo',
         battingOrder: '1',
         o: '1',
@@ -86,7 +94,12 @@ const mergedPlayerStats = [
     {
         meetupId: '234078828',
         name: 'Fresh Basta',
-        photos: 'http://photo',
+        joined: 123,
+        admin: false,
+        status: 'active',
+        gender: 'n/a',
+        photos: '"http://photo"',
+        profile: undefined,
         games: [
             {
                 ab: '1',
@@ -122,7 +135,12 @@ const mergedPlayerStats = [
     {
         meetupId: '254078828',
         name: 'Steven',
-        photos: 'http://photo',
+        joined: 234,
+        admin: true,
+        status: 'active',
+        gender: 'n/a',
+        photos: '"http://photo"',
+        profile: undefined,
         games: [
             {
                 ab: '1',

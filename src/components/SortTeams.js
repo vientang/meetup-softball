@@ -58,11 +58,7 @@ class SortTeams extends Component {
         return (
             <div className={componentStyles.teamTransfer}>
                 <TeamTransfer gameId={meetupId} onChange={this.handleChange} players={players} />
-                <Button
-                    type="primary"
-                    className={componentStyles.setTeamsBtn}
-                    onClick={this.submitList}
-                >
+                <Button type="primary" onClick={this.submitList}>
                     SET TEAMS
                 </Button>
             </div>

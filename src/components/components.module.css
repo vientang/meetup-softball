@@ -102,9 +102,19 @@
     text-align: right;
 }
 
+.game-menu-item {
+    background-color: transparent;
+    transition: background-color 500ms ease-in-out;
+}
+
 .game-menu-title-section {
     justify-content: space-between;
-    font-size: 0.65rem;
+}
+
+.game-menu-title {
+    font-size: 0.7rem;
+    font-weight: bold;
+    margin-bottom: var(--margin-1);
 }
 
 .game-menu-date {

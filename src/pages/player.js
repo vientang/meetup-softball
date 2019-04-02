@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import React from 'react';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
@@ -83,8 +82,8 @@ class Player extends React.Component {
         }
     }
 
-    async componentWillUnmount() {
-        const playerInMemory = await localStorage.getItem('currentPlayer');
+    componentWillUnmount() {
+        const playerInMemory = localStorage.getItem('currentPlayer');
         if (playerInMemory) {
             localStorage.removeItem('currentPlayer');
         }

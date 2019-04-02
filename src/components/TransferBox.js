@@ -19,7 +19,7 @@ const TransferBox = (props) => {
                     return (
                         <TransferListItem
                             focused={player.meetupId === focusedItemId}
-                            key={player.name}
+                            key={player.meetupId}
                             onClick={onItemFocus}
                             value={player.name}
                         >

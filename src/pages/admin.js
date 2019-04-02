@@ -1,10 +1,10 @@
-/* eslint-disable no-undef */
 import React from 'react';
 import fetchJsonp from 'fetch-jsonp';
 import { API, graphqlOperation } from 'aws-amplify';
 import { withAuthenticator, SignIn, Greetings } from 'aws-amplify-react';
+import get from 'lodash/get';
 import { AdminStatsTable, GameMenu, Layout, SortTeams, SuccessImage } from '../components';
-import { createGameStats, updatePlayerStats } from '../graphql/mutations';
+import { createGameStats, createPlayerStats, updatePlayerStats } from '../graphql/mutations';
 import { listGameStatss, listPlayerStatss } from '../graphql/queries';
 import { Utils, apiService } from '../utils';
 import styles from './pages.module.css';
@@ -71,7 +71,6 @@ class Admin extends React.Component {
         const lastGameRecorded = localStorage.getItem('lastGameRecorded');
 
         if (lastGameRecorded) {
-            // might need to parse
             return lastGameRecorded;
         }
 
@@ -108,16 +107,18 @@ class Admin extends React.Component {
         return newGame;
     };
 
-    getCurrentGamePlayers = async (currentGame) => {
+    getCurrentGamePlayers = async (currentGame = {}) => {
+        if (currentGame.players) {
+            return currentGame.players;
+        }
+
         const RSVPS = `${process.env.RSVP_URL}${
             currentGame.meetupId
         }/attendance?&sign=true&photo-host=public`;
 
         let rsvpList = await fetchJsonp(RSVPS)
             .then((response) => response.json())
-            .then((result) =>
-                result.data.filter((player) => player.rsvp && player.rsvp.response === 'yes'),
-            )
+            .then((result) => result.data.filter(this.filterAttendees))
             .catch((error) => {
                 throw new Error(error);
             });
@@ -133,26 +134,97 @@ class Admin extends React.Component {
     };
 
     /**
-     * Submit updated stats to PlayerStats, GameStats and Metadata tables
+     * Data from Meetup API is inconsistent
+     * Catch the different permutations of attendance
+     * @param {Object} player
+     * @return {Boolean}
+     */
+    filterAttendees = (player = {}) => {
+        const status = get(player, 'status');
+        const response = get(player, 'rsvp.response');
+        if ((status && status === 'absent') || status === 'noshow') {
+            return false;
+        }
+        if (response === 'yes') {
+            return true;
+        }
+        return status === 'attended';
+    };
+
+    findGameByMeetupId = (selectedGameId) => (game) => game.meetupId === selectedGameId;
+
+    filterGameByMeetupId = (selectedGameId) => (game) => game.meetupId !== selectedGameId;
+
+    /**
+     * Update a players game log or create a new player
+     * @param {Array} playerStats
+     */
+    submitPlayerStats = async (playerStats = []) => {
+        playerStats.forEach(async (player) => {
+            let existingPlayer = await API.graphql(
+                graphqlOperation(listPlayerStatss, {
+                    filter: { meetupId: { eq: player.meetupId } },
+                }),
+            );
+            existingPlayer = get(existingPlayer, 'data.listPlayerStatss.items', null);
+
+            try {
+                if (existingPlayer[0]) {
+                    // player already exists in database
+                    const { id, games } = existingPlayer[0];
+                    const parsedGames = JSON.parse(games);
+                    const updatedGames = [player.games[0], ...parsedGames];
+
+                    await API.graphql(
+                        graphqlOperation(updatePlayerStats, {
+                            input: { id },
+                            games: JSON.stringify(updatedGames),
+                        }),
+                    );
+                } else {
+                    // player does not yet exist in database
+                    const newPlayer = {
+                        ...player,
+                        games: JSON.stringify(player.games),
+                    };
+
+                    await API.graphql(
+                        graphqlOperation(createPlayerStats, {
+                            input: newPlayer,
+                        }),
+                    );
+                }
+            } catch (e) {
+                console.log('error saving player', { e, existingPlayer, player });
+            }
+        });
+    };
+
+    submitGameStats = async (gameStats) => {
+        await API.graphql(graphqlOperation(createGameStats, { input: gameStats }));
+    };
+
+    /**
+     * Submit updated stats to PlayerStats & GameStats
      */
     handleSubmitData = async (winners, losers, selectedGameId) => {
-        const players = await apiService.mergePlayerStats(this.state.currentGame, winners, losers);
-        const gameStats = await apiService.mergeGameStats(this.state.currentGame, winners, losers);
+        const { currentGame, games } = this.state;
+        const playerStats = await apiService.mergePlayerStats(currentGame, winners, losers);
+        this.submitPlayerStats(playerStats);
 
-        await API.graphql(graphqlOperation(createGameStats, { input: gameStats }));
-        // playerStats.forEach(player => {
-        //     API.graphql(graphqlOperation(updatePlayerStats, { input: player }));
-        // });
+        const gameStats = await apiService.mergeGameStats(currentGame, winners, losers);
+        this.submitGameStats(gameStats);
 
-        this.setState((prevState) => {
-            const games = prevState.games.filter((game) => game.gameId !== selectedGameId);
-            const currentGame = games[0];
+        const remainingGames = games.filter((game) => game.meetupId !== selectedGameId);
+        const nextGame = remainingGames[0];
+        nextGame.players = await this.getCurrentGamePlayers(remainingGames[0]);
 
+        this.setState(() => {
             return {
                 areTeamsSorted: false,
-                selectedGameId: currentGame ? currentGame.gameId : '',
-                currentGame,
-                games,
+                currentGame: nextGame,
+                games: remainingGames,
+                selectedGameId: get(nextGame, 'meetupId', ''),
             };
         });
 
@@ -164,33 +236,25 @@ class Admin extends React.Component {
      */
     handleSelectGame = async (e) => {
         const selectedGameId = e.key;
-        const currentGame = this.state.games.find((game) => game.meetupId === selectedGameId);
+        const nextGame = await this.getCurrentGamePlayers(
+            this.state.games.find(this.findGameByMeetupId(selectedGameId)),
+        );
 
-        if (!currentGame.players) {
-            currentGame.players = await this.getCurrentGamePlayers(currentGame);
-        }
-
-        this.setState(() => {
-            return {
-                currentGame,
-                selectedGameId,
-            };
-        });
+        this.setState(() => ({ currentGame: nextGame, selectedGameId }));
     };
 
-    handleCancelGame = (e) => {
+    handleCancelGame = async (e) => {
         e.stopPropagation();
         const selectedGameId = e.target.id;
-        const games = this.state.games.filter((game) => game.meetupId !== selectedGameId);
-        const currentGame = games[0];
+        const games = this.state.games.filter(this.filterGameByMeetupId(selectedGameId));
+        const nextGame = games[0];
+        nextGame.players = await this.getCurrentGamePlayers(games[0]);
 
-        this.setState(() => {
-            return {
-                selectedGameId: currentGame ? currentGame.meetupId : '',
-                currentGame,
-                games,
-            };
-        });
+        this.setState(() => ({
+            currentGame: nextGame,
+            selectedGameId: get(nextGame, 'meetupId', ''),
+            games,
+        }));
     };
 
     handleSetTeams = (winners, losers) => {
