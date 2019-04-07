@@ -17,6 +17,10 @@ const {
     getRunsCreated,
 } = statsCalc;
 
+/**
+ * Adaptor to create player object from meetup data and admin stats to database
+ * @param {Object} player
+ */
 const createPlayer = (player) => {
     const { name, id, joined, group_profile, is_pro_admin, photo, status } = player.data;
     return {
@@ -40,6 +44,38 @@ const createPlayer = (player) => {
         sac: null,
         sb: null,
     };
+};
+
+const formatValueLength = (value, max) => {
+    if (!value.includes('.')) {
+        return value;
+    }
+
+    if (value.length > max) {
+        return value.slice(0, max);
+    }
+
+    let formattedValue = value;
+    while (formattedValue.length < max) {
+        formattedValue += '0';
+    }
+
+    return formattedValue;
+};
+
+/**
+ * Remove leading zero, append zeroes or convert to zero
+ * @param {String} value
+ */
+const formatCellValue = (value) => {
+    const formattedValue = value || '';
+    if (formattedValue.substring(0, 2) === '0.') {
+        return formatValueLength(formattedValue.slice(1), 4);
+    }
+    if (Number(formattedValue[0]) > 0 && formattedValue[1] === '.') {
+        return formatValueLength(formattedValue, 4);
+    }
+    return value || 0;
 };
 
 const sortByNameLength = (a, b) => {
@@ -221,10 +257,11 @@ const chainedFunc = (...funcs) =>
 export default {
     chainedFunc,
     createPlayer,
+    formatCellValue,
+    getRateStatTotal,
+    getRunsCreatedTotal,
     sortByNameLength,
     sortHighToLow,
     sortTimeStamp,
     setTopLeaders,
-    getRateStatTotal,
-    getRunsCreatedTotal,
 };

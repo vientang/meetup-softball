@@ -25,7 +25,7 @@ type PlayerStats {
   meetupId: String
   profile: AWSJSON
   admin: Boolean
-  photos: String
+  photos: AWSJSON
   status: String
   gender: String
   games: AWSJSON
@@ -216,7 +216,7 @@ input CreatePlayerStatsInput {
   meetupId: String
   profile: AWSJSON
   admin: Boolean
-  photos: String
+  photos: AWSJSON
   status: String
   gender: String
   games: AWSJSON
@@ -229,7 +229,7 @@ input UpdatePlayerStatsInput {
   meetupId: String
   profile: AWSJSON
   admin: Boolean
-  photos: String
+  photos: AWSJSON
   status: String
   gender: String
   games: AWSJSON

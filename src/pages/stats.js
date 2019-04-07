@@ -30,7 +30,7 @@ const categories = [
     'woba',
 ];
 
-const statsTableStyle = { height: 500, fontSize: 12 };
+const statsTableStyle = { height: 500, width: 960, fontSize: 12 };
 const skeletonConfig = { rows: 20, width: '100%' };
 class Stats extends React.Component {
     constructor(props) {
@@ -79,7 +79,8 @@ class Stats extends React.Component {
                 </Link>
             );
         }
-        return cellValue;
+
+        return Utils.formatCellValue(cellValue);
     };
 
     render() {
@@ -95,13 +96,27 @@ class Stats extends React.Component {
         }
 
         return (
-            <StatsTable
-                categories={categories}
-                cellRenderer={this.renderCell}
-                stats={playerStats}
-                sortMethod={Utils.sortHighToLow}
-                style={statsTableStyle}
-            />
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <StatsTable
+                    categories={categories}
+                    cellRenderer={this.renderCell}
+                    stats={playerStats}
+                    sortMethod={Utils.sortHighToLow}
+                    style={statsTableStyle}
+                />
+                <div
+                    style={{
+                        minWidth: 200,
+                        width: 200,
+                        height: 500,
+                        padding: '1rem',
+                        textAlign: 'center',
+                        border: '1px solid red',
+                    }}
+                >
+                    <h2>Player of the month</h2>
+                </div>
+            </div>
         );
     }
 }

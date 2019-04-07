@@ -1,6 +1,10 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Amplify from 'aws-amplify';
-import { Layout, Image } from '../components';
+import { graphql } from 'gatsby';
+import Img from 'gatsby-image';
+import { Layout } from '../components';
+import pageStyles from './pages.module.css';
 import configuration from '../aws-exports';
 
 Amplify.configure(configuration);
@@ -12,22 +16,44 @@ const layoutStyle = {
 };
 
 const imageStyle = {
-    width: 100,
-    maxWidth: 300,
-    marginBottom: '1.45rem',
+    position: 'absolute',
 };
 
-const IndexPage = () => {
+const IndexPage = (props) => {
     return (
-        <Layout style={layoutStyle}>
-            <h1>Hi aliens</h1>
-            <p>Welcome to your new Gatsby site.</p>
-            <p>Now go build something great.</p>
-            <div style={imageStyle}>
-                <Image />
-            </div>
-        </Layout>
+        <>
+            <Img
+                fluid={props.data.imageOne.childImageSharp.fluid}
+                style={imageStyle}
+                className={pageStyles.homePageImage}
+            />
+
+            <Layout style={layoutStyle} />
+        </>
     );
 };
 
+IndexPage.displayName = 'IndexPage';
+IndexPage.propTypes = {
+    data: PropTypes.shape(),
+};
+
 export default IndexPage;
+
+export const fluidImage = graphql`
+    fragment fluidImage on File {
+        childImageSharp {
+            fluid(maxWidth: 1000) {
+                ...GatsbyImageSharpFluid
+            }
+        }
+    }
+`;
+
+export const pageQuery = graphql`
+    query {
+        imageOne: file(relativePath: { eq: "softball.jpg" }) {
+            ...fluidImage
+        }
+    }
+`;

@@ -7,19 +7,17 @@ const Header = () => ({ siteTitle }) => (
     <header className={componentStyles.headerContainer}>
         <div className={componentStyles.header}>
             <h1 className={componentStyles.headerH1}>
+                <p className={componentStyles.subHeader}>San Francisco</p>
                 <Link to="/" className={componentStyles.siteTitle}>
                     {siteTitle}
                 </Link>
             </h1>
             <div className={componentStyles.navLinks}>
-                <Link to="/stats" className={componentStyles.siteTitle}>
+                <Link to="/stats" className={componentStyles.navLink}>
                     Stats
                 </Link>
-                <Link to="/leaderboard" className={componentStyles.siteTitle}>
+                <Link to="/leaderboard" className={componentStyles.navLink}>
                     Leaderboard
-                </Link>
-                <Link to="/admin" className={componentStyles.siteTitle}>
-                    Admin
                 </Link>
             </div>
         </div>

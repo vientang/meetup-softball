@@ -5,6 +5,9 @@ import { listGameStatss, listPlayerStatss } from '../graphql/queries';
 import Layout from './Layout';
 import FilterBar from './FilterBar';
 import styles from '../pages/pages.module.css';
+import configuration from '../aws-exports';
+
+API.configure(configuration);
 
 const defaultFilter = '2019';
 

@@ -1,3 +1,38 @@
+.home-page-image {
+    width: 100%;
+    height: 100%;
+    filter: saturate(80%);
+    z-index: -1;
+}
+
+.home-page-image::before {
+    position: absolute;
+    content: '';
+    height: 300px;
+    width: 100%;
+    background: linear-gradient(
+        360deg,
+        rgba(255, 255, 255, 0.001),
+        rgba(255, 255, 255, 0.5),
+        rgba(255, 255, 255, 1)
+    );
+    pointer-events: none;
+    z-index: 1;
+}
+
+.home-page-image::after {
+    position: absolute;
+    content: '';
+    bottom: 0;
+    height: 100%;
+    width: 60%;
+    transform: skew(-25deg) translateX(-300px);
+    filter: opacity(0.6);
+    background: rgba(255, 255, 255, 0.45);
+    pointer-events: none;
+    z-index: 1;
+}
+
 .admin-page {
     display: flex;
     flex-direction: column;

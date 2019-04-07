@@ -25,7 +25,7 @@ type PlayerStats @model {
     meetupId: String
     profile: AWSJSON
     admin: Boolean
-    photos: String
+    photos: AWSJSON
     status: String
     gender: String
     games: AWSJSON

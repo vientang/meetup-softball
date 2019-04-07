@@ -28,11 +28,11 @@ const defaultCategories = [
 const convertHeaderLabel = (category) => {
     switch (category) {
         case 'singles':
-            return '1b';
+            return '1B';
         case 'doubles':
-            return '2b';
+            return '2B';
         case 'triples':
-            return '3b';
+            return '3B';
         case 'player':
             return 'Player';
         case 'w':
@@ -47,9 +47,11 @@ const convertHeaderLabel = (category) => {
 };
 
 const convertColumnWidth = (category) => {
+    const rateCategories = ['avg', 'rc', 'obp', 'ops', 'slg', 'woba'];
+    if (rateCategories.includes(category)) {
+        return 50;
+    }
     switch (category) {
-        case 'battingOrder':
-            return 40;
         case 'player':
             return 150;
         case 'w':
@@ -57,7 +59,7 @@ const convertColumnWidth = (category) => {
         case '':
             return 150;
         default:
-            return 50;
+            return 35;
     }
 };
 

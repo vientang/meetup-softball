@@ -1,4 +1,6 @@
 :root {
+    --muNavy: #345160;
+    --muRed: #c43045;
     --pblue-4: #1890ff;
     --background-color: #ffffff;
     --border-color: #ffcccc;
@@ -24,6 +26,7 @@
     --blue-2: #00bdff;
     --blue-3: #1890ff;
     --blue-4: #137bc2;
+    --skew-10: skew(-10deg);
 }
 
 .header,
@@ -48,13 +51,14 @@
 
 /* HEADER */
 .header-container {
-    background-color: rebeccapurple;
+    height: 3rem;
+    background-color: rgba(255, 255, 255, 0);
     margin-bottom: var(--margin-5);
 }
 
 .header {
     justify-content: space-between;
-    padding: var(--pad-5) 5.0875rem;
+    padding: var(--pad-5) 3rem;
     max-width: 100%;
 }
 
@@ -62,15 +66,44 @@
     margin: 0;
 }
 
-.nav-links {
-    justify-content: space-between;
-    width: 250px;
-    max-width: 250px;
+.sub-header {
+    margin-bottom: 0;
+    font-size: 1rem;
+    color: var(--grey-5);
+}
+
+.nav-link,
+.site-title {
+    color: var(--muRed);
+    text-decoration: none;
 }
 
 .site-title {
+    filter: drop-shadow(0.1rem 0.1rem var(--grey-1));
+}
+
+.nav-links {
+    justify-content: space-between;
+    height: 100%;
+    width: 200px;
+    max-width: 250px;
+}
+
+.nav-link {
+    display: inline-block;
+    padding: 2px 8px;
+    font-weight: bold;
+    text-transform: uppercase;
+    transform: var(--skew-10);
+}
+
+.nav-link:hover {
     color: var(--white-1);
-    text-decoration: none;
+    background: var(--muRed);    
+}
+
+.site-title:hover {
+    color: var(--muRed);
 }
 
 /* ADMIN FORM */
@@ -352,6 +385,7 @@
 .filter-bar-label-types {
     font-size: 0.7rem;
     color: var(--grey-3);
+    transition: transform 200ms;
 }
 
 .filter-bar-label-reset {
@@ -361,17 +395,20 @@
 
 .filter-bar-label-gender-active {
     font-weight: bold;
-    color: var(--blue-3);
+    color: var(--muRed);
+}
+
+.filter-bar-label-gender:hover {
+    transform: scale(1.1);
+    cursor: pointer;
 }
 
 .filter-bar-label-reset {
-    color: var(--blue-3);
+    color: var(--muRed);
 }
 
 .filter-bar-label-types:hover,
 .filter-bar-label:hover,
-.filter-bar-label-gender:hover,
-.filter-bar-label-gender:focus,
 .filter-bar-label:hover svg path,
 .filter-bar-label-reset:hover {
     color: var(--blue-3);
