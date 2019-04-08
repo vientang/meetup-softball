@@ -4,9 +4,11 @@ import ErrorBoundary from './ErrorBoundary';
 import FilterBar from './FilterBar';
 import GameMenu from './GameMenu';
 import Header from './Header';
+import IconGroup from './IconGroup';
 import Image from './Image';
 import Layout from './Layout';
 import LeaderCard from './LeaderCard';
+import MeetupIcon from './MeetupIcon';
 import NotFoundImage from './NotFoundImage';
 import PlayerGameLog from './PlayerGameLog';
 import PlayerInfo from './PlayerInfo';
@@ -25,9 +27,11 @@ export {
     FilterBar,
     GameMenu,
     Header,
+    IconGroup,
     Image,
     Layout,
     LeaderCard,
+    MeetupIcon,
     NotFoundImage,
     PlayerGameLog,
     PlayerInfo,

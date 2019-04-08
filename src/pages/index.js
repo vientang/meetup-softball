@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Amplify from 'aws-amplify';
 import { graphql } from 'gatsby';
 import Img from 'gatsby-image';
-import { Layout } from '../components';
+import { Layout, IconGroup } from '../components';
 import pageStyles from './pages.module.css';
 import configuration from '../aws-exports';
 
@@ -26,6 +26,19 @@ const IndexPage = (props) => {
                 fluid={props.data.imageOne.childImageSharp.fluid}
                 style={imageStyle}
                 className={pageStyles.homePageImage}
+            />
+
+            <IconGroup
+                types={[
+                    {
+                        type: 'facebook',
+                        url: 'https://www.facebook.com/groups/SFsoftballmeetup/',
+                    },
+                    {
+                        type: 'meetup',
+                        url: 'https://www.meetup.com/San-Francisco-Softball-Players/',
+                    },
+                ]}
             />
 
             <Layout style={layoutStyle} />

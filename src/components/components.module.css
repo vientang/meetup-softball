@@ -34,6 +34,7 @@
 .admin-form,
 .admin-stats-table,
 .game-menu-title-section,
+.icon-group,
 .leader-board,
 .leader-stat-title,
 .team-transfer,
@@ -99,11 +100,27 @@
 
 .nav-link:hover {
     color: var(--white-1);
-    background: var(--muRed);    
+    background: var(--muRed);
 }
 
 .site-title:hover {
     color: var(--muRed);
+}
+
+.icon-group {
+    position: absolute;
+    display: flex;
+    justify-content: space-between;
+    width: 100px;
+    height: 40px;
+    left: 3rem;
+    bottom: 2rem;
+}
+
+.icon-link {
+    height: 100%;
+    font-size: 2rem;
+    color: var(--white-1);
 }
 
 /* ADMIN FORM */
