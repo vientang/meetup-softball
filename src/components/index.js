@@ -1,4 +1,5 @@
 import AdminStatsTable from './AdminStatsTable';
+import BoxScore from './BoxScore';
 import CareerStats from './CareerStats';
 import ErrorBoundary from './ErrorBoundary';
 import FilterBar from './FilterBar';
@@ -6,6 +7,7 @@ import GameMenu from './GameMenu';
 import Header from './Header';
 import IconGroup from './IconGroup';
 import Image from './Image';
+import JoinUs from './JoinUs';
 import Layout from './Layout';
 import LeaderCard from './LeaderCard';
 import MeetupIcon from './MeetupIcon';
@@ -22,12 +24,14 @@ import withFilterBar from './withFilterBar';
 
 export {
     AdminStatsTable,
+    BoxScore,
     CareerStats,
     ErrorBoundary,
     FilterBar,
     GameMenu,
     Header,
     IconGroup,
+    JoinUs,
     Image,
     Layout,
     LeaderCard,

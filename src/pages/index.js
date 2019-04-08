@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Amplify from 'aws-amplify';
 import { graphql } from 'gatsby';
 import Img from 'gatsby-image';
-import { Layout, IconGroup } from '../components';
+import { BoxScore, Layout, IconGroup, JoinUs } from '../components';
 import pageStyles from './pages.module.css';
 import configuration from '../aws-exports';
 
@@ -17,6 +17,14 @@ const layoutStyle = {
 
 const imageStyle = {
     position: 'absolute',
+};
+
+const boxScore1Style = {
+    left: 520,
+};
+
+const boxScore2Style = {
+    left: 820,
 };
 
 const IndexPage = (props) => {
@@ -41,7 +49,11 @@ const IndexPage = (props) => {
                 ]}
             />
 
-            <Layout style={layoutStyle} />
+            <Layout style={layoutStyle}>
+                <JoinUs />
+                <BoxScore style={boxScore1Style} />
+                <BoxScore style={boxScore2Style} />
+            </Layout>
         </>
     );
 };

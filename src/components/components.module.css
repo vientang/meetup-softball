@@ -27,12 +27,14 @@
     --blue-3: #1890ff;
     --blue-4: #137bc2;
     --skew-10: skew(-10deg);
+    --skew-25: skew(-25deg);
 }
 
 .header,
 .nav-links,
 .admin-form,
 .admin-stats-table,
+.box-score,
 .game-menu-title-section,
 .icon-group,
 .leader-board,
@@ -121,6 +123,64 @@
     height: 100%;
     font-size: 2rem;
     color: var(--white-1);
+}
+
+.join-us,
+.box-score {
+    position: absolute;
+    bottom: 0;
+}
+
+.join-us {
+    height: 125px;
+    width: 350px;
+    right: 0px;
+    padding: var(--pad-3) var(--pad-3) var(--pad-3) 6rem;
+    background: var(--muRed);
+    color: var(--white-2);
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.join-us-title {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    line-height: normal;
+    transform: var(--skew-10);
+}
+
+.box-score {
+    flex-direction: column;
+    justify-content: space-between;
+    height: 150px;
+    width: 300px;
+    padding: var(--pad-3) var(--pad-5);
+    border: 1px solid var(--grey-1);
+    background: var(--white-2);
+    transform: var(--skew-25);
+}
+
+.box-score-title,
+.box-score-results,
+.box-score-date {
+    color: var(--grey-3);
+    transform: skew(25deg);
+}
+
+.box-score-title {
+    font-size: 1rem;
+    margin-bottom: 0;
+}
+
+.box-score-date {
+    color: var(--grey-3);
+    margin-bottom: 1rem;
+}
+
+.box-score-results {
+    display: grid;
+    grid-template-columns: 90% 1fr;
+    margin: var(--margin-1) 0;
 }
 
 /* ADMIN FORM */
