@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Amplify from 'aws-amplify';
 import { graphql } from 'gatsby';
 import Img from 'gatsby-image';
-import { BoxScore, Layout, IconGroup, JoinUs } from '../components';
+import { BoxScore, Layout, JoinUs } from '../components';
 import pageStyles from './pages.module.css';
 import configuration from '../aws-exports';
 
@@ -12,19 +12,11 @@ Amplify.configure(configuration);
 const layoutStyle = {
     margin: '0 auto',
     maxWidth: 1170,
-    padding: '0px 1.0875rem 1.45rem',
+    padding: '1.45rem 1.0875rem',
 };
 
 const imageStyle = {
     position: 'absolute',
-};
-
-const boxScore1Style = {
-    left: 520,
-};
-
-const boxScore2Style = {
-    left: 820,
 };
 
 const IndexPage = (props) => {
@@ -36,23 +28,12 @@ const IndexPage = (props) => {
                 className={pageStyles.homePageImage}
             />
 
-            <IconGroup
-                types={[
-                    {
-                        type: 'facebook',
-                        url: 'https://www.facebook.com/groups/SFsoftballmeetup/',
-                    },
-                    {
-                        type: 'meetup',
-                        url: 'https://www.meetup.com/San-Francisco-Softball-Players/',
-                    },
-                ]}
-            />
-
-            <Layout style={layoutStyle}>
-                <JoinUs />
-                <BoxScore style={boxScore1Style} />
-                <BoxScore style={boxScore2Style} />
+            <Layout style={layoutStyle} uri={props.uri}>
+                <div className={pageStyles.boxScoreGroup}>
+                    <JoinUs />
+                    <BoxScore />
+                    <BoxScore />
+                </div>
             </Layout>
         </>
     );
@@ -61,6 +42,7 @@ const IndexPage = (props) => {
 IndexPage.displayName = 'IndexPage';
 IndexPage.propTypes = {
     data: PropTypes.shape(),
+    uri: PropTypes.string,
 };
 
 export default IndexPage;

@@ -211,7 +211,7 @@ const withFilterBar = (Page) => {
 
             if (Page.displayName === 'Player') {
                 return (
-                    <Layout className={styles.adminPage}>
+                    <Layout className={styles.statsPage}>
                         <Page
                             location={this.props.location}
                             gameData={gameStats}
@@ -223,7 +223,7 @@ const withFilterBar = (Page) => {
             }
             return (
                 <>
-                    <Layout className={styles.adminPage}>
+                    <Layout className={styles.statsPage}>
                         {this.renderFilterBar()}
                         <Page
                             gameData={gameStats}

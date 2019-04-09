@@ -11,11 +11,11 @@ const BoxScore = ({ style }) => {
             <div>
                 <div className={componentStyles.boxScoreResults}>
                     <span>Winners</span>
-                    <span>10</span>
+                    <span className={componentStyles.boxScoreTotal}>10</span>
                 </div>
                 <div className={componentStyles.boxScoreResults}>
                     <span>Losers</span>
-                    <span>9</span>
+                    <span className={componentStyles.boxScoreTotal}>9</span>
                 </div>
             </div>
         </div>

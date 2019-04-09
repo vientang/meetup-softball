@@ -8,14 +8,15 @@
     --pad-1: 0.5rem;
     --pad-2: 0.75rem;
     --pad-3: 1rem;
+    --pad-4: 1.25rem;
     --pad-5: 1.5rem;
     --margin-0: 0.25rem;
     --margin-1: 0.5rem;
     --margin-2: 0.75rem;
     --margin-3: 1rem;
     --margin-5: 1.5rem;
-    --grey-1: #bebbbb;
-    --grey-2: #e1e1e166;
+    --grey-1: #d1d1d1;
+    --grey-2: #bebbbb;
     --grey-3: #555555;
     --grey-4: #3a3a3a;
     --grey-5: #393939;
@@ -53,15 +54,9 @@
 }
 
 /* HEADER */
-.header-container {
-    height: 3rem;
-    background-color: rgba(255, 255, 255, 0);
-    margin-bottom: var(--margin-5);
-}
-
 .header {
     justify-content: space-between;
-    padding: var(--pad-5) 3rem;
+    padding: var(--pad-4) 3rem;
     max-width: 100%;
 }
 
@@ -110,31 +105,31 @@
 }
 
 .icon-group {
-    position: absolute;
-    display: flex;
     justify-content: space-between;
-    width: 100px;
-    height: 40px;
-    left: 3rem;
-    bottom: 2rem;
+    margin-left: auto;
+    width: 50px;
+    height: 20px;
 }
 
 .icon-link {
-    height: 100%;
+    position: absolute;
+    top: -15px;
     font-size: 2rem;
     color: var(--white-1);
 }
 
 .join-us,
 .box-score {
-    position: absolute;
+    position: relative;
     bottom: 0;
+    right: 0;
 }
 
 .join-us {
+    order: 1;
+    align-self: flex-end;
     height: 125px;
     width: 350px;
-    right: 0px;
     padding: var(--pad-3) var(--pad-3) var(--pad-3) 6rem;
     background: var(--muRed);
     color: var(--white-2);
@@ -150,10 +145,12 @@
 }
 
 .box-score {
+    order: 0;
     flex-direction: column;
     justify-content: space-between;
     height: 150px;
     width: 300px;
+    right: -50px;
     padding: var(--pad-3) var(--pad-5);
     border: 1px solid var(--grey-1);
     background: var(--white-2);
@@ -173,7 +170,7 @@
 }
 
 .box-score-date {
-    color: var(--grey-3);
+    color: var(--grey-2);
     margin-bottom: 1rem;
 }
 
@@ -181,6 +178,10 @@
     display: grid;
     grid-template-columns: 90% 1fr;
     margin: var(--margin-1) 0;
+}
+
+.box-score-total {
+    font-weight: bold;
 }
 
 /* ADMIN FORM */

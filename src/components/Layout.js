@@ -5,7 +5,7 @@ import { StaticQuery, graphql } from 'gatsby';
 import Header from './Header';
 import './layout.css';
 
-const Layout = ({ className, children, style }) => (
+const Layout = ({ className, children, style, uri }) => (
     <StaticQuery
         query={graphql`
             query SiteTitleQuery {
@@ -21,7 +21,10 @@ const Layout = ({ className, children, style }) => (
                 <Helmet
                     title={data.site.siteMetadata.title}
                     meta={[
-                        { name: 'description', content: 'San Francisco Meetup Softball website' },
+                        {
+                            name: 'description',
+                            content: 'San Francisco Meetup Softball website',
+                        },
                         {
                             name: 'keywords',
                             content: 'meetup, softball, meetupsoftball, meetup-softball',
@@ -30,7 +33,7 @@ const Layout = ({ className, children, style }) => (
                 >
                     <html lang="en" />
                 </Helmet>
-                <Header siteTitle={data.site.siteMetadata.title} />
+                <Header siteTitle={data.site.siteMetadata.title} uri={uri} />
                 <div className={className} style={style}>
                     {children}
                 </div>
@@ -44,6 +47,7 @@ Layout.propTypes = {
     className: PropTypes.string,
     children: PropTypes.node.isRequired,
     style: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
+    uri: PropTypes.string,
 };
 
 export default Layout;

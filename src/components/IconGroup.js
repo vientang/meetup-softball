@@ -5,13 +5,17 @@ import MeetupIcon from './MeetupIcon';
 import componentStyles from './components.module.css';
 
 const iconStyle = {
+    fontSize: 16,
     color: '#c43045',
 };
 
 const IconGroup = ({ types }) => {
     return (
         <div className={componentStyles.iconGroup}>
-            {types.map((icon) => {
+            {types.map((icon, i) => {
+                const iconLinkStyle = {
+                    right: i === 0 ? 100 : 70,
+                };
                 const socialIcon =
                     icon.type === 'meetup' ? (
                         <Icon component={MeetupIcon} />
@@ -24,6 +28,7 @@ const IconGroup = ({ types }) => {
                         href={icon.url}
                         target="_blank"
                         rel="noopener noreferrer"
+                        style={iconLinkStyle}
                         className={componentStyles.iconLink}
                     >
                         {socialIcon}

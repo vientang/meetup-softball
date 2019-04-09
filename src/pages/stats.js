@@ -5,6 +5,7 @@ import { Link } from 'gatsby';
 import { Skeleton } from 'antd';
 import { withFilterBar, NotFoundImage, StatsTable } from '../components';
 import { Utils, apiService } from '../utils';
+import pageStyles from './pages.module.css';
 
 const categories = [
     'player',
@@ -96,7 +97,7 @@ class Stats extends React.Component {
         }
 
         return (
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div className={pageStyles.statsSection}>
                 <StatsTable
                     categories={categories}
                     cellRenderer={this.renderCell}
@@ -104,16 +105,7 @@ class Stats extends React.Component {
                     sortMethod={Utils.sortHighToLow}
                     style={statsTableStyle}
                 />
-                <div
-                    style={{
-                        minWidth: 200,
-                        width: 200,
-                        height: 500,
-                        padding: '1rem',
-                        textAlign: 'center',
-                        border: '1px solid red',
-                    }}
-                >
+                <div className={pageStyles.playerPreview}>
                     <h2>Player of the month</h2>
                 </div>
             </div>

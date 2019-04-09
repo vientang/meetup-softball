@@ -33,7 +33,19 @@
     z-index: 1;
 }
 
-.admin-page {
+.box-score-group {
+    position: absolute;
+    display: flex;
+    height: 150px;
+    width: 950px;
+    bottom: 0;
+    right: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.admin-page,
+.stats-page {
     display: flex;
     flex-direction: column;
     max-width: 100%;
@@ -50,4 +62,22 @@
 .admin-page-success > h3 {
     text-align: center;
     margin-top: 1rem;
+}
+
+.stats-page {
+    padding: 1.45rem 3.5rem;
+}
+
+.stats-section {
+    display: flex;
+    justify-content: space-between;
+}
+
+.player-preview {
+    min-width: 200px;
+    width: 270px;
+    height: 500px;
+    padding: 1rem;
+    text-align: center;
+    border: 1px solid red;
 }
