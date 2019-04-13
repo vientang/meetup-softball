@@ -2,30 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ReactTable from 'react-table';
 import ErrorBoundary from './ErrorBoundary';
+import { defaultStatCategories } from '../utils/constants';
 import componentStyles from './components.module.css';
 import 'react-table/react-table.css';
 
-const defaultCategories = [
-    '',
-    'gp',
-    'h',
-    'singles',
-    'doubles',
-    'triples',
-    'r',
-    'rbi',
-    'hr',
-    'avg',
-    'sb',
-    'cs',
-    'bb',
-    'sac',
-    'k',
-    'rc',
-    'tb',
-];
+const headerStyle = { background: '#345160', color: 'white' };
 
-const convertHeaderLabel = (category) => {
+const formatHeaderLabel = (category) => {
     switch (category) {
         case 'singles':
             return '1B';
@@ -34,7 +17,7 @@ const convertHeaderLabel = (category) => {
         case 'triples':
             return '3B';
         case 'player':
-            return 'Player';
+            return 'PLAYER';
         case 'w':
             return 'WIN %';
         case 'battingOrder':
@@ -46,10 +29,10 @@ const convertHeaderLabel = (category) => {
     }
 };
 
-const convertColumnWidth = (category) => {
+const formatColumnWidth = (category) => {
     const rateCategories = ['avg', 'rc', 'obp', 'ops', 'slg', 'woba'];
     if (rateCategories.includes(category)) {
-        return 50;
+        return 60;
     }
     switch (category) {
         case 'player':
@@ -63,6 +46,15 @@ const convertColumnWidth = (category) => {
     }
 };
 
+const formatCellStyle = (params) => {
+    const { category } = params;
+    const cellStyle = {
+        textAlign: category === 'player' ? 'left' : 'right',
+        color: '#555555',
+    };
+    return cellStyle;
+};
+
 class StatsTable extends React.Component {
     constructor() {
         super();
@@ -73,14 +65,16 @@ class StatsTable extends React.Component {
         const { categories, cellRenderer, sortMethod } = this.props;
 
         const columns = categories.map((category) => {
-            const header = convertHeaderLabel(category);
-            const width = convertColumnWidth(category);
-
+            const header = formatHeaderLabel(category);
+            const width = formatColumnWidth(category);
+            const cellStyle = formatCellStyle({ category });
             return {
                 Header: header,
                 Cell: cellRenderer,
                 accessor: category === 'player' ? 'name' : category,
                 resizable: false,
+                style: cellStyle,
+                headerStyle,
                 sortMethod,
                 width,
             };
@@ -122,7 +116,7 @@ StatsTable.propTypes = {
 };
 
 StatsTable.defaultProps = {
-    categories: defaultCategories,
+    categories: defaultStatCategories,
     stats: [],
     showPagination: false,
 };

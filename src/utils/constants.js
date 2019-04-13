@@ -82,12 +82,12 @@ const definitions = {
         detail: 'Total Bases = Singles x 1 + Doubles x 2 + Triples x 3 + Home Runs x 4',
     },
 };
-const qualifiers = ' game minium';
+
+const qualifiers = 'game minimum';
 
 const cardTitles = [
     { name: 'Home Runs', abbr: 'hr' },
     { name: 'Average', abbr: 'avg' },
-    // { name: 'Winning Percentage', abbr: 'wp' },
     { name: 'Runs Created', abbr: 'rc' },
     { name: 'Runs Batted In', abbr: 'rbi' },
     { name: 'Runs', abbr: 'r' },
@@ -96,5 +96,51 @@ const cardTitles = [
     { name: 'Stolen Bases', abbr: 'sb' },
     { name: 'OPS', abbr: 'ops' },
     { name: 'wOBA', abbr: 'woba' },
+    // { name: 'Winning Percentage', abbr: 'wp' },
 ];
-export { definitions, qualifiers, cardTitles };
+
+const defaultStatCategories = [
+    '',
+    'gp',
+    'h',
+    'singles',
+    'doubles',
+    'triples',
+    'r',
+    'rbi',
+    'hr',
+    'avg',
+    'sb',
+    'cs',
+    'bb',
+    'sac',
+    'k',
+    'rc',
+    'tb',
+];
+
+const statPageCategories = [
+    'player',
+    'gp',
+    'h',
+    'singles',
+    'doubles',
+    'triples',
+    'r',
+    'rbi',
+    'hr',
+    'avg',
+    'sb',
+    'cs',
+    'bb',
+    'sac',
+    'k',
+    'rc',
+    'tb',
+    'obp',
+    'ops',
+    'slg',
+    'woba',
+];
+
+export { cardTitles, defaultStatCategories, definitions, qualifiers, statPageCategories };

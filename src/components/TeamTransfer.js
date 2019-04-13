@@ -84,13 +84,18 @@ class TeamTransfer extends React.Component {
         this.props.onChange(sourceList, targetList);
     };
 
+    findPlayerByMeetupId = (meetupId) => (player) => player.meetupId === meetupId;
+
     /**
      * Adds items to target box
      */
-    handleAdd = () => {
+    handleMoveToTarget = () => {
         const { focusedItem, targetList, sourceList } = this.state;
 
-        if (focusedItem) {
+        // sort player to source if in sourceList
+        const validMove = sourceList.find((player) => player.meetupId === focusedItem.meetupId);
+
+        if (focusedItem && validMove) {
             const newSourceList = addBattingOrder(
                 sourceList.filter((player) => player.name !== focusedItem.name),
             );
@@ -109,10 +114,13 @@ class TeamTransfer extends React.Component {
     /**
      * Remove items from target box
      */
-    handleRemove = () => {
+    handleMoveToSource = () => {
         const { focusedItem, targetList, sourceList } = this.state;
 
-        if (focusedItem) {
+        // sort player to source if in targetList
+        const validMove = targetList.find((player) => player.meetupId === focusedItem.meetupId);
+
+        if (focusedItem && validMove) {
             const newSourceList = addBattingOrder([...sourceList, focusedItem]);
             const newTargetList = addBattingOrder(
                 targetList.filter((player) => player.name !== focusedItem.name),
@@ -204,8 +212,16 @@ class TeamTransfer extends React.Component {
                     onMoveDown={this.handleDown}
                 />
                 <div className={componentStyles.teamTransferOperations}>
-                    <Button onClick={this.handleAdd} title={locale.moveToTarget} icon="right" />
-                    <Button onClick={this.handleRemove} title={locale.moveToSource} icon="left" />
+                    <Button
+                        onClick={this.handleMoveToTarget}
+                        title={locale.moveToTarget}
+                        icon="right"
+                    />
+                    <Button
+                        onClick={this.handleMoveToSource}
+                        title={locale.moveToSource}
+                        icon="left"
+                    />
                 </div>
                 <TransferBox
                     focusedItem={focusedItem}

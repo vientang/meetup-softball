@@ -5,33 +5,10 @@ import { Link } from 'gatsby';
 import { Skeleton } from 'antd';
 import { withFilterBar, NotFoundImage, StatsTable } from '../components';
 import { Utils, apiService } from '../utils';
+import { statPageCategories } from '../utils/constants';
 import pageStyles from './pages.module.css';
 
-const categories = [
-    'player',
-    'gp',
-    'h',
-    'singles',
-    'doubles',
-    'triples',
-    'r',
-    'rbi',
-    'hr',
-    'avg',
-    'sb',
-    'cs',
-    'bb',
-    'sac',
-    'k',
-    'rc',
-    'tb',
-    'obp',
-    'ops',
-    'slg',
-    'woba',
-];
-
-const statsTableStyle = { height: 500, width: 960, fontSize: 12 };
+const statsTableStyle = { height: 700, width: 1050, fontSize: 12 };
 const skeletonConfig = { rows: 20, width: '100%' };
 class Stats extends React.Component {
     constructor(props) {
@@ -99,7 +76,7 @@ class Stats extends React.Component {
         return (
             <div className={pageStyles.statsSection}>
                 <StatsTable
-                    categories={categories}
+                    categories={statPageCategories}
                     cellRenderer={this.renderCell}
                     stats={playerStats}
                     sortMethod={Utils.sortHighToLow}

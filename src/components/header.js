@@ -9,7 +9,7 @@ import componentStyles from './components.module.css';
  */
 const Header = () => ({ siteTitle, uri }) => {
     const headerStyle = {
-        boxShadow: uri !== '/' ? '0 -20px 18px 14px lightslategrey' : null,
+        boxShadow: uri !== '/' ? '0 -25px 20px 14px #345160' : null,
     };
     return (
         <>

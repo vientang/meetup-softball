@@ -55,9 +55,11 @@
 
 /* HEADER */
 .header {
+    align-items: center;
     justify-content: space-between;
-    padding: var(--pad-4) 3rem;
+    padding: var(--pad-5) 3rem;
     max-width: 100%;
+    transform: translateY(-20px);
 }
 
 .header-h1 {
