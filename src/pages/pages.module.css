@@ -102,11 +102,10 @@
     bottom: 0;
     left: 0;
     margin: 1rem 3rem;
-    color: whitesmoke;
+    color: var(--muNavy);
     font-family: Georgia, 'Times New Roman', Times, serif;
     font-style: italic;
     font-size: calc(6px + 0.5vmin);
-    opacity: 0.5;
 }
 
 @media (max-width: 1450px) {

@@ -29,7 +29,7 @@ const GenderFilter = ({ gender, onGenderSelection }) => {
             {genderLabels.map((genderLabel) => {
                 const genderClass = cn({
                     [componentStyles.filterBarLabelGender]: true,
-                    [componentStyles.filterBarLabelGenderActive]: genderLabel === gender,
+                    [componentStyles.filterBarLabelActive]: genderLabel === gender,
                 });
                 return (
                     <Col key={genderLabel} span={1}>
@@ -98,7 +98,7 @@ const renderFilterType = (props) => {
     return filterTypes.map((filter, i) => {
         const filterName = activeFilters[filter] || filter;
         const filterBarClass = cn({
-            [componentStyles.filterBarLabel]: activeFilters[filter],
+            [componentStyles.filterBarLabelActive]: activeFilters[filter],
             [componentStyles.filterBarLabelTypes]: !activeFilters[filter],
         });
         const colSpan = getColumnSpan(activeFilters[filter]);

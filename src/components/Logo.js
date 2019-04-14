@@ -5,18 +5,20 @@ import { Link } from 'gatsby';
 import componentStyles from './components.module.css';
 
 const Logo = ({ siteTitle, uri }) => {
+    const headerTitleClass = cn({
+        [componentStyles.headerTitle]: true,
+        [componentStyles.headerTitleThemed]: uri !== '/',
+    });
     const subHeaderClass = cn({
         [componentStyles.subHeader]: true,
         [componentStyles.subHeaderThemed]: uri !== '/',
     });
     return (
         <div>
-            <h1 className={componentStyles.headerH1}>
-                <Link to="/" className={componentStyles.siteTitle}>
-                    <p className={subHeaderClass}>San Francisco</p>
-                    {siteTitle}
-                </Link>
-            </h1>
+            <Link to="/" className={componentStyles.siteTitle}>
+                <p className={subHeaderClass}>San Francisco</p>
+                <h1 className={headerTitleClass}>{siteTitle}</h1>
+            </Link>
         </div>
     );
 };

@@ -22,7 +22,8 @@
         "gatsby-plugin-manifest": "2.0.5",
         "gatsby-plugin-offline": "2.0.5",
         "gatsby-plugin-react-helmet": "3.0.0",
-        "gatsby-plugin-sharp": "2.0.30",
+        "gatsby-plugin-sharp": "^2.0.34",
+        "gatsby-plugin-typography": "^2.2.13",
         "gatsby-source-filesystem": "2.0.27",
         "gatsby-transformer-sharp": "2.1.4",
         "graphql": "14.1.1",
@@ -34,7 +35,9 @@
         "react-dom": "^16.8.4",
         "react-helmet": "5.2.0",
         "react-share": "2.4.0",
-        "react-table": "6.8.6"
+        "react-table": "6.8.6",
+        "typeface-oleo-script": "0.0.72",
+        "typeface-shrikhand": "0.0.72"
     },
     "keywords": [
         "gatsby"

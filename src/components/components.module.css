@@ -1,6 +1,6 @@
 :root {
-    --muNavy: #243B55;
-    --muNavy-2: #141E30;
+    --muNavy: #243b55;
+    --muNavy-2: #141e30;
     --muRed: #c43045;
     --pblue-4: #1890ff;
     --background-color: #ffffff;
@@ -30,6 +30,14 @@
     --blue-4: #137bc2;
     --skew-10: skew(-10deg);
     --skew-25: skew(-25deg);
+}
+
+@font-face {
+    font-family: 'Shrikhand';
+    font-style: normal;
+    font-weight: 400;
+    src: url(https://fonts.gstatic.com/s/shrikhand/v4/a8IbNovtLWfR7T7bMJwrGIKR8Ttcte1q.woff2)
+        format('woff2');
 }
 
 .header,
@@ -63,14 +71,24 @@
 }
 
 .header-themed {
-    background: var(--muNavy-2);  /* fallback for old browsers */
+    background: var(--muNavy-2); /* fallback for old browsers */
     background: linear-gradient(to right, var(--muNavy), var(--muNavy-2));
     box-shadow: 0 -25px 20px 14px var(--muNavy);
 }
 
-.header-h1 {
+.header-title {
     margin: 0;
+    font-family: 'Shrikhand';
     font-size: calc(0.8rem + 2vmin);
+    letter-spacing: 1px;
+}
+
+.header-title-themed {
+    background: linear-gradient(var(--muRed), var(--muNavy));
+    -webkit-text-stroke: 0.01px var(--white-1);
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
 }
 
 .sub-header {
@@ -122,8 +140,7 @@
 }
 
 .nav-link-themed:hover {
-    color: var(--muRed);
-    background: var(--white-1);
+    background: var(--muRed);
 }
 
 .site-title:hover {
@@ -162,17 +179,17 @@
     height: calc(65px + 0.4vmin);
     width: 260px;
     padding-left: 4.5rem;
-    background: var(--muRed);
+    background: linear-gradient(to top, var(--muRed), #962737);
     color: var(--white-2);
     overflow: hidden;
     box-sizing: border-box;
 }
 
 .join-us-title {
-    font-size: calc(0.5rem + 0.4vmin);
+    font-size: calc(0.7rem + 0.4vmin);
     text-transform: uppercase;
-    line-height: normal;
-    transform: var(--skew-10);
+    line-height: 1.5;
+    transform: var(--skew-10) translateY(4px);
 }
 
 .box-score {
@@ -494,11 +511,12 @@
     font-size: calc(0.5rem + 0.5vmin);
 }
 
-.filter-bar-label {
+/* .filter-bar-label {
     min-width: 112px;
+    font-size: calc(0.5rem + 0.4vmin);
     font-weight: bold;
     overflow-wrap: normal;
-}
+} */
 
 .filter-bar-label,
 .filter-bar-label-gender,
@@ -510,15 +528,17 @@
     overflow: hidden;
 }
 
-.filter-bar-label-gender-active {
+.filter-bar-label-active {
     font-size: calc(0.5rem + 0.5vmin);
     font-weight: bold;
     color: var(--muNavy);
 }
 
+.filter-bar-label-active:hover {
+    cursor: pointer;
+}
+
 .filter-bar-label-types:hover,
-.filter-bar-label:hover,
-.filter-bar-label:hover svg path,
 .filter-bar-label-reset:hover,
 .filter-bar-label-gender:hover {
     color: var(--muNavy);
