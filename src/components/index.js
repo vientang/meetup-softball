@@ -10,6 +10,7 @@ import Image from './Image';
 import JoinUs from './JoinUs';
 import Layout from './Layout';
 import LeaderCard from './LeaderCard';
+import Logo from './Logo';
 import MeetupIcon from './MeetupIcon';
 import NotFoundImage from './NotFoundImage';
 import PlayerGameLog from './PlayerGameLog';
@@ -35,6 +36,7 @@ export {
     Image,
     Layout,
     LeaderCard,
+    Logo,
     MeetupIcon,
     NotFoundImage,
     PlayerGameLog,

@@ -8,8 +8,8 @@ import { Utils, apiService } from '../utils';
 import { statPageCategories } from '../utils/constants';
 import pageStyles from './pages.module.css';
 
-const statsTableStyle = { height: 700, width: 1050, fontSize: 12 };
-const skeletonConfig = { rows: 20, width: '100%' };
+const statsTableStyle = { height: 700, width: 1105, fontSize: 12 };
+const skeletonConfig = { rows: 20, width: '905px' };
 class Stats extends React.Component {
     constructor(props) {
         super(props);
@@ -48,6 +48,7 @@ class Stats extends React.Component {
             return (
                 <Link
                     to={`/player?name=${slug}`}
+                    className={pageStyles.playerName}
                     state={{
                         playerName,
                         playerStats: this.state.playerStats,

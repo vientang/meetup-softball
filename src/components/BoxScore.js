@@ -8,7 +8,7 @@ const BoxScore = ({ style }) => {
         <div className={componentStyles.boxScore} style={style}>
             <h3 className={componentStyles.boxScoreTitle}>Game 240 @ Parkside</h3>
             <span className={componentStyles.boxScoreDate}>Saturday, April 6th</span>
-            <div>
+            <div className={componentStyles.boxScoreResultsGroup}>
                 <div className={componentStyles.boxScoreResults}>
                     <span>Winners</span>
                     <span className={componentStyles.boxScoreTotal}>10</span>

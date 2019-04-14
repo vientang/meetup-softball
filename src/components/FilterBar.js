@@ -5,6 +5,7 @@ import { Row, Col, Dropdown, Menu, Icon } from 'antd';
 import componentStyles from './components.module.css';
 
 const menuItemStyle = {
+    fontSize: 10,
     paddingTop: 0,
     paddingBottom: 0,
 };
@@ -52,8 +53,8 @@ const createMenu = (menus, onFilterChange) => {
             <Menu.Divider />
             {menus.map((menuItem) => {
                 return (
-                    <Menu.Item key={menuItem}>
-                        <span>{menuItem}</span>
+                    <Menu.Item key={menuItem} className={componentStyles.filterMenuItem}>
+                        <span className={componentStyles.filterMenuItemLabel}>{menuItem}</span>
                     </Menu.Item>
                 );
             })}

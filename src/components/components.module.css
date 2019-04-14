@@ -1,5 +1,6 @@
 :root {
-    --muNavy: #345160;
+    --muNavy: #243B55;
+    --muNavy-2: #141E30;
     --muRed: #c43045;
     --pblue-4: #1890ff;
     --background-color: #ffffff;
@@ -57,19 +58,31 @@
 .header {
     align-items: center;
     justify-content: space-between;
-    padding: var(--pad-5) 3rem;
+    padding: var(--pad-3) 3rem;
     max-width: 100%;
-    transform: translateY(-20px);
+}
+
+.header-themed {
+    background: var(--muNavy-2);  /* fallback for old browsers */
+    background: linear-gradient(to right, var(--muNavy), var(--muNavy-2));
+    box-shadow: 0 -25px 20px 14px var(--muNavy);
 }
 
 .header-h1 {
     margin: 0;
+    font-size: calc(0.8rem + 2vmin);
 }
 
 .sub-header {
     margin-bottom: 0;
-    font-size: 1rem;
     color: var(--grey-5);
+    font-size: calc(0.5rem + 0.2vmin);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.sub-header-themed {
+    color: var(--white-1);
 }
 
 .nav-link,
@@ -82,11 +95,16 @@
     filter: drop-shadow(0.1rem 0.1rem var(--grey-1));
 }
 
+.nav-link-themed {
+    color: var(--white-1);
+}
+
 .nav-links {
     justify-content: space-between;
     height: 100%;
     width: 200px;
     max-width: 250px;
+    font-size: calc(0.5rem + 0.4vmin);
 }
 
 .nav-link {
@@ -95,6 +113,7 @@
     font-weight: bold;
     text-transform: uppercase;
     transform: var(--skew-10);
+    transition: color 200ms, background 200ms;
 }
 
 .nav-link:hover {
@@ -102,27 +121,37 @@
     background: var(--muRed);
 }
 
+.nav-link-themed:hover {
+    color: var(--muRed);
+    background: var(--white-1);
+}
+
 .site-title:hover {
     color: var(--muRed);
 }
 
 .icon-group {
+    position: absolute;
+    top: 0;
+    right: 0;
     justify-content: space-between;
     margin-left: auto;
-    width: 50px;
+    padding: 8px 0;
+    width: 100%;
     height: 20px;
 }
 
 .icon-link {
     position: absolute;
-    top: -15px;
-    font-size: 2rem;
-    color: var(--white-1);
+    line-height: normal;
 }
+/**********************/
 
+/*** HOME PAGE BOX SCORE & JOIN US ***/
 .join-us,
 .box-score {
     position: relative;
+    padding: var(--pad-1) var(--pad-5);
     bottom: 0;
     right: 0;
 }
@@ -130,9 +159,9 @@
 .join-us {
     order: 1;
     align-self: flex-end;
-    height: 125px;
-    width: 350px;
-    padding: var(--pad-3) var(--pad-3) var(--pad-3) 6rem;
+    height: calc(65px + 0.4vmin);
+    width: 260px;
+    padding-left: 4.5rem;
     background: var(--muRed);
     color: var(--white-2);
     overflow: hidden;
@@ -140,7 +169,7 @@
 }
 
 .join-us-title {
-    font-size: 0.8rem;
+    font-size: calc(0.5rem + 0.4vmin);
     text-transform: uppercase;
     line-height: normal;
     transform: var(--skew-10);
@@ -150,13 +179,16 @@
     order: 0;
     flex-direction: column;
     justify-content: space-between;
-    height: 150px;
     width: 300px;
-    right: -50px;
-    padding: var(--pad-3) var(--pad-5);
-    border: 1px solid var(--grey-1);
+    right: -65px;
+    border-top: 10px solid var(--muNavy);
     background: var(--white-2);
     transform: var(--skew-25);
+    box-sizing: border-box;
+}
+
+.box-score-results-group {
+    margin-top: 0.5rem;
 }
 
 .box-score-title,
@@ -167,24 +199,29 @@
 }
 
 .box-score-title {
-    font-size: 1rem;
+    font-size: calc(0.5rem + 0.5vmin);
     margin-bottom: 0;
 }
 
 .box-score-date {
+    font-size: calc(0.5rem + 0.3vmin);
     color: var(--grey-2);
-    margin-bottom: 1rem;
+}
+
+.box-score-results-group {
+    margin-top: 0.5rem;
 }
 
 .box-score-results {
     display: grid;
     grid-template-columns: 90% 1fr;
-    margin: var(--margin-1) 0;
+    font-size: calc(0.5rem + 0.3vmin);
 }
 
 .box-score-total {
     font-weight: bold;
 }
+/**********************/
 
 /* ADMIN FORM */
 .admin-form {
@@ -240,6 +277,7 @@
     font-size: 0.7rem;
     color: var(--grey-1);
 }
+/**********************/
 
 /* LEADER BOARD & LEADER CARD */
 .leader-board {
@@ -314,8 +352,9 @@
 .leader-card-stat {
     text-align: right;
 }
+/**********************/
 
-/* SORT TEAMS - TEAM TRANSFER, TRANSFER BOX, TRANSFER LIST ITEM */
+/*** SORT TEAMS - TEAM TRANSFER, TRANSFER BOX, TRANSFER LIST ITEM ***/
 .set-teams-btn {
     position: absolute;
     display: inline-block;
@@ -427,8 +466,9 @@
 .team-transfer-list:hover .team-transfer-sort-operations {
     opacity: 1;
 }
+/**********************/
 
-/* FILTER BAR */
+/**** FILTER BAR ****/
 .filter-row {
     margin-bottom: 1.2rem;
 }
@@ -442,12 +482,22 @@
 }
 
 .filter-bar-label,
-.filter-bar-label-reset {
+.filter-bar-label-gender,
+.filter-bar-label-reset,
+.filter-bar-label-types {
+    font-size: calc(0.4rem + 0.4vmin);
+    color: var(--grey-2);
+    transition: color 200ms ease-in-out, transform 200ms;
+}
+
+.filter-bar-label-gender {
+    font-size: calc(0.5rem + 0.5vmin);
+}
+
+.filter-bar-label {
     min-width: 112px;
-    color: var(--grey-5);
     font-weight: bold;
     overflow-wrap: normal;
-    transition: color 200ms ease-in-out;
 }
 
 .filter-bar-label,
@@ -460,43 +510,28 @@
     overflow: hidden;
 }
 
-.filter-bar-label-gender,
-.filter-bar-label-reset,
-.filter-bar-label-types {
-    font-size: 0.7rem;
-    color: var(--grey-3);
-    transition: transform 200ms;
-}
-
-.filter-bar-label-reset {
-    font-size: 0.6rem;
-    font-weight: normal;
-}
-
 .filter-bar-label-gender-active {
+    font-size: calc(0.5rem + 0.5vmin);
     font-weight: bold;
-    color: var(--muRed);
-}
-
-.filter-bar-label-gender:hover {
-    transform: scale(1.1);
-    cursor: pointer;
-}
-
-.filter-bar-label-reset {
-    color: var(--muRed);
+    color: var(--muNavy);
 }
 
 .filter-bar-label-types:hover,
 .filter-bar-label:hover,
 .filter-bar-label:hover svg path,
-.filter-bar-label-reset:hover {
-    color: var(--blue-3);
+.filter-bar-label-reset:hover,
+.filter-bar-label-gender:hover {
+    color: var(--muNavy);
+    transform: scale(1.1);
     cursor: pointer;
 }
 
 .filter-bar-label-name {
     margin-right: var(--margin-0);
+}
+
+.filter-menu-item:hover > .filter-menu-item-label {
+    color: var(--muNavy);
 }
 
 .filter-menu-all-label {
@@ -505,6 +540,14 @@
     color: var(--grey-3);
 }
 
+.filter-menu-item-label {
+    font-size: calc(0.5rem + 0.5vmin);
+    color: var(--grey-2);
+    transition: color 200ms ease-in-out;
+}
+/**********************/
+
+/**** PLAYER PAGE ****/
 .player-page-section {
     margin: var(--margin-3) 0;
 }
@@ -537,4 +580,12 @@
 
 .player-info-name {
     font-size: 2rem;
+}
+/**********************/
+
+/**** MEDIA QUERIES ****/
+@media (max-width: 1450px) {
+    .filter-row {
+        justify-content: center;
+    }
 }

@@ -6,8 +6,6 @@ import { defaultStatCategories } from '../utils/constants';
 import componentStyles from './components.module.css';
 import 'react-table/react-table.css';
 
-const headerStyle = { background: '#345160', color: 'white' };
-
 const formatHeaderLabel = (category) => {
     switch (category) {
         case 'singles':
@@ -29,10 +27,12 @@ const formatHeaderLabel = (category) => {
     }
 };
 
-const formatColumnWidth = (category) => {
+const formatColumnWidth = (params) => {
+    const { category, lastColumn } = params;
+    const scrollBarOffset = 15;
     const rateCategories = ['avg', 'rc', 'obp', 'ops', 'slg', 'woba'];
     if (rateCategories.includes(category)) {
-        return 60;
+        return lastColumn ? 58 + scrollBarOffset : 50;
     }
     switch (category) {
         case 'player':
@@ -42,69 +42,85 @@ const formatColumnWidth = (category) => {
         case '':
             return 150;
         default:
-            return 35;
+            return 45;
     }
 };
 
+const formatHeaderStyle = (params) => {
+    const { category, lastColumn } = params;
+    const headerStyle = {
+        background: '#243B55',
+        color: 'white',
+        padding: '0.5rem',
+        textAlign: 'right',
+        letterSpacing: '1px',
+    };
+    if (category === 'player') {
+        headerStyle.textAlign = 'left';
+    }
+    if (lastColumn) {
+        headerStyle.textAlign = 'center';
+        headerStyle.paddingRight = 25;
+    }
+    return headerStyle;
+};
+
 const formatCellStyle = (params) => {
-    const { category } = params;
+    const { category, lastColumn } = params;
     const cellStyle = {
         textAlign: category === 'player' ? 'left' : 'right',
         color: '#555555',
+        padding: '0.5rem',
+        borderRight: 0,
+        paddingRight: lastColumn ? 25 : null,
     };
     return cellStyle;
 };
 
-class StatsTable extends React.Component {
-    constructor() {
-        super();
-        this.tBodyComponent = null;
+const renderColumns = (params) => {
+    const { categories, cellRenderer, sortMethod } = params;
+
+    const columns = categories.map((category, i) => {
+        const lastColumn = categories.length - 1 === i;
+        const header = formatHeaderLabel(category);
+        const width = formatColumnWidth({ category, lastColumn });
+        const headerStyle = formatHeaderStyle({ category, lastColumn });
+        const cellStyle = formatCellStyle({ category, lastColumn });
+        return {
+            Header: header,
+            Cell: cellRenderer,
+            accessor: category === 'player' ? 'name' : category,
+            resizable: false,
+            style: cellStyle,
+            headerStyle,
+            sortMethod,
+            width,
+        };
+    });
+    return columns;
+};
+
+const StatsTable = (props) => {
+    const { stats, showPagination, style } = props;
+    if (!stats || stats.length < 1) {
+        return null;
     }
 
-    renderColumns = () => {
-        const { categories, cellRenderer, sortMethod } = this.props;
-
-        const columns = categories.map((category) => {
-            const header = formatHeaderLabel(category);
-            const width = formatColumnWidth(category);
-            const cellStyle = formatCellStyle({ category });
-            return {
-                Header: header,
-                Cell: cellRenderer,
-                accessor: category === 'player' ? 'name' : category,
-                resizable: false,
-                style: cellStyle,
-                headerStyle,
-                sortMethod,
-                width,
-            };
-        });
-        return columns;
-    };
-
-    render() {
-        const { stats, showPagination, style } = this.props;
-
-        if (!stats || stats.length < 1) {
-            return null;
-        }
-
-        return (
-            <div className={componentStyles.statsTable}>
-                <ErrorBoundary>
-                    <ReactTable
-                        data={stats}
-                        className="-striped -highlight"
-                        columns={this.renderColumns()}
-                        defaultPageSize={stats.length}
-                        showPaginationBottom={showPagination}
-                        style={style}
-                    />
-                </ErrorBoundary>
-            </div>
-        );
-    }
-}
+    return (
+        <div className={componentStyles.statsTable}>
+            <ErrorBoundary>
+                <ReactTable
+                    data={stats}
+                    className="-striped -highlight"
+                    columns={renderColumns(props)}
+                    defaultPageSize={stats.length}
+                    showPaginationBottom={showPagination}
+                    style={style}
+                />
+            </ErrorBoundary>
+        </div>
+    );
+};
 
 StatsTable.propTypes = {
     categories: PropTypes.arrayOf(PropTypes.string),
