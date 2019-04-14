@@ -240,6 +240,47 @@
 }
 /**********************/
 
+
+/* STATS TABLE */
+.stats-table {
+    margin-bottom: 3rem;
+}
+
+.stat-cell {
+    height: 100%;
+}
+
+.stat-cell:focus {
+    outline: none;
+}
+
+.stats-legend {
+    list-style: none;
+    margin: 0;
+    padding: 1rem 0;
+    border-top: 1px solid var(--grey-1);
+    line-height: normal;
+}
+
+.stats-legend-definition {
+    color: var(--grey-2);
+    font-size: calc(0.4rem + 0.4vmin);
+}
+
+.stats-legend-basic {
+    margin: 0 0 0.5rem;
+}
+
+.stats-legend-detail,
+.stats-legend-formula {
+    display: block;
+    margin-left: 2rem;
+}
+
+.stats-legend-formula {
+    font-style: italic;
+}
+
 /* ADMIN FORM */
 .admin-form {
     justify-content: space-between;
@@ -251,18 +292,6 @@
     flex-direction: column;
     width: 100%;
     margin-top: var(--margin-5);
-}
-
-.stats-table {
-    margin-bottom: 3rem;
-}
-
-.stat-cell {
-    height: 100%;
-}
-
-.stat-cell:focus {
-    outline: none;
 }
 
 .submit-button {

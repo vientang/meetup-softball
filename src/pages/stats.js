@@ -8,7 +8,7 @@ import { Utils, apiService } from '../utils';
 import { statPageCategories } from '../utils/constants';
 import pageStyles from './pages.module.css';
 
-const statsTableStyle = { height: 700, width: 1105, fontSize: 12 };
+const statsTableStyle = { height: 700, width: 1105, fontSize: 12, marginBottom: '1rem' };
 const skeletonConfig = { rows: 20, width: '905px' };
 class Stats extends React.Component {
     constructor(props) {

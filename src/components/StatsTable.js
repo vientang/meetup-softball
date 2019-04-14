@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ReactTable from 'react-table';
 import ErrorBoundary from './ErrorBoundary';
+import StatsLegend from './StatsLegend';
 import { defaultStatCategories } from '../utils/constants';
 import componentStyles from './components.module.css';
 import 'react-table/react-table.css';
@@ -117,6 +118,8 @@ const StatsTable = (props) => {
                     showPaginationBottom={showPagination}
                     style={style}
                 />
+                <StatsLegend />
+
             </ErrorBoundary>
         </div>
     );

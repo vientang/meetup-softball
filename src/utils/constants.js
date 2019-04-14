@@ -1,25 +1,28 @@
 const definitions = {
     // write definitions for stats using key/value pairs. These will be seen on // stats table
     rc: {
-        basic:
-            'Runs Created. Uses offensive stats (including steal attempts) to estimate the actual runs created by a player',
-        detail: `In a game where steals are allowed, this is our best stat for offensive production. Formula:
-            Runs Created = (hits + walks - caught stealing) * (total bases + stolen bases * 0.55)) / (at bats + walks)`,
+        basic: 'Runs Created',
+        detail:
+            'Uses offensive stats (including steal attempts) to estimate the actual runs created by a player. In a game where steals are allowed, this is our best stat for offensive production.',
+        formula:
+            '(hits + walks - caught stealing) * (total bases + stolen bases * 0.55)) / (at bats + walks)',
     },
     woba: {
-        basic:
-            'Weighted On Base Average. Considers on base skills and power hitting to measure offensive production',
-        detail: `In a game without steals, this is our best stat to measure offensive production. Formula:
-            wOBA = (0.690×BB + 0.888×1B + 1.271×2B + 1.616×3B + 2.101×HR) / (at bats + walks + sacrifice flies )`,
+        basic: 'Weighted On Base Average',
+        detail:
+            'Considers on base skills and power hitting to measure offensive production. In a game without steals, this is our best stat to measure offensive production.',
+        formula:
+            '(0.690×BB + 0.888×1B + 1.271×2B + 1.616×3B + 2.101×HR) / (at bats + walks + sacrifice flies )',
     },
     obp: {
         basic: 'On Base Percentage',
         detail: 'Percentage of times reached base safely without making an out',
+        formula: '(hits + walks) / (atBats + walks + sacrifices)',
     },
     ops: {
         basic: 'On Base Plus Slugging',
-        detail:
-            'On Base Percentage + Slugging Percentage. Good simple stat for performance at the plate',
+        detail: 'Good simple stat for performance at the plate',
+        formula: 'On Base Percentage + Slugging Percentage.',
     },
     gp: {
         basic: 'Games Played',
@@ -79,7 +82,8 @@ const definitions = {
     },
     tb: {
         basic: 'Total Bases',
-        detail: 'Total Bases = Singles x 1 + Doubles x 2 + Triples x 3 + Home Runs x 4',
+        detail: 'Total amount of bases reached.',
+        formula: 'Singles x 1 + Doubles x 2 + Triples x 3 + Home Runs x 4',
     },
 };
 

@@ -16,6 +16,7 @@ import NotFoundImage from './NotFoundImage';
 import PlayerGameLog from './PlayerGameLog';
 import PlayerInfo from './PlayerInfo';
 import SortTeams from './SortTeams';
+import StatsLegend from './StatsLegend';
 import StatsTable from './StatsTable';
 import SuccessImage from './SuccessImage';
 import TeamTransfer from './TeamTransfer';
@@ -42,6 +43,7 @@ export {
     PlayerGameLog,
     PlayerInfo,
     SortTeams,
+    StatsLegend,
     StatsTable,
     SuccessImage,
     TeamTransfer,
