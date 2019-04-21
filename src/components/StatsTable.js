@@ -73,8 +73,10 @@ const formatCellStyle = (params) => {
         color: '#555555',
         padding: '0.5rem',
         borderRight: 0,
-        paddingRight: lastColumn ? 25 : null,
     };
+    if (lastColumn) {
+        cellStyle.paddingRight = 25;
+    }
     return cellStyle;
 };
 

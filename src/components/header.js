@@ -10,20 +10,13 @@ import componentStyles from './components.module.css';
  * Singleton component to ensure one instance
  */
 const Header = () => ({ siteTitle, uri }) => {
-    const headerClass = cn({
-        [componentStyles.header]: true,
-        [componentStyles.headerThemed]: uri !== '/',
-    });
-
-    const navLinkClass = cn({
-        [componentStyles.navLink]: true,
-        [componentStyles.navLinkThemed]: uri !== '/',
-    });
-
+    const headerStyle = {
+        borderBottom: uri === '/' ? 'none' : '1px solid #d1d1d1',
+    };
     return (
         <>
-            <header className={headerClass}>
-                <Logo siteTitle={siteTitle} uri={uri} />
+            <header className={componentStyles.header} style={headerStyle}>
+                <Logo siteTitle={siteTitle} />
 
                 <IconGroup
                     types={[
@@ -39,10 +32,10 @@ const Header = () => ({ siteTitle, uri }) => {
                     uri={uri}
                 />
                 <div className={componentStyles.navLinks}>
-                    <Link to="/stats" className={navLinkClass}>
+                    <Link to="/stats" className={componentStyles.navLink}>
                         Stats
                     </Link>
-                    <Link to="/leaderboard" className={navLinkClass}>
+                    <Link to="/leaderboard" className={componentStyles.navLink}>
                         Leaderboard
                     </Link>
                 </div>

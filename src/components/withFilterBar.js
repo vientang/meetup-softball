@@ -27,16 +27,14 @@ const withFilterBar = (Page) => {
                     year: defaultFilter,
                     month: '',
                     field: '',
-                    tournament: '',
                     batting: '',
                 },
                 currentFilter: '',
                 fields: [''],
-                filterTypes: ['year', 'month', 'field', 'tournament', 'batting'],
+                filterTypes: ['year', 'month', 'field', 'batting'],
                 gameStats: [],
                 gender: 'All',
                 playerStats: [],
-                tournaments: [''],
                 years: [''],
             };
         }
@@ -52,7 +50,6 @@ const withFilterBar = (Page) => {
                         playerStats: playerData.data.listPlayerStatss.items,
                         years: dataMap.get('years'),
                         fields: dataMap.get('fields'),
-                        tournaments: dataMap.get('tournaments'),
                     }));
                 }
             } else {
@@ -70,15 +67,11 @@ const withFilterBar = (Page) => {
                 try {
                     const years = this.getFilterMenu(gameStats.data.listGameStatss.items, 'year');
                     const fields = this.getFilterMenu(gameStats.data.listGameStatss.items, 'field');
-                    const tournaments = this.getFilterMenu(
-                        gameStats.data.listGameStatss.items,
-                        'tournamentName',
-                    );
+
                     dataMap.set('gameData', gameStats);
                     dataMap.set('playerData', playerStats);
                     dataMap.set('years', years);
                     dataMap.set('fields', fields);
-                    dataMap.set('tournaments', tournaments);
 
                     if (this.mounted) {
                         this.setState(() => ({
@@ -86,7 +79,6 @@ const withFilterBar = (Page) => {
                             playerStats: playerStats.data.listPlayerStatss.items,
                             fields,
                             years,
-                            tournaments,
                         }));
                     }
                 } catch (error) {
@@ -182,21 +174,19 @@ const withFilterBar = (Page) => {
                 year: defaultFilter,
                 month: '',
                 field: '',
-                tournament: '',
                 batting: '',
             };
             this.updateState({ activeFilters });
         };
 
         renderFilterBar = () => {
-            const { activeFilters, fields, filterTypes, gender, tournaments, years } = this.state;
+            const { activeFilters, fields, filterTypes, gender, years } = this.state;
             return (
                 <FilterBar
                     activeFilters={activeFilters}
                     fields={fields}
                     filterTypes={filterTypes}
                     gender={Page.displayName === 'Player' ? null : gender}
-                    tournaments={tournaments}
                     years={years}
                     onResetFilters={this.handleResetFilters}
                     onFilterChange={this.handleFilterChange}
@@ -223,8 +213,7 @@ const withFilterBar = (Page) => {
             }
             return (
                 <>
-                    <Layout className={styles.statsPage}>
-                        {this.renderFilterBar()}
+                    <Layout className={styles.statsPage} filterBar={this.renderFilterBar()}>
                         <Page
                             gameData={gameStats}
                             playerData={playerStats}

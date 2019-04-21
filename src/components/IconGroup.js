@@ -6,10 +6,10 @@ import componentStyles from './components.module.css';
 
 const IconGroup = ({ types, uri }) => {
     const fontSize = 14;
-    const meetupIcon = () => <MeetupIcon uri={uri} size={fontSize} />;
+    const meetupIcon = () => <MeetupIcon size={fontSize} />;
     const iconStyle = {
-        verticalAlign: 0,
-        color: uri !== '/' ? '#ffffff' : '#c43045',
+        verticalAlign: -1,
+        color: '#c43045',
         fontSize,
     };
     return (
