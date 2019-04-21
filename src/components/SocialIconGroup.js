@@ -4,7 +4,7 @@ import { Icon } from 'antd';
 import MeetupIcon from './MeetupIcon';
 import componentStyles from './components.module.css';
 
-const IconGroup = ({ types, uri }) => {
+const SocialIconGroup = ({ types, uri }) => {
     const fontSize = 14;
     const meetupIcon = () => <MeetupIcon size={fontSize} />;
     const iconStyle = {
@@ -41,13 +41,13 @@ const IconGroup = ({ types, uri }) => {
     );
 };
 
-IconGroup.displayName = 'IconGroup';
-IconGroup.propTypes = {
+SocialIconGroup.displayName = 'SocialIconGroup';
+SocialIconGroup.propTypes = {
     types: PropTypes.arrayOf(PropTypes.shape),
     uri: PropTypes.string,
 };
-IconGroup.defaultProps = {
+SocialIconGroup.defaultProps = {
     types: [],
 };
 
-export default IconGroup;
+export default SocialIconGroup;

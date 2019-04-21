@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import cn from 'classnames';
 import { Link } from 'gatsby';
-import IconGroup from './IconGroup';
+import SocialIconGroup from './SocialIconGroup';
 import Logo from './Logo';
 import componentStyles from './components.module.css';
 
@@ -16,9 +15,9 @@ const Header = () => ({ siteTitle, uri }) => {
     return (
         <>
             <header className={componentStyles.header} style={headerStyle}>
-                <Logo siteTitle={siteTitle} />
+                <Logo siteTitle={siteTitle} uri={uri} />
 
-                <IconGroup
+                <SocialIconGroup
                     types={[
                         {
                             type: 'facebook',

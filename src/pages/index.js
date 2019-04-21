@@ -6,6 +6,7 @@ import Img from 'gatsby-image';
 import { BoxScore, Layout, JoinUs } from '../components';
 import pageStyles from './pages.module.css';
 import configuration from '../aws-exports';
+import Losers from '../components/Losers';
 import 'typeface-shrikhand';
 
 Amplify.configure(configuration);

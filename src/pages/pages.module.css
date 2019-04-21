@@ -41,7 +41,7 @@
     position: absolute;
     display: flex;
     justify-content: flex-end;
-    height: calc(100px + 1vmin);
+    height: calc(90px + 1vmin);
     width: calc(950px + 1vmin);
     bottom: 0;
     right: 0;
