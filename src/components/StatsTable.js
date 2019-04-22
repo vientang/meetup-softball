@@ -37,7 +37,7 @@ const formatColumnWidth = (params) => {
     }
     switch (category) {
         case 'player':
-            return 150;
+            return 200;
         case 'w':
             return 75;
         case '':
@@ -73,6 +73,7 @@ const formatCellStyle = (params) => {
         color: '#555555',
         padding: '0.5rem',
         borderRight: 0,
+        alignSelf: 'center',
     };
     if (lastColumn) {
         cellStyle.paddingRight = 25;

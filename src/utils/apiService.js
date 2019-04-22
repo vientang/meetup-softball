@@ -226,6 +226,9 @@ const updateEntries = (gamePlayers) => {
                 woba,
             });
 
+            playerStats.meetupId = player.meetupId;
+            playerStats.photos = player.photos;
+
             masterList.set(playerStats.name, playerStats);
         }
     });

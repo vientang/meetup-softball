@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import isEqual from 'lodash/isEqual';
+import get from 'lodash/get';
 import { Link } from 'gatsby';
-import { Skeleton } from 'antd';
+import { Avatar, Skeleton } from 'antd';
 import { withFilterBar, NotFoundImage, StatsTable } from '../components';
 import { Utils, apiService } from '../utils';
 import { statPageCategories } from '../utils/constants';
@@ -10,7 +11,7 @@ import pageStyles from './pages.module.css';
 
 const statsTableStyle = {
     height: 700,
-    width: 1105,
+    width: 1155,
     fontSize: 12,
     marginBottom: '1rem',
     boxShadow: '0px 0px 25px -20px #243b55',
@@ -43,30 +44,42 @@ class Stats extends React.Component {
         this.setState(() => ({ playerStats, noDataFound: playerStats.length < 1 }));
     };
 
+    renderPlayerCell = (playerStats, cellInfo) => {
+        const playerName = playerStats[cellInfo.index].name;
+        const playerImg = get(playerStats[cellInfo.index], 'photos.thumb_link', '');
+        const avatarStyle = { marginRight: '0.5rem' };
+        const slug = playerName
+            .split(' ')
+            .join('_')
+            .toLowerCase();
+        return (
+            <Link
+                to={`/player?name=${slug}`}
+                className={pageStyles.playerName}
+                state={{
+                    playerName,
+                    playerStats: this.state.playerStats,
+                }}
+            >
+                {playerImg ? (
+                    <Avatar src={playerImg} style={avatarStyle} alt={playerName} shape="square" />
+                ) : (
+                    <Avatar icon="user" style={avatarStyle} alt={playerName} shape="square" />
+                )}
+                {playerName}
+            </Link>
+        );
+    };
+
     renderCell = (cellInfo) => {
         const { playerStats } = this.state;
-        const cellValue = playerStats[cellInfo.index][cellInfo.column.id];
-        const playerName = playerStats[cellInfo.index].name;
-        if (cellValue === playerName) {
-            const slug = playerName
-                .split(' ')
-                .join('_')
-                .toLowerCase();
-            return (
-                <Link
-                    to={`/player?name=${slug}`}
-                    className={pageStyles.playerName}
-                    state={{
-                        playerName,
-                        playerStats: this.state.playerStats,
-                    }}
-                >
-                    {playerName}
-                </Link>
-            );
-        }
 
-        return Utils.formatCellValue(cellValue);
+        const playerName = playerStats[cellInfo.index].name;
+        const cellValue = playerStats[cellInfo.index][cellInfo.column.id];
+
+        return cellValue === playerName
+            ? this.renderPlayerCell(playerStats, cellInfo)
+            : Utils.formatCellValue(cellValue);
     };
 
     render() {
