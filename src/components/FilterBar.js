@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import cn from 'classnames';
 import { Dropdown, Menu, Icon } from 'antd';
+import SearchBar from './SearchBar';
 import componentStyles from './components.module.css';
 
 const menuItemStyle = {
@@ -84,19 +85,15 @@ const renderFilterTypes = (props) => {
 };
 
 const FilterBar = (props) => {
-    const { onResetFilters } = props;
+    const { onResetFilters, playerData } = props;
     return (
-        <>
-            <div className={componentStyles.filterRow}>
-                <div className={componentStyles.filterRowSection}>
-                    {renderFilterTypes(props)}
-                    <ResetFilters onClick={onResetFilters} />
-                </div>
-                <div className={componentStyles.searchBar}>
-                    <input type="text" />
-                </div>
+        <div className={componentStyles.filterRow}>
+            <div className={componentStyles.filterRowSection}>
+                {renderFilterTypes(props)}
+                <ResetFilters onClick={onResetFilters} />
             </div>
-        </>
+            <SearchBar playerData={playerData} />
+        </div>
     );
 };
 
@@ -104,19 +101,21 @@ FilterBar.displayName = 'FilterBar';
 /* eslint-disable react/no-unused-prop-types */
 FilterBar.propTypes = {
     activeFilters: PropTypes.shape(),
-    filterTypes: PropTypes.arrayOf(PropTypes.string),
-    years: PropTypes.arrayOf(PropTypes.string),
-    months: PropTypes.arrayOf(PropTypes.string),
-    fields: PropTypes.arrayOf(PropTypes.string),
     battingPositions: PropTypes.arrayOf(PropTypes.number),
+    fields: PropTypes.arrayOf(PropTypes.string),
+    filterTypes: PropTypes.arrayOf(PropTypes.string),
+    months: PropTypes.arrayOf(PropTypes.string),
     onFilterChange: PropTypes.func,
     onMouseEnter: PropTypes.func,
     onResetFilters: PropTypes.func,
+    playerData: PropTypes.arrayOf(PropTypes.shape),
+    years: PropTypes.arrayOf(PropTypes.string),
 };
 
 FilterBar.defaultProps = {
+    battingPositions: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    fields: ['West Sunset', 'Parkside', 'Westlake'],
     filterTypes: ['2019', 'MONTHS', 'FIELDS', 'BATTING'],
-    years: ['2019', '2018', '2017', '2016', '2015', '2014'],
     months: [
         'January',
         'February',
@@ -131,8 +130,8 @@ FilterBar.defaultProps = {
         'November',
         'December',
     ],
-    fields: ['West Sunset', 'Parkside', 'Westlake'],
-    battingPositions: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    playerData: [],
+    years: ['2019', '2018', '2017', '2016', '2015', '2014'],
 };
 
 export default FilterBar;

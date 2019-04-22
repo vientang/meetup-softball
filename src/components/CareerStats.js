@@ -28,18 +28,16 @@ const categories = [
     'woba',
 ];
 
-const CareerStats = ({ filterBar, stats }) => {
+const CareerStats = ({ stats }) => {
     return (
         <div className={componentStyles.playerPageSection}>
             <p className={componentStyles.playerPageSectionTitle}>Career stats</p>
-            {filterBar}
             <StatsTable categories={categories} stats={stats} sortMethod={Utils.sortHighToLow} />
         </div>
     );
 };
 
 CareerStats.propTypes = {
-    filterBar: PropTypes.node,
     stats: PropTypes.arrayOf(PropTypes.shape()),
 };
 

@@ -180,7 +180,8 @@ const withFilterBar = (Page) => {
         };
 
         renderFilterBar = () => {
-            const { activeFilters, fields, filterTypes, gender, years } = this.state;
+            const { activeFilters, fields, filterTypes, gender, playerStats, years } = this.state;
+
             return (
                 <FilterBar
                     activeFilters={activeFilters}
@@ -192,6 +193,7 @@ const withFilterBar = (Page) => {
                     onFilterChange={this.handleFilterChange}
                     onGenderSelection={this.handleGenderSelection}
                     onMouseEnter={this.handleMouseEnter}
+                    playerData={playerStats}
                 />
             );
         };
@@ -199,28 +201,14 @@ const withFilterBar = (Page) => {
         render() {
             const { gameStats, playerStats } = this.state;
 
-            if (Page.displayName === 'Player') {
-                return (
-                    <Layout className={styles.statsPage}>
-                        <Page
-                            location={this.props.location}
-                            gameData={gameStats}
-                            playerData={playerStats}
-                            filterBar={this.renderFilterBar()}
-                        />
-                    </Layout>
-                );
-            }
             return (
-                <>
-                    <Layout className={styles.statsPage} filterBar={this.renderFilterBar()}>
-                        <Page
-                            gameData={gameStats}
-                            playerData={playerStats}
-                            location={this.props.location}
-                        />
-                    </Layout>
-                </>
+                <Layout className={styles.statsPage} filterBar={this.renderFilterBar()}>
+                    <Page
+                        gameData={gameStats}
+                        playerData={playerStats}
+                        location={this.props.location}
+                    />
+                </Layout>
             );
         }
     };

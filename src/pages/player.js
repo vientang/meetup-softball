@@ -93,7 +93,7 @@ class Player extends React.Component {
         return (
             <div>
                 <PlayerInfo playerInfo={{ name: this.state.playerName }} />
-                <CareerStats filterBar={this.props.filterBar} stats={careerStats} />
+                <CareerStats stats={careerStats} />
                 <PlayerGameLog stats={gameStats} />
             </div>
         );
@@ -101,6 +101,7 @@ class Player extends React.Component {
 }
 
 Player.displayName = 'Player';
+/* eslint-disable react/no-unused-prop-types */
 Player.propTypes = {
     filterBar: PropTypes.node,
     gameData: PropTypes.arrayOf(PropTypes.shape),
