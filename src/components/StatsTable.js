@@ -7,7 +7,66 @@ import { defaultStatCategories } from '../utils/constants';
 import componentStyles from './components.module.css';
 import 'react-table/react-table.css';
 
-const formatHeaderLabel = (category) => {
+const StatsTable = (props) => {
+    const { stats, showPagination, striped, style } = props;
+
+    const statsTableStyle = {
+        fontSize: 12,
+        boxShadow: '0px 0px 20px -15px #243b55',
+        ...style,
+    };
+    const statsLegendStyle = {
+        width: style.width,
+    };
+
+    if (!stats || stats.length < 1) {
+        return null;
+    }
+
+    return (
+        <div className={componentStyles.statsTable}>
+            <ErrorBoundary>
+                <ReactTable
+                    data={stats}
+                    className={`-${striped} -highlight`}
+                    columns={renderColumns(props)}
+                    defaultPageSize={stats.length}
+                    showPaginationBottom={showPagination}
+                    style={statsTableStyle}
+                />
+                <StatsLegend style={statsLegendStyle} />
+            </ErrorBoundary>
+        </div>
+    );
+};
+
+function renderColumns(params) {
+    const { categories, cellRenderer, sortMethod } = params;
+
+    const columns = categories.map((category, i) => {
+        const lastColumn = categories.length - 1 === i;
+        const header = formatHeaderLabel(category);
+        const width = formatColumnWidth({ category, lastColumn });
+        const headerStyle = formatHeaderStyle({ category, lastColumn });
+        const cellStyle = formatCellStyle({ category, lastColumn });
+
+        return {
+            Header: header,
+            Cell: cellRenderer,
+            accessor: category === 'player' ? 'name' : category,
+            resizable: false,
+            headerClassName: componentStyles.statHeaderCell,
+            className: componentStyles.statCell,
+            style: cellStyle,
+            headerStyle,
+            sortMethod,
+            width,
+        };
+    });
+    return columns;
+}
+
+function formatHeaderLabel(category) {
     switch (category) {
         case 'singles':
             return '1B';
@@ -26,9 +85,9 @@ const formatHeaderLabel = (category) => {
         default:
             return category.toUpperCase();
     }
-};
+}
 
-const formatColumnWidth = (params) => {
+function formatColumnWidth(params) {
     const { category, lastColumn } = params;
     const scrollBarOffset = 15;
     const rateCategories = ['avg', 'rc', 'obp', 'ops', 'slg', 'woba'];
@@ -38,6 +97,8 @@ const formatColumnWidth = (params) => {
     switch (category) {
         case 'player':
             return 200;
+        case 'game':
+            return 200;
         case 'w':
             return 75;
         case '':
@@ -45,18 +106,14 @@ const formatColumnWidth = (params) => {
         default:
             return 45;
     }
-};
+}
 
-const formatHeaderStyle = (params) => {
+function formatHeaderStyle(params) {
     const { category, lastColumn } = params;
     const headerStyle = {
-        background: '#243B55',
-        color: 'white',
         padding: '0.5rem',
-        textAlign: 'right',
-        letterSpacing: '1px',
     };
-    if (category === 'player') {
+    if (category === 'player' || category === 'game') {
         headerStyle.textAlign = 'left';
     }
     if (lastColumn) {
@@ -64,83 +121,39 @@ const formatHeaderStyle = (params) => {
         headerStyle.paddingRight = 25;
     }
     return headerStyle;
-};
+}
 
-const formatCellStyle = (params) => {
+function formatCellStyle(params) {
     const { category, lastColumn } = params;
+
     const cellStyle = {
-        textAlign: category === 'player' ? 'left' : 'right',
-        color: '#555555',
+        textAlign: category === 'player' || category === 'game' ? 'left' : 'right',
+        color: category === 'gp' ? '#bebbbb' : '#555555',
+        borderRight: category === 'player' ? '1px solid #f5f5f5' : 0,
         padding: '0.5rem',
-        borderRight: 0,
-        alignSelf: 'center',
     };
     if (lastColumn) {
         cellStyle.paddingRight = 25;
     }
     return cellStyle;
-};
-
-const renderColumns = (params) => {
-    const { categories, cellRenderer, sortMethod } = params;
-
-    const columns = categories.map((category, i) => {
-        const lastColumn = categories.length - 1 === i;
-        const header = formatHeaderLabel(category);
-        const width = formatColumnWidth({ category, lastColumn });
-        const headerStyle = formatHeaderStyle({ category, lastColumn });
-        const cellStyle = formatCellStyle({ category, lastColumn });
-        return {
-            Header: header,
-            Cell: cellRenderer,
-            accessor: category === 'player' ? 'name' : category,
-            resizable: false,
-            style: cellStyle,
-            headerStyle,
-            sortMethod,
-            width,
-        };
-    });
-    return columns;
-};
-
-const StatsTable = (props) => {
-    const { stats, showPagination, style } = props;
-    if (!stats || stats.length < 1) {
-        return null;
-    }
-
-    return (
-        <div className={componentStyles.statsTable}>
-            <ErrorBoundary>
-                <ReactTable
-                    data={stats}
-                    className="-striped -highlight"
-                    columns={renderColumns(props)}
-                    defaultPageSize={stats.length}
-                    showPaginationBottom={showPagination}
-                    style={style}
-                />
-                <StatsLegend />
-
-            </ErrorBoundary>
-        </div>
-    );
-};
+}
 
 StatsTable.propTypes = {
     categories: PropTypes.arrayOf(PropTypes.string),
     cellRenderer: PropTypes.func,
-    stats: PropTypes.arrayOf(PropTypes.object),
     showPagination: PropTypes.bool,
     sortMethod: PropTypes.func,
+    stats: PropTypes.arrayOf(PropTypes.object),
+    striped: PropTypes.string,
     style: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
 };
 
 StatsTable.defaultProps = {
     categories: defaultStatCategories,
-    stats: [],
     showPagination: false,
+    stats: [],
+    striped: 'striped',
+    style: {},
 };
 
 export default StatsTable;

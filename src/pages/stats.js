@@ -10,14 +10,11 @@ import { statPageCategories } from '../utils/constants';
 import pageStyles from './pages.module.css';
 
 const statsTableStyle = {
-    height: 700,
+    height: 800,
     width: 1155,
-    fontSize: 12,
-    marginBottom: '1rem',
-    boxShadow: '0px 0px 25px -20px #243b55',
 };
 
-const skeletonConfig = { rows: 20, width: '705px' };
+const skeletonConfig = { rows: 20, width: '1155px' };
 class Stats extends React.Component {
     constructor(props) {
         super(props);
@@ -37,8 +34,13 @@ class Stats extends React.Component {
             });
             this.updatePlayerStats(playerStats);
         }
+
         apiService.clearMasterList();
     }
+
+    getPlayerStats = (playerStats, playerId) => {
+        return playerId ? playerStats.find((player) => player.meetupId === playerId) : {};
+    };
 
     updatePlayerStats = (playerStats) => {
         this.setState(() => ({ playerStats, noDataFound: playerStats.length < 1 }));
@@ -46,19 +48,24 @@ class Stats extends React.Component {
 
     renderPlayerCell = (playerStats, cellInfo) => {
         const playerName = playerStats[cellInfo.index].name;
+        const playerId = playerStats[cellInfo.index].meetupId;
         const playerImg = get(playerStats[cellInfo.index], 'photos.thumb_link', '');
         const avatarStyle = { marginRight: '0.5rem' };
+        const stats = this.getPlayerStats(playerStats, playerId);
+
         const slug = playerName
             .split(' ')
             .join('_')
             .toLowerCase();
+
         return (
             <Link
                 to={`/player?name=${slug}`}
                 className={pageStyles.playerName}
                 state={{
+                    playerId,
                     playerName,
-                    playerStats: this.state.playerStats,
+                    playerStats: stats,
                 }}
             >
                 {playerImg ? (
@@ -91,7 +98,11 @@ class Stats extends React.Component {
         }
 
         if (gameData.length === 0) {
-            return <Skeleton active paragraph={skeletonConfig} title={false} />;
+            return (
+                <div className={pageStyles.statsSection}>
+                    <Skeleton active paragraph={skeletonConfig} title={false} />
+                </div>
+            );
         }
 
         return (

@@ -10,6 +10,7 @@ import componentStyles from './components.module.css';
  */
 const Header = () => ({ siteTitle, uri }) => {
     const headerStyle = {
+        backgroundColor: uri === '/' ? 'transparent' : '#ffffff',
         borderBottom: uri === '/' ? 'none' : '1px solid #d1d1d1',
     };
     return (

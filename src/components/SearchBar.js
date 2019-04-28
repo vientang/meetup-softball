@@ -30,7 +30,9 @@ class SearchBar extends React.Component {
 
     filterOptions = (playerData, value) =>
         playerData
-            .filter((player) => player.name.includes(value))
+            .filter((player) => {
+                return player.name.toLowerCase().includes(value.toLowerCase());
+            })
             .map((player) => (
                 <Option key={player.meetupId} value={player.name}>
                     {player.name}

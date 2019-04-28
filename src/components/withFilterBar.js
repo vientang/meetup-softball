@@ -10,11 +10,10 @@ import configuration from '../aws-exports';
 API.configure(configuration);
 
 const defaultFilter = '2019';
-
+// Store data outside of component context to prevent
+// excessive network queries in the same app session
+const dataMap = new Map();
 const withFilterBar = (Page) => {
-    // Store data outside of component context to prevent
-    // excessive network queries in the same app session
-    const dataMap = new Map();
     return class PageWithFilters extends Component {
         static propTypes = {
             location: PropTypes.shape(),
@@ -202,7 +201,7 @@ const withFilterBar = (Page) => {
             const { gameStats, playerStats } = this.state;
 
             return (
-                <Layout className={styles.statsPage} filterBar={this.renderFilterBar()}>
+                <Layout className={styles.layoutPage} filterBar={this.renderFilterBar()}>
                     <Page
                         gameData={gameStats}
                         playerData={playerStats}

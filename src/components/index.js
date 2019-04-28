@@ -5,7 +5,6 @@ import ErrorBoundary from './ErrorBoundary';
 import FilterBar from './FilterBar';
 import GameMenu from './GameMenu';
 import Header from './Header';
-import SocialIconGroup from './SocialIconGroup';
 import Image from './Image';
 import JoinUs from './JoinUs';
 import Layout from './Layout';
@@ -15,6 +14,8 @@ import MeetupIcon from './MeetupIcon';
 import NotFoundImage from './NotFoundImage';
 import PlayerGameLog from './PlayerGameLog';
 import PlayerInfo from './PlayerInfo';
+import SearchBar from './SearchBar';
+import SocialIconGroup from './SocialIconGroup';
 import SoftBallIcon from './SoftballIcon';
 import SortTeams from './SortTeams';
 import StatsLegend from './StatsLegend';
@@ -33,7 +34,6 @@ export {
     FilterBar,
     GameMenu,
     Header,
-    SocialIconGroup,
     JoinUs,
     Image,
     Layout,
@@ -43,6 +43,8 @@ export {
     NotFoundImage,
     PlayerGameLog,
     PlayerInfo,
+    SearchBar,
+    SocialIconGroup,
     SoftBallIcon,
     SortTeams,
     StatsLegend,

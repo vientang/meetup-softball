@@ -228,6 +228,7 @@ const updateEntries = (gamePlayers) => {
 
             playerStats.meetupId = player.meetupId;
             playerStats.photos = player.photos;
+            playerStats.profile = player.profile;
 
             masterList.set(playerStats.name, playerStats);
         }

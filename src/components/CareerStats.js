@@ -22,17 +22,27 @@ const categories = [
     'k',
     'rc',
     'tb',
-    'slg',
     'obp',
     'ops',
+    'slg',
     'woba',
 ];
+
+const statsTableStyle = {
+    width: 1155,
+};
 
 const CareerStats = ({ stats }) => {
     return (
         <div className={componentStyles.playerPageSection}>
             <p className={componentStyles.playerPageSectionTitle}>Career stats</p>
-            <StatsTable categories={categories} stats={stats} sortMethod={Utils.sortHighToLow} />
+            <StatsTable
+                style={statsTableStyle}
+                categories={categories}
+                stats={stats}
+                sortMethod={Utils.sortHighToLow}
+                striped=""
+            />
         </div>
     );
 };

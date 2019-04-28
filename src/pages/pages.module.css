@@ -73,10 +73,14 @@
     margin-top: 1rem;
 }
 
-.stats-page {
-    background: #f5f5f5;
+.layout-page {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     min-width: 1225px;
-    padding: calc(3rem + 2vmin);
+    padding: 3rem;
+    background: linear-gradient(#f5f5f5, #e2ebf0);
 }
 
 .stats-section {
@@ -91,6 +95,7 @@
 }
 
 .player-preview {
+    display: none;
     min-width: 200px;
     width: 270px;
     height: 500px;
@@ -111,9 +116,9 @@
 }
 
 @media (max-width: 1450px) {
-    .stats-section {
+    /* .stats-section {
         justify-content: center;
-    }
+    } */
 
     .player-preview {
         display: none;

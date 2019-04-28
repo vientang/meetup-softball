@@ -147,4 +147,35 @@ const statPageCategories = [
     'woba',
 ];
 
-export { cardTitles, defaultStatCategories, definitions, qualifiers, statPageCategories };
+const gameLogCategories = [
+    'game',
+    'ab',
+    'h',
+    'singles',
+    'doubles',
+    'triples',
+    'r',
+    'rbi',
+    'hr',
+    'avg',
+    'sb',
+    'cs',
+    'bb',
+    'sac',
+    'k',
+    'rc',
+    'tb',
+    'obp',
+    'ops',
+    'slg',
+    'woba',
+];
+
+export {
+    cardTitles,
+    defaultStatCategories,
+    definitions,
+    gameLogCategories,
+    qualifiers,
+    statPageCategories,
+};

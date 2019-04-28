@@ -9,7 +9,7 @@ const SocialIconGroup = ({ types, uri }) => {
     const meetupIcon = () => <MeetupIcon size={fontSize} />;
     const iconStyle = {
         verticalAlign: -1,
-        color: '#c43045',
+        color: '#4267B2',
         fontSize,
     };
     return (

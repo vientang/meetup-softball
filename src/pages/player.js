@@ -53,7 +53,7 @@ class Player extends React.Component {
     constructor() {
         super();
         this.state = {
-            playerName: '',
+            player: {},
         };
     }
 
@@ -62,28 +62,25 @@ class Player extends React.Component {
             return;
         }
 
-        const player = get(window, 'history.state.playerName', null);
+        const player = get(this.props, 'location.state.playerName', null);
+        const playerStats = get(this.props, 'location.state.playerStats', {});
         const playerInMemory = await localStorage.getItem('currentPlayer');
+
         if (player) {
-            if (!playerInMemory) {
-                // first time saving to local storage
-                // TODO: calculate the players career stats
-                // replace the value with players calculated stats
-                localStorage.setItem('currentPlayer', player);
-            }
-            this.setState(() => ({ playerName: player }));
+            // routed by clicking on player name
+            await localStorage.setItem('currentPlayer', JSON.stringify(playerStats));
+            this.setState(() => ({ player: playerStats }));
         } else if (playerInMemory) {
-            // if reached, player page was refreshed
-            // window.history is gone but we've saved it in localStorage
+            // routed by refreshing player page
+            // location.state is gone but we've saved it in localStorage
             // so we're good!
-            this.setState(() => ({
-                playerName: playerInMemory,
-            }));
+            this.setState(() => ({ player: JSON.parse(playerInMemory) }));
         }
     }
 
     componentWillUnmount() {
         const playerInMemory = localStorage.getItem('currentPlayer');
+
         if (playerInMemory) {
             localStorage.removeItem('currentPlayer');
         }
@@ -91,11 +88,11 @@ class Player extends React.Component {
 
     render() {
         return (
-            <div>
-                <PlayerInfo playerInfo={{ name: this.state.playerName }} />
+            <>
+                <PlayerInfo playerInfo={this.state.player} />
                 <CareerStats stats={careerStats} />
                 <PlayerGameLog stats={gameStats} />
-            </div>
+            </>
         );
     }
 }
@@ -105,11 +102,13 @@ Player.displayName = 'Player';
 Player.propTypes = {
     filterBar: PropTypes.node,
     gameData: PropTypes.arrayOf(PropTypes.shape),
+    location: PropTypes.shape(),
     playerData: PropTypes.arrayOf(PropTypes.shape),
 };
 
 Player.defaultProps = {
     gameData: [],
+    location: {},
     playerData: [],
 };
 

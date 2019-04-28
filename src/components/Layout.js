@@ -47,6 +47,7 @@ Layout.displayName = 'Layout';
 Layout.propTypes = {
     className: PropTypes.string,
     children: PropTypes.node.isRequired,
+    filterBar: PropTypes.node,
     style: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
     uri: PropTypes.string,
 };

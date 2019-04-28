@@ -1,11 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import componentStyles from './components.module.css';
 import { definitions } from '../utils/constants';
 
 const legendCategories = ['rc', 'obp', 'ops', 'tb', 'woba'];
-const StatsLegend = () => {
+const StatsLegend = ({ style }) => {
     return (
-        <ul className={componentStyles.statsLegend}>
+        <ul className={componentStyles.statsLegend} style={style}>
             {legendCategories.map((category) => {
                 return (
                     <li key={category} className={componentStyles.statsLegendDefinition}>
@@ -26,4 +27,7 @@ const StatsLegend = () => {
 };
 
 StatsLegend.displayName = 'StatsLegend';
+StatsLegend.propTypes = {
+    style: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
+};
 export default StatsLegend;

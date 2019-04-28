@@ -11,11 +11,15 @@
     --pad-3: 1rem;
     --pad-4: 1.25rem;
     --pad-5: 1.5rem;
+    --pad-6: 1.75rem;
+    --pad-7: 2rem;
     --margin-0: 0.25rem;
     --margin-1: 0.5rem;
     --margin-2: 0.75rem;
     --margin-3: 1rem;
     --margin-5: 1.5rem;
+    --margin-6: 1.75rem;
+    --margin-7: 2rem;
     --grey-0: #f5f5f5;
     --grey-1: #d1d1d1;
     --grey-2: #bebbbb;
@@ -31,6 +35,12 @@
     --blue-4: #137bc2;
     --skew-10: skew(-10deg);
     --skew-25: skew(-25deg);
+    --shadow-1: 0px 0px 20px -15px #243b55;
+    --font-xsmall: calc(0.4rem + 0.3vmin);
+    --font-small: calc(0.4rem + 0.4vmin);
+    --font-medium: calc(0.45rem + 0.4vmin);
+    --font-large: calc(0.5rem + 0.4vmin);
+    --font-xlarge: calc(0.5rem + 0.5vmin);
 }
 
 @font-face {
@@ -63,7 +73,10 @@
 .team-transfer-item-name,
 .team-transfer-operations,
 .player-info-card,
-.player-info-card-section {
+.player-info-card-group,
+.player-info-card-questions-group,
+.player-info-card-questions-list,
+.player-info-card-bio {
     display: flex;
     box-sizing: border-box;
 }
@@ -75,6 +88,7 @@
     justify-content: space-between;
     padding: var(--pad-3) 3rem;
     max-width: 100%;
+    overflow: hidden;
 }
 
 .header-title {
@@ -96,7 +110,9 @@
     content: '';
     position: absolute;
     height: 100%;
-    width: 340px;
+    width: calc(20rem + 1vw);
+    min-width: 340px;
+    max-width: 380px;
     transform: skew(-25deg) translate(-2.5rem, -1rem);
     background: var(--grey-0);
     border-right: 1px solid var(--grey-1);
@@ -104,13 +120,9 @@
     z-index: -1;
 }
 
-.nav-link,
 .site-title {
     color: var(--muRed);
     text-decoration: none;
-}
-
-.site-title {
     filter: drop-shadow(0.1rem 0.1rem var(--grey-1));
 }
 
@@ -120,22 +132,24 @@
     width: 170px;
     max-width: 250px;
     margin-top: var(--margin-3);
-    font-size: calc(0.5rem + 0.4vmin);
+    font-size: var(--font-large);
 }
 
 .nav-link {
     display: inline-block;
-    padding: 2px 8px;
+    padding: 2px 0.5rem;
+    color: var(--grey-3);
     font-weight: bold;
     text-transform: uppercase;
+    text-decoration: none;
     transform: var(--skew-10) translateX(0.5rem);
     transition: color 200ms, background 200ms;
 }
 
-.nav-link:hover {
+/* .nav-link:hover {
     color: var(--white-1);
-    background: var(--muRed);
-}
+    background: var(--muNavy);
+} */
 
 .site-title:hover {
     color: var(--muRed);
@@ -147,7 +161,7 @@
     right: 0;
     justify-content: space-between;
     margin-left: auto;
-    padding: 12px 0;
+    padding: 0.6rem 0;
     width: 100%;
     height: 20px;
     transform: translateX(1rem);
@@ -170,7 +184,7 @@
 .join-us {
     order: 1;
     align-self: flex-end;
-    height: calc(60px + 0.4vmin);
+    height: calc(55px + 0.5vmin);
     width: 260px;
     padding: var(--pad-0) var(--pad-5);
     padding-left: 4.5rem;
@@ -183,7 +197,7 @@
 .join-us-title {
     display: inline-block;
     color: var(--white-2);
-    font-size: calc(0.4rem + 0.3vmin);
+    font-size: var(--font-xsmall);
     font-weight: bold;
     text-transform: uppercase;
     line-height: 1.5;
@@ -208,9 +222,9 @@
 .box-score-heading {
     flex-direction: column;
     background: var(--grey-0);
-    height: 35px;
+    height: 40px;
     width: 100%;
-    padding: var(--pad-0) var(--pad-2);
+    padding: var(--pad-1) var(--pad-3);
     line-height: normal;
 }
 
@@ -223,12 +237,12 @@
 
 .box-score-title {
     margin-bottom: 0;
-    font-size: calc(0.4rem + 0.4vmin);
+    font-size: var(--font-small);
     text-transform: uppercase;
 }
 
 .box-score-date {
-    font-size: calc(0.4rem + 0.3vmin);
+    font-size: var(--font-xsmall);
     color: var(--grey-2);
 }
 
@@ -250,11 +264,18 @@
 
 /* STATS TABLE */
 .stats-table {
-    margin-bottom: 3rem;
+    margin-bottom: var(--margin-7);
+}
+
+.stat-header-cell {
+    background: var(--muNavy);
+    color: var(--white-1);
+    text-align: right;
+    letter-spacing: 1px;
 }
 
 .stat-cell {
-    height: 100%;
+    align-self: center;
 }
 
 .stat-cell:focus {
@@ -263,10 +284,10 @@
 
 .stats-legend {
     list-style: none;
-    margin: calc(3rem + 2vmin) 0;
-    padding: 1rem;
-    background: white;
-    box-shadow: 0px 0px 20px -30px #243b55;
+    margin: 3rem 0;
+    padding: var(--pad-3);
+    background: var(--white-1);
+    box-shadow: var(--shadow-1);
     border-radius: 2px;
     line-height: normal;
 }
@@ -274,12 +295,12 @@
 .stats-legend-definition {
     max-width: 60%;
     color: var(--grey-2);
-    font-size: calc(0.4rem + 0.4vmin);
+    font-size: var(--font-small);
 }
 
 .stats-legend-basic {
     margin: 0 0 var(--margin-1);
-    font-size: calc(0.45rem + 0.4vmin);
+    font-size: var(--font-medium);
 }
 
 .stats-legend-detail,
@@ -528,6 +549,7 @@
 /**** FILTER BAR ****/
 .filter-row {
     justify-content: space-between;
+    background-color: var(--white-1);
     padding: var(--pad-1) 3rem;
     border-bottom: 1px solid var(--grey-1);
 }
@@ -557,7 +579,7 @@
 .filter-bar-label-gender,
 .filter-bar-label-reset,
 .filter-bar-label-types {
-    font-size: calc(0.4rem + 0.4vmin);
+    font-size: var(--font-small);
     color: var(--grey-2);
     transition: color 200ms ease-in-out, transform 200ms;
 }
@@ -572,7 +594,7 @@
 }
 
 .filter-bar-label-active {
-    font-size: calc(0.5rem + 0.5vmin);
+    font-size: var(--font-xlarge);
     font-weight: bold;
     color: var(--muNavy);
 }
@@ -614,7 +636,7 @@
 }
 
 .filter-menu-item-label {
-    font-size: calc(0.5rem + 0.5vmin);
+    font-size: var(--font-xlarge);
     color: var(--grey-2);
     transition: color 200ms ease-in-out;
 }
@@ -627,33 +649,105 @@
 
 .player-page-section-title {
     font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--grey-2);
+    margin: var(--margin-7) 0 var(--margin-3);
 }
 
 .player-info-card {
-    width: 100%;
-    height: 200px;
+    justify-content: space-between;
+    width: 1155px;
+    height: 250px;
     padding: var(--pad-3);
-    border: 1px solid red;
-}
-
-.player-info-card-section {
-    flex-direction: column;
-    padding: 0 var(--margin-5);
+    background: var(--white-1);
+    box-shadow: var(--shadow-1);
+    border-radius: 2px;
 }
 
 .player-info-list,
 .player-info-list-item,
-.player-info-name {
+.player-info-name,
+.player-info-card-question-group,
+.player-info-card-questions-list,
+.player-info-card-question,
+.player-info-card-answer {
     margin: 0;
 }
 
+.player-info-card-questions-list,
 .player-info-list {
     list-style: none;
 }
 
-.player-info-name {
-    font-size: 2rem;
+.player-info-card-questions-group {
+    flex: 0 0 420px;
+    padding: 0;
+    padding-left: 1.5rem;
+    border-left: 1px solid var(--grey-2);
+    overflow: -moz-scrollbars-none;
+    overflow: auto;
+    -ms-overflow-style: none;
 }
+
+.player-info-card-questions-group::-webkit-scrollbar {
+    width: 0;
+}
+
+.player-info-card-questions-list {
+    justify-content: space-between;
+    flex-direction: column;
+    height: 100%;
+}
+
+.player-info-card-question-group + .player-info-card-question-group {
+    margin: 5px 0;
+}
+
+.player-info-card-bio {
+    flex-direction: column;
+    padding: 0 var(--margin-5);
+}
+
+.player-info-photo {
+    display: inline-block;
+    width: 200px;
+    height: 200px;
+    margin: 5px;
+    background-position: center center;
+    background-size: cover;
+    border-radius: 5px;
+    box-shadow: var(--shadow-1);
+}
+
+.player-info-name,
+.player-info-title {
+    font-size: 2rem;
+    line-height: normal;
+}
+
+.player-info-name {
+    font-family: Helvetica, sans-serif;
+    font-weight: bold;
+}
+
+.player-info-title {
+    font-family: 'Shrikhand';
+    font-size: 1.2rem;
+    letter-spacing: 1.2px;
+    color: var(--grey-2);
+}
+
+.player-info-card-question {
+    color: var(--grey-2);
+    font-size: var(--font-xsmall);
+    text-transform: uppercase;
+}
+
+.player-info-card-answer {
+    font-size: var(--font-small);
+}
+
 /**********************/
 
 /**** SEARCH BAR ****/
