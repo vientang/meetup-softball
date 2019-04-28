@@ -72,6 +72,7 @@
 .team-transfer-header,
 .team-transfer-item-name,
 .team-transfer-operations,
+.team-transfer-sort-operations,
 .player-info-card,
 .player-info-card-group,
 .player-info-card-questions-group,
@@ -92,14 +93,12 @@
 }
 
 .header-title {
-    margin: 0;
     font-family: 'Shrikhand';
     font-size: calc(0.8rem + 2vmin);
     letter-spacing: 1px;
 }
 
 .sub-header {
-    margin-bottom: 0;
     color: var(--grey-5);
     font-size: calc(0.4rem + 0.2vmin);
     text-transform: uppercase;
@@ -236,7 +235,6 @@
 }
 
 .box-score-title {
-    margin-bottom: 0;
     font-size: var(--font-small);
     text-transform: uppercase;
 }
@@ -532,10 +530,9 @@
 
 .team-transfer-sort-operations {
     position: absolute;
-    display: flex;
     flex-direction: column;
-    right: 0;
     top: calc(21.5rem / 2);
+    right: 0;
     margin: auto var(--margin-3);
     opacity: 0;
     transition: opacity 200ms ease-in-out;
@@ -665,21 +662,6 @@
     border-radius: 2px;
 }
 
-.player-info-list,
-.player-info-list-item,
-.player-info-name,
-.player-info-card-question-group,
-.player-info-card-questions-list,
-.player-info-card-question,
-.player-info-card-answer {
-    margin: 0;
-}
-
-.player-info-card-questions-list,
-.player-info-list {
-    list-style: none;
-}
-
 .player-info-card-questions-group {
     flex: 0 0 420px;
     padding: 0;
@@ -747,14 +729,6 @@
 .player-info-card-answer {
     font-size: var(--font-small);
 }
-
-/**********************/
-
-/**** SEARCH BAR ****/
-.search-bar-container ul li {
-    margin-bottom: 0;
-}
-
 /**********************/
 
 /**** MEDIA QUERIES ****/

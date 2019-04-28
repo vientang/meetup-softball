@@ -3,7 +3,10 @@ import PropTypes from 'prop-types';
 import Helmet from 'react-helmet';
 import { StaticQuery, graphql } from 'gatsby';
 import Header from './Header';
-import './layout.css';
+
+// Layout.js is the entry point for stylesheets
+import '../styles/index.css';
+import '../styles/overrides.css';
 
 const Layout = ({ className, children, filterBar, style, uri }) => (
     <StaticQuery

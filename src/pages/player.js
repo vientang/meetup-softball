@@ -98,7 +98,6 @@ class Player extends React.Component {
 }
 
 Player.displayName = 'Player';
-/* eslint-disable react/no-unused-prop-types */
 Player.propTypes = {
     filterBar: PropTypes.node,
     gameData: PropTypes.arrayOf(PropTypes.shape),
