@@ -20,6 +20,7 @@ const PlayerInfo = (props) => {
     ) : (
         <Avatar src={playerImg} size={212} shape="square" icon="user" />
     );
+
     return (
         <div className={componentStyles.playerInfoCard}>
             <div className={componentStyles.playerInfoCardGroup}>

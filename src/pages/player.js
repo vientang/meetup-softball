@@ -61,6 +61,10 @@ class Player extends React.Component {
         if (typeof window === 'undefined') {
             return;
         }
+        // playerData contains name, games, profile, photos, etc.
+        // TODO: data model in db is out of sync with the current schema
+        // playerData will have name and games. replace player and playerStats after database is cleaned up
+        // const playerData = get(this.props, 'location.state.playerData', {});
 
         const player = get(this.props, 'location.state.playerName', null);
         const playerStats = get(this.props, 'location.state.playerStats', {});

@@ -11,7 +11,7 @@ import pageStyles from './pages.module.css';
 
 const statsTableStyle = {
     height: 800,
-    width: 1155,
+    width: 1145,
 };
 
 const skeletonConfig = { rows: 20, width: '1155px' };
@@ -39,7 +39,10 @@ class Stats extends React.Component {
     }
 
     getPlayerStats = (playerStats, playerId) => {
-        return playerId ? playerStats.find((player) => player.meetupId === playerId) : {};
+        if (!playerId) {
+            return {};
+        }
+        return playerStats.find((player) => Number(player.meetupId) === playerId) || {};
     };
 
     updatePlayerStats = (playerStats) => {
@@ -47,10 +50,16 @@ class Stats extends React.Component {
     };
 
     renderPlayerCell = (playerStats, cellInfo) => {
-        const playerName = playerStats[cellInfo.index].name;
         const playerId = playerStats[cellInfo.index].meetupId;
         const playerImg = get(playerStats[cellInfo.index], 'photos.thumb_link', '');
         const avatarStyle = { marginRight: '0.5rem' };
+        const playerData = this.getPlayerStats(this.props.playerData, playerId);
+
+        // TODO: data model in db is out of sync with the current schema
+        // playerData will have name and games.
+        // replace playerId, playerName and stats with playerData
+        // after database is cleaned up
+        const playerName = playerStats[cellInfo.index].name;
         const stats = this.getPlayerStats(playerStats, playerId);
 
         const slug = playerName
@@ -66,6 +75,7 @@ class Stats extends React.Component {
                     playerId,
                     playerName,
                     playerStats: stats,
+                    player: playerData,
                 }}
             >
                 {playerImg ? (

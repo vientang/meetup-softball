@@ -92,7 +92,7 @@ function formatColumnWidth(params) {
     const scrollBarOffset = 15;
     const rateCategories = ['avg', 'rc', 'obp', 'ops', 'slg', 'woba'];
     if (rateCategories.includes(category)) {
-        return lastColumn ? 58 + scrollBarOffset : 50;
+        return lastColumn ? 60 + scrollBarOffset : 50;
     }
     switch (category) {
         case 'player':
@@ -101,6 +101,8 @@ function formatColumnWidth(params) {
             return 200;
         case 'w':
             return 75;
+        case 'gp':
+            return 35;
         case '':
             return 150;
         default:
@@ -113,7 +115,7 @@ function formatHeaderStyle(params) {
     const headerStyle = {
         padding: '0.5rem',
     };
-    if (category === 'player' || category === 'game') {
+    if (['player', 'game', 'gp'].includes(category)) {
         headerStyle.textAlign = 'left';
     }
     if (lastColumn) {
@@ -127,7 +129,7 @@ function formatCellStyle(params) {
     const { category, lastColumn } = params;
 
     const cellStyle = {
-        textAlign: category === 'player' || category === 'game' ? 'left' : 'right',
+        textAlign: ['player', 'game', 'gp'].includes(category) ? 'left' : 'right',
         color: category === 'gp' ? '#bebbbb' : '#555555',
         borderRight: category === 'player' ? '1px solid #f5f5f5' : 0,
         padding: '0.5rem',

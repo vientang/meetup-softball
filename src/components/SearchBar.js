@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import get from 'lodash/get';
+import { Link, navigate } from 'gatsby';
 import { Icon, Input, AutoComplete } from 'antd';
 import componentStyles from './components.module.css';
 
@@ -21,12 +23,38 @@ class SearchBar extends React.Component {
         }
     };
 
-    renderOptions = (playerData) =>
-        playerData.map((player) => (
-            <Option key={player.meetupId} value={player.name}>
+    createSlug = (name) =>
+        name
+            .split(' ')
+            .join('_')
+            .toLowerCase();
+
+    renderPlayerLink = (player) => {
+        const games = JSON.parse(player.games);
+        const slug = this.createSlug(player.name);
+
+        return (
+            <Link
+                to={`/player?name=${slug}`}
+                state={{
+                    playerId: player.meetupId,
+                    playerName: player.name,
+                    playerStats: games,
+                    player,
+                }}
+            >
                 {player.name}
+            </Link>
+        );
+    };
+
+    renderOptions = (playerData) => {
+        return playerData.map((player) => (
+            <Option key={player.meetupId} value={player.name}>
+                {this.renderPlayerLink(player)}
             </Option>
         ));
+    };
 
     filterOptions = (playerData, value) =>
         playerData
@@ -35,13 +63,21 @@ class SearchBar extends React.Component {
             })
             .map((player) => (
                 <Option key={player.meetupId} value={player.name}>
-                    {player.name}
+                    {this.renderPlayerLink(player)}
                 </Option>
             ));
 
     handleSearch = (value) => {
         const filteredOptions = this.filterOptions(this.props.playerData, value);
         this.setState(() => ({ playerData: filteredOptions }));
+    };
+
+    handleSelect = (value, instance) => {
+        const slug = this.createSlug(value);
+        const state = get(instance, 'props.children.props.state', {});
+        navigate(`/player?name=${slug}`, {
+            state: { ...state },
+        });
     };
 
     render() {
@@ -53,6 +89,7 @@ class SearchBar extends React.Component {
                     dataSource={this.state.playerData}
                     dropdownMatchSelectWidth={false}
                     dropdownStyle={dropdownStyle}
+                    onSelect={this.handleSelect}
                     onSearch={this.handleSearch}
                     optionLabelProp="value"
                     placeholder="Search for player"
