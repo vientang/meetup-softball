@@ -11,7 +11,7 @@ import pageStyles from './pages.module.css';
 
 const statsTableStyle = {
     height: 800,
-    width: 1145,
+    width: 1148,
 };
 
 const skeletonConfig = { rows: 20, width: '1155px' };
@@ -120,9 +120,10 @@ class Stats extends React.Component {
                 <StatsTable
                     categories={statPageCategories}
                     cellRenderer={this.renderCell}
-                    stats={playerStats}
                     sortMethod={Utils.sortHighToLow}
+                    stats={playerStats}
                     style={statsTableStyle}
+                    showLegend
                 />
                 <div className={pageStyles.playerPreview}>
                     <h2>Player of the month</h2>

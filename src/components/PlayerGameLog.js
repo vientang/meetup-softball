@@ -7,7 +7,7 @@ import { gameLogCategories } from '../utils/constants';
 import componentStyles from './components.module.css';
 
 const statsTableStyle = {
-    width: 1155,
+    width: 1148,
 };
 
 const renderCell = (cellInfo) => {

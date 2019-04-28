@@ -8,7 +8,7 @@ import componentStyles from './components.module.css';
 import 'react-table/react-table.css';
 
 const StatsTable = (props) => {
-    const { stats, showPagination, striped, style } = props;
+    const { stats, showLegend, showPagination, striped, style } = props;
 
     const statsTableStyle = {
         fontSize: 12,
@@ -34,7 +34,7 @@ const StatsTable = (props) => {
                     showPaginationBottom={showPagination}
                     style={statsTableStyle}
                 />
-                <StatsLegend style={statsLegendStyle} />
+                {showLegend && <StatsLegend style={statsLegendStyle} />}
             </ErrorBoundary>
         </div>
     );
@@ -89,7 +89,7 @@ function formatHeaderLabel(category) {
 
 function formatColumnWidth(params) {
     const { category, lastColumn } = params;
-    const scrollBarOffset = 15;
+    const scrollBarOffset = 16;
     const rateCategories = ['avg', 'rc', 'obp', 'ops', 'slg', 'woba'];
     if (rateCategories.includes(category)) {
         return lastColumn ? 60 + scrollBarOffset : 50;
@@ -98,7 +98,7 @@ function formatColumnWidth(params) {
         case 'player':
             return 200;
         case 'game':
-            return 200;
+            return 190;
         case 'w':
             return 75;
         case 'gp':
@@ -143,6 +143,7 @@ function formatCellStyle(params) {
 StatsTable.propTypes = {
     categories: PropTypes.arrayOf(PropTypes.string),
     cellRenderer: PropTypes.func,
+    showLegend: PropTypes.bool,
     showPagination: PropTypes.bool,
     sortMethod: PropTypes.func,
     stats: PropTypes.arrayOf(PropTypes.object),
@@ -152,6 +153,7 @@ StatsTable.propTypes = {
 
 StatsTable.defaultProps = {
     categories: defaultStatCategories,
+    showLegend: false,
     showPagination: false,
     stats: [],
     striped: 'striped',
