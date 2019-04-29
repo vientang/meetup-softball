@@ -11,36 +11,21 @@ const menuItemStyle = {
     paddingBottom: 0,
 };
 
-/* eslint-disable react/prop-types */
-const ResetFilters = ({ onClick }) => (
-    <div className={componentStyles.filterBarLabelResetContainer}>
-        <span className={componentStyles.filterBarLabelReset} onClick={onClick}>
-            <Icon type="filter" />
-            reset filters
-        </span>
-    </div>
-);
-
-const createMenu = (menus, onFilterChange) => {
-    const allStats = 'all';
+const FilterBar = (props) => {
+    const { onResetFilters, playerData } = props;
     return (
-        <Menu onClick={onFilterChange}>
-            <Menu.Item style={menuItemStyle} key={allStats}>
-                <span className={componentStyles.filterMenuAllLabel}>{allStats}</span>
-            </Menu.Item>
-            <Menu.Divider />
-            {menus.map((menuItem) => {
-                return (
-                    <Menu.Item key={menuItem} className={componentStyles.filterMenuItem}>
-                        <span className={componentStyles.filterMenuItemLabel}>{menuItem}</span>
-                    </Menu.Item>
-                );
-            })}
-        </Menu>
+        <div className={componentStyles.filterRow}>
+            <div className={componentStyles.filterRowSection}>
+                <FilterTypes {...props} />
+                <ResetFilters onClick={onResetFilters} />
+            </div>
+            <SearchBar playerData={playerData} />
+        </div>
     );
 };
 
-const renderFilterTypes = (props) => {
+/* eslint-disable react/prop-types */
+function FilterTypes(props) {
     const {
         activeFilters,
         battingPositions,
@@ -82,20 +67,37 @@ const renderFilterTypes = (props) => {
             })}
         </div>
     );
-};
+}
 
-const FilterBar = (props) => {
-    const { onResetFilters, playerData } = props;
+function ResetFilters({ onClick }) {
     return (
-        <div className={componentStyles.filterRow}>
-            <div className={componentStyles.filterRowSection}>
-                {renderFilterTypes(props)}
-                <ResetFilters onClick={onResetFilters} />
-            </div>
-            <SearchBar playerData={playerData} />
+        <div className={componentStyles.filterBarLabelResetContainer}>
+            <span className={componentStyles.filterBarLabelReset} onClick={onClick}>
+                <Icon type="filter" />
+                reset filters
+            </span>
         </div>
     );
-};
+}
+
+function createMenu(menus, onFilterChange) {
+    const allStats = 'all';
+    return (
+        <Menu onClick={onFilterChange}>
+            <Menu.Item style={menuItemStyle} key={allStats}>
+                <span className={componentStyles.filterMenuAllLabel}>{allStats}</span>
+            </Menu.Item>
+            <Menu.Divider />
+            {menus.map((menuItem) => {
+                return (
+                    <Menu.Item key={menuItem} className={componentStyles.filterMenuItem}>
+                        <span className={componentStyles.filterMenuItemLabel}>{menuItem}</span>
+                    </Menu.Item>
+                );
+            })}
+        </Menu>
+    );
+}
 
 FilterBar.displayName = 'FilterBar';
 /* eslint-disable react/no-unused-prop-types */
