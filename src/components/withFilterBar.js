@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { API, graphqlOperation } from 'aws-amplify';
+import isEqual from 'lodash/isEqual';
 import { listGameStatss, listPlayerStatss } from '../graphql/queries';
 import Layout from './Layout';
 import FilterBar from './FilterBar';
@@ -10,6 +11,13 @@ import configuration from '../aws-exports';
 API.configure(configuration);
 
 const defaultFilter = '2019';
+const defaultFilters = {
+    year: '',
+    month: '',
+    field: '',
+    batting: '',
+};
+
 // Store data outside of component context to prevent
 // excessive network queries in the same app session
 const dataMap = new Map();
@@ -22,17 +30,11 @@ const withFilterBar = (Page) => {
         constructor(props) {
             super(props);
             this.state = {
-                activeFilters: {
-                    year: defaultFilter,
-                    month: '',
-                    field: '',
-                    batting: '',
-                },
-                currentFilter: '',
+                activeFilters: { ...defaultFilters, year: defaultFilter },
+                currentFilter: 'year',
                 fields: [''],
                 filterTypes: ['year', 'month', 'field', 'batting'],
                 gameStats: [],
-                gender: 'All',
                 playerStats: [],
                 years: [''],
             };
@@ -91,13 +93,45 @@ const withFilterBar = (Page) => {
         }
 
         /**
+         * Set query filters for graphql query or null to query for everything
+         */
+        setQueryFilters = (filterKeys, activeFilters) => {
+            const queryFilters = filterKeys.reduce((filter, value) => {
+                /* eslint-disable no-param-reassign */
+                if (activeFilters[value]) {
+                    filter[value] = {};
+                    filter[value].eq = activeFilters[value];
+                }
+                return filter;
+            }, {});
+            return Object.values(queryFilters).length > 0 ? queryFilters : null;
+        };
+
+        setActiveFilters = (filterKeys, state) => {
+            const activeFilters = filterKeys.reduce((filter, value) => {
+                /* eslint-disable no-param-reassign */
+                if (state.activeFilters[value]) {
+                    filter[value] = {};
+                    filter[value] = state.activeFilters[value];
+                } else {
+                    filter[value] = '';
+                }
+                return filter;
+            }, {});
+            return activeFilters;
+        };
+
+        /**
          * Game stats based on filter params
          * StatsTable
          * GameLog
          * BoxScore
          * @param filters
          */
-        getGameStats = () => {};
+        getGameStats = async (queryFilters) =>
+            queryFilters
+                ? API.graphql(graphqlOperation(listGameStatss, { filter: queryFilters }))
+                : API.graphql(graphqlOperation(listGameStatss));
 
         /**
          * Player stats
@@ -130,23 +164,7 @@ const withFilterBar = (Page) => {
 
         calculateAllPlayersStats = () => {};
 
-        /**
-         * PlayerCard and PlayerPreview
-         */
-        calculatePlayerCareerStats = () => {};
-
         calculatePlayerStats = () => {};
-
-        handleFilterChange = ({ key }) => {
-            this.setState((prevState) => {
-                const currState = { ...prevState };
-                currState.activeFilters[prevState.currentFilter] = key === 'all' ? '' : key;
-
-                return {
-                    activeFilters: currState.activeFilters,
-                };
-            });
-        };
 
         /**
          * Validate that we have gameStats before triggering
@@ -158,53 +176,65 @@ const withFilterBar = (Page) => {
             }
         };
 
-        handleGenderSelection = (e) => {
-            const gender = e.target.id;
-            this.updateState({ gender });
+        handleFilterChange = async ({ key }) => {
+            const activeFilters = { ...this.state.activeFilters };
+
+            if (key === 'all') {
+                this.updateState({ activeFilters: defaultFilters });
+            }
+
+            activeFilters[this.state.currentFilter] = key;
+
+            if (!isEqual(activeFilters, this.state.activeFilters)) {
+                const filterKeys = Object.keys(activeFilters).filter(
+                    (filter) => filter !== 'batting',
+                );
+                const queryFilters = this.setQueryFilters(filterKeys, activeFilters);
+                const gameStats = await this.getGameStats(queryFilters);
+
+                this.updateState({ activeFilters });
+            }
         };
 
         handleMouseEnter = (e) => {
             const currentFilter = e.target.id;
-            this.updateState({ currentFilter });
+
+            if (currentFilter && currentFilter !== this.state.currentFilter) {
+                this.updateState({ currentFilter });
+            }
         };
 
         handleResetFilters = () => {
-            const activeFilters = {
-                year: defaultFilter,
-                month: '',
-                field: '',
-                batting: '',
-            };
+            const activeFilters = { ...defaultFilters, year: defaultFilter };
             this.updateState({ activeFilters });
         };
 
         renderFilterBar = () => {
-            const { activeFilters, fields, filterTypes, gender, playerStats, years } = this.state;
+            const { activeFilters, fields, filterTypes, playerStats, years } = this.state;
 
             return (
                 <FilterBar
                     activeFilters={activeFilters}
                     fields={fields}
                     filterTypes={filterTypes}
-                    gender={Page.displayName === 'Player' ? null : gender}
                     years={years}
                     onResetFilters={this.handleResetFilters}
                     onFilterChange={this.handleFilterChange}
-                    onGenderSelection={this.handleGenderSelection}
                     onMouseEnter={this.handleMouseEnter}
-                    playerData={playerStats}
+                    allPlayers={playerStats}
                 />
             );
         };
 
         render() {
-            const { gameStats, playerStats } = this.state;
+            const { activeFilters, gameStats, playerStats } = this.state;
 
             return (
                 <Layout className={styles.layoutPage} filterBar={this.renderFilterBar()}>
                     <Page
+                        allPlayers={playerStats}
+                        filters={activeFilters}
                         gameData={gameStats}
-                        playerData={playerStats}
                         location={this.props.location}
                     />
                 </Layout>

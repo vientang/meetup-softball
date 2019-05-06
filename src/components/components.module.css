@@ -730,10 +730,3 @@
     font-size: var(--font-small);
 }
 /**********************/
-
-/**** MEDIA QUERIES ****/
-/* @media (max-width: 1450px) {
-    .filter-row {
-        justify-content: center;
-    }
-} */

@@ -79,7 +79,7 @@ function formatHeaderLabel(category) {
         case 'w':
             return 'WIN %';
         case 'battingOrder':
-            return '';
+            return 'BATTING';
         case '':
             return '';
         default:
@@ -99,6 +99,8 @@ function formatColumnWidth(params) {
             return 200;
         case 'game':
             return 190;
+        case 'battingOrder':
+            return 100;
         case 'w':
             return 75;
         case 'gp':

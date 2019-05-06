@@ -11,72 +11,29 @@ class SearchBar extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            playerData: props.playerData,
+            allPlayerData: props.allPlayers,
         };
     }
 
     componentDidMount = () => {
-        if (this.props.playerData.length === 0) {
+        if (this.props.allPlayers.length === 0) {
             this.setState(() => ({
-                playerData: this.renderOptions(this.props.playerData),
+                allPlayerData: renderOptions(this.props.allPlayers),
             }));
         }
     };
 
-    createSlug = (name) =>
-        name
-            .split(' ')
-            .join('_')
-            .toLowerCase();
-
-    renderPlayerLink = (player) => {
-        const games = JSON.parse(player.games);
-        const slug = this.createSlug(player.name);
-
-        return (
-            <Link
-                to={`/player?name=${slug}`}
-                state={{
-                    playerId: player.meetupId,
-                    playerName: player.name,
-                    playerStats: games,
-                    player,
-                }}
-            >
-                {player.name}
-            </Link>
-        );
-    };
-
-    renderOptions = (playerData) => {
-        return playerData.map((player) => (
-            <Option key={player.meetupId} value={player.name}>
-                {this.renderPlayerLink(player)}
-            </Option>
-        ));
-    };
-
-    filterOptions = (playerData, value) =>
-        playerData
-            .filter((player) => {
-                return player.name.toLowerCase().includes(value.toLowerCase());
-            })
-            .map((player) => (
-                <Option key={player.meetupId} value={player.name}>
-                    {this.renderPlayerLink(player)}
-                </Option>
-            ));
-
     handleSearch = (value) => {
-        const filteredOptions = this.filterOptions(this.props.playerData, value);
-        this.setState(() => ({ playerData: filteredOptions }));
+        const filteredOptions = filterOptions(this.props.allPlayers, value);
+        this.setState(() => ({ allPlayerData: filteredOptions }));
     };
 
     handleSelect = (value, instance) => {
-        const slug = this.createSlug(value);
-        const state = get(instance, 'props.children.props.state', {});
+        const slug = createSlug(value);
+        const childState = get(instance, 'props.children.props.state', {});
+
         navigate(`/player?name=${slug}`, {
-            state: { ...state },
+            state: { player: childState.player },
         });
     };
 
@@ -86,7 +43,7 @@ class SearchBar extends React.Component {
         return (
             <div className={componentStyles.searchBarContainer}>
                 <AutoComplete
-                    dataSource={this.state.playerData}
+                    dataSource={this.state.allPlayerData}
                     dropdownMatchSelectWidth={false}
                     dropdownStyle={dropdownStyle}
                     onSelect={this.handleSelect}
@@ -103,12 +60,49 @@ class SearchBar extends React.Component {
     }
 }
 
+function filterOptions(playerData, value) {
+    return playerData
+        .filter((player) => {
+            return player.name.toLowerCase().includes(value.toLowerCase());
+        })
+        .map((player) => (
+            <Option key={player.meetupId} value={player.name}>
+                {renderPlayerLink(player)}
+            </Option>
+        ));
+}
+
+function renderOptions(allPlayers) {
+    return allPlayers.map((player) => (
+        <Option key={player.meetupId} value={player.name}>
+            {this.renderPlayerLink(player)}
+        </Option>
+    ));
+}
+
+function renderPlayerLink(player) {
+    const slug = createSlug(player.name);
+
+    return (
+        <Link to={`/player?name=${slug}`} state={{ player }}>
+            {player.name}
+        </Link>
+    );
+}
+
+function createSlug(name) {
+    return name
+        .split(' ')
+        .join('_')
+        .toLowerCase();
+}
+
 SearchBar.propTypes = {
-    playerData: PropTypes.arrayOf(PropTypes.shape),
+    allPlayers: PropTypes.arrayOf(PropTypes.shape),
 };
 
 SearchBar.defaultProps = {
-    playerData: [],
+    allPlayers: [],
 };
 
 export default SearchBar;

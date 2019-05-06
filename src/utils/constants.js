@@ -149,6 +149,7 @@ const statPageCategories = [
 
 const gameLogCategories = [
     'game',
+    'battingOrder',
     'ab',
     'h',
     'singles',
@@ -163,12 +164,6 @@ const gameLogCategories = [
     'bb',
     'sac',
     'k',
-    'rc',
-    'tb',
-    'obp',
-    'ops',
-    'slg',
-    'woba',
 ];
 
 export {

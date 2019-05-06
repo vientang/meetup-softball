@@ -94,33 +94,13 @@
     padding: 0.5rem 0;
 }
 
-.player-preview {
-    display: none;
-    min-width: 200px;
-    width: 270px;
-    height: 500px;
-    padding: 1rem;
-    text-align: center;
-    border: 1px solid red;
-}
-
 .photo-credit {
     position: absolute;
     bottom: 0;
     left: 0;
     margin: 1rem 3rem;
-    color: var(--muNavy);
+    color: #ffffff;
     font-family: Georgia, 'Times New Roman', Times, serif;
     font-style: italic;
     font-size: calc(6px + 0.5vmin);
-}
-
-@media (max-width: 1450px) {
-    /* .stats-section {
-        justify-content: center;
-    } */
-
-    .player-preview {
-        display: none;
-    }
 }

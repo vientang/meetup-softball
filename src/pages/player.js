@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
+import isEqual from 'lodash/isEqual';
 import { withFilterBar, CareerStats, PlayerGameLog, PlayerInfo } from '../components';
 
-const careerStats = [
+const mockCareerStats = [
     {
         gp: '2',
         w: '.529',
@@ -29,7 +30,6 @@ const careerStats = [
 const gameStats = [
     {
         game: 'Game 245 WWS',
-        gp: '2',
         singles: '1',
         doubles: '1',
         triples: '1',
@@ -42,9 +42,6 @@ const gameStats = [
         bb: '1',
         avg: '.600',
         ab: '1',
-        tb: '1',
-        rc: '.800',
-        h: '1',
         sac: '1',
     },
 ];
@@ -53,6 +50,8 @@ class Player extends React.Component {
     constructor() {
         super();
         this.state = {
+            careerStats: {},
+            games: [],
             player: {},
         };
     }
@@ -61,24 +60,35 @@ class Player extends React.Component {
         if (typeof window === 'undefined') {
             return;
         }
+
         // playerData contains name, games, profile, photos, etc.
-        // TODO: data model in db is out of sync with the current schema
-        // playerData will have name and games. replace player and playerStats after database is cleaned up
-        // const playerData = get(this.props, 'location.state.playerData', {});
+        const playerData = get(this.props, 'location.state.player', {});
 
-        const player = get(this.props, 'location.state.playerName', null);
-        const playerStats = get(this.props, 'location.state.playerStats', {});
-        const playerInMemory = await localStorage.getItem('currentPlayer');
+        if (playerData.meetupId && playerData.games) {
+            // routed by user action - selecting player by search or link
+            await localStorage.setItem('currentPlayer', JSON.stringify(playerData));
+            this.updateState({ player: playerData });
+        } else {
+            // routed by browser navigation or browser refresh
+            // local state doesn't persist and props.location.state is gone
+            // but we've saved it in localStorage so we're good!
+            const playerDataInMemory =
+                (await JSON.parse(localStorage.getItem('currentPlayer'))) || {};
+            this.updateState({ player: playerDataInMemory });
+        }
+    }
 
-        if (player) {
-            // routed by clicking on player name
-            await localStorage.setItem('currentPlayer', JSON.stringify(playerStats));
-            this.setState(() => ({ player: playerStats }));
-        } else if (playerInMemory) {
-            // routed by refreshing player page
-            // location.state is gone but we've saved it in localStorage
-            // so we're good!
-            this.setState(() => ({ player: JSON.parse(playerInMemory) }));
+    componentDidUpdate(prevProps) {
+        const { player } = this.state;
+        const { filters } = this.props;
+
+        const playerData = get(this.props, 'location.state.player', {});
+
+        // update games log only when filters have changed
+        if (!isEqual(prevProps.filters, filters) || playerData.meetupId !== player.meetupId) {
+            const gamesToFilter = player.games || playerData.games;
+            const filteredGames = filterGameStats(filters, gamesToFilter);
+            this.updateState({ player: playerData, games: filteredGames });
         }
     }
 
@@ -90,29 +100,93 @@ class Player extends React.Component {
         }
     }
 
+    updateState = ({ player, games }) => {
+        const allGames = player.games ? JSON.parse(player.games) : [];
+        const careerStats = calculatePlayerCareerStats(allGames);
+        const filteredGames = games || filterGameStats(this.props.filters, allGames);
+        this.setState(() => ({
+            player,
+            games: filteredGames,
+            careerStats,
+        }));
+    };
+
     render() {
+        const { careerStats, games, player } = this.state;
+
         return (
             <>
-                <PlayerInfo playerInfo={this.state.player} />
-                <CareerStats stats={careerStats} />
-                <PlayerGameLog stats={gameStats} />
+                <PlayerInfo playerInfo={player} />
+                <CareerStats stats={mockCareerStats || careerStats} />
+                <PlayerGameLog stats={games.length ? games : gameStats} />
             </>
         );
     }
 }
 
+/**
+ * Filter games for games log
+ * This should be called on mount and when filters are updated
+ * @param {Object} filters
+ * @param {Array} games
+ */
+function filterGameStats(filters, games = []) {
+    // TODO: cache return value to avoid unnecessary filter operations
+    return games
+        .filter((game) => {
+            if (
+                game.year === filters.year ||
+                game.month === filters.month ||
+                game.field === filters.field ||
+                game.batting === filters.batting
+            ) {
+                return true;
+            }
+            return false;
+        })
+        .map((game) => {
+            return {
+                game: game.name,
+                battingOrder: game.battingOrder,
+                singles: game.singles,
+                doubles: game.doubles,
+                triples: game.triples,
+                hr: game.hr,
+                rbi: game.rbi,
+                r: game.r,
+                sb: game.sb,
+                cs: game.cs,
+                k: game.k,
+                bb: game.bb,
+                ab: game.ab,
+                sac: game.sac,
+            };
+        });
+}
+
+/**
+ * Calculate career stats based on non-filtered games
+ * This should be called only once in componentDidMount
+ * @param {Object} games
+ */
+function calculatePlayerCareerStats(games) {
+    // TODO: cache return value to avoid recalculating stats
+    return games;
+}
+
 Player.displayName = 'Player';
 Player.propTypes = {
-    filterBar: PropTypes.node,
+    allPlayers: PropTypes.arrayOf(PropTypes.shape),
+    filters: PropTypes.shape(),
     gameData: PropTypes.arrayOf(PropTypes.shape),
     location: PropTypes.shape(),
-    playerData: PropTypes.arrayOf(PropTypes.shape),
 };
 
 Player.defaultProps = {
+    allPlayers: [],
+    filters: {},
     gameData: [],
     location: {},
-    playerData: [],
 };
 
 export default withFilterBar(Player);

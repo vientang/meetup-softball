@@ -15,74 +15,48 @@ const statsTableStyle = {
 };
 
 const skeletonConfig = { rows: 20, width: '1155px' };
+
 class Stats extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             playerStats: [],
-            noDataFound: false,
         };
     }
 
     componentDidUpdate(prevProps) {
         let playerStats = [];
-        const receivedNewStats = !isEqual(prevProps.gameData, this.props.gameData);
-        if (prevProps.gameData.length <= 0 || receivedNewStats) {
+        if (this.shouldUpdateStats(prevProps.gameData)) {
             this.props.gameData.forEach((game) => {
                 const updatedStats = apiService.filterPlayerStats(game);
                 playerStats = Array.from(updatedStats.values());
             });
             this.updatePlayerStats(playerStats);
         }
-
         apiService.clearMasterList();
     }
 
-    getPlayerStats = (playerStats, playerId) => {
-        if (!playerId) {
-            return {};
-        }
-        return playerStats.find((player) => Number(player.meetupId) === playerId) || {};
-    };
+    shouldUpdateStats = (prevGameData) =>
+        prevGameData.length <= 0 || !isEqual(prevGameData, this.props.gameData);
 
     updatePlayerStats = (playerStats) => {
-        this.setState(() => ({ playerStats, noDataFound: playerStats.length < 1 }));
+        this.setState(() => ({ playerStats }));
     };
 
     renderPlayerCell = (playerStats, cellInfo) => {
-        const playerId = playerStats[cellInfo.index].meetupId;
-        const playerImg = get(playerStats[cellInfo.index], 'photos.thumb_link', '');
-        const avatarStyle = { marginRight: '0.5rem' };
-        const playerData = this.getPlayerStats(this.props.playerData, playerId);
+        const { playerId, playerName, playerImg } = getPlayerMetaData(playerStats, cellInfo);
+        const slug = createSlug(playerName);
 
-        // TODO: data model in db is out of sync with the current schema
-        // playerData will have name and games.
-        // replace playerId, playerName and stats with playerData
-        // after database is cleaned up
-        const playerName = playerStats[cellInfo.index].name;
-        const stats = this.getPlayerStats(playerStats, playerId);
-
-        const slug = playerName
-            .split(' ')
-            .join('_')
-            .toLowerCase();
+        // playerData contains name, games, profile, photos, etc.
+        const playerData = getPlayerStats(this.props.allPlayers, playerId);
 
         return (
             <Link
                 to={`/player?name=${slug}`}
                 className={pageStyles.playerName}
-                state={{
-                    playerId,
-                    playerName,
-                    playerStats: stats,
-                    player: playerData,
-                }}
+                state={{ player: playerData }}
             >
-                {playerImg ? (
-                    <Avatar src={playerImg} style={avatarStyle} alt={playerName} shape="square" />
-                ) : (
-                    <Avatar icon="user" style={avatarStyle} alt={playerName} shape="square" />
-                )}
+                <PlayerAvatar image={playerImg} name={playerName} />
                 {playerName}
             </Link>
         );
@@ -100,14 +74,14 @@ class Stats extends React.Component {
     };
 
     render() {
-        const { gameData, playerData } = this.props;
-        const { playerStats, noDataFound } = this.state;
+        const { gameData, allPlayers } = this.props;
+        const { playerStats } = this.state;
 
-        if (noDataFound) {
+        if (gameData.length < 0) {
             return <NotFoundImage />;
         }
 
-        if (gameData.length === 0) {
+        if (playerStats.length === 0) {
             return (
                 <div className={pageStyles.statsSection}>
                     <Skeleton active paragraph={skeletonConfig} title={false} />
@@ -125,22 +99,53 @@ class Stats extends React.Component {
                     style={statsTableStyle}
                     showLegend
                 />
-                <div className={pageStyles.playerPreview}>
-                    <h2>Player of the month</h2>
-                </div>
             </div>
         );
     }
 }
 
+function getPlayerStats(playerStats, playerId) {
+    if (!playerId) {
+        return {};
+    }
+    return playerStats.find((player) => Number(player.meetupId) === playerId) || {};
+}
+
+function createSlug(name) {
+    return name
+        .split(' ')
+        .join('_')
+        .toLowerCase();
+}
+
+/* eslint-disable react/prop-types */
+function PlayerAvatar({ image, name }) {
+    const avatarStyle = { marginRight: '0.5rem' };
+    const avatarProps = { style: avatarStyle, alt: name };
+    if (image) {
+        avatarProps.src = image;
+    } else {
+        avatarProps.icon = 'user';
+    }
+
+    return <Avatar {...avatarProps} shape="square" />;
+}
+
+function getPlayerMetaData(playerStats, cellInfo) {
+    const playerId = playerStats[cellInfo.index].meetupId;
+    const playerName = playerStats[cellInfo.index].name;
+    const playerImg = get(playerStats[cellInfo.index], 'photos.thumb_link', '');
+    return { playerId, playerName, playerImg };
+}
+
 Stats.propTypes = {
     gameData: PropTypes.arrayOf(PropTypes.shape),
-    playerData: PropTypes.arrayOf(PropTypes.shape),
+    allPlayers: PropTypes.arrayOf(PropTypes.shape),
 };
 
 Stats.defaultProps = {
     gameData: [],
-    playerData: [],
+    allPlayers: [],
 };
 
 export default withFilterBar(Stats);

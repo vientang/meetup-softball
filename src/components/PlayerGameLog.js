@@ -14,7 +14,7 @@ const renderCell = (cellInfo) => {
     if (cellInfo.column.Header === 'GAME') {
         return <Link to="/game">{cellInfo.original.game}</Link>;
     }
-    return cellInfo.value;
+    return cellInfo.value || '0';
 };
 
 const PlayerGameLog = ({ stats }) => {
