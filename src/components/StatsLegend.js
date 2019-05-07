@@ -6,18 +6,20 @@ import { definitions } from '../utils/constants';
 const legendCategories = ['rc', 'obp', 'ops', 'tb', 'woba'];
 const StatsLegend = ({ style }) => {
     return (
-        <ul className={componentStyles.statsLegend} style={style}>
+        <ul className={componentStyles.statsLegendList} style={style}>
             {legendCategories.map((category) => {
                 return (
-                    <li key={category} className={componentStyles.statsLegendDefinition}>
-                        <p className={componentStyles.statsLegendBasic}>
-                            {`${definitions[category].basic} (${category.toUpperCase()}): `}
-                        </p>
-                        <span className={componentStyles.statsLegendDetail}>
-                            {definitions[category].detail}
-                        </span>
+                    <li key={category} className={componentStyles.statsLegendListItem}>
+                        <div>
+                            <p className={componentStyles.statsLegendBasic}>
+                                {`${definitions[category].basic} (${category.toUpperCase()}): `}
+                            </p>
+                            <span className={componentStyles.statsLegendDetail}>
+                                {definitions[category].detail}
+                            </span>
+                        </div>
                         <span className={componentStyles.statsLegendFormula}>
-                            {`Formula: ${definitions[category].formula}`}
+                            {`${definitions[category].formula}`}
                         </span>
                     </li>
                 );
