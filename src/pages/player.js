@@ -67,14 +67,14 @@ class Player extends React.Component {
         if (playerData.meetupId && playerData.games) {
             // routed by user action - selecting player by search or link
             await localStorage.setItem('currentPlayer', JSON.stringify(playerData));
-            this.updateState({ player: playerData });
+            this.updateState({ player: playerData, games: playerData.games });
         } else {
             // routed by browser navigation or browser refresh
             // local state doesn't persist and props.location.state is gone
             // but we've saved it in localStorage so we're good!
             const playerDataInMemory =
                 (await JSON.parse(localStorage.getItem('currentPlayer'))) || {};
-            this.updateState({ player: playerDataInMemory });
+            this.updateState({ player: playerDataInMemory, games: playerDataInMemory.games });
         }
     }
 
@@ -84,9 +84,9 @@ class Player extends React.Component {
 
         const playerData = get(this.props, 'location.state.player', {});
 
-        // update games log only when filters have changed
+        // update games log only when filters have changed or if different player
         if (!isEqual(prevProps.filters, filters) || playerData.meetupId !== player.meetupId) {
-            const gamesToFilter = player.games || playerData.games;
+            const gamesToFilter = player.games || JSON.parse(playerData.games);
             const filteredGames = filterGameStats(filters, gamesToFilter);
             this.updateState({ player: playerData, games: filteredGames });
         }

@@ -21,6 +21,7 @@ class Stats extends React.Component {
         super(props);
         this.state = {
             playerStats: [],
+            sortedColumn: '',
         };
     }
 
@@ -41,6 +42,10 @@ class Stats extends React.Component {
 
     updatePlayerStats = (playerStats) => {
         this.setState(() => ({ playerStats }));
+    };
+
+    handleColumnSort = (newSorted, column) => {
+        this.setState(() => ({ sortedColumn: column.id }));
     };
 
     renderPlayerCell = (playerStats, cellInfo) => {
@@ -75,7 +80,7 @@ class Stats extends React.Component {
 
     render() {
         const { gameData, allPlayers } = this.props;
-        const { playerStats } = this.state;
+        const { playerStats, sortedColumn } = this.state;
 
         if (gameData.length < 0) {
             return <NotFoundImage />;
@@ -94,6 +99,8 @@ class Stats extends React.Component {
                 <StatsTable
                     categories={statPageCategories}
                     cellRenderer={this.renderCell}
+                    onSortedChange={this.handleColumnSort}
+                    sortedColumn={sortedColumn}
                     sortMethod={Utils.sortHighToLow}
                     stats={playerStats}
                     style={statsTableStyle}

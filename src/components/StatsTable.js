@@ -8,7 +8,7 @@ import componentStyles from './components.module.css';
 import 'react-table/react-table.css';
 
 const StatsTable = (props) => {
-    const { stats, showLegend, showPagination, striped, style } = props;
+    const { onSortedChange, stats, showLegend, showPagination, striped, style } = props;
 
     const statsTableStyle = {
         fontSize: 12,
@@ -31,6 +31,7 @@ const StatsTable = (props) => {
                     className={`-${striped} -highlight`}
                     columns={renderColumns(props)}
                     defaultPageSize={stats.length}
+                    onSortedChange={onSortedChange}
                     showPaginationBottom={showPagination}
                     style={statsTableStyle}
                 />
@@ -40,15 +41,15 @@ const StatsTable = (props) => {
     );
 };
 
-function renderColumns(params) {
-    const { categories, cellRenderer, sortMethod } = params;
+function renderColumns(props) {
+    const { categories, cellRenderer, sortedColumn, sortMethod } = props;
 
     const columns = categories.map((category, i) => {
         const lastColumn = categories.length - 1 === i;
         const header = formatHeaderLabel(category);
         const width = formatColumnWidth({ category, lastColumn });
         const headerStyle = formatHeaderStyle({ category, lastColumn });
-        const cellStyle = formatCellStyle({ category, lastColumn });
+        const cellStyle = formatCellStyle({ category, lastColumn, sortedColumn });
 
         return {
             Header: header,
@@ -87,8 +88,8 @@ function formatHeaderLabel(category) {
     }
 }
 
-function formatColumnWidth(params) {
-    const { category, lastColumn } = params;
+function formatColumnWidth(props) {
+    const { category, lastColumn } = props;
     const scrollBarOffset = 16;
     const rateCategories = ['avg', 'rc', 'obp', 'ops', 'slg', 'woba'];
     if (rateCategories.includes(category)) {
@@ -112,8 +113,8 @@ function formatColumnWidth(params) {
     }
 }
 
-function formatHeaderStyle(params) {
-    const { category, lastColumn } = params;
+function formatHeaderStyle(props) {
+    const { category, lastColumn } = props;
     const headerStyle = {
         padding: '0.5rem',
     };
@@ -127,26 +128,31 @@ function formatHeaderStyle(params) {
     return headerStyle;
 }
 
-function formatCellStyle(params) {
-    const { category, lastColumn } = params;
+function formatCellStyle(props) {
+    const { category, lastColumn, sortedColumn } = props;
 
     const cellStyle = {
         textAlign: ['player', 'game', 'gp'].includes(category) ? 'left' : 'right',
         color: category === 'gp' ? '#bebbbb' : '#555555',
         borderRight: category === 'player' ? '1px solid #f5f5f5' : 0,
         padding: '0.5rem',
+        fontWeight: sortedColumn === category ? 'bold' : 'normal',
     };
+
     if (lastColumn) {
         cellStyle.paddingRight = 25;
     }
+
     return cellStyle;
 }
 
 StatsTable.propTypes = {
     categories: PropTypes.arrayOf(PropTypes.string),
     cellRenderer: PropTypes.func,
+    onSortedChange: PropTypes.func,
     showLegend: PropTypes.bool,
     showPagination: PropTypes.bool,
+    sortedColumn: PropTypes.string,
     sortMethod: PropTypes.func,
     stats: PropTypes.arrayOf(PropTypes.object),
     striped: PropTypes.string,
