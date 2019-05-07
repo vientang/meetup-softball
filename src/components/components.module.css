@@ -183,9 +183,9 @@
 .join-us {
     order: 1;
     align-self: flex-end;
-    height: calc(55px + 0.5vmin);
+    height: calc(65px + 1vmin);
     width: 260px;
-    padding: var(--pad-0) var(--pad-5);
+    padding: var(--pad-2) var(--pad-5);
     padding-left: 4.5rem;
     background: linear-gradient(to top, var(--muRed), #962737);
     color: var(--white-2);
@@ -210,8 +210,7 @@
 .box-score {
     order: 0;
     flex-direction: column;
-    justify-content: space-between;
-    width: 200px;
+    width: calc(200px + 3vmin);
     right: -65px;
     background: var(--white-2);
     transform: var(--skew-25);
@@ -245,7 +244,7 @@
 }
 
 .box-score-results-group {
-    padding: var(--pad-0) var(--pad-2);
+    padding: var(--pad-2) var(--pad-2);
 }
 
 .box-score-results {
@@ -305,7 +304,7 @@
 
 .stats-legend-basic {
     margin: 0 0 var(--margin-1);
-    font-size: var(--font-xsmall);
+    font-size: calc(5px + 0.4vmin);
     text-transform: uppercase;
 }
 

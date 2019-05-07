@@ -57,24 +57,25 @@ class Player extends React.Component {
     }
 
     async componentDidMount() {
-        if (typeof window === 'undefined') {
-            return;
-        }
-
         // playerData contains name, games, profile, photos, etc.
         const playerData = get(this.props, 'location.state.player', {});
 
         if (playerData.meetupId && playerData.games) {
             // routed by user action - selecting player by search or link
             await localStorage.setItem('currentPlayer', JSON.stringify(playerData));
-            this.updateState({ player: playerData, games: playerData.games });
+            const filteredGames = filterGameStats(this.props.filters, playerData.games);
+            this.updateState({ player: playerData, games: filteredGames });
         } else {
             // routed by browser navigation or browser refresh
             // local state doesn't persist and props.location.state is gone
             // but we've saved it in localStorage so we're good!
             const playerDataInMemory =
                 (await JSON.parse(localStorage.getItem('currentPlayer'))) || {};
-            this.updateState({ player: playerDataInMemory, games: playerDataInMemory.games });
+            const filteredGames = filterGameStats(this.props.filters, playerDataInMemory.games);
+            this.updateState({
+                player: playerDataInMemory,
+                games: filteredGames,
+            });
         }
     }
 
@@ -83,10 +84,9 @@ class Player extends React.Component {
         const { filters } = this.props;
 
         const playerData = get(this.props, 'location.state.player', {});
-
         // update games log only when filters have changed or if different player
         if (!isEqual(prevProps.filters, filters) || playerData.meetupId !== player.meetupId) {
-            const gamesToFilter = player.games || JSON.parse(playerData.games);
+            const gamesToFilter = player.games || playerData.games;
             const filteredGames = filterGameStats(filters, gamesToFilter);
             this.updateState({ player: playerData, games: filteredGames });
         }
@@ -101,12 +101,12 @@ class Player extends React.Component {
     }
 
     updateState = ({ player, games }) => {
-        const allGames = player.games ? JSON.parse(player.games) : [];
+        const allGames = player.games || [];
         const careerStats = calculatePlayerCareerStats(allGames);
-        const filteredGames = games || filterGameStats(this.props.filters, allGames);
+
         this.setState(() => ({
             player,
-            games: filteredGames,
+            games,
             careerStats,
         }));
     };
@@ -130,38 +130,36 @@ class Player extends React.Component {
  * @param {Object} filters
  * @param {Array} games
  */
-function filterGameStats(filters, games = []) {
+function filterGameStats(filters, games) {
+    let parsedGames = games || [];
+    if (typeof games === 'string') {
+        parsedGames = JSON.parse(games);
+    }
     // TODO: cache return value to avoid unnecessary filter operations
-    return games
-        .filter((game) => {
-            if (
+    return parsedGames
+        .filter(
+            (game) =>
                 game.year === filters.year ||
                 game.month === filters.month ||
                 game.field === filters.field ||
-                game.batting === filters.batting
-            ) {
-                return true;
-            }
-            return false;
-        })
-        .map((game) => {
-            return {
-                game: game.name,
-                battingOrder: game.battingOrder,
-                singles: game.singles,
-                doubles: game.doubles,
-                triples: game.triples,
-                hr: game.hr,
-                rbi: game.rbi,
-                r: game.r,
-                sb: game.sb,
-                cs: game.cs,
-                k: game.k,
-                bb: game.bb,
-                ab: game.ab,
-                sac: game.sac,
-            };
-        });
+                game.batting === filters.batting,
+        )
+        .map((game) => ({
+            game: game.name,
+            battingOrder: game.battingOrder,
+            singles: game.singles,
+            doubles: game.doubles,
+            triples: game.triples,
+            hr: game.hr,
+            rbi: game.rbi,
+            r: game.r,
+            sb: game.sb,
+            cs: game.cs,
+            k: game.k,
+            bb: game.bb,
+            ab: game.ab,
+            sac: game.sac,
+        }));
 }
 
 /**

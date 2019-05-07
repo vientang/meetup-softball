@@ -41,7 +41,7 @@
     position: absolute;
     display: flex;
     justify-content: flex-end;
-    height: calc(90px + 1vmin);
+    height: calc(100px + 1.5vmin);
     width: calc(950px + 1vmin);
     bottom: 0;
     right: 0;
@@ -102,5 +102,5 @@
     color: #ffffff;
     font-family: Georgia, 'Times New Roman', Times, serif;
     font-style: italic;
-    font-size: calc(6px + 0.5vmin);
+    font-size: calc(5px + 0.4vmin);
 }
