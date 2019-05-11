@@ -36,7 +36,7 @@ class TeamTransfer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            focusedItem: null,
+            focusedItem: {},
             gameId: '',
             sourceList: [],
             targetList: [],
@@ -216,11 +216,15 @@ class TeamTransfer extends React.Component {
                         onClick={this.handleMoveToTarget}
                         title={locale.moveToTarget}
                         icon="right"
+                        size="small"
+                        shape="circle"
                     />
                     <Button
                         onClick={this.handleMoveToSource}
                         title={locale.moveToSource}
                         icon="left"
+                        size="small"
+                        shape="circle"
                     />
                 </div>
                 <TransferBox

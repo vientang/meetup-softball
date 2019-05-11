@@ -53,12 +53,31 @@
     border-right: 1px solid #d1d1d1;
 }
 
-.admin-page,
+.page-layout {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 1225px;
+    padding: 3rem;
+    background: linear-gradient(#f5f5f5, #e2ebf0);
+}
+
 .stats-page {
     display: flex;
     flex-direction: column;
     max-width: 100%;
     padding: 0 5.0875rem 1.45rem;    
+    box-sizing: border-box;
+}
+
+.admin-page {
+    display: grid;
+    grid-template-columns: 15% 1fr 25%;
+    grid-gap: 2rem;
+    max-width: 100%;
+    padding: 2rem 3rem;
+    background: linear-gradient(#f5f5f5, #e2ebf0);
     box-sizing: border-box;
 }
 
@@ -73,19 +92,8 @@
     margin-top: 1rem;
 }
 
-.layout-page {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 1225px;
-    padding: 3rem;
-    background: linear-gradient(#f5f5f5, #e2ebf0);
-}
-
 .stats-section {
     display: flex;
-    justify-content: space-between;
     flex-wrap: wrap;
 }
 

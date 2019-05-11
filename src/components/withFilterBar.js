@@ -215,13 +215,13 @@ const withFilterBar = (Page) => {
             return (
                 <FilterBar
                     activeFilters={activeFilters}
+                    allPlayers={playerStats}
                     fields={fields}
                     filterTypes={filterTypes}
                     years={years}
                     onResetFilters={this.handleResetFilters}
                     onFilterChange={this.handleFilterChange}
                     onMouseEnter={this.handleMouseEnter}
-                    allPlayers={playerStats}
                 />
             );
         };
@@ -230,7 +230,7 @@ const withFilterBar = (Page) => {
             const { activeFilters, gameStats, playerStats } = this.state;
 
             return (
-                <Layout className={styles.layoutPage} filterBar={this.renderFilterBar()}>
+                <Layout className={styles.pageLayout} filterBar={this.renderFilterBar()}>
                     <Page
                         allPlayers={playerStats}
                         filters={activeFilters}

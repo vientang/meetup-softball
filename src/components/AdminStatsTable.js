@@ -112,7 +112,6 @@ class AdminStatsTable extends React.Component {
 
         return (
             <div
-                className={componentStyles.statCell}
                 contentEditable={makeContentEditable}
                 suppressContentEditableWarning
                 onKeyDown={this.handleNonNumericKeys}
@@ -128,7 +127,6 @@ class AdminStatsTable extends React.Component {
 
         return (
             <div
-                className={componentStyles.statCell}
                 contentEditable={makeContentEditable}
                 suppressContentEditableWarning
                 onKeyDown={this.handleNonNumericKeys}
@@ -147,23 +145,25 @@ class AdminStatsTable extends React.Component {
         }
 
         return (
-            <div className={componentStyles.adminStatsTable}>
-                <h2>{this.props.game}</h2>
-                <h3>Winners</h3>
+            <div className={componentStyles.adminSection}>
+                <p className={componentStyles.adminSectionTitle}>ENTER STATS</p>
+                <p className={componentStyles.adminSectionTitle}>WINNERS</p>
                 <StatsTable
                     stats={winners}
                     categories={categories}
                     cellRenderer={this.renderWinnerEditableCell}
                     showPagination={false}
                     sortMethod={Utils.sortByNameLength}
+                    adminPage
                 />
-                <h3>Losers</h3>
+                <p className={componentStyles.adminSectionTitle}>LOSERS</p>
                 <StatsTable
                     stats={losers}
                     categories={categories}
                     cellRenderer={this.renderLoserEditableCell}
                     showPagination={false}
                     sortMethod={Utils.sortByNameLength}
+                    adminPage
                 />
                 <div className={componentStyles.submitButton}>
                     <Button type="primary" htmlType="button" onClick={this.handleSubmitData}>

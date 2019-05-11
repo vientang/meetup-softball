@@ -1,13 +1,15 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import fetchJsonp from 'fetch-jsonp';
+import get from 'lodash/get';
 import { API, graphqlOperation } from 'aws-amplify';
 import { withAuthenticator, SignIn, Greetings } from 'aws-amplify-react';
-import get from 'lodash/get';
 import { AdminStatsTable, GameMenu, Layout, SortTeams, SuccessImage } from '../components';
 import { createGameStats, createPlayerStats, updatePlayerStats } from '../graphql/mutations';
 import { listGameStatss, listPlayerStatss } from '../graphql/queries';
 import { Utils, apiService } from '../utils';
 import styles from './pages.module.css';
+import componentStyles from '../components/components.module.css';
 
 class Admin extends React.Component {
     constructor(props) {
@@ -41,7 +43,7 @@ class Admin extends React.Component {
                     if (lastGameTimeStamp >= game.time) {
                         return;
                     }
-                    games.push(this.createGame(game));
+                    games.push(createGame(game));
                 });
             })
             .catch((error) => {
@@ -80,33 +82,6 @@ class Admin extends React.Component {
         return Number(gamesSorted[0].timeStamp);
     };
 
-    createGame = (game) => {
-        const { id, local_date, local_time, rsvp_limit, time, venue, waitlist_count } = game;
-
-        const gameDate = new Date(time).toDateString();
-        const [year, month] = local_date.split('-');
-        const { lat, lon, name } = venue;
-        const gameId = game.name.split(' ')[1];
-
-        const newGame = {};
-        newGame.date = gameDate;
-        newGame.field = name;
-        newGame.gameId = gameId;
-        newGame.lat = lat;
-        newGame.lon = lon;
-        newGame.meetupId = id;
-        newGame.month = month;
-        newGame.name = game.name;
-        newGame.rsvps = rsvp_limit;
-        newGame.time = local_time;
-        newGame.timeStamp = time;
-        newGame.tournamentName = game.name;
-        newGame.waitListCount = waitlist_count;
-        newGame.year = year;
-
-        return newGame;
-    };
-
     getCurrentGamePlayers = async (currentGame = {}) => {
         if (currentGame.players) {
             return currentGame.players;
@@ -118,7 +93,7 @@ class Admin extends React.Component {
 
         let rsvpList = await fetchJsonp(RSVPS)
             .then((response) => response.json())
-            .then((result) => result.data.filter(this.filterAttendees))
+            .then((result) => result.data.filter(filterAttendees))
             .catch((error) => {
                 throw new Error(error);
             });
@@ -132,28 +107,6 @@ class Admin extends React.Component {
         const results = await Promise.all(rsvpList);
         return results.map((player) => Utils.createPlayer(player));
     };
-
-    /**
-     * Data from Meetup API is inconsistent
-     * Catch the different permutations of attendance
-     * @param {Object} player
-     * @return {Boolean}
-     */
-    filterAttendees = (player = {}) => {
-        const status = get(player, 'status');
-        const response = get(player, 'rsvp.response');
-        if ((status && status === 'absent') || status === 'noshow') {
-            return false;
-        }
-        if (response === 'yes') {
-            return true;
-        }
-        return status === 'attended';
-    };
-
-    findGameByMeetupId = (selectedGameId) => (game) => game.meetupId === selectedGameId;
-
-    filterGameByMeetupId = (selectedGameId) => (game) => game.meetupId !== selectedGameId;
 
     /**
      * Update a players game log or create a new player
@@ -237,16 +190,20 @@ class Admin extends React.Component {
     handleSelectGame = async (e) => {
         const selectedGameId = e.key;
         const nextGame = await this.getCurrentGamePlayers(
-            this.state.games.find(this.findGameByMeetupId(selectedGameId)),
+            this.state.games.find(findGameByMeetupId(selectedGameId)),
         );
 
         this.setState(() => ({ currentGame: nextGame, selectedGameId }));
     };
 
+    /**
+     * Removes a game from games menu
+     * Useful when events other than games are created
+     */
     handleCancelGame = async (e) => {
         e.stopPropagation();
         const selectedGameId = e.target.id;
-        const games = this.state.games.filter(this.filterGameByMeetupId(selectedGameId));
+        const games = this.state.games.filter(filterGameByMeetupId(selectedGameId));
         const nextGame = games[0];
         nextGame.players = await this.getCurrentGamePlayers(games[0]);
 
@@ -263,6 +220,7 @@ class Admin extends React.Component {
 
     render() {
         const { areTeamsSorted, currentGame, games, losers, selectedGameId, winners } = this.state;
+        const adminPagePath = get(this.props.pageResources, 'page.path', null);
 
         if (!currentGame) {
             return (
@@ -274,32 +232,84 @@ class Admin extends React.Component {
         }
 
         return (
-            <>
-                <Layout className={styles.adminPage}>
-                    {!areTeamsSorted && (
-                        <>
-                            <GameMenu
-                                games={games}
-                                selectedGame={selectedGameId}
-                                onGameSelection={this.handleSelectGame}
-                                onGameCancel={this.handleCancelGame}
-                            />
-                            <SortTeams data={currentGame} setTeams={this.handleSetTeams} />
-                        </>
-                    )}
-                    {areTeamsSorted && (
-                        <AdminStatsTable
-                            game={currentGame.name}
-                            winners={winners}
-                            losers={losers}
-                            onSubmit={this.handleSubmitData}
-                            selectedGame={selectedGameId}
-                        />
-                    )}
-                </Layout>
-            </>
+            <Layout className={styles.adminPage} uri={adminPagePath}>
+                <div className={componentStyles.adminSection}>
+                    <p className={componentStyles.adminSectionTitle}>GAME DETAILS</p>
+                </div>
+
+                {areTeamsSorted ? (
+                    <AdminStatsTable
+                        game={currentGame.name}
+                        winners={winners}
+                        losers={losers}
+                        onSubmit={this.handleSubmitData}
+                        selectedGame={selectedGameId}
+                    />
+                ) : (
+                    <SortTeams data={currentGame} setTeams={this.handleSetTeams} />
+                )}
+                <GameMenu
+                    games={games}
+                    selectedGame={selectedGameId}
+                    onGameSelection={this.handleSelectGame}
+                    onGameCancel={this.handleCancelGame}
+                />
+            </Layout>
         );
     }
+}
+
+function createGame(game) {
+    const { id, local_date, local_time, rsvp_limit, time, venue, waitlist_count } = game;
+
+    const gameDate = new Date(time).toDateString();
+    const [year, month] = local_date.split('-');
+    const { lat, lon, name } = venue;
+    const gameId = game.name.split(' ')[1];
+
+    const newGame = {};
+    newGame.date = gameDate;
+    newGame.field = name;
+    newGame.gameId = gameId;
+    newGame.lat = lat;
+    newGame.lon = lon;
+    newGame.meetupId = id;
+    newGame.month = month;
+    newGame.name = game.name;
+    newGame.rsvps = rsvp_limit;
+    newGame.time = local_time;
+    newGame.timeStamp = time;
+    newGame.tournamentName = game.name;
+    newGame.waitListCount = waitlist_count;
+    newGame.year = year;
+
+    return newGame;
+}
+
+function findGameByMeetupId(selectedGameId) {
+    return (game) => game.meetupId === selectedGameId;
+}
+
+function filterGameByMeetupId(selectedGameId) {
+    return (game) => game.meetupId !== selectedGameId;
+}
+
+/**
+ * Data from Meetup API is inconsistent
+ * Catch the different permutations of attendance
+ * @param {Object} player
+ * @return {Boolean}
+ */
+function filterAttendees(player = {}) {
+    const status = get(player, 'status');
+    const response = get(player, 'rsvp.response');
+    if ((status && status === 'absent') || status === 'noshow') {
+        return false;
+    }
+    if (response === 'yes') {
+        return true;
+    }
+    return status === 'attended';
 }
 
 /**

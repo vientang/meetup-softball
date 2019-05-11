@@ -42,14 +42,14 @@ const StatsTable = (props) => {
 };
 
 function renderColumns(props) {
-    const { categories, cellRenderer, sortedColumn, sortMethod } = props;
+    const { categories, cellRenderer, sortMethod } = props;
 
     const columns = categories.map((category, i) => {
         const lastColumn = categories.length - 1 === i;
         const header = formatHeaderLabel(category);
         const width = formatColumnWidth({ category, lastColumn });
         const headerStyle = formatHeaderStyle({ category, lastColumn });
-        const cellStyle = formatCellStyle({ category, lastColumn, sortedColumn });
+        const cellStyle = formatCellStyle({ ...props, category, lastColumn });
 
         return {
             Header: header,
@@ -80,7 +80,7 @@ function formatHeaderLabel(category) {
         case 'w':
             return 'WIN %';
         case 'battingOrder':
-            return 'BATTING';
+            return '';
         case '':
             return '';
         default:
@@ -101,7 +101,7 @@ function formatColumnWidth(props) {
         case 'game':
             return 190;
         case 'battingOrder':
-            return 100;
+            return 35;
         case 'w':
             return 75;
         case 'gp':
@@ -115,38 +115,47 @@ function formatColumnWidth(props) {
 
 function formatHeaderStyle(props) {
     const { category, lastColumn } = props;
+
     const headerStyle = {
         padding: '0.5rem',
     };
-    if (['player', 'game', 'gp'].includes(category)) {
+
+    if (lastColumn || ['player', 'game', 'gp', 'battingOrder'].includes(category)) {
         headerStyle.textAlign = 'left';
     }
-    if (lastColumn) {
-        headerStyle.textAlign = 'center';
-        headerStyle.paddingRight = 25;
-    }
+
     return headerStyle;
 }
 
 function formatCellStyle(props) {
-    const { category, lastColumn, sortedColumn } = props;
+    const { adminPage, category, lastColumn, sortedColumn } = props;
 
     const cellStyle = {
-        textAlign: ['player', 'game', 'gp'].includes(category) ? 'left' : 'right',
-        color: category === 'gp' ? '#bebbbb' : '#555555',
-        borderRight: category === 'player' ? '1px solid #f5f5f5' : 0,
+        borderRight: 0,
         padding: '0.5rem',
-        fontWeight: sortedColumn === category ? 'bold' : 'normal',
     };
 
-    if (lastColumn) {
-        cellStyle.paddingRight = 25;
+    if (sortedColumn === category) {
+        cellStyle.fontWeight = 'bold';
+    }
+
+    if (category === 'gp' || category === 'battingOrder') {
+        cellStyle.color = '#bebbbb';
+    }
+
+    if (adminPage || category === 'player' || category === 'gp') {
+        cellStyle.borderRight = '1px solid #f5f5f5';
+    }
+
+    if (adminPage || lastColumn || ['player', 'game', 'gp', 'battingOrder'].includes(category)) {
+        cellStyle.textAlign = 'left';
     }
 
     return cellStyle;
 }
 
 StatsTable.propTypes = {
+    adminPage: PropTypes.bool,
     categories: PropTypes.arrayOf(PropTypes.string),
     cellRenderer: PropTypes.func,
     onSortedChange: PropTypes.func,
@@ -160,6 +169,7 @@ StatsTable.propTypes = {
 };
 
 StatsTable.defaultProps = {
+    adminPage: false,
     categories: defaultStatCategories,
     showLegend: false,
     showPagination: false,

@@ -4,7 +4,7 @@ import { Link } from 'gatsby';
 import componentStyles from './components.module.css';
 
 const Logo = ({ siteTitle, uri }) => (
-    <div className={uri === '/' ? '' : componentStyles.logoGroup}>
+    <div className={uri === '/admin/' ? componentStyles.logoGroup : ''}>
         <Link to="/" className={componentStyles.siteTitle}>
             <p className={componentStyles.subHeader}>San Francisco</p>
             <h1 className={componentStyles.headerTitle}>{siteTitle}</h1>
@@ -14,6 +14,7 @@ const Logo = ({ siteTitle, uri }) => (
 
 Logo.propTypes = {
     siteTitle: PropTypes.string,
+    uri: PropTypes.string,
 };
 
 export default Logo;

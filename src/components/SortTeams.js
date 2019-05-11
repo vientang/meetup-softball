@@ -5,6 +5,10 @@ import TeamTransfer from './TeamTransfer';
 import componentStyles from './components.module.css';
 import 'antd/dist/antd.css';
 
+const setTeamsBtnStyle = {
+    alignSelf: 'flex-end',
+    fontSize: 'calc(0.4rem + 0.4vmin)',
+};
 class SortTeams extends Component {
     constructor(props) {
         super(props);
@@ -56,9 +60,15 @@ class SortTeams extends Component {
         const { meetupId, players } = this.state;
 
         return (
-            <div className={componentStyles.teamTransfer}>
+            <div className={componentStyles.adminSection}>
+                <p className={componentStyles.adminSectionTitle}>SORT TEAMS</p>
                 <TeamTransfer gameId={meetupId} onChange={this.handleChange} players={players} />
-                <Button type="primary" onClick={this.submitList}>
+                <Button
+                    type="primary"
+                    onClick={this.submitList}
+                    style={setTeamsBtnStyle}
+                    size="small"
+                >
                     SET TEAMS
                 </Button>
             </div>
