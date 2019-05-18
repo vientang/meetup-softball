@@ -239,7 +239,6 @@ class Admin extends React.Component {
 
                 {areTeamsSorted ? (
                     <AdminStatsTable
-                        game={currentGame.name}
                         winners={winners}
                         losers={losers}
                         onSubmit={this.handleSubmitData}

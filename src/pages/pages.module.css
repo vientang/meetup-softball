@@ -73,7 +73,7 @@
 
 .admin-page {
     display: grid;
-    grid-template-columns: 15% 1fr 25%;
+    grid-template-columns: 15% 55% 1fr;
     grid-gap: 2rem;
     max-width: 100%;
     padding: 2rem 3rem;

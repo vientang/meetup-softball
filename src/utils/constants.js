@@ -166,7 +166,25 @@ const gameLogCategories = [
     'k',
 ];
 
+const adminStatCategories = [
+    'battingOrder',
+    'player',
+    'o',
+    'singles',
+    'doubles',
+    'triples',
+    'hr',
+    'bb',
+    'sb',
+    'cs',
+    'k',
+    'rbi',
+    'r',
+    'sac',
+];
+
 export {
+    adminStatCategories,
     cardTitles,
     defaultStatCategories,
     definitions,

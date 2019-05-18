@@ -68,7 +68,6 @@
 .team-transfer-box-count,
 .team-transfer-list,
 .team-transfer-header,
-.team-transfer-item-name,
 .team-transfer-operations,
 .team-transfer-sort-operations,
 .team-transfer-title,
@@ -317,6 +316,9 @@
     width: 100%;
     max-width: 100%;
     min-width: 15%;
+    padding: var(--pad-3);
+    background: var(--white-1);
+    border-radius: 5px;
     white-space: nowrap;
 }
 
@@ -478,10 +480,8 @@
     color: var(--white-2);
 }
 
-.team-transfer-batting-order::after {
-    content: '. ';
-    position: relative;
-    margin-right: var(--margin-0);
+.team-transfer-list-item-name {
+    font-size: var(--font-large);
 }
 
 .team-transfer-header {

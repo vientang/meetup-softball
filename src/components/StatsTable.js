@@ -97,9 +97,9 @@ function formatColumnWidth(props) {
     }
     switch (category) {
         case 'player':
-            return 200;
+            return 150;
         case 'game':
-            return 190;
+            return 175;
         case 'battingOrder':
             return 35;
         case 'w':

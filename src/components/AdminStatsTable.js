@@ -3,25 +3,10 @@ import PropTypes from 'prop-types';
 import { Button } from 'antd';
 import { Utils } from '../utils';
 import StatsTable from './StatsTable';
+import { adminStatCategories } from '../utils/constants';
 import componentStyles from './components.module.css';
 import 'react-table/react-table.css';
 
-const categories = [
-    'battingOrder',
-    'player',
-    'o',
-    'singles',
-    'doubles',
-    'triples',
-    'hr',
-    'bb',
-    'sb',
-    'cs',
-    'k',
-    'rbi',
-    'r',
-    'sac',
-];
 class AdminStatsTable extends React.Component {
     constructor(props) {
         super(props);
@@ -69,6 +54,8 @@ class AdminStatsTable extends React.Component {
         if (enterKey || charKeys) {
             e.preventDefault();
         }
+
+        return null;
     };
 
     /**
@@ -87,6 +74,8 @@ class AdminStatsTable extends React.Component {
         winners[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;
 
         this.setState(() => ({ winners }));
+
+        return null;
     };
 
     /**
@@ -105,6 +94,8 @@ class AdminStatsTable extends React.Component {
         losers[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;
 
         this.setState(() => ({ losers }));
+
+        return null;
     };
 
     renderWinnerEditableCell = (cellInfo) => {
@@ -150,7 +141,7 @@ class AdminStatsTable extends React.Component {
                 <p className={componentStyles.adminSectionTitle}>WINNERS</p>
                 <StatsTable
                     stats={winners}
-                    categories={categories}
+                    categories={adminStatCategories}
                     cellRenderer={this.renderWinnerEditableCell}
                     showPagination={false}
                     sortMethod={Utils.sortByNameLength}
@@ -159,7 +150,7 @@ class AdminStatsTable extends React.Component {
                 <p className={componentStyles.adminSectionTitle}>LOSERS</p>
                 <StatsTable
                     stats={losers}
-                    categories={categories}
+                    categories={adminStatCategories}
                     cellRenderer={this.renderLoserEditableCell}
                     showPagination={false}
                     sortMethod={Utils.sortByNameLength}
@@ -176,7 +167,6 @@ class AdminStatsTable extends React.Component {
 }
 
 AdminStatsTable.propTypes = {
-    game: PropTypes.string,
     winners: PropTypes.arrayOf(PropTypes.object),
     losers: PropTypes.arrayOf(PropTypes.object),
     onSubmit: PropTypes.func,

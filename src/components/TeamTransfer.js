@@ -5,33 +5,6 @@ import { Button } from 'antd';
 import componentStyles from './components.module.css';
 import TransferBox from './TransferBox';
 
-const addBattingOrder = (players) =>
-    players.map((player, i) => ({ ...player, battingOrder: i + 1 }));
-
-const sortBattingOrder = ({ focusedItem, list, direction }) => {
-    const listToSort = [...list];
-    const currIndex = listToSort.findIndex((target) => target.meetupId === focusedItem.meetupId);
-    const playerToMove = listToSort[currIndex];
-
-    // sort players inside a list
-    // account for boundaries
-    if (direction === 'up' && currIndex > 0) {
-        const playerToSwap = listToSort[currIndex - 1];
-        listToSort[currIndex - 1] = playerToMove;
-        listToSort[currIndex] = playerToSwap;
-
-        return addBattingOrder(listToSort);
-    }
-    if (direction === 'down' && currIndex < list.length - 1) {
-        const playerToSwap = listToSort[currIndex + 1];
-        listToSort[currIndex + 1] = playerToMove;
-        listToSort[currIndex] = playerToSwap;
-
-        return addBattingOrder(listToSort);
-    }
-
-    return listToSort;
-};
 class TeamTransfer extends React.Component {
     constructor(props) {
         super(props);
@@ -83,8 +56,6 @@ class TeamTransfer extends React.Component {
         const { sourceList, targetList } = this.state;
         this.props.onChange(sourceList, targetList);
     };
-
-    findPlayerByMeetupId = (meetupId) => (player) => player.meetupId === meetupId;
 
     /**
      * Adds items to target box
@@ -239,6 +210,35 @@ class TeamTransfer extends React.Component {
             </div>
         );
     }
+}
+
+function addBattingOrder(players) {
+    return players.map((player, i) => ({ ...player, battingOrder: i + 1 }));
+}
+
+function sortBattingOrder({ focusedItem, list, direction }) {
+    const listToSort = [...list];
+    const currIndex = listToSort.findIndex((target) => target.meetupId === focusedItem.meetupId);
+    const playerToMove = listToSort[currIndex];
+
+    // sort players inside a list
+    // account for boundaries
+    if (direction === 'up' && currIndex > 0) {
+        const playerToSwap = listToSort[currIndex - 1];
+        listToSort[currIndex - 1] = playerToMove;
+        listToSort[currIndex] = playerToSwap;
+
+        return addBattingOrder(listToSort);
+    }
+    if (direction === 'down' && currIndex < list.length - 1) {
+        const playerToSwap = listToSort[currIndex + 1];
+        listToSort[currIndex + 1] = playerToMove;
+        listToSort[currIndex] = playerToSwap;
+
+        return addBattingOrder(listToSort);
+    }
+
+    return listToSort;
 }
 
 TeamTransfer.propTypes = {
