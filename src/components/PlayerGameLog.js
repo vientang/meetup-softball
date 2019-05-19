@@ -6,18 +6,7 @@ import { Utils } from '../utils';
 import { gameLogCategories } from '../utils/constants';
 import componentStyles from './components.module.css';
 
-const statsTableStyle = {
-    width: 1148,
-};
-
-const renderCell = (cellInfo) => {
-    if (cellInfo.column.Header === 'GAME') {
-        return <Link to="/game">{cellInfo.original.game}</Link>;
-    }
-    return cellInfo.value || '0';
-};
-
-const PlayerGameLog = ({ stats }) => {
+const PlayerGameLog = ({ stats, statsTableStyle }) => {
     return (
         <div className={componentStyles.playerPageSection}>
             <p className={componentStyles.playerPageSectionTitle}>Games</p>
@@ -32,8 +21,16 @@ const PlayerGameLog = ({ stats }) => {
     );
 };
 
+function renderCell(cellInfo) {
+    if (cellInfo.column.Header === 'GAME') {
+        return <Link to="/game">{cellInfo.original.game}</Link>;
+    }
+    return cellInfo.value || '0';
+}
+
 PlayerGameLog.propTypes = {
     stats: PropTypes.arrayOf(PropTypes.shape()),
+    statsTableStyle: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
 };
 
 export default PlayerGameLog;

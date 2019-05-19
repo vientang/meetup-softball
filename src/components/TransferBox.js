@@ -2,94 +2,111 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'antd';
-import TransferListItem from './TransferListItem';
 import Winners from './Winners';
 import Losers from './Losers';
 import componentStyles from './components.module.css';
+import AddPlayer from './AddPlayer';
 
 /* eslint-disable-next-line react/prop-types */
-const TransferHeader = ({ header, playerCount }) => (
-    <div className={componentStyles.teamTransferHeader}>
-        <span className={componentStyles.teamTransferTitle}>
-            {header === 'WINNERS' ? (
-                <Winners
-                    gStyle={{
-                        transform: 'translate(-80px, -20px)',
-                    }}
-                    size={20}
-                />
-            ) : (
-                <Losers
-                    gStyle={{
-                        transform: 'translate(-150px, 0px)',
-                    }}
-                    size={20}
+const TransferHeader = ({ listType, playerCount }) => {
+    const winnerLogoStyle = { transform: 'translate(-80px, -20px)' };
+    const loserLogoStyle = { transform: 'translate(-80px, -20px)' };
+    return (
+        <div className={componentStyles.teamTransferHeader}>
+            <span className={componentStyles.teamTransferTitle}>
+                {listType === 'WINNERS' ? (
+                    <Winners gStyle={winnerLogoStyle} size={20} />
+                ) : (
+                    <Losers gStyle={loserLogoStyle} size={20} />
+                )}
+                {listType}
+            </span>
+            <span className={componentStyles.teamTransferBoxCount}>{playerCount}</span>
+        </div>
+    );
+};
+
+const TransferListItems = (props) => {
+    /* eslint-disable-next-line react/prop-types */
+    const { allRsvpIds, listItems, listType, onAddPlayer, onPlayerFocus, focusedItemId } = props;
+
+    return (
+        <div className={componentStyles.teamTransferListItems}>
+            {listItems.map((player) => {
+                const focusedStyle =
+                    player.meetupId === focusedItemId
+                        ? componentStyles.teamTransferListItemFocused
+                        : null;
+                return (
+                    <div
+                        key={player.meetupId}
+                        className={`${componentStyles.teamTransferListItem} ${focusedStyle}`}
+                        data-id={player.meetupId}
+                        onClick={onPlayerFocus}
+                    >
+                        <span className={componentStyles.teamTransferListItemName}>
+                            {`${player.battingOrder}. ${player.name}`}
+                        </span>
+                    </div>
+                );
+            })}
+            {listItems.length > 0 && (
+                <AddPlayer
+                    allRsvpIds={allRsvpIds}
+                    listCount={listItems.length}
+                    listType={listType}
+                    onAddPlayer={onAddPlayer}
                 />
             )}
-            {header}
-        </span>
-        <span className={componentStyles.teamTransferBoxCount}>{playerCount}</span>
-    </div>
-);
+        </div>
+    );
+};
 
 /* eslint-disable-next-line react/prop-types */
-const TransferListItems = ({ listItems, onItemFocus, focusedItemId }) => (
-    <div className={componentStyles.teamTransferListItems}>
-        {listItems.map((player) => {
-            return (
-                <TransferListItem
-                    focused={player.meetupId === focusedItemId}
-                    key={player.meetupId}
-                    onClick={onItemFocus}
-                    value={player.name}
-                >
-                    <span className={componentStyles.teamTransferListItemName}>
-                        {`${player.battingOrder}. ${player.name}`}
-                    </span>
-                </TransferListItem>
-            );
-        })}
-    </div>
-);
-
-/* eslint-disable-next-line react/prop-types */
-const TransferSortOperations = ({ header, locale, onMoveDown, onMoveUp }) => (
+const TransferSortOperations = ({ listType, onMoveDown, onMoveUp }) => (
     <div className={componentStyles.teamTransferSortOperations}>
-        <Button
-            id={header}
-            icon="caret-up"
-            type="primary"
-            onClick={onMoveUp}
-            title={locale.moveUp}
-            size="small"
-            shape="circle"
-        />
-        <Button
-            id={header}
-            icon="caret-down"
-            type="primary"
-            onClick={onMoveDown}
-            title={locale.moveDown}
-            size="small"
-            shape="circle"
-        />
+        {['caret-up', 'caret-down'].map((icon) => (
+            <Button
+                key={icon}
+                id={listType}
+                icon={icon}
+                type="primary"
+                onClick={icon === 'caret-up' ? onMoveUp : onMoveDown}
+                size="small"
+                shape="circle"
+                title={icon === 'caret-up' ? 'Move up' : 'Move down'}
+            />
+        ))}
     </div>
 );
 
 const TransferBox = (props) => {
-    const { header, listItems, locale, focusedItem, onItemFocus, onMoveDown, onMoveUp } = props;
+    const {
+        allRsvpIds,
+        listItems,
+        listType,
+        focusedItem,
+        onAddPlayer,
+        onPlayerFocus,
+        onMoveDown,
+        onMoveUp,
+    } = props;
+
     const focusedItemId = focusedItem && focusedItem.meetupId;
+
     return (
         <div className={componentStyles.teamTransferList}>
-            <TransferHeader header={header} playerCount={listItems.length} />
+            <TransferHeader listType={listType} playerCount={listItems.length} />
             <TransferListItems
+                allRsvpIds={allRsvpIds}
                 listItems={listItems}
-                onItemFocus={onItemFocus}
+                listType={listType}
+                onAddPlayer={onAddPlayer}
+                onPlayerFocus={onPlayerFocus}
                 focusedItemId={focusedItemId}
             />
             <TransferSortOperations
-                header={header}
-                locale={locale}
+                listType={listType}
                 onMoveDown={onMoveDown}
                 onMoveUp={onMoveUp}
             />
@@ -98,22 +115,20 @@ const TransferBox = (props) => {
 };
 
 TransferBox.propTypes = {
+    allRsvpIds: PropTypes.arrayOf(PropTypes.number),
     focusedItem: PropTypes.shape(),
-    header: PropTypes.string,
     listItems: PropTypes.arrayOf(PropTypes.object),
-    locale: PropTypes.shape({
-        moveUp: PropTypes.string,
-        moveDown: PropTypes.string,
-    }),
-    onItemFocus: PropTypes.func,
+    listType: PropTypes.string,
+    onAddPlayer: PropTypes.func,
+    onPlayerFocus: PropTypes.func,
     onMoveDown: PropTypes.func,
     onMoveUp: PropTypes.func,
 };
 
 TransferBox.defaultProps = {
-    header: '',
+    allRsvpIds: [],
+    focusedItem: {},
     listItems: [],
-    locale: {},
 };
 
 export default TransferBox;

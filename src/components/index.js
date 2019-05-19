@@ -23,7 +23,6 @@ import StatsTable from './StatsTable';
 import SuccessImage from './SuccessImage';
 import TeamTransfer from './TeamTransfer';
 import TransferBox from './TransferBox';
-import TransferListItem from './TransferListItem';
 import withFilterBar from './withFilterBar';
 
 export {
@@ -52,6 +51,5 @@ export {
     SuccessImage,
     TeamTransfer,
     TransferBox,
-    TransferListItem,
     withFilterBar,
 };

@@ -114,11 +114,21 @@ class Player extends React.Component {
     render() {
         const { careerStats, games, player } = this.state;
 
+        const statsTableStyle = {
+            width: 1155,
+        };
+
         return (
             <>
                 <PlayerInfo playerInfo={player} />
-                <CareerStats stats={mockCareerStats || careerStats} />
-                <PlayerGameLog stats={games.length ? games : gameStats} />
+                <CareerStats
+                    stats={mockCareerStats || careerStats}
+                    statsTableStyle={statsTableStyle}
+                />
+                <PlayerGameLog
+                    stats={games.length ? games : gameStats}
+                    statsTableStyle={statsTableStyle}
+                />
             </>
         );
     }

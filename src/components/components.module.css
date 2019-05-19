@@ -475,6 +475,14 @@
     background-color: var(--blue-0);
 }
 
+.team-transfer-list-item:nth-last-child(1) {
+    border-top: 1px solid var(--grey-1);
+}
+
+.team-transfer-list-item:nth-last-child(1):hover {
+    background-color: var(--white-1);
+}
+
 .team-transfer-list-item-focused {
     background-color: var(--blue-3);
     color: var(--white-2);
@@ -482,6 +490,12 @@
 
 .team-transfer-list-item-name {
     font-size: var(--font-large);
+}
+
+.team-transfer-add-player {
+    font-size: var(--font-large);
+    font-style: italic;
+    color: var(--grey-2);
 }
 
 .team-transfer-header {
@@ -531,6 +545,11 @@
 
 .team-transfer-list:hover .team-transfer-sort-operations {
     opacity: 1;
+}
+
+.add-player-input {
+    border: 0;
+    width: 100%;
 }
 /**********************/
 
