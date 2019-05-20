@@ -176,6 +176,9 @@ const withFilterBar = (Page) => {
             }
         };
 
+        /**
+         * Update active filters from FilterBar selections
+         */
         handleFilterChange = async ({ key }) => {
             const activeFilters = { ...this.state.activeFilters };
 
@@ -196,6 +199,10 @@ const withFilterBar = (Page) => {
             }
         };
 
+        /**
+         * Detect the filter that will be selected
+         * Use in handleFilterChange for optimizations
+         */
         handleMouseEnter = (e) => {
             const currentFilter = e.target.id;
 

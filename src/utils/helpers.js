@@ -1,8 +1,3 @@
-/**
- * Make a player object with stat categories to show on AdminStatsTable
- * @param {Object} player data from meetup
- * @return {Object}
- */
 import statsCalc from './statsCalc';
 
 const {
@@ -17,36 +12,87 @@ const {
     getRunsCreated,
 } = statsCalc;
 
-/**
- * Adaptor to create player object from meetup data and admin stats to database
- * @param {Object} player
- */
-const createPlayer = (player) => {
-    const { name, id, joined, group_profile, is_pro_admin, photo, status } = player.data;
-    return {
-        name,
-        joined,
-        status,
-        meetupId: id,
-        profile: group_profile,
-        admin: is_pro_admin,
-        photos: photo,
-        singles: null,
-        doubles: null,
-        triples: null,
-        bb: null,
-        cs: null,
-        hr: null,
-        k: null,
-        o: null,
-        r: null,
-        rbi: null,
-        sac: null,
-        sb: null,
-    };
-};
+export function createSlug(name) {
+    return name
+        .split(' ')
+        .join('_')
+        .toLowerCase();
+}
 
-const formatValueLength = (value, max) => {
+export function sortByNameLength(a, b) {
+    if (a.length === b.length) {
+        return a > b ? 1 : -1;
+    }
+    return a.length > b.length ? 1 : -1;
+}
+
+export function sortHighToLow(a, b) {
+    return Number(a) < Number(b) ? 1 : -1;
+}
+
+export function sortTimeStamp(a, b) {
+    return Number(a.timeStamp) < Number(b.timeStamp) ? 1 : -1;
+}
+
+/**
+ * Remove leading zero, append zeroes or convert to zero
+ * @param {String} value
+ */
+export function formatCellValue(value) {
+    const formattedValue = value || '';
+    if (formattedValue.substring(0, 2) === '0.') {
+        return formatValueLength(formattedValue.slice(1), 4);
+    }
+    if (Number(formattedValue[0]) > 0 && formattedValue[1] === '.') {
+        return formatValueLength(formattedValue, 4);
+    }
+    return value || 0;
+}
+
+export function setTopLeaders(players, stat) {
+    // return an array of 5 objects
+    // describing the player name and their stat total
+    let topLeaders = [];
+    let comparison = [];
+    let total;
+    players.forEach((element) => {
+        const playerName = element.name;
+
+        // switch on woba/obp/ops/avg to do either rate or counting stat
+        switch (stat) {
+            case 'avg':
+            case 'obp':
+            case 'ops':
+            case 'woba':
+                total = getRateStatTotal(element.games, stat);
+                break;
+            case 'rc':
+                total = getRunsCreatedTotal(element.games);
+                break;
+            default:
+                total = getCountingStatTotal(element.games, stat);
+                break;
+        }
+        comparison.push({ playerName, total });
+    });
+
+    comparison = comparison.sort((a, b) => (a.total > b.total ? -1 : 1));
+
+    topLeaders = comparison.slice(0, 5);
+
+    // is there a tie for the 5th spot?
+    comparison.slice(5).some((player) => {
+        if (player.total === topLeaders[4].total) {
+            topLeaders.push(player);
+            return false;
+        }
+        return true;
+    });
+    return topLeaders;
+}
+
+/** ***************************** PRIVATE FUNCTIONS ***************************** */
+function formatValueLength(value, max) {
     if (!value.includes('.')) {
         return value;
     }
@@ -61,40 +107,14 @@ const formatValueLength = (value, max) => {
     }
 
     return formattedValue;
-};
-
-/**
- * Remove leading zero, append zeroes or convert to zero
- * @param {String} value
- */
-const formatCellValue = (value) => {
-    const formattedValue = value || '';
-    if (formattedValue.substring(0, 2) === '0.') {
-        return formatValueLength(formattedValue.slice(1), 4);
-    }
-    if (Number(formattedValue[0]) > 0 && formattedValue[1] === '.') {
-        return formatValueLength(formattedValue, 4);
-    }
-    return value || 0;
-};
-
-const sortByNameLength = (a, b) => {
-    if (a.length === b.length) {
-        return a > b ? 1 : -1;
-    }
-    return a.length > b.length ? 1 : -1;
-};
-
-const sortHighToLow = (a, b) => (Number(a) < Number(b) ? 1 : -1);
-
-const sortTimeStamp = (a, b) => (Number(a.timeStamp) < Number(b.timeStamp) ? 1 : -1);
+}
 
 // Loop through all players
 // Calculate their counting stat totals
 // Check if it belongs in the top 5
 // If yes, save the player name and stat total
 // If no, don't save
-const getCountingStatTotal = (games, statToCount) => {
+function getCountingStatTotal(games, statToCount) {
     return games.reduce((acc, cur) => {
         let total = acc;
         if (typeof cur[statToCount] === 'number') {
@@ -104,9 +124,9 @@ const getCountingStatTotal = (games, statToCount) => {
         }
         return total;
     }, 0);
-};
+}
 
-const getRunsCreatedTotal = (games) => {
+function getRunsCreatedTotal(games) {
     const hits = getHits(
         getCountingStatTotal(games, 'singles'),
         getCountingStatTotal(games, 'doubles'),
@@ -130,9 +150,9 @@ const getRunsCreatedTotal = (games) => {
         getCountingStatTotal(games, 'sb'),
         atBats,
     );
-};
+}
 
-const getRateStatTotal = (games, statToCount) => {
+function getRateStatTotal(games, statToCount) {
     // switch case for each rate stat and calculate for setTopLeaders
     // think about how to involve getCountingStatTotal
     // test in utils.test.js
@@ -189,49 +209,7 @@ const getRateStatTotal = (games, statToCount) => {
         default:
             return 0;
     }
-};
-
-const setTopLeaders = (players, stat) => {
-    // return an array of 5 objects
-    // describing the player name and their stat total
-    let topLeaders = [];
-    let comparison = [];
-    let total;
-    players.forEach((element) => {
-        const playerName = element.name;
-
-        // switch on woba/obp/ops/avg to do either rate or counting stat
-        switch (stat) {
-            case 'avg':
-            case 'obp':
-            case 'ops':
-            case 'woba':
-                total = getRateStatTotal(element.games, stat);
-                break;
-            case 'rc':
-                total = getRunsCreatedTotal(element.games);
-                break;
-            default:
-                total = getCountingStatTotal(element.games, stat);
-                break;
-        }
-        comparison.push({ playerName, total });
-    });
-
-    comparison = comparison.sort((a, b) => (a.total > b.total ? -1 : 1));
-
-    topLeaders = comparison.slice(0, 5);
-
-    // is there a tie for the 5th spot?
-    comparison.slice(5).some((player) => {
-        if (player.total === topLeaders[4].total) {
-            topLeaders.push(player);
-            return false;
-        }
-        return true;
-    });
-    return topLeaders;
-};
+}
 
 /**
  * Combine multiple functions into one
@@ -253,15 +231,14 @@ const chainedFunc = (...funcs) =>
                 f.apply(this, args);
             };
         }, null);
+/** ***************************** END OF PRIVATE FUNCTIONS ***************************** */
 
 export default {
     chainedFunc,
-    createPlayer,
     formatCellValue,
     getRateStatTotal,
     getRunsCreatedTotal,
     sortByNameLength,
     sortHighToLow,
     sortTimeStamp,
-    setTopLeaders,
 };

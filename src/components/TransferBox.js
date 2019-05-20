@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import { Button } from 'antd';
 import Winners from './Winners';
 import Losers from './Losers';
-import componentStyles from './components.module.css';
 import AddPlayer from './AddPlayer';
+import componentStyles from './components.module.css';
 
 /* eslint-disable-next-line react/prop-types */
 const TransferHeader = ({ listType, playerCount }) => {

@@ -5,13 +5,14 @@ import get from 'lodash/get';
 import { Link } from 'gatsby';
 import { Avatar, Skeleton } from 'antd';
 import { withFilterBar, NotFoundImage, StatsTable } from '../components';
-import { Utils, apiService } from '../utils';
+import { apiService } from '../utils';
+import { createSlug, formatCellValue, sortHighToLow } from '../utils/helpers';
 import { statPageCategories } from '../utils/constants';
 import pageStyles from './pages.module.css';
 
 const statsTableStyle = {
     height: 800,
-    width: 1148,
+    width: 1155,
 };
 
 const skeletonConfig = { rows: 20, width: '1155px' };
@@ -75,7 +76,7 @@ class Stats extends React.Component {
 
         return cellValue === playerName
             ? this.renderPlayerCell(playerStats, cellInfo)
-            : Utils.formatCellValue(cellValue);
+            : formatCellValue(cellValue);
     };
 
     render() {
@@ -101,7 +102,7 @@ class Stats extends React.Component {
                     cellRenderer={this.renderCell}
                     onSortedChange={this.handleColumnSort}
                     sortedColumn={sortedColumn}
-                    sortMethod={Utils.sortHighToLow}
+                    sortMethod={sortHighToLow}
                     stats={playerStats}
                     style={statsTableStyle}
                     showLegend
@@ -109,20 +110,6 @@ class Stats extends React.Component {
             </div>
         );
     }
-}
-
-function getPlayerStats(playerStats, playerId) {
-    if (!playerId) {
-        return {};
-    }
-    return playerStats.find((player) => Number(player.meetupId) === playerId) || {};
-}
-
-function createSlug(name) {
-    return name
-        .split(' ')
-        .join('_')
-        .toLowerCase();
 }
 
 /* eslint-disable react/prop-types */
@@ -136,6 +123,13 @@ function PlayerAvatar({ image, name }) {
     }
 
     return <Avatar {...avatarProps} shape="square" />;
+}
+
+function getPlayerStats(playerStats, playerId) {
+    if (!playerId) {
+        return {};
+    }
+    return playerStats.find((player) => Number(player.meetupId) === playerId) || {};
 }
 
 function getPlayerMetaData(playerStats, cellInfo) {

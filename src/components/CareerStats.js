@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import StatsTable from './StatsTable';
-import { Utils } from '../utils';
+import { sortHighToLow } from '../utils/helpers';
 import { careerStatCategories } from '../utils/constants';
 import componentStyles from './components.module.css';
 
@@ -13,7 +13,7 @@ const CareerStats = ({ stats, statsTableStyle }) => {
                 style={statsTableStyle}
                 categories={careerStatCategories}
                 stats={stats}
-                sortMethod={Utils.sortHighToLow}
+                sortMethod={sortHighToLow}
                 striped=""
             />
         </div>

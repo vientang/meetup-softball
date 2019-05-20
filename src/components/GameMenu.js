@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Menu } from 'antd';
-import 'antd/dist/antd.css';
 import componentStyles from './components.module.css';
+import 'antd/dist/antd.css';
 
 const sideMenuStyle = {
     display: 'flex',

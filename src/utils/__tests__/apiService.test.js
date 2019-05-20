@@ -48,7 +48,7 @@ const currentPlayerStats = [
         triples: '1',
         hr: '1',
         rbi: '1',
-        r: '1',
+        r: '2',
         sb: '1',
         cs: '0',
         k: '1',
@@ -110,7 +110,7 @@ const mergedPlayerStats = [
                 triples: '1',
                 hr: '1',
                 rbi: '1',
-                r: '1',
+                r: '2',
                 sb: '1',
                 cs: '0',
                 k: '1',
@@ -175,27 +175,18 @@ const mergedPlayerStats = [
     },
 ];
 
-describe('Update player stats', () => {
+describe('Player stats', () => {
     it('merge player stats', () => {
         expect(
             mergePlayerStats(currentGame, [currentPlayerStats[0]], [currentPlayerStats[1]]),
         ).toEqual(mergedPlayerStats);
     });
-
-    it('add derived stats', () => {
-        expect(addDerivedStats([currentPlayerStats[0]], true)).toEqual([
-            { ...currentPlayerStats[0], w: '1', l: '0', gp: '1' },
-        ]);
-
-        expect(addDerivedStats([currentPlayerStats[1]], false)).toEqual([
-            { ...currentPlayerStats[1], w: '0', l: '1', gp: '1' },
-        ]);
-    });
 });
 
-describe('Update game stats', () => {
+describe('Game stats', () => {
     it('appends current game stats to existing game stats', () => {
-        const winningTeam = addDerivedStats([currentPlayerStats[0]], true);
+        const isTie = false;
+        const winningTeam = addDerivedStats([currentPlayerStats[0]], isTie, true);
         const losingTeam = addDerivedStats([currentPlayerStats[1]]);
 
         const gameStats = {
@@ -209,7 +200,7 @@ describe('Update game stats', () => {
             tournamentName: meetupData.tournamentName,
             winners: JSON.stringify({
                 name: 'Winners',
-                runsScored: 1,
+                runsScored: 2,
                 totalHits: 4,
                 players: [winningTeam[0]],
             }),
@@ -224,5 +215,18 @@ describe('Update game stats', () => {
         expect(
             mergeGameStats(meetupData, [currentPlayerStats[0]], [currentPlayerStats[1]]),
         ).toEqual(gameStats);
+    });
+});
+
+describe('General helper functions', () => {
+    it('adds derived stats', () => {
+        const isTie = false;
+        expect(addDerivedStats([currentPlayerStats[0]], isTie, true)).toEqual([
+            { ...currentPlayerStats[0], w: '1', l: '0', gp: '1' },
+        ]);
+
+        expect(addDerivedStats([currentPlayerStats[1]])).toEqual([
+            { ...currentPlayerStats[1], w: '0', l: '1', gp: '1' },
+        ]);
     });
 });

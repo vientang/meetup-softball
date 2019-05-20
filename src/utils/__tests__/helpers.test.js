@@ -1,9 +1,8 @@
 /* eslint-disable no-undef */
-import Utils from '../Utils';
+import { setTopLeaders, formatCellValue, createSlug } from '../helpers';
 import mockData from '../mockData';
 
 const { mockLeaderBoard } = mockData;
-const { setTopLeaders, getRateStatTotal, getRunsCreatedTotal } = Utils;
 
 describe('Leaderboard Stats', () => {
     it('Get top 5 of home runs', () => {
@@ -44,5 +43,23 @@ describe('Leaderboard Stats', () => {
             { playerName: 'santiago', total: 12.969 },
             { playerName: 'laura', total: 11.972 },
         ]);
+    });
+});
+
+describe('Helpers', () => {
+    it('remove leading zero', () => {
+        expect(formatCellValue('0.123')).toEqual('.123');
+    });
+
+    it('add trailing zero', () => {
+        expect(formatCellValue('1.1')).toEqual('1.10');
+    });
+
+    it('remove extra trailing digits', () => {
+        expect(formatCellValue('1.123123')).toEqual('1.12');
+    });
+
+    it('create a slug for url', () => {
+        expect(createSlug('basta Fresh')).toEqual('basta_fresh');
     });
 });

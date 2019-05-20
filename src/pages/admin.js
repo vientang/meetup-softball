@@ -7,7 +7,8 @@ import { withAuthenticator, SignIn, Greetings } from 'aws-amplify-react';
 import { AdminStatsTable, GameMenu, Layout, SortTeams, SuccessImage } from '../components';
 import { createGameStats, createPlayerStats, updatePlayerStats } from '../graphql/mutations';
 import { listGameStatss, listPlayerStatss } from '../graphql/queries';
-import { Utils, apiService } from '../utils';
+import { apiService } from '../utils';
+import { sortTimeStamp } from '../utils/helpers';
 import styles from './pages.module.css';
 import componentStyles from '../components/components.module.css';
 
@@ -77,7 +78,7 @@ class Admin extends React.Component {
         }
 
         const games = await API.graphql(graphqlOperation(listGameStatss));
-        const gamesSorted = games.data.listGameStatss.items.sort(Utils.sortTimeStamp);
+        const gamesSorted = games.data.listGameStatss.items.sort(sortTimeStamp);
 
         return Number(gamesSorted[0].timeStamp);
     };
@@ -105,7 +106,7 @@ class Admin extends React.Component {
         );
 
         const results = await Promise.all(rsvpList);
-        return results.map((player) => Utils.createPlayer(player));
+        return results.map((player) => createPlayer(player));
     };
 
     /**
@@ -258,6 +259,11 @@ class Admin extends React.Component {
     }
 }
 
+/**
+ * Schema matching GameStats
+ * Adaptor to create game object from meetup data and admin stats
+ * @param {Object} player
+ */
 function createGame(game) {
     const { id, local_date, local_time, rsvp_limit, time, venue, waitlist_count } = game;
 
@@ -283,6 +289,36 @@ function createGame(game) {
     newGame.year = year;
 
     return newGame;
+}
+
+/**
+ * Schema matching PlayerStats
+ * Adaptor to create player object from meetup data and admin stats
+ * @param {Object} player
+ */
+function createPlayer(player) {
+    const { name, id, joined, group_profile, is_pro_admin, photo, status } = player.data;
+    return {
+        name,
+        joined,
+        status,
+        meetupId: id,
+        profile: group_profile,
+        admin: is_pro_admin,
+        photos: photo,
+        singles: null,
+        doubles: null,
+        triples: null,
+        bb: null,
+        cs: null,
+        hr: null,
+        k: null,
+        o: null,
+        r: null,
+        rbi: null,
+        sac: null,
+        sb: null,
+    };
 }
 
 function findGameByMeetupId(selectedGameId) {

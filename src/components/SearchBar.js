@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import { Link, navigate } from 'gatsby';
 import { Icon, Input, AutoComplete } from 'antd';
+import { createSlug } from '../utils/helpers';
 import componentStyles from './components.module.css';
 
 const { Option } = AutoComplete;
@@ -88,13 +89,6 @@ function renderPlayerLink(player) {
             {player.name}
         </Link>
     );
-}
-
-function createSlug(name) {
-    return name
-        .split(' ')
-        .join('_')
-        .toLowerCase();
 }
 
 SearchBar.propTypes = {

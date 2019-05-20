@@ -1,6 +1,6 @@
 import React from 'react';
 import { withFilterBar, LeaderCard } from '../components';
-import { Utils } from '../utils';
+import { setTopLeaders } from '../utils/helpers';
 import { cardTitles } from '../utils/constants';
 import mockData from '../utils/mockData';
 import componentStyles from '../components/components.module.css';
@@ -20,7 +20,7 @@ class LeaderBoard extends React.Component {
     componentDidMount() {
         // console.log(this.props.gameData);
         const stats = cardTitles.map((cardTitle) => {
-            return Utils.setTopLeaders(mockLeaderBoard, cardTitle.abbr);
+            return setTopLeaders(mockLeaderBoard, cardTitle.abbr);
         });
         this.setState(() => {
             return {

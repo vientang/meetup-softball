@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'gatsby';
 import StatsTable from './StatsTable';
-import { Utils } from '../utils';
+import { sortHighToLow } from '../utils/helpers';
 import { gameLogCategories } from '../utils/constants';
 import componentStyles from './components.module.css';
 
@@ -14,7 +14,7 @@ const PlayerGameLog = ({ stats, statsTableStyle }) => {
                 categories={gameLogCategories}
                 style={statsTableStyle}
                 cellRenderer={renderCell}
-                sortMethod={Utils.sortHighToLow}
+                sortMethod={sortHighToLow}
                 stats={stats}
             />
         </div>

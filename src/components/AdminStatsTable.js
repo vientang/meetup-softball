@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'antd';
-import { Utils } from '../utils';
 import StatsTable from './StatsTable';
+import { sortByNameLength } from '../utils/helpers';
 import { adminStatCategories } from '../utils/constants';
 import componentStyles from './components.module.css';
 import 'react-table/react-table.css';
@@ -144,7 +144,7 @@ class AdminStatsTable extends React.Component {
                     categories={adminStatCategories}
                     cellRenderer={this.renderWinnerEditableCell}
                     showPagination={false}
-                    sortMethod={Utils.sortByNameLength}
+                    sortMethod={sortByNameLength}
                     adminPage
                 />
                 <p className={componentStyles.adminSectionTitle}>LOSERS</p>
@@ -153,7 +153,7 @@ class AdminStatsTable extends React.Component {
                     categories={adminStatCategories}
                     cellRenderer={this.renderLoserEditableCell}
                     showPagination={false}
-                    sortMethod={Utils.sortByNameLength}
+                    sortMethod={sortByNameLength}
                     adminPage
                 />
                 <div className={componentStyles.submitButton}>

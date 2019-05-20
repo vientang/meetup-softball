@@ -255,15 +255,21 @@ const filterPlayerStats = (gameData) => {
  * Admins do not need to enter these
  * @param {Array} players
  * @param {Boolean} winner
+ * @param {Boolean} isTie
  * @return {Array}
  */
-const addDerivedStats = (players, winner) =>
-    players.map((player) => {
+const addDerivedStats = (players, isTie, winner) => {
+    return players.map((player) => {
         player.w = winner ? '1' : '0';
         player.l = winner ? '0' : '1';
+        if (isTie) {
+            player.w = '0';
+            player.l = '0';
+        }
         player.gp = '1';
         return player;
     });
+};
 
 /**
  * GAMESTATS Adaptor to combine data from meetup and current game stats
@@ -273,9 +279,10 @@ const addDerivedStats = (players, winner) =>
  */
 const mergeGameStats = (meetupData, w, l) => {
     const currentGameStats = omit(meetupData, ['players']);
+    const isTie = getTeamRunsScored(w) === getTeamRunsScored(l);
 
-    const winningTeam = addDerivedStats(w, true);
-    const losingTeam = addDerivedStats(l);
+    const winningTeam = addDerivedStats(w, isTie, true);
+    const losingTeam = addDerivedStats(l, isTie, false);
 
     const winners = {
         name: 'Winners', // swap with data from the admin
@@ -329,9 +336,10 @@ const createPlayerGameLog = (players, currentGameStats) => {
  */
 const mergePlayerStats = (currentGame, w, l) => {
     const currentGameStats = pick(currentGame, gameProperties);
-    const winningTeam = addDerivedStats(w, true);
+    const isTie = getTeamRunsScored(w) === getTeamRunsScored(l);
+    const winningTeam = addDerivedStats(w, isTie, true);
     const winners = createPlayerGameLog(winningTeam, currentGameStats);
-    const losingTeam = addDerivedStats(l);
+    const losingTeam = addDerivedStats(l, isTie);
     const losers = createPlayerGameLog(losingTeam, currentGameStats);
 
     return winners.concat(losers);
