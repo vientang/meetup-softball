@@ -31,14 +31,12 @@ function Details({ data }) {
         meridiem = Number(data.time.substring(0, 2)) < 12 ? 'am' : 'pm';
     }
     return (
-        <>
-            <p className={componentStyles.adminSectionTitle}>{data.field}</p>
-            <p className={componentStyles.adminSectionTitle}>{`@${data.time}${meridiem}`}</p>
-            <p className={componentStyles.adminSectionTitle}>
-                {`Attended: ${data.players.length}`}
-            </p>
-            <p className={componentStyles.adminSectionTitle}>{`RSVP's: ${data.rsvps}`}</p>
-        </>
+        <ul className={componentStyles.gameDetailsSection}>
+            <li>{data.field}</li>
+            <li>{`@${data.time}${meridiem}`}</li>
+            <li>{`Attended: ${data.players.length}`}</li>
+            <li>{`RSVP's: ${data.rsvps}`}</li>
+        </ul>
     );
 }
 

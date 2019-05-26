@@ -91,7 +91,7 @@ class Admin extends React.Component {
 
     getCurrentGamePlayers = async (currentGame = {}) => {
         if (currentGame.players) {
-            return currentGame;
+            return currentGame.players;
         }
 
         const RSVPS = `${process.env.RSVP_URL}${
@@ -197,12 +197,10 @@ class Admin extends React.Component {
     handleSelectGame = async (e) => {
         e.preventDefault();
         const selectedGameId = e.target.id;
-
-        const nextGame = await this.getCurrentGamePlayers(
-            this.state.games.find(findGameByMeetupId(selectedGameId)),
-        );
-
-        this.setState(() => ({ currentGame: nextGame, selectedGameId }));
+        const currentGame = this.state.games.find(findGameByMeetupId(selectedGameId));
+        const currentPlayers = await this.getCurrentGamePlayers(currentGame);
+        currentGame.players = currentPlayers;
+        this.setState(() => ({ currentGame, selectedGameId }));
     };
 
     /**
