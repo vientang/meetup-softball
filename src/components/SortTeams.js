@@ -9,6 +9,11 @@ const setTeamsBtnStyle = {
     alignSelf: 'flex-end',
     fontSize: 'calc(0.4rem + 0.4vmin)',
 };
+
+const iconStyle = {
+    fontSize: 16,
+    marginRight: '0.5rem',
+};
 class SortTeams extends Component {
     constructor(props) {
         super(props);
@@ -61,7 +66,11 @@ class SortTeams extends Component {
 
         return (
             <div className={componentStyles.adminSection}>
-                <p className={componentStyles.adminSectionTitle}>SORT TEAMS</p>
+                <p className={componentStyles.adminSectionTitle}>
+                    <Icon type="build" theme="twoTone" style={iconStyle} />
+                    SORT TEAMS
+                </p>
+
                 <TeamTransfer gameId={meetupId} onChange={this.handleChange} players={players} />
                 <Button
                     type="primary"

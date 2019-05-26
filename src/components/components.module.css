@@ -328,6 +328,8 @@
     font-size: var(--font-medium);
     font-weight: bold;
     margin-bottom: var(--margin-3);
+    padding-bottom: var(--pad-1);
+    border-bottom: 1px solid var(--grey-0);
 }
 
 .submit-button {

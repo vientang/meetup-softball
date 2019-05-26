@@ -1,10 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Icon } from 'antd';
 import componentStyles from './components.module.css';
+
+const iconStyle = {
+    fontSize: 16,
+    marginRight: '0.5rem',
+};
 
 const GameMenu = (props) => (
     <div className={componentStyles.adminSection}>
-        <p className={componentStyles.adminSectionTitle}>GAMES MENU</p>
+        <p className={componentStyles.adminSectionTitle}>
+            <Icon type="profile" theme="twoTone" style={iconStyle} />
+            GAMES MENU
+        </p>
         <ul className={componentStyles.gameMenu}>
             <MenuItems {...props} />
         </ul>

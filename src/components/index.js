@@ -1,6 +1,7 @@
 import AdminStatsTable from './AdminStatsTable';
 import BoxScore from './BoxScore';
 import CareerStats from './CareerStats';
+import GameDetails from './GameDetails';
 import GameMenu from './GameMenu';
 import JoinUs from './JoinUs';
 import Layout from './Layout';
@@ -17,6 +18,7 @@ export {
     AdminStatsTable,
     BoxScore,
     CareerStats,
+    GameDetails,
     GameMenu,
     JoinUs,
     Layout,

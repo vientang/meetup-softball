@@ -1,12 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button } from 'antd';
+import { Button, Icon } from 'antd';
 import StatsTable from './StatsTable';
 import { sortByNameLength } from '../utils/helpers';
 import { adminStatCategories } from '../utils/constants';
 import componentStyles from './components.module.css';
 import 'react-table/react-table.css';
 
+const iconStyle = {
+    color: '#1890ff',
+    fontSize: 16,
+    marginRight: '0.5rem',
+};
 class AdminStatsTable extends React.Component {
     constructor(props) {
         super(props);
@@ -137,7 +142,10 @@ class AdminStatsTable extends React.Component {
 
         return (
             <div className={componentStyles.adminSection}>
-                <p className={componentStyles.adminSectionTitle}>ENTER STATS</p>
+                <p className={componentStyles.adminSectionTitle}>
+                    <Icon type="table" style={iconStyle} />
+                    ENTER STATS
+                </p>
                 <p className={componentStyles.adminSectionTitle}>WINNERS</p>
                 <StatsTable
                     stats={winners}

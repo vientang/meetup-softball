@@ -2,16 +2,21 @@
 import React from 'react';
 import fetchJsonp from 'fetch-jsonp';
 import get from 'lodash/get';
-import isEmpty from 'lodash/isEmpty';
 import { API, graphqlOperation } from 'aws-amplify';
 import { withAuthenticator, SignIn, Greetings } from 'aws-amplify-react';
-import { AdminStatsTable, GameMenu, Layout, SortTeams, SuccessImage } from '../components';
+import {
+    AdminStatsTable,
+    GameDetails,
+    GameMenu,
+    Layout,
+    SortTeams,
+    SuccessImage,
+} from '../components';
 import { createGameStats, createPlayerStats, updatePlayerStats } from '../graphql/mutations';
 import { listGameStatss, listPlayerStatss } from '../graphql/queries';
 import { apiService } from '../utils';
 import { sortTimeStamp } from '../utils/helpers';
 import styles from './pages.module.css';
-import componentStyles from '../components/components.module.css';
 
 class Admin extends React.Component {
     constructor(props) {
@@ -258,33 +263,6 @@ class Admin extends React.Component {
             </Layout>
         );
     }
-}
-
-function GameDetails({ data }) {
-    if (isEmpty(data)) {
-        return (
-            <div className={componentStyles.adminSection}>
-                <p className={componentStyles.adminSectionTitle}>GAME DETAILS</p>
-            </div>
-        );
-    }
-
-    let meridiem = null;
-    if (data.time) {
-        meridiem = Number(data.time.substring(0, 2)) < 12 ? 'am' : 'pm';
-    }
-
-    return (
-        <div className={componentStyles.adminSection}>
-            <p className={componentStyles.adminSectionTitle}>GAME DETAILS</p>
-            <p className={componentStyles.adminSectionTitle}>{data.field}</p>
-            <p className={componentStyles.adminSectionTitle}>{`@${data.time}${meridiem}`}</p>
-            <p className={componentStyles.adminSectionTitle}>
-                {`Attended: ${data.players.length}`}
-            </p>
-            <p className={componentStyles.adminSectionTitle}>{`RSVP's: ${data.rsvps}`}</p>
-        </div>
-    );
 }
 
 /**
