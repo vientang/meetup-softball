@@ -2,6 +2,7 @@
 import React from 'react';
 import fetchJsonp from 'fetch-jsonp';
 import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 import { API, graphqlOperation } from 'aws-amplify';
 import { withAuthenticator, SignIn, Greetings } from 'aws-amplify-react';
 import { AdminStatsTable, GameMenu, Layout, SortTeams, SuccessImage } from '../components';
@@ -196,11 +197,6 @@ class Admin extends React.Component {
             this.state.games.find(findGameByMeetupId(selectedGameId)),
         );
 
-        console.log('facts', {
-            game: this.state.games.find(findGameByMeetupId(selectedGameId)),
-            selectedGameId,
-            nextGame,
-        });
         this.setState(() => ({ currentGame: nextGame, selectedGameId }));
     };
 
@@ -241,9 +237,7 @@ class Admin extends React.Component {
 
         return (
             <Layout className={styles.adminPage} uri={adminPagePath}>
-                <div className={componentStyles.adminSection}>
-                    <p className={componentStyles.adminSectionTitle}>GAME DETAILS</p>
-                </div>
+                <GameDetails data={currentGame} />
 
                 {areTeamsSorted ? (
                     <AdminStatsTable
@@ -264,6 +258,33 @@ class Admin extends React.Component {
             </Layout>
         );
     }
+}
+
+function GameDetails({ data }) {
+    if (isEmpty(data)) {
+        return (
+            <div className={componentStyles.adminSection}>
+                <p className={componentStyles.adminSectionTitle}>GAME DETAILS</p>
+            </div>
+        );
+    }
+
+    let meridiem = null;
+    if (data.time) {
+        meridiem = Number(data.time.substring(0, 2)) < 12 ? 'am' : 'pm';
+    }
+
+    return (
+        <div className={componentStyles.adminSection}>
+            <p className={componentStyles.adminSectionTitle}>GAME DETAILS</p>
+            <p className={componentStyles.adminSectionTitle}>{data.field}</p>
+            <p className={componentStyles.adminSectionTitle}>{`@${data.time}${meridiem}`}</p>
+            <p className={componentStyles.adminSectionTitle}>
+                {`Attended: ${data.players.length}`}
+            </p>
+            <p className={componentStyles.adminSectionTitle}>{`RSVP's: ${data.rsvps}`}</p>
+        </div>
+    );
 }
 
 /**
