@@ -1,65 +1,81 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Menu } from 'antd';
 import componentStyles from './components.module.css';
-import 'antd/dist/antd.css';
 
-const sideMenuStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    width: '100%',
-    maxWidth: '100%',
-    boxShadow: '0px 0px 20px -15px #243b55',
-};
+const GameMenu = (props) => (
+    <div className={componentStyles.adminSection}>
+        <p className={componentStyles.adminSectionTitle}>GAMES MENU</p>
+        <ul className={componentStyles.gameMenu}>
+            <MenuItems {...props} />
+        </ul>
+    </div>
+);
 
-const GameMenu = ({ games, onGameCancel, onGameSelection, selectedGame }) => {
-    return (
-        <div className={componentStyles.adminSection}>
-            <p className={componentStyles.adminSectionTitle}>GAMES MENU</p>
-            <Menu style={sideMenuStyle} defaultSelectedKeys={[selectedGame]}>
-                {games.map((game) => {
-                    const menuItemStyle = getMenuItemStyles(game.meetupId, selectedGame);
-                    return (
-                        <Menu.Item
-                            key={game.meetupId}
-                            className={componentStyles.gameMenuItem}
-                            style={menuItemStyle}
-                            onClick={onGameSelection}
-                        >
-                            <div className={componentStyles.gameMenuTitleSection}>
-                                <p className={componentStyles.gameMenuTitle}>{game.name}</p>
-                                <span
-                                    id={game.meetupId}
-                                    className={componentStyles.gameMenuCloseIcon}
-                                    onClick={onGameCancel}
-                                >
-                                    x
-                                </span>
-                            </div>
-                            <span className={componentStyles.gameMenuDate}>{game.date}</span>
-                        </Menu.Item>
-                    );
-                })}
-            </Menu>
-        </div>
-    );
-};
+function MenuItems(props) {
+    const { games } = props;
+    const datesPlayed = getDatesPlayed(games);
+
+    return datesPlayed.map((date) => {
+        return (
+            <li key={date} className={componentStyles.gameMenuItem}>
+                <p className={componentStyles.gameMenuTitle}>{date.toUpperCase()}</p>
+                {getGamesByDate(games, date, props).map((game) => game)}
+            </li>
+        );
+    });
+}
+
+function getDatesPlayed(games) {
+    const gameDates = [];
+    let currentDate = '';
+    games.forEach((game) => {
+        if (currentDate !== game.date) {
+            gameDates.push(game.date);
+            currentDate = game.date;
+        }
+    });
+    return gameDates;
+}
+
+function getGamesByDate(games, date, props) {
+    const gamesByDate = [];
+    games.forEach((game) => {
+        if (game.date === date) {
+            const { onGameCancel, onGameSelection, selectedGame } = props;
+            const menuItemStyle = getMenuItemStyles(game.meetupId, selectedGame);
+            gamesByDate.push(
+                <div
+                    key={game.meetupId}
+                    className={componentStyles.gameMenuTimeSection}
+                    style={menuItemStyle}
+                >
+                    <span
+                        id={game.meetupId}
+                        className={componentStyles.gameMenuTime}
+                        onClick={onGameSelection}
+                    >
+                        {game.time}
+                    </span>
+                    <span
+                        id={game.meetupId}
+                        className={componentStyles.gameMenuCloseIcon}
+                        onClick={onGameCancel}
+                    >
+                        x
+                    </span>
+                </div>,
+            );
+        }
+    });
+
+    return gamesByDate;
+}
 
 function getMenuItemStyles(meetupId, selectedGame) {
-    const menuItemStyle = {
-        display: 'flex',
-        flexDirection: 'column',
-        top: 0,
-        height: 'auto',
-        padding: '1rem',
-        margin: 0,
-        lineHeight: 'normal',
-        whiteSpace: 'normal',
-    };
+    const menuItemStyle = {};
 
     if (meetupId === selectedGame) {
         menuItemStyle.backgroundColor = '#FFDEE9';
-        menuItemStyle.borderBottom = 2;
     }
 
     return menuItemStyle;

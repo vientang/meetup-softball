@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Helmet from 'react-helmet';
 import { StaticQuery, graphql } from 'gatsby';
 import Header from './Header';
+import 'antd/dist/antd.css';
 
 // Layout.js is the entry point for stylesheets
 import '../styles/index.css';
