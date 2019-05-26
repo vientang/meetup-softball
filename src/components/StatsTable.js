@@ -77,6 +77,10 @@ function formatHeaderLabel(category) {
             return '3B';
         case 'player':
             return 'PLAYER';
+        case 'season':
+            return 'SEASON';
+        case 'field':
+            return 'FIELD';
         case 'w':
             return 'WIN %';
         case 'battingOrder':
@@ -102,6 +106,9 @@ function formatColumnWidth(props) {
             return 175;
         case 'battingOrder':
             return 35;
+        case 'season':
+        case 'field':
+            return 100;
         case 'w':
             return 75;
         case 'gp':
@@ -113,6 +120,8 @@ function formatColumnWidth(props) {
     }
 }
 
+const nonStatHeaders = ['player', 'game', 'gp', 'battingOrder', 'season', 'field'];
+
 function formatHeaderStyle(props) {
     const { category, lastColumn } = props;
 
@@ -120,7 +129,7 @@ function formatHeaderStyle(props) {
         padding: '0.5rem',
     };
 
-    if (lastColumn || ['player', 'game', 'gp', 'battingOrder'].includes(category)) {
+    if (lastColumn || nonStatHeaders.includes(category)) {
         headerStyle.textAlign = 'left';
     }
 
@@ -129,6 +138,7 @@ function formatHeaderStyle(props) {
 
 function formatCellStyle(props) {
     const { adminPage, category, lastColumn, sortedColumn } = props;
+    const cellsWithBorders = ['player', 'gp', 'season', 'field'];
 
     const cellStyle = {
         borderRight: 0,
@@ -143,11 +153,11 @@ function formatCellStyle(props) {
         cellStyle.color = '#bebbbb';
     }
 
-    if (adminPage || category === 'player' || category === 'gp') {
+    if (adminPage || cellsWithBorders.includes(category)) {
         cellStyle.borderRight = '1px solid #f5f5f5';
     }
 
-    if (adminPage || lastColumn || ['player', 'game', 'gp', 'battingOrder'].includes(category)) {
+    if (adminPage || lastColumn || nonStatHeaders.includes(category)) {
         cellStyle.textAlign = 'left';
     }
 

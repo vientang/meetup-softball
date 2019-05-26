@@ -183,7 +183,8 @@ const adminStatCategories = [
     'sac',
 ];
 
-const careerStatCategories = [
+const careerStatCatsByYear = [
+    'season',
     'gp',
     'w',
     'h',
@@ -207,9 +208,34 @@ const careerStatCategories = [
     'woba',
 ];
 
+const careerStatCatsByField = [
+    'field',
+    'gp',
+    'w',
+    'h',
+    'singles',
+    'doubles',
+    'triples',
+    'r',
+    'rbi',
+    'hr',
+    'avg',
+    'sb',
+    'cs',
+    'bb',
+    'sac',
+    'k',
+    'rc',
+    'tb',
+    'obp',
+    'ops',
+    'slg',
+    'woba',
+];
 export {
     adminStatCategories,
-    careerStatCategories,
+    careerStatCatsByField,
+    careerStatCatsByYear,
     cardTitles,
     defaultStatCategories,
     definitions,

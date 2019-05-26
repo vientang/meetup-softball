@@ -4,9 +4,31 @@ import get from 'lodash/get';
 import isEqual from 'lodash/isEqual';
 import { withFilterBar, CareerStats, PlayerGameLog, PlayerInfo } from '../components';
 
-const mockCareerStats = [
+const careerStatsByYear = [
     {
-        gp: '2',
+        season: '2019',
+        gp: '29',
+        w: '.529',
+        singles: '10',
+        doubles: '11',
+        triples: '12',
+        hr: '1',
+        rbi: '1',
+        r: '1',
+        sb: '1',
+        cs: '0',
+        k: '1',
+        bb: '1',
+        avg: '.600',
+        ab: '1',
+        tb: '1',
+        rc: '.800',
+        h: '1',
+        sac: '1',
+    },
+    {
+        season: '2018',
+        gp: '52',
         w: '.529',
         singles: '1',
         doubles: '1',
@@ -26,7 +48,50 @@ const mockCareerStats = [
         sac: '1',
     },
 ];
-
+const careerStatsByField = [
+    {
+        field: 'Parkside',
+        gp: '29',
+        w: '.529',
+        singles: '10',
+        doubles: '11',
+        triples: '12',
+        hr: '1',
+        rbi: '1',
+        r: '1',
+        sb: '1',
+        cs: '0',
+        k: '1',
+        bb: '1',
+        avg: '.600',
+        ab: '1',
+        tb: '1',
+        rc: '.800',
+        h: '1',
+        sac: '1',
+    },
+    {
+        field: 'Aptos',
+        gp: '52',
+        w: '.529',
+        singles: '1',
+        doubles: '1',
+        triples: '1',
+        hr: '1',
+        rbi: '1',
+        r: '1',
+        sb: '1',
+        cs: '0',
+        k: '1',
+        bb: '1',
+        avg: '.600',
+        ab: '1',
+        tb: '1',
+        rc: '.800',
+        h: '1',
+        sac: '1',
+    },
+];
 const gameStats = [
     {
         game: 'Game 245 WWS',
@@ -122,7 +187,8 @@ class Player extends React.Component {
             <>
                 <PlayerInfo playerInfo={player} />
                 <CareerStats
-                    stats={mockCareerStats || careerStats}
+                    careerStatsByField={careerStatsByField}
+                    careerStatsByYear={careerStatsByYear || careerStats}
                     statsTableStyle={statsTableStyle}
                 />
                 <PlayerGameLog

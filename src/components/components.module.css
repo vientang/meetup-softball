@@ -640,7 +640,7 @@
 
 /**** PLAYER PAGE ****/
 .player-page-section {
-    margin: var(--margin-3) 0;
+    margin: var(--margin-3) 0 0;
 }
 
 .player-page-section-title {
@@ -648,7 +648,7 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     color: var(--grey-2);
-    margin: var(--margin-7) 0 var(--margin-3);
+    margin: var(--margin-3) 0;
 }
 
 .player-info-card {

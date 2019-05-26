@@ -2,17 +2,24 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import StatsTable from './StatsTable';
 import { sortHighToLow } from '../utils/helpers';
-import { careerStatCategories } from '../utils/constants';
+import { careerStatCatsByYear, careerStatCatsByField } from '../utils/constants';
 import componentStyles from './components.module.css';
 
-const CareerStats = ({ stats, statsTableStyle }) => {
+const CareerStats = ({ careerStatsByField, careerStatsByYear, statsTableStyle }) => {
     return (
         <div className={componentStyles.playerPageSection}>
             <p className={componentStyles.playerPageSectionTitle}>Career stats</p>
             <StatsTable
                 style={statsTableStyle}
-                categories={careerStatCategories}
-                stats={stats}
+                categories={careerStatCatsByYear}
+                stats={careerStatsByYear}
+                sortMethod={sortHighToLow}
+                striped=""
+            />
+            <StatsTable
+                style={statsTableStyle}
+                categories={careerStatCatsByField}
+                stats={careerStatsByField}
                 sortMethod={sortHighToLow}
                 striped=""
             />
@@ -21,7 +28,8 @@ const CareerStats = ({ stats, statsTableStyle }) => {
 };
 
 CareerStats.propTypes = {
-    stats: PropTypes.arrayOf(PropTypes.shape()),
+    careerStatsByField: PropTypes.arrayOf(PropTypes.shape()),
+    careerStatsByYear: PropTypes.arrayOf(PropTypes.shape()),
     statsTableStyle: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
 };
 
