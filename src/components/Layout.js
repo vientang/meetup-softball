@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import Helmet from 'react-helmet';
 import { StaticQuery, graphql } from 'gatsby';
 import Header from './Header';
-import 'antd/dist/antd.css';
+import Footer from './Footer';
 
 // Layout.js is the entry point for stylesheets
+import 'antd/dist/antd.css';
 import '../styles/index.css';
 import '../styles/overrides.css';
 
@@ -42,6 +43,7 @@ const Layout = ({ className, children, filterBar, style, uri }) => (
                 <div className={className} style={style}>
                     {children}
                 </div>
+                <Footer siteTitle={data.site.siteMetadata.title} uri={uri} />
             </>
         )}
     />
