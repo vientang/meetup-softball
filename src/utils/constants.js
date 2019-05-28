@@ -232,6 +232,30 @@ const careerStatCatsByField = [
     'slg',
     'woba',
 ];
+
+const splitStatCategories = [
+    'gp',
+    'w',
+    'h',
+    'singles',
+    'doubles',
+    'triples',
+    'r',
+    'rbi',
+    'hr',
+    'avg',
+    'sb',
+    'cs',
+    'bb',
+    'sac',
+    'k',
+    'rc',
+    'tb',
+    'obp',
+    'ops',
+    'slg',
+    'woba',
+];
 export {
     adminStatCategories,
     careerStatCatsByField,
@@ -241,5 +265,6 @@ export {
     definitions,
     gameLogCategories,
     qualifiers,
+    splitStatCategories,
     statPageCategories,
 };

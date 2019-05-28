@@ -9,6 +9,7 @@ import LeaderCard from './LeaderCard';
 import NotFoundImage from './NotFoundImage';
 import PlayerGameLog from './PlayerGameLog';
 import PlayerInfo from './PlayerInfo';
+import PlayerSplitStats from './PlayerSplitStats';
 import SortTeams from './SortTeams';
 import StatsTable from './StatsTable';
 import SuccessImage from './SuccessImage';
@@ -26,6 +27,7 @@ export {
     NotFoundImage,
     PlayerGameLog,
     PlayerInfo,
+    PlayerSplitStats,
     SortTeams,
     StatsTable,
     SuccessImage,

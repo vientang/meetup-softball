@@ -2,7 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import isEqual from 'lodash/isEqual';
-import { withFilterBar, CareerStats, PlayerGameLog, PlayerInfo } from '../components';
+import {
+    withFilterBar,
+    CareerStats,
+    PlayerGameLog,
+    PlayerInfo,
+    PlayerSplitStats,
+} from '../components';
 
 const careerStatsByYear = [
     {
@@ -186,6 +192,10 @@ class Player extends React.Component {
         return (
             <>
                 <PlayerInfo playerInfo={player} />
+                <PlayerSplitStats
+                    filteredStats={careerStatsByField}
+                    statsTableStyle={statsTableStyle}
+                />
                 <CareerStats
                     careerStatsByField={careerStatsByField}
                     careerStatsByYear={careerStatsByYear || careerStats}
