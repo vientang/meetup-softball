@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Icon, notification } from 'antd';
+import { Icon } from 'antd';
 import TeamTransfer from './TeamTransfer';
+import AdminSection from './AdminSection';
+import Button from './Button';
 import componentStyles from './components.module.css';
 import 'antd/dist/antd.css';
-
-const setTeamsBtnStyle = {
-    alignSelf: 'flex-end',
-    fontSize: 'calc(0.4rem + 0.4vmin)',
-};
 
 const iconStyle = {
     fontSize: 16,
@@ -18,9 +15,10 @@ class SortTeams extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            losers: [],
             meetupId: props.data.meetupId,
             players: props.data.players || [],
-            losers: [],
+            teamsBalanced: false,
             winners: [],
         };
     }
@@ -40,49 +38,44 @@ class SortTeams extends Component {
      * @param {Array} losers - items on the right transfer box
      */
     handleChange = (winners, losers) => {
-        this.setState(() => ({ winners, losers }));
+        const teamsBalanced = areTeamsBalanced(winners, losers);
+        this.setState(() => ({ winners, losers, teamsBalanced }));
     };
 
     submitList = () => {
-        const { losers, winners } = this.state;
-        const teamsBalanced = Math.abs(winners.length - losers.length) <= 1;
+        const { losers, winners, teamsBalanced } = this.state;
+
         if (teamsBalanced) {
             this.props.setTeams(winners, losers);
-        } else {
-            notification.warn({
-                message: 'Teams are not balanced',
-                description: `You have ${winners.length} on the winning team and ${
-                    losers.length
-                } on the losing team. Rebalance the teams and try again.`,
-                duration: 3,
-                icon: <Icon type="warning" theme="filled" />,
-                style: { color: 'red' },
-            });
         }
     };
 
     render() {
-        const { meetupId, players } = this.state;
+        const { losers, meetupId, players, teamsBalanced, winners } = this.state;
+        const buttonProps = {
+            disabled: !teamsBalanced,
+            onClick: this.submitList,
+            tooltipMsg: `Teams are not balanced. You have ${
+                winners.length
+            } on the winning team and ${
+                losers.length
+            } on the losing team. Rebalance the teams and try again.`,
+        };
 
         return (
-            <div className={componentStyles.adminSection}>
-                <p className={componentStyles.adminSectionTitle}>
-                    <Icon type="build" theme="twoTone" style={iconStyle} />
-                    SORT TEAMS
-                </p>
-
+            <AdminSection title="SORT TEAMS" iconType="swap" iconColor="#1890ff">
                 <TeamTransfer gameId={meetupId} onChange={this.handleChange} players={players} />
-                <Button
-                    type="primary"
-                    onClick={this.submitList}
-                    style={setTeamsBtnStyle}
-                    size="small"
-                >
-                    SET TEAMS
-                </Button>
-            </div>
+                <Button {...buttonProps}>SET TEAMS</Button>
+            </AdminSection>
         );
     }
+}
+
+function areTeamsBalanced(winners, losers) {
+    if (winners.length === 0 && losers.length === 0) {
+        return false;
+    }
+    return Math.abs(winners.length - losers.length) <= 1;
 }
 
 SortTeams.propTypes = {

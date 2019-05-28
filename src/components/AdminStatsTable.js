@@ -1,17 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, Icon } from 'antd';
 import StatsTable from './StatsTable';
+import AdminSection from './AdminSection';
+import Button from './Button';
 import { sortByNameLength } from '../utils/helpers';
 import { adminStatCategories } from '../utils/constants';
 import componentStyles from './components.module.css';
 import 'react-table/react-table.css';
 
-const iconStyle = {
-    color: '#1890ff',
-    fontSize: 16,
-    marginRight: '0.5rem',
-};
 class AdminStatsTable extends React.Component {
     constructor(props) {
         super(props);
@@ -141,11 +137,7 @@ class AdminStatsTable extends React.Component {
         }
 
         return (
-            <div className={componentStyles.adminSection}>
-                <p className={componentStyles.adminSectionTitle}>
-                    <Icon type="table" style={iconStyle} />
-                    ENTER STATS
-                </p>
+            <AdminSection title="ENTER STATS" iconType="table" iconColor="#1890ff">
                 <p className={componentStyles.adminSectionTitle}>WINNERS</p>
                 <StatsTable
                     stats={winners}
@@ -165,11 +157,9 @@ class AdminStatsTable extends React.Component {
                     adminPage
                 />
                 <div className={componentStyles.submitButton}>
-                    <Button type="primary" htmlType="button" onClick={this.handleSubmitData}>
-                        Submit
-                    </Button>
+                    <Button onClick={this.handleSubmitData}>SUBMIT</Button>
                 </div>
-            </div>
+            </AdminSection>
         );
     }
 }
