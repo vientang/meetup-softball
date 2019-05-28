@@ -333,10 +333,6 @@
     border-bottom: 1px solid var(--grey-0);
 }
 
-.submit-button {
-    text-align: right;
-}
-
 .game-details-section {
     color: var(--grey-3);
     font-size: var(--font-small);

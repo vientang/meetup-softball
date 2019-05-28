@@ -30,7 +30,7 @@ const AdminSection = ({ children, iconColor, iconType, title }) => {
 
 AdminSection.displayName = 'AdminSection';
 AdminSection.propTypes = {
-    children: PropTypes.element,
+    children: PropTypes.node,
     iconColor: PropTypes.string,
     iconType: PropTypes.string,
     title: PropTypes.string,
