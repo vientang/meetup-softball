@@ -5,7 +5,7 @@ import get from 'lodash/get';
 import { Link } from 'gatsby';
 import { Avatar, Skeleton } from 'antd';
 import { withFilterBar, NotFoundImage, StatsTable } from '../components';
-import { apiService } from '../utils';
+import { clearMasterList, filterPlayerStats } from '../utils/apiService';
 import { createSlug, formatCellValue, sortHighToLow } from '../utils/helpers';
 import { statPageCategories } from '../utils/constants';
 import pageStyles from './pages.module.css';
@@ -30,12 +30,12 @@ class Stats extends React.Component {
         let playerStats = [];
         if (this.shouldUpdateStats(prevProps.gameData)) {
             this.props.gameData.forEach((game) => {
-                const updatedStats = apiService.filterPlayerStats(game);
+                const updatedStats = filterPlayerStats(game);
                 playerStats = Array.from(updatedStats.values());
             });
             this.updatePlayerStats(playerStats);
         }
-        apiService.clearMasterList();
+        clearMasterList();
     }
 
     shouldUpdateStats = (prevGameData) =>

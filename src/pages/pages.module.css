@@ -1,5 +1,5 @@
 :root {
-    --muNavy: #243B55;
+    --muNavy: #243b55;
 }
 
 .home-page-image {
@@ -67,7 +67,7 @@
     display: flex;
     flex-direction: column;
     max-width: 100%;
-    padding: 0 5.0875rem 1.45rem;    
+    padding: 0 5.0875rem 1.45rem;
     box-sizing: border-box;
 }
 
@@ -111,4 +111,47 @@
     font-family: Georgia, 'Times New Roman', Times, serif;
     font-style: italic;
     font-size: calc(5px + 0.4vmin);
+}
+
+.loading-text-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 670px;
+}
+
+.loading-text {
+    margin: auto;
+    color: var(--grey-3);
+    font-size: 30px;
+    font-weight: bold;
+    animation: fadeInOut infinite 1s ease-out;
+}
+
+.loading-text::after {
+    content: '.';
+    animation: addDots infinite 1s ease-out;
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes addDots {
+    0% {
+        content: '.';
+    }
+
+    50% {
+        content: '..';
+    }
+    100% {
+        content: '...';
+    }
 }

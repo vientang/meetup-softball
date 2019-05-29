@@ -256,6 +256,7 @@ const splitStatCategories = [
     'slg',
     'woba',
 ];
+
 export {
     adminStatCategories,
     careerStatCatsByField,

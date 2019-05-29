@@ -136,7 +136,7 @@ class AdminStatsTable extends React.Component {
 
     render() {
         const { winners, losers, invalidStats, tooltipMsg } = this.state;
-        console.log('ast render', { invalidStats, tooltipMsg });
+
         if (!winners || winners.length < 1) {
             return null;
         }

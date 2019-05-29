@@ -2,6 +2,7 @@
 import React from 'react';
 import fetchJsonp from 'fetch-jsonp';
 import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 import { API, graphqlOperation } from 'aws-amplify';
 import { withAuthenticator, SignIn, Greetings } from 'aws-amplify-react';
 import {
@@ -228,6 +229,14 @@ class Admin extends React.Component {
     render() {
         const { areTeamsSorted, currentGame, games, losers, selectedGameId, winners } = this.state;
         const adminPagePath = get(this.props.pageResources, 'page.path', null);
+
+        if (isEmpty(currentGame)) {
+            return (
+                <Layout className={styles.loadingTextContainer} uri={adminPagePath}>
+                    <div className={styles.loadingText}>LOADING</div>
+                </Layout>
+            );
+        }
 
         if (!currentGame) {
             return (

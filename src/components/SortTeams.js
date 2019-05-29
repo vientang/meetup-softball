@@ -1,17 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { Icon } from 'antd';
-import TeamTransfer from './TeamTransfer';
 import AdminSection from './AdminSection';
+import TeamTransfer from './TeamTransfer';
 import Button from './Button';
-import componentStyles from './components.module.css';
-import 'antd/dist/antd.css';
 
-const iconStyle = {
-    fontSize: 16,
-    marginRight: '0.5rem',
-};
-class SortTeams extends Component {
+class SortTeams extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -42,7 +35,7 @@ class SortTeams extends Component {
         this.setState(() => ({ winners, losers, teamsBalanced }));
     };
 
-    submitList = () => {
+    submitSortedTeams = () => {
         const { losers, winners, teamsBalanced } = this.state;
 
         if (teamsBalanced) {
@@ -52,9 +45,10 @@ class SortTeams extends Component {
 
     render() {
         const { losers, meetupId, players, teamsBalanced, winners } = this.state;
+
         const buttonProps = {
             disabled: !teamsBalanced,
-            onClick: this.submitList,
+            onClick: this.submitSortedTeams,
             tooltipMsg: `Teams are not balanced. You have ${
                 winners.length
             } on the winning team and ${
@@ -71,6 +65,11 @@ class SortTeams extends Component {
     }
 }
 
+/**
+ * Validate that teams are balanced with a delta of 1
+ * @param {Array} winners
+ * @param {Array} losers
+ */
 function areTeamsBalanced(winners, losers) {
     if (winners.length === 0 && losers.length === 0) {
         return false;

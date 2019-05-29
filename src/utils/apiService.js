@@ -74,26 +74,119 @@ const ignoreKeystoTransform = [
 ];
 
 /**
+ * LIST OF PLAYER STATS
+ * HOLDS ALL OF THE RESOLVED STATS BASED ON A SPECIFIC FILTER
+ */
+const masterList = new Map();
+export function clearMasterList() {
+    masterList.clear();
+}
+
+/**
+ * StatsPage
+ * Combines winners and losers
+ * @return {Array} list of updated player stats
+ */
+export function filterPlayerStats(gameData) {
+    const winners = JSON.parse(gameData.winners);
+    const losers = JSON.parse(gameData.losers);
+    const gamePlayers = winners.players.concat(losers.players);
+
+    return updateEntries(gamePlayers);
+}
+
+/**
+ * Add stats that can be derived from playing a game
+ * Admins do not need to enter these
+ * @param {Array} players
+ * @param {Boolean} winner
+ * @param {Boolean} isTie
+ * @return {Array}
+ */
+export function addDerivedStats(players, isTie, winner) {
+    return players.map((player) => {
+        player.w = winner ? '1' : '0';
+        player.l = winner ? '0' : '1';
+        if (isTie) {
+            player.w = '0';
+            player.l = '0';
+        }
+        player.gp = '1';
+        return player;
+    });
+}
+
+/**
+ * GAMESTATS Adaptor to combine data from meetup and current game stats
+ * @param {Array} meetupData - data from meetup api
+ * @param {Array} currentStats - all player stats from current game
+ * @return {Object} currentGameStats
+ */
+export function mergeGameStats(meetupData, w, l) {
+    const currentGameStats = omit(meetupData, ['players']);
+    const isTie = getTeamRunsScored(w) === getTeamRunsScored(l);
+
+    const winningTeam = addDerivedStats(w, isTie, true);
+    const losingTeam = addDerivedStats(l, isTie, false);
+
+    const winners = {
+        name: 'Winners', // swap with data from the admin
+        runsScored: getTeamRunsScored(winningTeam),
+        totalHits: getTeamTotalHits(winningTeam),
+        players: winningTeam,
+    };
+    const losers = {
+        name: 'Losers', // swap with data from the admin
+        runsScored: getTeamRunsScored(losingTeam),
+        totalHits: getTeamTotalHits(losingTeam),
+        players: losingTeam,
+    };
+
+    currentGameStats.winners = JSON.stringify(winners);
+    currentGameStats.losers = JSON.stringify(losers);
+
+    return currentGameStats;
+}
+
+/**
+ * PLAYERSTATS Adaptor to combine data from meetup and current game stats
+ * @param {Array} currentGame - data from meetup api
+ * @param {Array} w - winners
+ * @param {Array} l - losers
+ * @return {Array} list of players and their stats
+ */
+export function mergePlayerStats(currentGame, w, l) {
+    const currentGameStats = pick(currentGame, gameProperties);
+    const isTie = getTeamRunsScored(w) === getTeamRunsScored(l);
+    const winningTeam = addDerivedStats(w, isTie, true);
+    const winners = createPlayerGameLog(winningTeam, currentGameStats);
+    const losingTeam = addDerivedStats(l, isTie);
+    const losers = createPlayerGameLog(losingTeam, currentGameStats);
+
+    return winners.concat(losers);
+}
+
+/**
  * Stringify values and combine into one object
  * @param {*} player
  * @param {*} derivedStats
  * @return {Object}
  */
-const combineDerivedStats = (player, derivedStats) => {
+function combineDerivedStats(player, derivedStats) {
     const derivedWithStrings = {};
     Object.keys(derivedStats).forEach((key) => {
         derivedWithStrings[key] = String(derivedStats[key]);
     });
 
     return Object.assign(pick(player, stats), derivedWithStrings);
-};
+}
 
 /**
  * Calculate cumulative stats from current game and the running total
  * This can be used generically after filtering data from database
  * @return {Object} updated stats for an individual player
  */
-const mergePlayerStatsForView = (existingStats = {}, currentStats) => {
+function mergePlayerStatsForView(existingStats = {}, currentStats) {
     const countingStats = {
         first: Number(currentStats.singles),
         second: Number(currentStats.doubles),
@@ -168,22 +261,13 @@ const mergePlayerStatsForView = (existingStats = {}, currentStats) => {
         woba: weightedOnBaseAverage,
         avg,
     });
-};
-
-/**
- * LIST OF PLAYER STATS
- * HOLDS ALL OF THE RESOLVED STATS BASED ON A SPECIFIC FILTER
- */
-const masterList = new Map();
-const clearMasterList = () => {
-    masterList.clear();
-};
+}
 
 /**
  * Build up master list with updated player stats
  * @return {Map} map of player stats
  */
-const updateEntries = (gamePlayers) => {
+function updateEntries(gamePlayers) {
     gamePlayers.forEach((player) => {
         const countingStats = {
             first: Number(player.singles),
@@ -235,80 +319,14 @@ const updateEntries = (gamePlayers) => {
     });
 
     return masterList;
-};
-
-/**
- * StatsPage
- * Combines winners and losers
- * @return {Array} list of updated player stats
- */
-const filterPlayerStats = (gameData) => {
-    const winners = JSON.parse(gameData.winners);
-    const losers = JSON.parse(gameData.losers);
-    const gamePlayers = winners.players.concat(losers.players);
-
-    return updateEntries(gamePlayers);
-};
-
-/**
- * Add stats that can be derived from playing a game
- * Admins do not need to enter these
- * @param {Array} players
- * @param {Boolean} winner
- * @param {Boolean} isTie
- * @return {Array}
- */
-const addDerivedStats = (players, isTie, winner) => {
-    return players.map((player) => {
-        player.w = winner ? '1' : '0';
-        player.l = winner ? '0' : '1';
-        if (isTie) {
-            player.w = '0';
-            player.l = '0';
-        }
-        player.gp = '1';
-        return player;
-    });
-};
-
-/**
- * GAMESTATS Adaptor to combine data from meetup and current game stats
- * @param {Array} meetupData - data from meetup api
- * @param {Array} currentStats - all player stats from current game
- * @return {Object} currentGameStats
- */
-const mergeGameStats = (meetupData, w, l) => {
-    const currentGameStats = omit(meetupData, ['players']);
-    const isTie = getTeamRunsScored(w) === getTeamRunsScored(l);
-
-    const winningTeam = addDerivedStats(w, isTie, true);
-    const losingTeam = addDerivedStats(l, isTie, false);
-
-    const winners = {
-        name: 'Winners', // swap with data from the admin
-        runsScored: getTeamRunsScored(winningTeam),
-        totalHits: getTeamTotalHits(winningTeam),
-        players: winningTeam,
-    };
-    const losers = {
-        name: 'Losers', // swap with data from the admin
-        runsScored: getTeamRunsScored(losingTeam),
-        totalHits: getTeamTotalHits(losingTeam),
-        players: losingTeam,
-    };
-
-    currentGameStats.winners = JSON.stringify(winners);
-    currentGameStats.losers = JSON.stringify(losers);
-
-    return currentGameStats;
-};
+}
 
 /**
  * Create a game log for each player
  * @param {*} players
  * @param {*} currentGameStats
  */
-const createPlayerGameLog = (players, currentGameStats) => {
+function createPlayerGameLog(players, currentGameStats) {
     return players.map((player) => {
         const gameStats = pick(player, stats);
         const playerStats = {};
@@ -325,30 +343,4 @@ const createPlayerGameLog = (players, currentGameStats) => {
         playerStats.games = playerStats.games;
         return playerStats;
     });
-};
-
-/**
- * PLAYERSTATS Adaptor to combine data from meetup and current game stats
- * @param {Array} currentGame - data from meetup api
- * @param {Array} w - winners
- * @param {Array} l - losers
- * @return {Array} list of players and their stats
- */
-const mergePlayerStats = (currentGame, w, l) => {
-    const currentGameStats = pick(currentGame, gameProperties);
-    const isTie = getTeamRunsScored(w) === getTeamRunsScored(l);
-    const winningTeam = addDerivedStats(w, isTie, true);
-    const winners = createPlayerGameLog(winningTeam, currentGameStats);
-    const losingTeam = addDerivedStats(l, isTie);
-    const losers = createPlayerGameLog(losingTeam, currentGameStats);
-
-    return winners.concat(losers);
-};
-
-export default {
-    addDerivedStats,
-    clearMasterList,
-    filterPlayerStats,
-    mergeGameStats,
-    mergePlayerStats,
-};
+}

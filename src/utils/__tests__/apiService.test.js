@@ -1,7 +1,5 @@
 /* eslint-disable no-undef */
-import apiService from '../apiService';
-
-const { addDerivedStats, mergeGameStats, mergePlayerStats } = apiService;
+import { addDerivedStats, mergeGameStats, mergePlayerStats } from '../apiService';
 
 const meetupData = {
     meetupId: 'mu-123',

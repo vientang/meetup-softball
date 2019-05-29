@@ -8,19 +8,18 @@ const AdminSection = ({ children, iconColor, iconType, title }) => {
         fontSize: 16,
         marginRight: '0.5rem',
     };
-    let twoToneProps = {
-        theme: 'twoTone',
-        // twoToneColor: 'green',
-    };
+
+    let theme = 'twoTone';
+
     if (iconColor) {
         iconStyle.color = iconColor;
-        twoToneProps = null;
+        theme = null;
     }
 
     return (
         <div className={componentStyles.adminSection}>
             <p className={componentStyles.adminSectionTitle}>
-                <Icon type={iconType} style={iconStyle} {...twoToneProps} />
+                <Icon type={iconType} style={iconStyle} theme={theme} />
                 {title}
             </p>
             {children}

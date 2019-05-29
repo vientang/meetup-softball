@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Button as AntDButton, Tooltip } from 'antd';
 
-const tooltipStyle = { fontSize: '0.6rem' };
+const tooltipStyle = { fontSize: 'calc(0.4rem + 0.4vmin)' };
 
 const btnStyle = {
     display: 'flex',
