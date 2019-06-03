@@ -26,23 +26,24 @@
     bottom: 0;
     height: 100%;
     width: 60%;
-    transform: skew(-25deg) translateX(-300px);
     filter: opacity(0.6);
     background: rgba(255, 255, 255, 0.45);
     pointer-events: none;
-    animation: shadowSlideIn 150ms ease-in;
+    transition: transform 500ms opacity 500ms;
+    transform: skew(-25deg) translate3d(-300px, 0, 0);
+    animation: overlaySlideIn 400ms cubic-bezier(0,.91,.49,.99);
     z-index: 1;
 }
 
-@keyframes shadowSlideIn {
+@keyframes overlaySlideIn {
     0% {
         opacity: 0;
-        transform: translateX(-1000px);
+        transform: translate3d(-1000px, 0, 0);
     }
 
     100% {
         opacity: 1;
-        transform: skew(-25deg) translateX(-300px);
+        transform: skew(-25deg) translate3d(-300px, 0, 0);
     }
 }
 
