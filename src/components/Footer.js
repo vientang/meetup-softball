@@ -6,17 +6,17 @@ import componentStyles from './components.module.css';
 
 const imageStyle = {
     position: 'absolute',
+    height: 200,
 };
 
 const Footer = (props) => {
     const { data, uri, siteTitle } = props;
     const footerStyle = {
         display: uri === '/' ? 'none' : 'block',
-        borderTop: uri === '/' ? 'none' : '1px solid #d1d1d1',
     };
 
     return (
-        <footer style={footerStyle}>
+        <footer style={footerStyle} className={componentStyles.footerContainer}>
             <Img
                 fluid={data.file.childImageSharp.fluid}
                 style={imageStyle}

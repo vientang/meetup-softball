@@ -34,32 +34,10 @@ class Admin extends React.Component {
 
     /**
      * Get data from meetup api - games and players
-     * Find those players in our API to get existing stats
-     * Merge each player name and meetup id with the stats categories
      */
     async componentDidMount() {
         this.mounted = true;
-        const lastGameTimeStamp = await this.getLastGameRecorded();
-
-        const games = [];
-
-        await fetchJsonp(process.env.GAMES_URL)
-            .then((response) => response.json())
-            .then((result) => {
-                result.data.forEach((game) => {
-                    // prevent overfetching games from meetup
-                    if (lastGameTimeStamp >= game.time) {
-                        return;
-                    }
-                    games.push(createGame(game));
-                });
-            })
-            .catch((error) => {
-                throw new Error(error);
-            });
-
-        // sort games by time for GamesMenu
-        games.sort((a, b) => new Date(a.timeStamp) - new Date(b.timeStamp));
+        const games = await this.fetchGames();
 
         const currentGame = games[0];
         currentGame.players = await this.getCurrentGamePlayers(currentGame);
@@ -95,24 +73,9 @@ class Admin extends React.Component {
             return currentGame.players;
         }
 
-        const RSVPS = `${process.env.RSVP_URL}${
-            currentGame.meetupId
-        }/attendance?&sign=true&photo-host=public`;
-
-        let rsvpList = await fetchJsonp(RSVPS)
-            .then((response) => response.json())
-            .then((result) => result.data.filter(filterAttendees))
-            .catch((error) => {
-                throw new Error(error);
-            });
-
-        rsvpList = await rsvpList.map((player) =>
-            fetchJsonp(`${process.env.PLAYER_URL}${player.member.id}?&sign=true&photo-host=public`)
-                .then((response) => response.json())
-                .then((playerResult) => playerResult),
-        );
-
+        const rsvpList = await this.fetchRsvpList(currentGame.meetupId);
         const results = await Promise.all(rsvpList);
+
         return results.map((player) => createPlayer(player));
     };
 
@@ -225,6 +188,56 @@ class Admin extends React.Component {
     handleSetTeams = (winners, losers) => {
         this.setState(() => ({ areTeamsSorted: true, winners, losers }));
     };
+
+    /**
+     * Get data from meetup api - games and players
+     * Find those players in our API to get existing stats
+     * Merge each player name and meetup id with the stats categories
+     */
+    async fetchGames() {
+        const lastGameTimeStamp = await this.getLastGameRecorded();
+
+        const games = [];
+
+        await fetchJsonp(process.env.GAMES_URL)
+            .then((response) => response.json())
+            .then((result) => {
+                result.data.forEach((game) => {
+                    // prevent overfetching games from meetup
+                    if (lastGameTimeStamp >= game.time) {
+                        return;
+                    }
+                    games.push(createGame(game));
+                });
+            })
+            .catch((error) => {
+                throw new Error(error);
+            });
+
+        // sort games by time for GamesMenu
+        games.sort((a, b) => new Date(a.timeStamp) - new Date(b.timeStamp));
+
+        return games;
+    }
+
+    async fetchRsvpList(gameId) {
+        const RSVPS = `${process.env.RSVP_URL}${gameId}/attendance?&sign=true&photo-host=public`;
+
+        let rsvpList = await fetchJsonp(RSVPS)
+            .then((response) => response.json())
+            .then((result) => result.data.filter(filterAttendees))
+            .catch((error) => {
+                throw new Error(error);
+            });
+
+        rsvpList = await rsvpList.map((player) =>
+            fetchJsonp(`${process.env.PLAYER_URL}${player.member.id}?&sign=true&photo-host=public`)
+                .then((response) => response.json())
+                .then((playerResult) => playerResult),
+        );
+
+        return rsvpList;
+    }
 
     render() {
         const { areTeamsSorted, currentGame, games, losers, selectedGameId, winners } = this.state;

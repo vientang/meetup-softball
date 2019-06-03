@@ -19,6 +19,13 @@ export function createSlug(name) {
         .toLowerCase();
 }
 
+export function getMeridiem(time) {
+    if (time) {
+        return Number(time.substring(0, 2)) < 12 ? 'am' : 'pm';
+    }
+    return '';
+}
+
 export function sortByNameLength(a, b) {
     if (a.length === b.length) {
         return a > b ? 1 : -1;
@@ -35,7 +42,8 @@ export function sortTimeStamp(a, b) {
 }
 
 /**
- * Remove leading zero, append zeroes or convert to zero
+ * Format cell value to 4 decimal points
+ * 0.567 becomes .567 || 1.234567 becomes 1.234 || 0.8 becomes .800
  * @param {String} value
  */
 export function formatCellValue(value) {

@@ -2,16 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import isEmpty from 'lodash/isEmpty';
 import AdminSection from './AdminSection';
+import { getMeridiem } from '../utils/helpers';
 import componentStyles from './components.module.css';
 
 const GameDetails = ({ data }) => {
     if (isEmpty(data)) {
         return null;
     }
-    let meridiem = null;
-    if (data.time) {
-        meridiem = Number(data.time.substring(0, 2)) < 12 ? 'am' : 'pm';
-    }
+    const meridiem = getMeridiem(data.time);
 
     return (
         <AdminSection title="GAME DETAILS" iconType="schedule">

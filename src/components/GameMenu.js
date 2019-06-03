@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from 'antd';
+import { getMeridiem } from '../utils/helpers';
 import componentStyles from './components.module.css';
 
 const iconStyle = {
@@ -52,6 +53,8 @@ function getGamesByDate(games, date, props) {
         if (game.date === date) {
             const { onGameCancel, onGameSelection, selectedGame } = props;
             const menuItemStyle = getMenuItemStyles(game.meetupId, selectedGame);
+            const meridiem = getMeridiem(game.time);
+
             gamesByDate.push(
                 <div
                     key={game.meetupId}
@@ -64,6 +67,7 @@ function getGamesByDate(games, date, props) {
                         onClick={onGameSelection}
                     >
                         {game.time}
+                        {meridiem}
                     </span>
                     <span
                         id={game.meetupId}

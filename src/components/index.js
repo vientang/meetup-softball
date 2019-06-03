@@ -1,4 +1,5 @@
 import AdminStatsTable from './AdminStatsTable';
+import BoxScoreGroup from './BoxScoreGroup';
 import BoxScore from './BoxScore';
 import CareerStats from './CareerStats';
 import GameDetails from './GameDetails';
@@ -17,6 +18,7 @@ import withFilterBar from './withFilterBar';
 
 export {
     AdminStatsTable,
+    BoxScoreGroup,
     BoxScore,
     CareerStats,
     GameDetails,

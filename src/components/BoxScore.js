@@ -2,36 +2,47 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Winners from './Winners';
 import Losers from './Losers';
+import { getMeridiem } from '../utils/helpers';
 import componentStyles from './components.module.css';
 
-// TODO: use hooks to fetch softball stats data
-const BoxScore = ({ style }) => {
+const BoxScore = ({ gameData }) => {
+    const { date, time, field, gameId, winners, losers } = gameData;
+    const gameDesc = gameId && field ? `Game ${gameId} @ ${field}` : null;
+    const gameTime = time && date ? `${date}, ${time}${getMeridiem(time)}` : null;
+
     return (
-        <div className={componentStyles.boxScore} style={style}>
+        <div className={componentStyles.boxScore}>
             <div className={componentStyles.boxScoreHeading}>
-                <h3 className={componentStyles.boxScoreTitle}>Game 240 @ Parkside</h3>
-                <span className={componentStyles.boxScoreDate}>Saturday, April 6th</span>
+                <h3 className={componentStyles.boxScoreTitle}>{gameDesc}</h3>
+                <span className={componentStyles.boxScoreDate}>{gameTime}</span>
             </div>
             <div className={componentStyles.boxScoreResultsGroup}>
                 <div className={componentStyles.boxScoreResults}>
                     <Winners />
-                    <span>Winners</span>
-                    <span className={componentStyles.boxScoreTotal}>10</span>
+                    <span>WINNERS</span>
+                    <span className={componentStyles.boxScoreTotal}>{winners}</span>
                 </div>
                 <div className={componentStyles.boxScoreResults}>
                     <Losers />
-                    <span>Losers</span>
-                    <span className={componentStyles.boxScoreTotal}>9</span>
+                    <span>LOSERS</span>
+                    <span className={componentStyles.boxScoreTotal}>{losers}</span>
                 </div>
             </div>
         </div>
     );
 };
 
+BoxScore.displayName = 'BoxScore';
 BoxScore.propTypes = {
-    losers: PropTypes.shape(),
-    style: PropTypes.shape(),
-    winners: PropTypes.shape(),
+    gameData: PropTypes.shape({
+        name: PropTypes.string,
+        field: PropTypes.string,
+        date: PropTypes.string,
+        time: PropTypes.string,
+        gameId: PropTypes.string,
+        winners: PropTypes.number,
+        losers: PropTypes.number,
+    }),
 };
 
 export default BoxScore;

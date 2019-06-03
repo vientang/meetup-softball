@@ -7,12 +7,24 @@ import Losers from './Losers';
 import AddPlayer from './AddPlayer';
 import componentStyles from './components.module.css';
 
+const muBlue1 = '#1890ff';
+const muBlue2 = '#2d72d9';
+const muRed1 = '#c43045';
+const muRed2 = '#962737';
+const white = '#ffffff';
+
 /* eslint-disable-next-line react/prop-types */
 const TransferHeader = ({ listType, playerCount }) => {
     const winnerLogoStyle = { transform: 'translate(-80px, -20px)' };
-    const loserLogoStyle = { transform: 'translate(-80px, -20px)' };
+    const loserLogoStyle = { transform: 'translate(-140px, -20px)', fill: white };
+    const headerStyle = {
+        background:
+            listType === 'WINNERS'
+                ? `linear-gradient(172deg, ${muBlue2}, ${muBlue1})`
+                : `linear-gradient(172deg, ${muRed2}, ${muRed1})`,
+    };
     return (
-        <div className={componentStyles.teamTransferHeader}>
+        <div className={componentStyles.teamTransferHeader} style={headerStyle}>
             <span className={componentStyles.teamTransferTitle}>
                 {listType === 'WINNERS' ? (
                     <Winners gStyle={winnerLogoStyle} size={20} />

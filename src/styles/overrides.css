@@ -2,7 +2,7 @@
     overflow: auto;
 }
 .ReactTable .-header .rt-tr {
-    background: #2d72d9;
+    background: linear-gradient(172deg, var(--muBlue-2), var(--muBlue-1), var(--muBlue-2));
 }
 .ReactTable .rt-tr {
     background: #ffffff;

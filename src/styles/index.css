@@ -1,3 +1,51 @@
+:root {
+    --muNavy: #243b55;
+    --muNavy-2: #141e30;
+    --muRed: #c43045;
+    --muRed-2: #962737;
+    --muBlue-1: #1890ff;
+    --muBlue-2: #2d72d9;
+    --muGold: #f7b639;
+    --background-color: #ffffff;
+    --border-color: #ffcccc;
+    --pad-0: 0.25rem;
+    --pad-1: 0.5rem;
+    --pad-2: 0.75rem;
+    --pad-3: 1rem;
+    --pad-4: 1.25rem;
+    --pad-5: 1.5rem;
+    --pad-6: 1.75rem;
+    --pad-7: 2rem;
+    --margin-0: 0.25rem;
+    --margin-1: 0.5rem;
+    --margin-2: 0.75rem;
+    --margin-3: 1rem;
+    --margin-5: 1.5rem;
+    --margin-6: 1.75rem;
+    --margin-7: 2rem;
+    --grey-0: #f5f5f5;
+    --grey-1: #d1d1d1;
+    --grey-2: #bebbbb;
+    --grey-3: #555555;
+    --grey-4: #3a3a3a;
+    --grey-5: #393939;
+    --white-1: #ffffff;
+    --white-2: #ededed;
+    --blue-0: rgba(0, 220, 255, 0.3);
+    --blue-1: #00dcff;
+    --blue-2: #00bdff;
+    --blue-3: #1890ff;
+    --blue-4: #137bc2;
+    --skew-10: skew(-10deg);
+    --skew-25: skew(-25deg);
+    --shadow-1: 0px 0px 20px -15px #243b55;
+    --font-xsmall: calc(0.4rem + 0.3vmin);
+    --font-small: calc(0.4rem + 0.4vmin);
+    --font-medium: calc(0.45rem + 0.4vmin);
+    --font-large: calc(0.5rem + 0.4vmin);
+    --font-xlarge: calc(0.5rem + 0.5vmin);
+}
+
 html {
     font-family: sans-serif;
     -ms-text-size-adjust: 100%;
@@ -181,6 +229,7 @@ html {
     font: 112.5%/1.45em georgia, serif;
     box-sizing: border-box;
     overflow-y: scroll;
+    overflow-x: hidden;
 }
 *, *:before, *:after {
     box-sizing: inherit;

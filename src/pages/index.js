@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Amplify from 'aws-amplify';
 import { graphql } from 'gatsby';
 import Img from 'gatsby-image';
-import { BoxScore, Layout, JoinUs } from '../components';
+import { BoxScoreGroup, Layout } from '../components';
 import pageStyles from './pages.module.css';
 import configuration from '../aws-exports';
 import 'typeface-shrikhand';
@@ -35,11 +35,7 @@ const IndexPage = (props) => (
             <p className={pageStyles.photoCredit}>Photo by Christopher Czermak on Unsplash</p>
         </a>
         <Layout style={layoutStyle} uri={props.uri}>
-            <div className={pageStyles.boxScoreGroup}>
-                <JoinUs />
-                <BoxScore />
-                <BoxScore />
-            </div>
+            <BoxScoreGroup />
         </Layout>
     </>
 );
