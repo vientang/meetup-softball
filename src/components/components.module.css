@@ -82,7 +82,7 @@
 
 .nav-link {
     display: inline-block;
-    padding: 2px 0.5rem;
+    margin: 2px 0.5rem;
     color: var(--grey-3);
     font-weight: bold;
     text-transform: uppercase;
@@ -91,10 +91,15 @@
     transition: color 200ms, background-color 200ms;
 }
 
-/* .nav-link:hover {
+.activeNavLink {
+    border-bottom: 2px solid var(--grey-3);
+}
+
+.nav-link:hover {
     color: var(--white-1);
     background: var(--muNavy);
-} */
+    transform: var(--skew-10) scale(1.1);
+}
 
 .site-title:hover {
     color: var(--muRed);

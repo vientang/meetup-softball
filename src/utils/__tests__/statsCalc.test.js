@@ -7,6 +7,7 @@ const {
     getHits,
     getOnBasePercentage,
     getOPS,
+    getOuts,
     getRunsCreated,
     getSlugging,
     getTeamRunsScored,
@@ -83,5 +84,9 @@ describe('Stats calculations', () => {
 
         players.push({ singles: null, doubles: 0, triples: undefined, hr: '' });
         expect(getTeamTotalHits(players)).toBe(8);
+    });
+
+    it('calculate outs', () => {
+        expect(getOuts(5, 1, 0)).toBe(4);
     });
 });

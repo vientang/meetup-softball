@@ -80,12 +80,17 @@ const getTeamTotalHits = (players) => {
     }, 0);
 };
 
+const getOuts = (ab, sac, hits) => {
+    return ab - sac - hits;
+};
+
 export default {
     getAtBats,
     getAverage,
     getHits,
     getOnBasePercentage,
     getOPS,
+    getOuts,
     getRunsCreated,
     getSlugging,
     getTeamRunsScored,

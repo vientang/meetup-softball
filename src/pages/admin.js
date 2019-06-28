@@ -15,7 +15,7 @@ import {
 } from '../components';
 import { createGameStats, createPlayerStats, updatePlayerStats } from '../graphql/mutations';
 import { listGameStatss, listPlayerStatss } from '../graphql/queries';
-import { apiService } from '../utils';
+import { mergePlayerStats, mergeGameStats } from '../utils/apiService';
 import { sortTimeStamp } from '../utils/helpers';
 import styles from './pages.module.css';
 
@@ -133,10 +133,10 @@ class Admin extends React.Component {
      */
     handleSubmitData = async (winners, losers, selectedGameId) => {
         const { currentGame, games } = this.state;
-        const playerStats = await apiService.mergePlayerStats(currentGame, winners, losers);
+        const playerStats = await mergePlayerStats(currentGame, winners, losers);
         this.submitPlayerStats(playerStats);
 
-        const gameStats = await apiService.mergeGameStats(currentGame, winners, losers);
+        const gameStats = await mergeGameStats(currentGame, winners, losers);
         this.submitGameStats(gameStats);
 
         const remainingGames = games.filter((game) => game.meetupId !== selectedGameId);

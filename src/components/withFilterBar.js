@@ -10,7 +10,7 @@ import configuration from '../aws-exports';
 
 API.configure(configuration);
 
-const defaultFilter = '2019';
+const defaultFilter = '2013';
 const defaultFilters = {
     year: '',
     month: '',

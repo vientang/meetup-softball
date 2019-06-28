@@ -41,6 +41,23 @@ export function sortTimeStamp(a, b) {
     return Number(a.timeStamp) < Number(b.timeStamp) ? 1 : -1;
 }
 
+export function convertStringStatsToNumbers(stats) {
+    const { ab, r, singles, doubles, triples, hr, rbi, bb, k, sac, sb } = stats;
+    return {
+        ab: Number(ab),
+        r: Number(r),
+        singles: Number(singles),
+        doubles: Number(doubles),
+        triples: Number(triples),
+        hr: Number(hr),
+        rbi: Number(rbi),
+        bb: Number(bb),
+        k: Number(k),
+        sac: Number(sac),
+        sb: Number(sb),
+    };
+}
+
 /**
  * Format cell value to 4 decimal points
  * 0.567 becomes .567 || 1.234567 becomes 1.234 || 0.8 becomes .800
@@ -48,12 +65,16 @@ export function sortTimeStamp(a, b) {
  */
 export function formatCellValue(value) {
     const formattedValue = value || '';
-    if (formattedValue.substring(0, 2) === '0.') {
-        return formatValueLength(formattedValue.slice(1), 4);
+
+    if (typeof value === 'string' && value.includes('.')) {
+        if (formattedValue.substring(0, 2) === '0.') {
+            return formatValueLength(formattedValue.slice(1), 4);
+        }
+        if (Number(formattedValue[0]) > 0 && formattedValue[1] === '.') {
+            return formatValueLength(formattedValue, 4);
+        }
     }
-    if (Number(formattedValue[0]) > 0 && formattedValue[1] === '.') {
-        return formatValueLength(formattedValue, 4);
-    }
+
     return value || 0;
 }
 

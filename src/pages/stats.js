@@ -4,11 +4,16 @@ import isEqual from 'lodash/isEqual';
 import get from 'lodash/get';
 import { Link } from 'gatsby';
 import { Avatar, Skeleton } from 'antd';
+import { API, graphqlOperation } from 'aws-amplify';
 import { withFilterBar, NotFoundImage, StatsTable } from '../components';
-import { clearMasterList, filterPlayerStats } from '../utils/apiService';
+import { clearMasterList, getAllPlayerStats } from '../utils/apiService';
 import { createSlug, formatCellValue, sortHighToLow } from '../utils/helpers';
 import { statPageCategories } from '../utils/constants';
 import pageStyles from './pages.module.css';
+import { legacyData } from '../../__mocks__/mockData';
+import { convertLegacyPlayerData, convertLegacyGameData } from '../utils/convertLegacyData';
+
+import { createGameStats, createPlayerStats, updatePlayerStats } from '../graphql/mutations';
 
 const statsTableStyle = {
     height: 800,
@@ -26,13 +31,20 @@ class Stats extends React.Component {
         };
     }
 
+    async componentDidMount() {
+        const playerdata = await convertLegacyPlayerData(legacyData);
+        const gamedata = await convertLegacyGameData(legacyData);
+        gamedata.forEach((value, key, map) => {
+            const game = { ...value };
+            game.winners = JSON.stringify(value.winners);
+            game.losers = JSON.stringify(value.losers);
+            // API.graphql(graphqlOperation(createGameStats, { input: game }));
+        });
+    }
+
     componentDidUpdate(prevProps) {
-        let playerStats = [];
         if (this.shouldUpdateStats(prevProps.gameData)) {
-            this.props.gameData.forEach((game) => {
-                const updatedStats = filterPlayerStats(game);
-                playerStats = Array.from(updatedStats.values());
-            });
+            const playerStats = getAllPlayerStats(this.props.gameData);
             this.updatePlayerStats(playerStats);
         }
         clearMasterList();
@@ -51,6 +63,7 @@ class Stats extends React.Component {
 
     renderPlayerCell = (playerStats, cellInfo) => {
         const { playerId, playerName, playerImg } = getPlayerMetaData(playerStats, cellInfo);
+
         const slug = createSlug(playerName);
 
         // playerData contains name, games, profile, photos, etc.

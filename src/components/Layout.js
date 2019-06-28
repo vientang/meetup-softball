@@ -40,9 +40,9 @@ const Layout = ({ className, children, filterBar, style, uri }) => (
                 </Helmet>
                 <Header siteTitle={data.site.siteMetadata.title} uri={uri} />
                 {filterBar}
-                <div className={className} style={style}>
+                <main className={className} style={style}>
                     {children}
-                </div>
+                </main>
                 <Footer siteTitle={data.site.siteMetadata.title} uri={uri} />
             </>
         )}
