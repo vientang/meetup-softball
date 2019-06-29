@@ -2,6 +2,7 @@ import pick from 'lodash/pick';
 import omit from 'lodash/omit';
 import transform from 'lodash/transform';
 import statsCalc from './statsCalc';
+import { gameProperties, ignoreKeystoTransform } from './constants';
 
 const {
     getAtBats,
@@ -16,63 +17,6 @@ const {
     getTotalBases,
     getWOBA,
 } = statsCalc;
-
-const stats = [
-    'ab',
-    'battingOrder',
-    'bb',
-    'cs',
-    'doubles',
-    'gp',
-    'hr',
-    'k',
-    'l',
-    'name',
-    'o',
-    'r',
-    'rbi',
-    'sac',
-    'sb',
-    'singles',
-    'triples',
-    'w',
-];
-
-const gameProperties = [
-    'date',
-    'field',
-    'lat',
-    'lon',
-    'month',
-    'name',
-    'time',
-    'timeStamp',
-    'tournamentName',
-    'year',
-];
-
-const ignoreKeystoTransform = [
-    'id',
-    'meetupId',
-    'name',
-    'admin',
-    'gender',
-    'ab',
-    'avg',
-    'battingOrder',
-    'h',
-    'joined',
-    'key',
-    'obp',
-    'ops',
-    'photos',
-    'profile',
-    'rc',
-    'slg',
-    'status',
-    'tb',
-    'woba',
-];
 
 /**
  * LIST OF PLAYER STATS
@@ -91,6 +35,7 @@ export function clearMasterList() {
  * @return {Array} list of players and their stats
  */
 export function getAllPlayerStats(games) {
+    masterList.clear();
     let playerStats = [];
 
     games.forEach((game) => {
@@ -230,18 +175,17 @@ export function mergePlayerStats(meetupData, w, l) {
 
 /**
  * Stringify values and combine into one object
- * @param {Object} player
  * @param {Object} derivedStats
  * @return {Object}
  */
-function combineDerivedStats(player, derivedStats) {
+function transformDerivedStatsToStrings(derivedStats) {
     const derivedWithStrings = {};
 
     Object.keys(derivedStats).forEach((key) => {
         derivedWithStrings[key] = String(derivedStats[key]);
     });
 
-    return Object.assign(pick(player, stats), derivedWithStrings);
+    return derivedWithStrings;
 }
 
 /**
@@ -266,18 +210,18 @@ function mergeExistingPlayerStats(existingStats = {}, currentStats = {}) {
     const ops = getOPS(obp, slg);
     const woba = getWOBA(bb, singles, doubles, triples, hr, atBats, sac);
 
+    // transform stats to strings while ignoring keys in existingStats
     const transformStats = (result, value, key) => {
         /* eslint-disable no-param-reassign */
         if (ignoreKeystoTransform.includes(key)) {
             result[key] = value;
         } else {
-            result[key] = transformStatsToStrings(existingStats, value, key);
+            result[key] = transformStatsToStrings(currentStats, value, key);
         }
     };
 
-    const updatedStats = transform(currentStats, transformStats, {});
-
-    const derivedStats = {
+    const updatedStats = transform(existingStats, transformStats, {});
+    const derivedStats = transformDerivedStatsToStrings({
         ab: atBats,
         battingOrder: updatedStats.battingOrder,
         h,
@@ -288,24 +232,24 @@ function mergeExistingPlayerStats(existingStats = {}, currentStats = {}) {
         tb,
         avg,
         woba,
-    };
+    });
 
-    return combineDerivedStats(updatedStats, derivedStats);
+    return { ...updatedStats, ...derivedStats };
 }
 
 /**
  * Validate, add, then transform stats to strings
- * @param {Array} existingStats
+ * @param {Array} currentStats
  * @param {Number} value
  * @param {String} key
  * @return {String} stat value
  */
-function transformStatsToStrings(existingStats, value, key) {
+function transformStatsToStrings(currentStats, value, key) {
     if (value === null) {
         return value;
     }
-    if (existingStats[key]) {
-        return (value + existingStats[key]).toString();
+    if (currentStats[key]) {
+        return (value + currentStats[key]).toString();
     }
     if (value === 0) {
         return '0';
@@ -320,7 +264,6 @@ function transformStatsToStrings(existingStats, value, key) {
  */
 function createPlayerData(players, currentGameStats) {
     return players.map((player) => {
-        const gameStats = pick(player, stats);
         const playerStats = {};
         playerStats.name = player.name;
         playerStats.joined = player.joined;
@@ -331,7 +274,7 @@ function createPlayerData(players, currentGameStats) {
         playerStats.status = player.status || 'active';
         playerStats.gender = player.gender || 'n/a';
         playerStats.games = [];
-        playerStats.games.push({ ...gameStats, ...currentGameStats });
+        playerStats.games.push({ ...player, ...currentGameStats });
         playerStats.games = playerStats.games;
         return playerStats;
     });

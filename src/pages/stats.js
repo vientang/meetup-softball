@@ -22,6 +22,13 @@ const statsTableStyle = {
 
 const skeletonConfig = { rows: 20, width: '1155px' };
 
+const defaultSorted = [
+    {
+        id: 'gp',
+        desc: false,
+    },
+];
+
 class Stats extends React.Component {
     constructor(props) {
         super(props);
@@ -34,6 +41,7 @@ class Stats extends React.Component {
     async componentDidMount() {
         const playerdata = await convertLegacyPlayerData(legacyData);
         const gamedata = await convertLegacyGameData(legacyData);
+
         gamedata.forEach((value, key, map) => {
             const game = { ...value };
             game.winners = JSON.stringify(value.winners);
@@ -47,7 +55,6 @@ class Stats extends React.Component {
             const playerStats = getAllPlayerStats(this.props.gameData);
             this.updatePlayerStats(playerStats);
         }
-        clearMasterList();
     }
 
     shouldUpdateStats = (prevGameData) =>
@@ -113,6 +120,7 @@ class Stats extends React.Component {
                 <StatsTable
                     categories={statPageCategories}
                     cellRenderer={this.renderCell}
+                    defaultSorted={defaultSorted}
                     onSortedChange={this.handleColumnSort}
                     sortedColumn={sortedColumn}
                     sortMethod={sortHighToLow}

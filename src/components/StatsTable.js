@@ -8,7 +8,15 @@ import componentStyles from './components.module.css';
 import 'react-table/react-table.css';
 
 const StatsTable = (props) => {
-    const { onSortedChange, stats, showLegend, showPagination, striped, style } = props;
+    const {
+        defaultSorted,
+        onSortedChange,
+        stats,
+        showLegend,
+        showPagination,
+        striped,
+        style,
+    } = props;
 
     const statsTableStyle = {
         fontSize: 12,
@@ -31,6 +39,7 @@ const StatsTable = (props) => {
                     className={`-${striped} -highlight`}
                     columns={renderColumns(props)}
                     defaultPageSize={stats.length}
+                    defaultSorted={defaultSorted}
                     onSortedChange={onSortedChange}
                     showPaginationBottom={showPagination}
                     style={statsTableStyle}
@@ -97,7 +106,7 @@ function formatColumnWidth(props) {
     const scrollBarOffset = 16;
     const rateCategories = ['avg', 'rc', 'obp', 'ops', 'slg', 'woba'];
     if (rateCategories.includes(category)) {
-        return lastColumn ? 60 + scrollBarOffset : 50;
+        return lastColumn ? 60 + scrollBarOffset : 60;
     }
     switch (category) {
         case 'player':
@@ -168,6 +177,7 @@ StatsTable.propTypes = {
     adminPage: PropTypes.bool,
     categories: PropTypes.arrayOf(PropTypes.string),
     cellRenderer: PropTypes.func,
+    defaultSorted: PropTypes.arrayOf(PropTypes.shape),
     onSortedChange: PropTypes.func,
     showLegend: PropTypes.bool,
     showPagination: PropTypes.bool,

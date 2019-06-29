@@ -257,6 +257,45 @@ const splitStatCategories = [
     'woba',
 ];
 
+const gameProperties = [
+    'date',
+    'field',
+    'lat',
+    'lon',
+    'month',
+    'name',
+    'time',
+    'timeStamp',
+    'tournamentName',
+    'year',
+];
+
+/**
+ * Ignore these keys when transforming to strings
+ */
+const ignoreKeystoTransform = [
+    'id',
+    'meetupId',
+    'name',
+    'admin',
+    'gender',
+    'ab',
+    'avg',
+    'battingOrder',
+    'h',
+    'joined',
+    'key',
+    'obp',
+    'ops',
+    'photos',
+    'profile',
+    'rc',
+    'slg',
+    'status',
+    'tb',
+    'woba',
+];
+
 export {
     adminStatCategories,
     careerStatCatsByField,
@@ -265,6 +304,8 @@ export {
     defaultStatCategories,
     definitions,
     gameLogCategories,
+    gameProperties,
+    ignoreKeystoTransform,
     qualifiers,
     splitStatCategories,
     statPageCategories,

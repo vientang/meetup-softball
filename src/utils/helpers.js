@@ -73,6 +73,9 @@ export function formatCellValue(value) {
         if (Number(formattedValue[0]) > 0 && formattedValue[1] === '.') {
             return formatValueLength(formattedValue, 4);
         }
+        if (formattedValue.length > 4) {
+            return formatValueLength(formattedValue, 5);
+        }
     }
 
     return value || 0;

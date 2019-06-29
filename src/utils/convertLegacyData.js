@@ -12,6 +12,7 @@ const legacyPlayerList = new Map();
  * @return {Array}
  */
 export async function convertLegacyPlayerData(data) {
+    legacyPlayerList.clear();
     for (const datum of data) {
         const legacyPlayerId = datum.meetupId.toString();
         const legacyPlayer = legacyPlayerList.get(legacyPlayerId);
@@ -48,6 +49,7 @@ export async function convertLegacyPlayerData(data) {
 
 const legacyGameList = new Map();
 export function convertLegacyGameData(data) {
+    legacyGameList.clear();
     for (const datum of data) {
         const gameId = `${datum.date}-${datum.time}`;
         const isWinner = isOnWinningTeam(datum);
