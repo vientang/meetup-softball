@@ -51,7 +51,7 @@ export function getAllPlayerStats(games) {
  */
 function getPlayerStats(game) {
     getWinnersAndLosers(game).forEach((player) => {
-        if (masterList.has(player.name)) {
+        if (masterList.has(player.name)) {            
             masterList.set(
                 player.name,
                 mergeExistingPlayerStats(masterList.get(player.name), player),
@@ -88,7 +88,7 @@ function initNewPlayerStats(player) {
         slg,
         obp,
     };
-
+    
     const metaData = parsePhotosAndProfile(player);
 
     return { ...player, ...metaData, ...derivedStats };
@@ -197,13 +197,13 @@ function transformDerivedStatsToStrings(derivedStats) {
 function mergeExistingPlayerStats(existingStats = {}, currentStats = {}) {
     const { bb, cs, singles, doubles, sb, triples, hr, o, sac } = currentStats;
 
-    const h = getHits(singles, doubles, triples, hr) + existingStats.h;
-    const atBats = getAtBats(h, o) + existingStats.ab;
-    const tb = getTotalBases(singles, doubles, triples, hr) + existingStats.tb;
+    const h = getHits(singles, doubles, triples, hr) + Number(existingStats.h);
+    const atBats = getAtBats(h, o) + Number(existingStats.ab);
+    const tb = getTotalBases(singles, doubles, triples, hr) + Number(existingStats.tb);
     const avg = getAverage(h, atBats);
-    const walks = bb + existingStats.bb;
-    const steals = sb + existingStats.sb;
-    const cSteals = cs + existingStats.cs;
+    const walks = bb + Number(existingStats.bb);
+    const steals = sb + Number(existingStats.sb);
+    const cSteals = cs + Number(existingStats.cs);
     const rc = getRunsCreated(h, walks, cSteals, tb, steals, atBats);
     const obp = getOnBasePercentage(h, bb, atBats, sac);
     const slg = getSlugging(tb, atBats);
@@ -248,13 +248,11 @@ function transformStatsToStrings(currentStats, value, key) {
     if (value === null) {
         return value;
     }
-    if (currentStats[key]) {
-        return (value + currentStats[key]).toString();
-    }
-    if (value === 0) {
-        return '0';
-    }
-    return value.toString();
+    
+    const existingStat = Number(value);
+    const currentStat = Number(currentStats[key]);
+
+    return (existingStat + currentStat).toString();
 }
 
 /**
@@ -286,10 +284,8 @@ function createPlayerData(players, currentGameStats) {
  * @return {Object}
  */
 function parsePhotosAndProfile(player) {
-    const photos = player.photos ? player.photos : {};
-    const profile = player.profile ? player.profile : {};
     return {
-        photos: JSON.parse(photos),
-        profile: JSON.parse(profile),
+        photos: player.photos ? JSON.parse(player.photos) : {},
+        profile: player.profile ? JSON.parse(player.profile) : {},
     };
 }

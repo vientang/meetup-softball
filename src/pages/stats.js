@@ -10,10 +10,11 @@ import { clearMasterList, getAllPlayerStats } from '../utils/apiService';
 import { createSlug, formatCellValue, sortHighToLow } from '../utils/helpers';
 import { statPageCategories } from '../utils/constants';
 import pageStyles from './pages.module.css';
-import { legacyData } from '../../__mocks__/mockData';
+import legacyData from '../../__mocks__/mockData';
 import { convertLegacyPlayerData, convertLegacyGameData } from '../utils/convertLegacyData';
 
 import { createGameStats, createPlayerStats, updatePlayerStats } from '../graphql/mutations';
+import { listGameStatss, listPlayerStatss } from '../graphql/queries';
 
 const statsTableStyle = {
     height: 800,
@@ -41,13 +42,11 @@ class Stats extends React.Component {
     async componentDidMount() {
         const playerdata = await convertLegacyPlayerData(legacyData);
         const gamedata = await convertLegacyGameData(legacyData);
-
-        gamedata.forEach((value, key, map) => {
-            const game = { ...value };
-            game.winners = JSON.stringify(value.winners);
-            game.losers = JSON.stringify(value.losers);
-            // API.graphql(graphqlOperation(createGameStats, { input: game }));
-        });
+        console.log('player data', { playerdata, gamedata });
+        console.time("submit data");
+        this.submitPlayerStats(playerdata);
+        this.submitGameStats(gamedata);
+        console.timeEnd("submit data");
     }
 
     componentDidUpdate(prevProps) {
@@ -56,6 +55,61 @@ class Stats extends React.Component {
             this.updatePlayerStats(playerStats);
         }
     }
+
+    fetchExistingPlayer = async (player) => {
+        // TODO: replace id with meetupId to allow for query instead of scanning the entire database
+        const existingPlayer = await API.graphql(
+                graphqlOperation(listPlayerStatss, {
+                    filter: { meetupId: { eq: player.meetupId } },
+                }),
+            );
+        return get(existingPlayer, 'data.listPlayerStatss.items', null);
+    };
+
+    /**
+     * Update a players game log or create a new player
+     * @param {Array} playerStats
+     */
+    submitPlayerStats = async (playerStats = []) => {
+        playerStats.forEach(async (player) => {
+            const existingPlayer = await this.fetchExistingPlayer(player);            
+            
+            if (existingPlayer[0]) {
+                // player already exists in database
+                const { id, games } = existingPlayer[0];
+                const parsedGames = JSON.parse(games);
+                const updatedGames = [...player.games, ...parsedGames];
+
+                // await API.graphql(
+                //     graphqlOperation(updatePlayerStats, {
+                //         input: { id },
+                //         games: JSON.stringify(updatedGames),
+                //     }),
+                // );
+            } else {
+                // player does not yet exist in database
+                const newPlayer = {
+                    ...player,
+                    games: JSON.stringify(player.games),
+                };
+
+                // await API.graphql(
+                //     graphqlOperation(createPlayerStats, {
+                //         input: newPlayer,
+                //     }),
+                // );
+            }
+        });
+    };
+
+    submitGameStats = async (gameStats) => {
+        gameStats.forEach(async (value, key, map) => {
+            const game = { ...value };
+            game.winners = JSON.stringify(value.winners);
+            game.losers = JSON.stringify(value.losers);
+            await API.graphql(graphqlOperation(createGameStats, { input: game }));
+        });
+    };
 
     shouldUpdateStats = (prevGameData) =>
         prevGameData.length <= 0 || !isEqual(prevGameData, this.props.gameData);
@@ -93,7 +147,7 @@ class Stats extends React.Component {
 
         const playerName = playerStats[cellInfo.index].name;
         const cellValue = playerStats[cellInfo.index][cellInfo.column.id];
-
+        
         return cellValue === playerName
             ? this.renderPlayerCell(playerStats, cellInfo)
             : formatCellValue(cellValue);

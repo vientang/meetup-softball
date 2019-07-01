@@ -1,4 +1,4 @@
-/* eslint-disable no-restricted-syntax, no-await-in-loop, no-continue */
+/* eslint-disable no-restricted-syntax, no-await-in-loop */
 import fetchJsonp from 'fetch-jsonp';
 import statsCalc from './statsCalc';
 import { convertStringStatsToNumbers } from './helpers';
@@ -11,14 +11,15 @@ const legacyPlayerList = new Map();
  * @param {Array}
  * @return {Array}
  */
-export async function convertLegacyPlayerData(data) {
+export async function convertLegacyPlayerData(data) {  
     legacyPlayerList.clear();
-    for (const datum of data) {
+
+    for (const [i, datum] of data.entries()) {
         const legacyPlayerId = datum.meetupId.toString();
         const legacyPlayer = legacyPlayerList.get(legacyPlayerId);
 
         // format game data and calculate stats
-        const gameData = buildGameData(datum);
+        const gameData = buildGameData(datum, data[i - 1]);
         const gameStats = buildGameStats(datum, legacyPlayer);
 
         if (legacyPlayer) {
@@ -28,7 +29,7 @@ export async function convertLegacyPlayerData(data) {
             if (playerData.data.errors) {
                 continue;
             }
-            const player = await convertPlayerData({
+            const player = await transformMeetupData({
                 ...playerData.data,
                 meetupId: datum.meetupId,
                 gender: datum.gender,
@@ -43,17 +44,15 @@ export async function convertLegacyPlayerData(data) {
             }
         }
     }
-    resetGameCountForGameData();
+    
     return legacyPlayerList;
 }
 
 const legacyGameList = new Map();
-export function convertLegacyGameData(data) {
+export function convertLegacyGameData(data) {      
     legacyGameList.clear();
-    for (const datum of data) {
-        const gameId = `${datum.date}-${datum.time}`;
-        const isWinner = isOnWinningTeam(datum);
 
+    for (const [i, datum] of data.entries()) {
         // get player data && delete the games array
         const legacyPlayerId = datum.meetupId.toString();
         const playerData = getPlayerDataForGameStats(legacyPlayerId);
@@ -65,11 +64,14 @@ export function convertLegacyGameData(data) {
         const playerStats = getPlayerStatsWithDerivedStats(datum);
         const { singles, doubles, triples, hr, r } = playerStats;
         const hits = getHits(singles, doubles, triples, hr);
-
         // combine data and stats
         const player = { ...playerData, ...playerStats };
 
-        const legacyGame = legacyGameList.get(gameId);
+        // set up game data properties - date, field, time, gameId, etc.
+        const gameData = buildGameData(datum, data[i - 1]);
+        const legacyGame = legacyGameList.get(gameData.gameId);
+        const isWinner = isOnWinningTeam(datum);
+        
         if (legacyGame) {
             if (isWinner) {
                 legacyGame.winners.runsScored += r;
@@ -81,9 +83,6 @@ export function convertLegacyGameData(data) {
                 legacyGame.losers.players.push(player);
             }
         } else {
-            // set up a new game
-            const gameData = buildGameData(datum);
-
             gameData.losers = {
                 name: 'Losers',
                 players: [],
@@ -107,28 +106,22 @@ export function convertLegacyGameData(data) {
                 gameData.losers.players.push(player);
             }
 
-            legacyGameList.set(gameId, gameData);
+            legacyGameList.set(gameData.gameId, gameData);
         }
     }
 
     return legacyGameList;
 }
 
-let gameCount = 1;
-function getGameName(field) {
-    const gameName = `Game ${gameCount} @ ${field}`;
-    gameCount += 1;
-    return gameName;
-}
-
 const currentGameData = new Map();
-function buildGameData(data = {}) {
+function buildGameData(data = {}, prevEntry) {
+    const gameId = getGameId(data, prevEntry);
     const gameData = {
-        date: data.date,
+        date: new Date(data.date).toString().slice(0, 15), // Wed Nov 13 2013
         field: data.field,
-        gameId: gameCount,
         time: data.time,
         timeStamp: Date.parse(`${data.date} ${data.time}`).toString(),
+        gameId,
     };
 
     const gameDate = currentGameData.get('date');
@@ -142,7 +135,7 @@ function buildGameData(data = {}) {
         // on a different game
         currentGameData.clear();
 
-        const name = getGameName(data.field);
+        const name = `Game ${gameId} @ ${data.field}`;
         const year = parseCurrentYear(data.date);
         const month = parseCurrentMonth(data.date);
 
@@ -176,6 +169,37 @@ function buildGameStats(data, legacyPlayer) {
 }
 
 /**
+* Persist gameId's in localStorage - derive from team numbers
+* @param {Object} data
+* @param {String} prevEntry use previous gameId to build the next gameId
+* @return {Number}
+*/
+function getGameId(data, prevEntry) {
+    const { date, time } = data;
+    const key = `${date}-${time}`;
+    let gameIds = localStorage.getItem('gameIds');
+
+    // first entry will be undefined
+    if (!gameIds) {
+        const gameNumbers = {
+            [key]: 1,
+        };
+        localStorage.setItem('gameIds', JSON.stringify(gameNumbers));
+        return 1;
+    }
+
+    // gameIds exists in localStorage
+    gameIds = JSON.parse(gameIds);
+    if (gameIds[key]) {
+        return gameIds[key];
+    }
+
+    // new gameId
+    // should only be here when iterating over players, not games
+    return gameIds[`${prevEntry.date}-${prevEntry.time}`] + 1;
+}
+
+/**
  * Get player data from legacyPlayerList map
  * Then remove games - not needed for GameStats
  * @param {String} legacyPlayerId
@@ -205,10 +229,6 @@ function getPlayerStatsWithDerivedStats(datum, isWinner) {
     return withUntrackedStats(playerStats);
 }
 
-function resetGameCountForGameData() {
-    gameCount = 1;
-}
-
 function parseCurrentYear(date) {
     return date.split('/')[2];
 }
@@ -229,7 +249,7 @@ async function getPlayerDataFromMeetup(meetupId) {
     return playerData;
 }
 
-function convertPlayerData(data) {
+function transformMeetupData(data) {
     const { name, joined, gender, group_profile, is_pro_admin, meetupId, photo, status } = data;
 
     return {

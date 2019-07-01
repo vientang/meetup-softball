@@ -96,7 +96,7 @@ const mergedPlayerStats = [
         admin: false,
         status: 'active',
         gender: 'n/a',
-        photos: '"http://photo"',
+        photos: '{}',
         profile: undefined,
         games: [
             {
@@ -106,6 +106,7 @@ const mergedPlayerStats = [
                 singles: '1',
                 doubles: '1',
                 triples: '1',
+                h: "1",
                 hr: '1',
                 rbi: '1',
                 r: '2',
@@ -117,12 +118,16 @@ const mergedPlayerStats = [
                 w: '1',
                 l: '0',
                 gp: '1',
+                admin: false,
                 date: 'today',
                 field: 'Westlake',
+                joined: 123,
                 lat: '111',
                 lon: '111',
                 month: 'Jan',
+                meetupId: '234078828',
                 name: 'MU',
+                photos: {},
                 time: 'local time',
                 timeStamp: 'time now',
                 tournamentName: 'MU',
@@ -137,7 +142,7 @@ const mergedPlayerStats = [
         admin: true,
         status: 'active',
         gender: 'n/a',
-        photos: '"http://photo"',
+        photos: '{}',
         profile: undefined,
         games: [
             {
@@ -147,6 +152,7 @@ const mergedPlayerStats = [
                 singles: '1',
                 doubles: '1',
                 triples: '1',
+                h: "1",
                 hr: '1',
                 rbi: '1',
                 r: '1',
@@ -158,12 +164,16 @@ const mergedPlayerStats = [
                 w: '0',
                 l: '1',
                 gp: '1',
+                admin: true,
                 date: 'today',
                 field: 'Westlake',
+                joined: 234,
                 lat: '111',
                 lon: '111',
+                meetupId: '254078828',
                 month: 'Jan',
                 name: 'MU',
+                photos: {},
                 time: 'local time',
                 timeStamp: 'time now',
                 tournamentName: 'MU',
@@ -174,10 +184,54 @@ const mergedPlayerStats = [
 ];
 
 describe('Player stats', () => {
+    const winners = [{        
+        name: 'Fresh Basta',
+        joined: 123,
+        meetupId: '234078828',
+        admin: false,
+        photos: {},
+        battingOrder: '1',
+        o: '1',
+        singles: '1',
+        doubles: '1',
+        triples: '1',
+        hr: '1',
+        rbi: '1',
+        r: '2',
+        sb: '1',
+        cs: '0',
+        k: '1',
+        bb: '1',
+        ab: '1',
+        h: '1',
+        sac: '1',
+    }];
+
+    const losers = [{
+        name: 'Steven',
+        joined: 234,
+        meetupId: '254078828',
+        admin: true,
+        photos: {},
+        battingOrder: '1',
+        o: '1',
+        singles: '1',
+        doubles: '1',
+        triples: '1',
+        hr: '1',
+        rbi: '1',
+        r: '1',
+        sb: '1',
+        cs: '0',
+        k: '1',
+        bb: '1',
+        ab: '1',
+        h: '1',
+        sac: '1',
+    }];
+
     it('merge player stats', () => {
-        expect(
-            mergePlayerStats(currentGame, [currentPlayerStats[0]], [currentPlayerStats[1]]),
-        ).toEqual(mergedPlayerStats);
+        expect(mergePlayerStats(currentGame, winners, losers)).toEqual(mergedPlayerStats);
     });
 });
 
@@ -216,15 +270,27 @@ describe('Game stats', () => {
     });
 });
 
-describe('General helper functions', () => {
-    it('adds derived stats', () => {
-        const isTie = false;
-        expect(addDerivedStats([currentPlayerStats[0]], isTie, true)).toEqual([
+describe('Add derived stats', () => {
+    let isTie = false;
+    it('winners', () => {
+        const winner = true;
+        expect(addDerivedStats([currentPlayerStats[0]], isTie, winner)).toEqual([
             { ...currentPlayerStats[0], w: '1', l: '0', gp: '1' },
         ]);
+    });
 
-        expect(addDerivedStats([currentPlayerStats[1]])).toEqual([
+    it('losers', () => {
+        const winner = false;
+        expect(addDerivedStats([currentPlayerStats[1]], isTie, winner)).toEqual([
             { ...currentPlayerStats[1], w: '0', l: '1', gp: '1' },
+        ]);
+    });
+
+    it('tie', () => {
+        isTie = true;
+        const winner = false;
+        expect(addDerivedStats([currentPlayerStats[1]], isTie, winner)).toEqual([
+            { ...currentPlayerStats[1], w: '0', l: '0', gp: '1' },
         ]);
     });
 });

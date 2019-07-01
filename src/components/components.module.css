@@ -87,8 +87,8 @@
     font-weight: bold;
     text-transform: uppercase;
     text-decoration: none;
-    transform: var(--skew-10) translateX(0.5rem);
-    transition: color 200ms, background-color 200ms;
+    transform: var(--skew-10);
+    transition: color 200ms, background-color 200ms, transform 200ms;
 }
 
 .activeNavLink {
@@ -98,6 +98,7 @@
 .nav-link:hover {
     color: var(--white-1);
     background: var(--muNavy);
+    padding: 0 2px;
     transform: var(--skew-10) scale(1.1);
 }
 

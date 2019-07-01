@@ -13,10 +13,16 @@ const {
 } = statsCalc;
 
 export function createSlug(name) {
-    return name
+    let slug = name
         .split(' ')
         .join('_')
         .toLowerCase();
+
+    if (slug.charAt(slug.length - 1) === '.') {
+        slug = slug.slice(0, slug.length - 1);
+    }
+
+    return slug;
 }
 
 export function getMeridiem(time) {
@@ -64,21 +70,28 @@ export function convertStringStatsToNumbers(stats) {
  * @param {String} value
  */
 export function formatCellValue(value) {
-    const formattedValue = value || '';
+    if (value === null) {
+        return '0';
+    }
 
-    if (typeof value === 'string' && value.includes('.')) {
+    const formattedValue = value.toString() || '';
+
+    if (formattedValue.includes('.')) {
+        // remove leading zero
         if (formattedValue.substring(0, 2) === '0.') {
             return formatValueLength(formattedValue.slice(1), 4);
         }
+        // add trailing zeroes or remove to 4 digits
+        // leading number is greater than 0
         if (Number(formattedValue[0]) > 0 && formattedValue[1] === '.') {
             return formatValueLength(formattedValue, 4);
         }
-        if (formattedValue.length > 4) {
-            return formatValueLength(formattedValue, 5);
-        }
+        // add trailing zeroes or remove to 5 digits
+        // leading number is greater than 9
+        return formatValueLength(formattedValue, 5);
     }
-
-    return value || 0;
+    
+    return formattedValue || '0';
 }
 
 export function setTopLeaders(players, stat) {

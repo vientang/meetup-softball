@@ -79,18 +79,22 @@ class Admin extends React.Component {
         return results.map((player) => createPlayer(player));
     };
 
+    fetchExistingPlayer = async (player) => {
+        const existingPlayer = await API.graphql(
+                graphqlOperation(listPlayerStatss, {
+                    filter: { meetupId: { eq: player.meetupId } },
+                }),
+            );
+        return get(existingPlayer, 'data.listPlayerStatss.items', null);
+    };
+
     /**
      * Update a players game log or create a new player
      * @param {Array} playerStats
      */
     submitPlayerStats = async (playerStats = []) => {
         playerStats.forEach(async (player) => {
-            let existingPlayer = await API.graphql(
-                graphqlOperation(listPlayerStatss, {
-                    filter: { meetupId: { eq: player.meetupId } },
-                }),
-            );
-            existingPlayer = get(existingPlayer, 'data.listPlayerStatss.items', null);
+            const existingPlayer = this.fetchExistingPlayer(player);
 
             try {
                 if (existingPlayer[0]) {

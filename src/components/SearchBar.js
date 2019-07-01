@@ -12,21 +12,21 @@ class SearchBar extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            allPlayerData: props.allPlayers,
+            allPlayers: props.allPlayers,
         };
     }
 
     componentDidMount = () => {
         if (this.props.allPlayers.length === 0) {
             this.setState(() => ({
-                allPlayerData: renderOptions(this.props.allPlayers),
+                allPlayers: renderOptions(this.props.allPlayers),
             }));
         }
     };
 
     handleSearch = (value) => {
         const filteredOptions = filterOptions(this.props.allPlayers, value);
-        this.setState(() => ({ allPlayerData: filteredOptions }));
+        this.setState(() => ({ allPlayers: filteredOptions }));
     };
 
     handleSelect = (value, instance) => {
@@ -44,7 +44,7 @@ class SearchBar extends React.Component {
         return (
             <div className={componentStyles.searchBarContainer}>
                 <AutoComplete
-                    dataSource={this.state.allPlayerData}
+                    dataSource={this.state.allPlayers}
                     dropdownMatchSelectWidth={false}
                     dropdownStyle={dropdownStyle}
                     onSelect={this.handleSelect}
@@ -61,8 +61,8 @@ class SearchBar extends React.Component {
     }
 }
 
-function filterOptions(playerData, value) {
-    return playerData
+function filterOptions(allPlayers, value) {
+    return allPlayers
         .filter((player) => {
             return player.name.toLowerCase().includes(value.toLowerCase());
         })
