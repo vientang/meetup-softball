@@ -52,17 +52,17 @@ function getGamesByDate(games, date, props) {
     games.forEach((game) => {
         if (game.date === date) {
             const { onGameCancel, onGameSelection, selectedGame } = props;
-            const menuItemStyle = getMenuItemStyles(game.meetupId, selectedGame);
+            const menuItemStyle = getMenuItemStyles(game.id, selectedGame);
             const meridiem = getMeridiem(game.time);
 
             gamesByDate.push(
                 <div
-                    key={game.meetupId}
+                    key={game.id}
                     className={componentStyles.gameMenuTimeSection}
                     style={menuItemStyle}
                 >
                     <span
-                        id={game.meetupId}
+                        id={game.id}
                         className={componentStyles.gameMenuTime}
                         onClick={onGameSelection}
                     >
@@ -70,7 +70,7 @@ function getGamesByDate(games, date, props) {
                         {meridiem}
                     </span>
                     <span
-                        id={game.meetupId}
+                        id={game.id}
                         className={componentStyles.gameMenuCloseIcon}
                         onClick={onGameCancel}
                     >
@@ -84,10 +84,10 @@ function getGamesByDate(games, date, props) {
     return gamesByDate;
 }
 
-function getMenuItemStyles(meetupId, selectedGame) {
+function getMenuItemStyles(id, selectedGame) {
     const menuItemStyle = {};
 
-    if (meetupId === selectedGame) {
+    if (id === selectedGame) {
         menuItemStyle.backgroundColor = '#FFDEE9';
     }
 

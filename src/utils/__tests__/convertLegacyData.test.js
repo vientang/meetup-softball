@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
-import { convertLegacyData, clearlegacyPlayerList } from '../convertLegacyData';
-import { legacyData } from '../../../__mocks__/mockData';
+import { convertLegacyPlayerData } from '../convertLegacyData';
+import legacyData from '../../../__mocks__/mockData';
 
 xdescribe('Legacy data', () => {
     beforeEach(() => {
@@ -8,7 +8,7 @@ xdescribe('Legacy data', () => {
     });
 
     it('equal size as input data', async () => {
-        const convertedData = await convertLegacyData(legacyData);
+        const convertedData = await convertLegacyPlayerData(legacyData);
         expect(convertedData.size).toBe(legacyData.length);
     });
 });

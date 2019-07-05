@@ -11,11 +11,14 @@ const legacyPlayerList = new Map();
  * @param {Array}
  * @return {Array}
  */
-export async function convertLegacyPlayerData(data) {  
+export async function convertLegacyPlayerData(data) {
     legacyPlayerList.clear();
+    // remove this when we're ready to migrate all legacy stats
+    // in order to persist the running count of game id's
+    localStorage.removeItem('gameIds');
 
     for (const [i, datum] of data.entries()) {
-        const legacyPlayerId = datum.meetupId.toString();
+        const legacyPlayerId = datum.id.toString();
         const legacyPlayer = legacyPlayerList.get(legacyPlayerId);
 
         // format game data and calculate stats
@@ -25,13 +28,13 @@ export async function convertLegacyPlayerData(data) {
         if (legacyPlayer) {
             legacyPlayer.games.push({ ...gameData, ...gameStats });
         } else {
-            const playerData = await getPlayerDataFromMeetup(datum.meetupId);
+            const playerData = await getPlayerDataFromMeetup(datum.id);
             if (playerData.data.errors) {
                 continue;
             }
             const player = await transformMeetupData({
                 ...playerData.data,
-                meetupId: datum.meetupId,
+                id: datum.id,
                 gender: datum.gender,
             });
 
@@ -44,17 +47,17 @@ export async function convertLegacyPlayerData(data) {
             }
         }
     }
-    
+
     return legacyPlayerList;
 }
 
 const legacyGameList = new Map();
-export function convertLegacyGameData(data) {      
+export function convertLegacyGameData(data) {
     legacyGameList.clear();
 
     for (const [i, datum] of data.entries()) {
         // get player data && delete the games array
-        const legacyPlayerId = datum.meetupId.toString();
+        const legacyPlayerId = datum.id.toString();
         const playerData = getPlayerDataForGameStats(legacyPlayerId);
         if (!playerData) {
             continue;
@@ -71,7 +74,7 @@ export function convertLegacyGameData(data) {
         const gameData = buildGameData(datum, data[i - 1]);
         const legacyGame = legacyGameList.get(gameData.gameId);
         const isWinner = isOnWinningTeam(datum);
-        
+
         if (legacyGame) {
             if (isWinner) {
                 legacyGame.winners.runsScored += r;
@@ -155,36 +158,36 @@ function buildGameData(data = {}, prevEntry) {
 }
 
 function buildGameStats(data, legacyPlayer) {
-    const { TEAM_1, TEAM_2, team } = data;
     const stats = convertStringStatsToNumbers(data);
     const { ab, singles, doubles, triples, hr, sac } = stats;
 
     const hits = getHits(singles, doubles, triples, hr);
     stats.o = getOuts(ab, sac, hits);
     stats.gp = legacyPlayer ? legacyPlayer.games.length + 1 : 1;
-    stats.w = TEAM_1 === team ? 1 : 0;
-    stats.l = TEAM_2 === team ? 1 : 0;
+    stats.w = isOnWinningTeam(data) ? 1 : 0;
+    stats.l = !isOnWinningTeam(data) ? 1 : 0;
 
     return withUntrackedStats(stats);
 }
 
 /**
-* Persist gameId's in localStorage - derive from team numbers
-* @param {Object} data
-* @param {String} prevEntry use previous gameId to build the next gameId
-* @return {Number}
-*/
-function getGameId(data, prevEntry) {
+ * Persist gameId's in localStorage - derive from team numbers
+ * @param {Object} data
+ * @param {String} prevEntry use previous gameId to build the next gameId
+ * @return {Number}
+ */
+function getGameId(data, prevEntry = {}) {
     const { date, time } = data;
     const key = `${date}-${time}`;
+    const prevKey = `${prevEntry.date}-${prevEntry.time}`;
     let gameIds = localStorage.getItem('gameIds');
 
-    // first entry will be undefined
+    // initialize gameIds in localstorage
     if (!gameIds) {
-        const gameNumbers = {
+        const games = {
             [key]: 1,
         };
-        localStorage.setItem('gameIds', JSON.stringify(gameNumbers));
+        localStorage.setItem('gameIds', JSON.stringify(games));
         return 1;
     }
 
@@ -196,7 +199,9 @@ function getGameId(data, prevEntry) {
 
     // new gameId
     // should only be here when iterating over players, not games
-    return gameIds[`${prevEntry.date}-${prevEntry.time}`] + 1;
+    gameIds[key] = gameIds[prevKey] + 1;
+    localStorage.setItem('gameIds', JSON.stringify(gameIds));
+    return gameIds[key] + 1;
 }
 
 /**
@@ -217,14 +222,14 @@ function getPlayerDataForGameStats(legacyPlayerId) {
     return playerDataForGameStats;
 }
 
-function getPlayerStatsWithDerivedStats(datum, isWinner) {
+function getPlayerStatsWithDerivedStats(datum) {
     const playerStats = convertStringStatsToNumbers(datum);
     const { ab, singles, doubles, triples, hr, sac } = playerStats;
     const hits = getHits(singles, doubles, triples, hr);
     playerStats.o = getOuts(ab, sac, hits);
     playerStats.gp = 1;
-    playerStats.w = isWinner ? 1 : 0;
-    playerStats.l = isWinner ? 0 : 1;
+    playerStats.w = isOnWinningTeam(datum) ? 1 : 0;
+    playerStats.l = !isOnWinningTeam(datum) ? 1 : 0;
 
     return withUntrackedStats(playerStats);
 }
@@ -237,9 +242,9 @@ function parseCurrentMonth(date) {
     return date.split('/')[0];
 }
 
-async function getPlayerDataFromMeetup(meetupId) {
+async function getPlayerDataFromMeetup(id) {
     const playerData = await fetchJsonp(
-        `${process.env.PLAYER_URL}${meetupId}?&sign=true&photo-host=public`,
+        `${process.env.PLAYER_URL}${id}?&sign=true&photo-host=public`,
     )
         .then((response) => response.json())
         .then((playerResult) => playerResult)
@@ -249,14 +254,18 @@ async function getPlayerDataFromMeetup(meetupId) {
     return playerData;
 }
 
+/**
+ * Transform Meetup data properties
+ * @param {Object} data
+ */
 function transformMeetupData(data) {
-    const { name, joined, gender, group_profile, is_pro_admin, meetupId, photo, status } = data;
+    const { name, joined, gender, group_profile, is_pro_admin, id, photo, status } = data;
 
     return {
+        id: id.toString(),
         admin: is_pro_admin,
         gender: getGender(gender),
         joined: joined.toString(),
-        meetupId: meetupId.toString(),
         photos: JSON.stringify(photo),
         profile: JSON.stringify(group_profile),
         name,
@@ -293,7 +302,6 @@ function withUntrackedGameData(gameData) {
     const untracked = {
         lat: null,
         lon: null,
-        meetupId: null,
         rsvps: null,
         tournamentName: null,
         waitListCount: null,

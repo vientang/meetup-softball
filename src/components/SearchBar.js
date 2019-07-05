@@ -67,7 +67,7 @@ function filterOptions(allPlayers, value) {
             return player.name.toLowerCase().includes(value.toLowerCase());
         })
         .map((player) => (
-            <Option key={player.meetupId} value={player.name}>
+            <Option key={player.id} value={player.name}>
                 {renderPlayerLink(player)}
             </Option>
         ));
@@ -75,7 +75,7 @@ function filterOptions(allPlayers, value) {
 
 function renderOptions(allPlayers) {
     return allPlayers.map((player) => (
-        <Option key={player.meetupId} value={player.name}>
+        <Option key={player.id} value={player.name}>
             {this.renderPlayerLink(player)}
         </Option>
     ));

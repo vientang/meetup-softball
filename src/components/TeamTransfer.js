@@ -40,13 +40,13 @@ class TeamTransfer extends React.Component {
         const focusedItemId = e.currentTarget.getAttribute('data-id');
 
         const selectedPlayer = [...sourceList, ...targetList].find(
-            (player) => player.meetupId.toString() === focusedItemId,
+            (player) => player.id.toString() === focusedItemId,
         );
 
         this.setState((prevState) => {
-            const prevFocusedId = get(prevState, 'focusedItem.meetupId', null);
+            const prevFocusedId = get(prevState, 'focusedItem.id', null);
             return {
-                focusedItem: prevFocusedId === selectedPlayer.meetupId ? null : selectedPlayer,
+                focusedItem: prevFocusedId === selectedPlayer.id ? null : selectedPlayer,
             };
         });
     };
@@ -88,11 +88,11 @@ class TeamTransfer extends React.Component {
         const { focusedItem, targetList, sourceList } = this.state;
 
         // sort player to source if in sourceList
-        const validMove = sourceList.find((player) => player.meetupId === focusedItem.meetupId);
+        const validMove = sourceList.find((player) => player.id === focusedItem.id);
 
         if (focusedItem && validMove) {
             const newSourceList = addBattingOrder(
-                sourceList.filter((player) => player.meetupId !== focusedItem.meetupId),
+                sourceList.filter((player) => player.id !== focusedItem.id),
             );
             const newTargetList = addBattingOrder([...targetList, focusedItem]);
 
@@ -113,12 +113,12 @@ class TeamTransfer extends React.Component {
         const { focusedItem, targetList, sourceList } = this.state;
 
         // sort player to source if in targetList
-        const validMove = targetList.find((player) => player.meetupId === focusedItem.meetupId);
+        const validMove = targetList.find((player) => player.id === focusedItem.id);
 
         if (focusedItem && validMove) {
             const newSourceList = addBattingOrder([...sourceList, focusedItem]);
             const newTargetList = addBattingOrder(
-                targetList.filter((player) => player.meetupId !== focusedItem.meetupId),
+                targetList.filter((player) => player.id !== focusedItem.id),
             );
 
             this.setState(
@@ -185,7 +185,7 @@ class TeamTransfer extends React.Component {
 
     render() {
         const { targetList, focusedItem, sourceList } = this.state;
-        const allRsvpIds = [...sourceList, ...targetList].map((player) => player.meetupId);
+        const allRsvpIds = [...sourceList, ...targetList].map((player) => player.id);
         const buttonProps = { size: 'small', shape: 'circle' };
 
         return (
@@ -225,7 +225,7 @@ function addBattingOrder(players) {
 
 function sortBattingOrder({ focusedItem, list, direction }) {
     const listToSort = [...list];
-    const currIndex = listToSort.findIndex((target) => target.meetupId === focusedItem.meetupId);
+    const currIndex = listToSort.findIndex((target) => target.id === focusedItem.id);
     const playerToMove = listToSort[currIndex];
 
     // sort players inside a list

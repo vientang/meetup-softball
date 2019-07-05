@@ -9,7 +9,7 @@ class SortTeams extends React.Component {
         super(props);
         this.state = {
             losers: [],
-            meetupId: props.data.meetupId,
+            gameId: props.data.id,
             players: props.data.players || [],
             teamsBalanced: false,
             winners: [],
@@ -17,11 +17,11 @@ class SortTeams extends React.Component {
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps.data.meetupId === prevState.meetupId) {
+        if (nextProps.data.id === prevState.id) {
             return null;
         }
         return {
-            meetupId: nextProps.data.meetupId,
+            gameId: nextProps.data.id,
             players: nextProps.data.players,
         };
     }
@@ -44,7 +44,7 @@ class SortTeams extends React.Component {
     };
 
     render() {
-        const { losers, meetupId, players, teamsBalanced, winners } = this.state;
+        const { losers, gameId, players, teamsBalanced, winners } = this.state;
 
         const buttonProps = {
             disabled: !teamsBalanced,
@@ -58,7 +58,7 @@ class SortTeams extends React.Component {
 
         return (
             <AdminSection title="SORT TEAMS" iconType="swap" iconColor="#1890ff">
-                <TeamTransfer gameId={meetupId} onChange={this.handleChange} players={players} />
+                <TeamTransfer gameId={gameId} onChange={this.handleChange} players={players} />
                 <Button {...buttonProps}>SET TEAMS</Button>
             </AdminSection>
         );
@@ -79,7 +79,7 @@ function areTeamsBalanced(winners, losers) {
 
 SortTeams.propTypes = {
     data: PropTypes.shape({
-        meetupId: PropTypes.string,
+        id: PropTypes.string,
         field: PropTypes.string,
         date: PropTypes.string,
         time: PropTypes.string,

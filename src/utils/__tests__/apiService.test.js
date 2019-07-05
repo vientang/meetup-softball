@@ -2,7 +2,7 @@
 import { addDerivedStats, mergeGameStats, mergePlayerStats } from '../apiService';
 
 const meetupData = {
-    meetupId: 'mu-123',
+    id: 'mu-123',
     date: '2019-01-01',
     gameId: '235',
     year: '2019',
@@ -18,7 +18,7 @@ const currentGame = {
     gameId: '300',
     lat: '111',
     lon: '111',
-    meetupId: 'zzz',
+    id: 'zzz',
     month: 'Jan',
     name: 'MU',
     rsvps: '1',
@@ -32,7 +32,6 @@ const currentGame = {
 const currentPlayerStats = [
     {
         id: '123',
-        meetupId: '234078828',
         name: 'Fresh Basta',
         joined: 123,
         admin: false,
@@ -60,7 +59,6 @@ const currentPlayerStats = [
     },
     {
         id: '456',
-        meetupId: '254078828',
         name: 'Steven',
         joined: 234,
         admin: true,
@@ -90,14 +88,14 @@ const currentPlayerStats = [
 
 const mergedPlayerStats = [
     {
-        meetupId: '234078828',
+        id: '123',
         name: 'Fresh Basta',
         joined: 123,
         admin: false,
         status: 'active',
         gender: 'n/a',
         photos: '{}',
-        profile: undefined,
+        profile: '{}',
         games: [
             {
                 ab: '1',
@@ -106,7 +104,7 @@ const mergedPlayerStats = [
                 singles: '1',
                 doubles: '1',
                 triples: '1',
-                h: "1",
+                h: '1',
                 hr: '1',
                 rbi: '1',
                 r: '2',
@@ -118,16 +116,12 @@ const mergedPlayerStats = [
                 w: '1',
                 l: '0',
                 gp: '1',
-                admin: false,
                 date: 'today',
                 field: 'Westlake',
-                joined: 123,
                 lat: '111',
                 lon: '111',
                 month: 'Jan',
-                meetupId: '234078828',
                 name: 'MU',
-                photos: {},
                 time: 'local time',
                 timeStamp: 'time now',
                 tournamentName: 'MU',
@@ -136,14 +130,14 @@ const mergedPlayerStats = [
         ],
     },
     {
-        meetupId: '254078828',
+        id: '456',
         name: 'Steven',
         joined: 234,
         admin: true,
         status: 'active',
         gender: 'n/a',
         photos: '{}',
-        profile: undefined,
+        profile: '{}',
         games: [
             {
                 ab: '1',
@@ -152,7 +146,7 @@ const mergedPlayerStats = [
                 singles: '1',
                 doubles: '1',
                 triples: '1',
-                h: "1",
+                h: '1',
                 hr: '1',
                 rbi: '1',
                 r: '1',
@@ -164,16 +158,12 @@ const mergedPlayerStats = [
                 w: '0',
                 l: '1',
                 gp: '1',
-                admin: true,
                 date: 'today',
                 field: 'Westlake',
-                joined: 234,
                 lat: '111',
                 lon: '111',
-                meetupId: '254078828',
                 month: 'Jan',
                 name: 'MU',
-                photos: {},
                 time: 'local time',
                 timeStamp: 'time now',
                 tournamentName: 'MU',
@@ -184,51 +174,57 @@ const mergedPlayerStats = [
 ];
 
 describe('Player stats', () => {
-    const winners = [{        
-        name: 'Fresh Basta',
-        joined: 123,
-        meetupId: '234078828',
-        admin: false,
-        photos: {},
-        battingOrder: '1',
-        o: '1',
-        singles: '1',
-        doubles: '1',
-        triples: '1',
-        hr: '1',
-        rbi: '1',
-        r: '2',
-        sb: '1',
-        cs: '0',
-        k: '1',
-        bb: '1',
-        ab: '1',
-        h: '1',
-        sac: '1',
-    }];
+    const winners = [
+        {
+            name: 'Fresh Basta',
+            joined: 123,
+            meetupId: '123',
+            admin: false,
+            photos: {},
+            profile: {},
+            battingOrder: '1',
+            o: '1',
+            singles: '1',
+            doubles: '1',
+            triples: '1',
+            hr: '1',
+            rbi: '1',
+            r: '2',
+            sb: '1',
+            cs: '0',
+            k: '1',
+            bb: '1',
+            ab: '1',
+            h: '1',
+            sac: '1',
+        },
+    ];
 
-    const losers = [{
-        name: 'Steven',
-        joined: 234,
-        meetupId: '254078828',
-        admin: true,
-        photos: {},
-        battingOrder: '1',
-        o: '1',
-        singles: '1',
-        doubles: '1',
-        triples: '1',
-        hr: '1',
-        rbi: '1',
-        r: '1',
-        sb: '1',
-        cs: '0',
-        k: '1',
-        bb: '1',
-        ab: '1',
-        h: '1',
-        sac: '1',
-    }];
+    const losers = [
+        {
+            name: 'Steven',
+            joined: 234,
+            meetupId: '456',
+            admin: true,
+            photos: {},
+            profile: {},
+            battingOrder: '1',
+            o: '1',
+            singles: '1',
+            doubles: '1',
+            triples: '1',
+            hr: '1',
+            rbi: '1',
+            r: '1',
+            sb: '1',
+            cs: '0',
+            k: '1',
+            bb: '1',
+            ab: '1',
+            h: '1',
+            sac: '1',
+        },
+    ];
 
     it('merge player stats', () => {
         expect(mergePlayerStats(currentGame, winners, losers)).toEqual(mergedPlayerStats);
@@ -242,7 +238,7 @@ describe('Game stats', () => {
         const losingTeam = addDerivedStats([currentPlayerStats[1]]);
 
         const gameStats = {
-            meetupId: meetupData.meetupId,
+            id: meetupData.id,
             gameId: meetupData.gameId,
             name: meetupData.name,
             date: meetupData.date,

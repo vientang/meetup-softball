@@ -2,11 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import isEqual from 'lodash/isEqual';
 import get from 'lodash/get';
+import uniqBy from 'lodash/uniqBy';
 import { Link } from 'gatsby';
 import { Avatar, Skeleton } from 'antd';
 import { API, graphqlOperation } from 'aws-amplify';
 import { withFilterBar, NotFoundImage, StatsTable } from '../components';
-import { clearMasterList, getAllPlayerStats } from '../utils/apiService';
+import { getAllPlayerStats } from '../utils/apiService';
 import { createSlug, formatCellValue, sortHighToLow } from '../utils/helpers';
 import { statPageCategories } from '../utils/constants';
 import pageStyles from './pages.module.css';
@@ -14,14 +15,14 @@ import legacyData from '../../__mocks__/mockData';
 import { convertLegacyPlayerData, convertLegacyGameData } from '../utils/convertLegacyData';
 
 import { createGameStats, createPlayerStats, updatePlayerStats } from '../graphql/mutations';
-import { listGameStatss, listPlayerStatss } from '../graphql/queries';
+import { getPlayerStats, listGameStatss, listPlayerStatss } from '../graphql/queries';
 
 const statsTableStyle = {
     height: 800,
-    width: 1155,
+    width: 1165,
 };
 
-const skeletonConfig = { rows: 20, width: '1155px' };
+const skeletonConfig = { rows: 20, width: '1165px' };
 
 const defaultSorted = [
     {
@@ -39,15 +40,16 @@ class Stats extends React.Component {
         };
     }
 
-    async componentDidMount() {
-        const playerdata = await convertLegacyPlayerData(legacyData);
-        const gamedata = await convertLegacyGameData(legacyData);
-        console.log('player data', { playerdata, gamedata });
-        console.time("submit data");
-        this.submitPlayerStats(playerdata);
-        this.submitGameStats(gamedata);
-        console.timeEnd("submit data");
-    }
+    // async componentDidMount() {
+    //     const playerdata = await convertLegacyPlayerData(legacyData);
+    //     const gamedata = await convertLegacyGameData(legacyData);
+    //     const uniqPlayers = uniqBy(playerdata, 'id');
+    //     console.log('player data', { uniqPlayers, gamedata, playerdata });
+    //     console.time('submit data');
+    //     this.submitPlayerStats(playerdata);
+    //     this.submitGameStats(gamedata);
+    //     console.timeEnd('submit data');
+    // }
 
     componentDidUpdate(prevProps) {
         if (this.shouldUpdateStats(prevProps.gameData)) {
@@ -57,13 +59,10 @@ class Stats extends React.Component {
     }
 
     fetchExistingPlayer = async (player) => {
-        // TODO: replace id with meetupId to allow for query instead of scanning the entire database
         const existingPlayer = await API.graphql(
-                graphqlOperation(listPlayerStatss, {
-                    filter: { meetupId: { eq: player.meetupId } },
-                }),
-            );
-        return get(existingPlayer, 'data.listPlayerStatss.items', null);
+            graphqlOperation(getPlayerStats, { id: player.id }),
+        );
+        return get(existingPlayer, 'data.getPlayerStats', null);
     };
 
     /**
@@ -72,20 +71,20 @@ class Stats extends React.Component {
      */
     submitPlayerStats = async (playerStats = []) => {
         playerStats.forEach(async (player) => {
-            const existingPlayer = await this.fetchExistingPlayer(player);            
-            
-            if (existingPlayer[0]) {
+            const existingPlayer = await this.fetchExistingPlayer(player);
+
+            if (existingPlayer) {
                 // player already exists in database
-                const { id, games } = existingPlayer[0];
+                const { id, games } = existingPlayer;
                 const parsedGames = JSON.parse(games);
                 const updatedGames = [...player.games, ...parsedGames];
 
-                // await API.graphql(
-                //     graphqlOperation(updatePlayerStats, {
-                //         input: { id },
-                //         games: JSON.stringify(updatedGames),
-                //     }),
-                // );
+                await API.graphql(
+                    graphqlOperation(updatePlayerStats, {
+                        input: { id },
+                        games: JSON.stringify(updatedGames),
+                    }),
+                );
             } else {
                 // player does not yet exist in database
                 const newPlayer = {
@@ -93,11 +92,11 @@ class Stats extends React.Component {
                     games: JSON.stringify(player.games),
                 };
 
-                // await API.graphql(
-                //     graphqlOperation(createPlayerStats, {
-                //         input: newPlayer,
-                //     }),
-                // );
+                await API.graphql(
+                    graphqlOperation(createPlayerStats, {
+                        input: newPlayer,
+                    }),
+                );
             }
         });
     };
@@ -128,7 +127,7 @@ class Stats extends React.Component {
         const slug = createSlug(playerName);
 
         // playerData contains name, games, profile, photos, etc.
-        const playerData = getPlayerStats(this.props.allPlayers, playerId);
+        const playerData = findPlayer(this.props.allPlayers, playerId);
 
         return (
             <Link
@@ -147,7 +146,7 @@ class Stats extends React.Component {
 
         const playerName = playerStats[cellInfo.index].name;
         const cellValue = playerStats[cellInfo.index][cellInfo.column.id];
-        
+
         return cellValue === playerName
             ? this.renderPlayerCell(playerStats, cellInfo)
             : formatCellValue(cellValue);
@@ -200,15 +199,15 @@ function PlayerAvatar({ image, name }) {
     return <Avatar {...avatarProps} shape="square" />;
 }
 
-function getPlayerStats(playerStats, playerId) {
+function findPlayer(playerStats, playerId) {
     if (!playerId) {
         return {};
     }
-    return playerStats.find((player) => Number(player.meetupId) === playerId) || {};
+    return playerStats.find((player) => Number(player.id) === playerId) || {};
 }
 
 function getPlayerMetaData(playerStats, cellInfo) {
-    const playerId = playerStats[cellInfo.index].meetupId;
+    const playerId = playerStats[cellInfo.index].id;
     const playerName = playerStats[cellInfo.index].name;
     const playerImg = get(playerStats[cellInfo.index], 'photos.thumb_link', '');
     return { playerId, playerName, playerImg };

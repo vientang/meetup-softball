@@ -14,7 +14,7 @@ import {
     SuccessImage,
 } from '../components';
 import { createGameStats, createPlayerStats, updatePlayerStats } from '../graphql/mutations';
-import { listGameStatss, listPlayerStatss } from '../graphql/queries';
+import { getPlayerStats, listGameStatss } from '../graphql/queries';
 import { mergePlayerStats, mergeGameStats } from '../utils/apiService';
 import { sortTimeStamp } from '../utils/helpers';
 import styles from './pages.module.css';
@@ -44,7 +44,7 @@ class Admin extends React.Component {
 
         if (this.mounted) {
             this.setState(() => ({
-                selectedGameId: currentGame.meetupId,
+                selectedGameId: currentGame.id,
                 currentGame,
                 games,
             }));
@@ -73,7 +73,7 @@ class Admin extends React.Component {
             return currentGame.players;
         }
 
-        const rsvpList = await this.fetchRsvpList(currentGame.meetupId);
+        const rsvpList = await this.fetchRsvpList(currentGame.id);
         const results = await Promise.all(rsvpList);
 
         return results.map((player) => createPlayer(player));
@@ -81,11 +81,9 @@ class Admin extends React.Component {
 
     fetchExistingPlayer = async (player) => {
         const existingPlayer = await API.graphql(
-                graphqlOperation(listPlayerStatss, {
-                    filter: { meetupId: { eq: player.meetupId } },
-                }),
-            );
-        return get(existingPlayer, 'data.listPlayerStatss.items', null);
+            graphqlOperation(getPlayerStats, { id: player.id }),
+        );
+        return get(existingPlayer, 'data.getPlayerStats', null);
     };
 
     /**
@@ -97,9 +95,9 @@ class Admin extends React.Component {
             const existingPlayer = this.fetchExistingPlayer(player);
 
             try {
-                if (existingPlayer[0]) {
+                if (existingPlayer) {
                     // player already exists in database
-                    const { id, games } = existingPlayer[0];
+                    const { id, games } = existingPlayer;
                     const parsedGames = JSON.parse(games);
                     const updatedGames = [player.games[0], ...parsedGames];
 
@@ -143,7 +141,7 @@ class Admin extends React.Component {
         const gameStats = await mergeGameStats(currentGame, winners, losers);
         this.submitGameStats(gameStats);
 
-        const remainingGames = games.filter((game) => game.meetupId !== selectedGameId);
+        const remainingGames = games.filter((game) => game.id !== selectedGameId);
         const nextGame = remainingGames[0];
         nextGame.players = await this.getCurrentGamePlayers(remainingGames[0]);
 
@@ -152,7 +150,7 @@ class Admin extends React.Component {
                 areTeamsSorted: false,
                 currentGame: nextGame,
                 games: remainingGames,
-                selectedGameId: get(nextGame, 'meetupId', ''),
+                selectedGameId: get(nextGame, 'id', ''),
             };
         });
 
@@ -165,7 +163,7 @@ class Admin extends React.Component {
     handleSelectGame = async (e) => {
         e.preventDefault();
         const selectedGameId = e.target.id;
-        const currentGame = this.state.games.find(findGameByMeetupId(selectedGameId));
+        const currentGame = this.state.games.find(findCurrentGame(selectedGameId));
         const currentPlayers = await this.getCurrentGamePlayers(currentGame);
         currentGame.players = currentPlayers;
         this.setState(() => ({ currentGame, selectedGameId }));
@@ -178,13 +176,13 @@ class Admin extends React.Component {
     handleCancelGame = async (e) => {
         e.stopPropagation();
         const selectedGameId = e.target.id;
-        const games = this.state.games.filter(filterGameByMeetupId(selectedGameId));
+        const games = this.state.games.filter(filterCurrentGame(selectedGameId));
         const nextGame = games[0];
         nextGame.players = await this.getCurrentGamePlayers(games[0]);
 
         this.setState(() => ({
             currentGame: nextGame,
-            selectedGameId: get(nextGame, 'meetupId', ''),
+            selectedGameId: get(nextGame, 'id', ''),
             games,
         }));
     };
@@ -308,7 +306,7 @@ function createGame(game) {
     newGame.gameId = gameId;
     newGame.lat = lat;
     newGame.lon = lon;
-    newGame.meetupId = id;
+    newGame.id = id;
     newGame.month = month;
     newGame.name = game.name;
     newGame.rsvps = rsvp_limit;
@@ -329,10 +327,10 @@ function createGame(game) {
 function createPlayer(player) {
     const { name, id, joined, group_profile, is_pro_admin, photo, status } = player.data;
     return {
+        id,
         name,
         joined,
         status,
-        meetupId: id,
         profile: group_profile,
         admin: is_pro_admin,
         photos: photo,
@@ -351,12 +349,12 @@ function createPlayer(player) {
     };
 }
 
-function findGameByMeetupId(selectedGameId) {
-    return (game) => game.meetupId === selectedGameId;
+function findCurrentGame(selectedGameId) {
+    return (game) => game.id === selectedGameId;
 }
 
-function filterGameByMeetupId(selectedGameId) {
-    return (game) => game.meetupId !== selectedGameId;
+function filterCurrentGame(selectedGameId) {
+    return (game) => game.id !== selectedGameId;
 }
 
 /**

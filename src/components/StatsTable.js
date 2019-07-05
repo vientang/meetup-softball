@@ -106,7 +106,7 @@ function formatColumnWidth(props) {
     const scrollBarOffset = 16;
     const rateCategories = ['avg', 'rc', 'obp', 'ops', 'slg', 'woba'];
     if (rateCategories.includes(category)) {
-        return lastColumn ? 60 + scrollBarOffset : 60;
+        return lastColumn ? 55 + scrollBarOffset : 55;
     }
     switch (category) {
         case 'player':

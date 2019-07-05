@@ -17,7 +17,7 @@ const AddPlayer = ({ allRsvpIds, listCount, listType, onAddPlayer }) => {
             let allPlayersList = await API.graphql(graphqlOperation(listPlayerStatss));
             allPlayersList = allPlayersList.data.listPlayerStatss.items.filter((player) => {
                 const playerFound = allRsvpIds.find(
-                    (playerId) => playerId.toString() === player.meetupId,
+                    (playerId) => playerId.toString() === player.id,
                 );
                 return !playerFound;
             });
@@ -34,7 +34,7 @@ const AddPlayer = ({ allRsvpIds, listCount, listType, onAddPlayer }) => {
         const playerNames = allPlayers
             .filter((player) => player.name.toLowerCase().includes(value.toLowerCase()))
             .map((player) => (
-                <Option key={player.meetupId} value={player.name}>
+                <Option key={player.id} value={player.name}>
                     {player.name}
                 </Option>
             ));
@@ -42,7 +42,7 @@ const AddPlayer = ({ allRsvpIds, listCount, listType, onAddPlayer }) => {
     };
 
     const handleAddPlayer = (value, instance) => {
-        let playerToAdd = allPlayers.find((player) => player.meetupId === instance.key) || {};
+        let playerToAdd = allPlayers.find((player) => player.id === instance.key) || {};
         playerToAdd = createPlayer({ ...playerToAdd, battingOrder: listCount + 1 });
         onAddPlayer(playerToAdd, listType);
         setSearchMode(false);
@@ -98,12 +98,12 @@ function changeListTheme(searchMode) {
  * @param {Object} player
  */
 function createPlayer(player) {
-    const { name, meetupId, joined, profile, admin, photos, status, battingOrder } = player;
+    const { name, id, joined, profile, admin, photos, status, battingOrder } = player;
     return {
         admin,
         battingOrder,
         joined,
-        meetupId,
+        id,
         name,
         photos,
         profile,

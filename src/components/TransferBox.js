@@ -46,14 +46,14 @@ const TransferListItems = (props) => {
         <div className={componentStyles.teamTransferListItems}>
             {listItems.map((player) => {
                 const focusedStyle =
-                    player.meetupId === focusedItemId
+                    player.id === focusedItemId
                         ? componentStyles.teamTransferListItemFocused
                         : null;
                 return (
                     <div
-                        key={player.meetupId}
+                        key={player.id}
                         className={`${componentStyles.teamTransferListItem} ${focusedStyle}`}
-                        data-id={player.meetupId}
+                        data-id={player.id}
                         onClick={onPlayerFocus}
                     >
                         <span className={componentStyles.teamTransferListItemName}>
@@ -104,7 +104,7 @@ const TransferBox = (props) => {
         onMoveUp,
     } = props;
 
-    const focusedItemId = focusedItem && focusedItem.meetupId;
+    const focusedItemId = focusedItem && focusedItem.id;
 
     return (
         <div className={componentStyles.teamTransferList}>

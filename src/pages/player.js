@@ -131,7 +131,7 @@ class Player extends React.Component {
         // playerData contains name, games, profile, photos, etc.
         const playerData = get(this.props, 'location.state.player', {});
 
-        if (playerData.meetupId && playerData.games) {
+        if (playerData.id && playerData.games) {
             // routed by user action - selecting player by search or link
             await localStorage.setItem('currentPlayer', JSON.stringify(playerData));
             const filteredGames = filterGameStats(this.props.filters, playerData.games);
@@ -156,7 +156,7 @@ class Player extends React.Component {
 
         const playerData = get(this.props, 'location.state.player', {});
         // update games log only when filters have changed or if different player
-        if (!isEqual(prevProps.filters, filters) || playerData.meetupId !== player.meetupId) {
+        if (!isEqual(prevProps.filters, filters) || playerData.id !== player.id) {
             const gamesToFilter = player.games || playerData.games;
             const filteredGames = filterGameStats(filters, gamesToFilter);
             this.updateState({ player: playerData, games: filteredGames });

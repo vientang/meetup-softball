@@ -126,6 +126,7 @@ const defaultStatCategories = [
 const statPageCategories = [
     'player',
     'gp',
+    'ab',
     'h',
     'singles',
     'doubles',
@@ -270,30 +271,17 @@ const gameProperties = [
     'year',
 ];
 
-/**
- * Ignore these keys when transforming to strings
- */
-const ignoreKeystoTransform = [
+const playerProfileKeys = [
     'id',
     'meetupId',
     'name',
     'admin',
     'gender',
-    'ab',
-    'avg',
-    'battingOrder',
-    'h',
     'joined',
     'key',
-    'obp',
-    'ops',
     'photos',
     'profile',
-    'rc',
-    'slg',
     'status',
-    'tb',
-    'woba',
 ];
 
 export {
@@ -305,7 +293,7 @@ export {
     definitions,
     gameLogCategories,
     gameProperties,
-    ignoreKeystoTransform,
+    playerProfileKeys,
     qualifiers,
     splitStatCategories,
     statPageCategories,
