@@ -10,6 +10,7 @@ import configuration from '../aws-exports';
 
 API.configure(configuration);
 
+const queryLimit = 1000;
 const defaultFilter = '2013';
 const defaultFilters = {
     year: '',
@@ -61,9 +62,14 @@ const withFilterBar = (Page) => {
                                 eq: defaultFilter,
                             },
                         },
+                        limit: queryLimit,
                     }),
                 );
-                const playerStats = await API.graphql(graphqlOperation(listPlayerStatss));
+                const playerStats = await API.graphql(
+                    graphqlOperation(listPlayerStatss, {
+                        limit: queryLimit,
+                    }),
+                );
 
                 try {
                     const years = this.getFilterMenu(gameStats.data.listGameStatss.items, 'year');
