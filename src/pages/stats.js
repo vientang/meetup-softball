@@ -19,7 +19,7 @@ import { getPlayerStats, listGameStatss, listPlayerStatss } from '../graphql/que
 
 const statsTableStyle = {
     height: 800,
-    width: 1165,
+    width: 1170,
 };
 
 const skeletonConfig = { rows: 20, width: '1165px' };

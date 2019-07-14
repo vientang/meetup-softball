@@ -1,7 +1,5 @@
 /* eslint-disable no-undef */
-import statsCalc from '../statsCalc';
-
-const {
+import {
     getAtBats,
     getAverage,
     getHits,
@@ -14,7 +12,7 @@ const {
     getTeamTotalHits,
     getTotalBases,
     getWOBA,
-} = statsCalc;
+} from '../statsCalc';
 
 describe('Stats calculations', () => {
     it('hits', () => {

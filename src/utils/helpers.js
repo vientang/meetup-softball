@@ -1,6 +1,4 @@
-import statsCalc from './statsCalc';
-
-const {
+import {
     getAtBats,
     getAverage,
     getHits,
@@ -10,7 +8,7 @@ const {
     getTotalBases,
     getWOBA,
     getRunsCreated,
-} = statsCalc;
+} from './statsCalc';
 
 export function createSlug(name) {
     let slug = name
@@ -90,7 +88,7 @@ export function formatCellValue(value) {
         // leading number is greater than 9
         return formatValueLength(formattedValue, 5);
     }
-    
+
     return formattedValue || '0';
 }
 
@@ -100,8 +98,8 @@ export function setTopLeaders(players, stat) {
     let topLeaders = [];
     let comparison = [];
     let total;
-    players.forEach((element) => {
-        const playerName = element.name;
+    players.forEach((player) => {
+        const playerName = player.name;
 
         // switch on woba/obp/ops/avg to do either rate or counting stat
         switch (stat) {
@@ -109,13 +107,13 @@ export function setTopLeaders(players, stat) {
             case 'obp':
             case 'ops':
             case 'woba':
-                total = getRateStatTotal(element.games, stat);
+                total = getRateStatTotal(player.games, stat);
                 break;
             case 'rc':
-                total = getRunsCreatedTotal(element.games);
+                total = getRunsCreatedTotal(player.games);
                 break;
             default:
-                total = getCountingStatTotal(element.games, stat);
+                total = getCountingStatTotal(player.games, stat);
                 break;
         }
         comparison.push({ playerName, total });

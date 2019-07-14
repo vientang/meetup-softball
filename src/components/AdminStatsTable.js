@@ -5,11 +5,9 @@ import AdminSection from './AdminSection';
 import Button from './Button';
 import { sortByNameLength } from '../utils/helpers';
 import { adminStatCategories } from '../utils/constants';
-import statsCalc from '../utils/statsCalc';
+import { getAtBats, getHits } from '../utils/statsCalc';
 import componentStyles from './components.module.css';
 import 'react-table/react-table.css';
-
-const { getAtBats, getHits } = statsCalc;
 
 class AdminStatsTable extends React.Component {
     constructor(props) {

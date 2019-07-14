@@ -1,9 +1,6 @@
 import pick from 'lodash/pick';
 import omit from 'lodash/omit';
-import statsCalc from './statsCalc';
-import { gameProperties, playerProfileKeys } from './constants';
-
-const {
+import {
     getAtBats,
     getAverage,
     getHits,
@@ -15,7 +12,8 @@ const {
     getTeamTotalHits,
     getTotalBases,
     getWOBA,
-} = statsCalc;
+} from './statsCalc';
+import { gameProperties, playerProfileKeys } from './constants';
 
 /**
  * LIST OF PLAYER STATS

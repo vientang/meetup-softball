@@ -5,24 +5,12 @@ import mockData from '../mockData';
 const { mockLeaderBoard } = mockData;
 
 describe('Leaderboard Stats', () => {
-    it('Get top 5 of home runs', () => {
-        expect(setTopLeaders(mockLeaderBoard, 'hr')).toEqual([
-            { playerName: 'carlos', total: 3 },
-            { playerName: 'vien', total: 2 },
-            { playerName: 'steven', total: 1 },
-            { playerName: 'laura', total: 1 },
-            { playerName: 'mike', total: 1 },
-        ]);
-    });
-
-    it('Get top 5 of rbi', () => {
-        expect(setTopLeaders(mockLeaderBoard, 'rbi')).toEqual([
-            { playerName: 'carlos', total: 14 },
-            { playerName: 'mike', total: 8 },
-            { playerName: 'vien', total: 7 },
-            { playerName: 'steven', total: 5 },
-            { playerName: 'laura', total: 5 },
-        ]);
+    it('Get top 5 of counting stat', () => {
+        expect(setTopLeaders(mockLeaderBoard, 'hr')[0].total).toBe(3);
+        expect(setTopLeaders(mockLeaderBoard, 'hr')[1].total).toBe(2);
+        expect(setTopLeaders(mockLeaderBoard, 'hr')[2].total).toBe(1);
+        expect(setTopLeaders(mockLeaderBoard, 'hr')[3].total).toBe(1);
+        expect(setTopLeaders(mockLeaderBoard, 'hr')[4].total).toBe(1);
     });
 
     it('Get top 5 OPS', () => {
@@ -87,4 +75,4 @@ describe('Create slug for url', () => {
         const name = 'Steven C.';
         expect(createSlug(name)).toBe('steven_c');
     });
-})
+});

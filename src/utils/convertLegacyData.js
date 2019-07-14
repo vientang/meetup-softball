@@ -1,9 +1,7 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
 import fetchJsonp from 'fetch-jsonp';
-import statsCalc from './statsCalc';
+import { getHits, getOuts } from './statsCalc';
 import { convertStringStatsToNumbers } from './helpers';
-
-const { getHits, getOuts } = statsCalc;
 
 const legacyPlayerList = new Map();
 /**
