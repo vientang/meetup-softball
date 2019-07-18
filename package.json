@@ -29,7 +29,7 @@
         "graphql": "14.1.1",
         "jest": "24.5.0",
         "jest-haste-map": "24.5.0",
-        "lodash": "4.17.11",
+        "lodash": "4.17.13",
         "prop-types": "15.7.2",
         "react": "^16.8.4",
         "react-dom": "^16.8.4",
