@@ -6,7 +6,8 @@ import uniqBy from 'lodash/uniqBy';
 import { Link } from 'gatsby';
 import { Avatar, Skeleton } from 'antd';
 import { API, graphqlOperation } from 'aws-amplify';
-import { withFilterBar, NotFoundImage, StatsTable } from '../components';
+import dataProvider from '../utils/dataProvider';
+import { NotFoundImage, StatsTable } from '../components';
 import { getAllPlayerStats } from '../utils/apiService';
 import { createSlug, formatCellValue, sortHighToLow } from '../utils/helpers';
 import { statPageCategories } from '../utils/constants';
@@ -223,4 +224,4 @@ Stats.defaultProps = {
     allPlayers: [],
 };
 
-export default withFilterBar(Stats);
+export default dataProvider(Stats);

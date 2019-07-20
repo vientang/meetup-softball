@@ -1,5 +1,6 @@
 import React from 'react';
-import { withFilterBar, LeaderCard } from '../components';
+import dataProvider from '../utils/dataProvider';
+import { LeaderCard } from '../components';
 import { setTopLeaders } from '../utils/helpers';
 import { cardTitles } from '../utils/constants';
 import mockData from '../utils/mockData';
@@ -47,4 +48,4 @@ class LeaderBoard extends React.Component {
     }
 }
 
-export default withFilterBar(LeaderBoard);
+export default dataProvider(LeaderBoard);

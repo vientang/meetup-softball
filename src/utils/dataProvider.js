@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { API, graphqlOperation } from 'aws-amplify';
 import isEqual from 'lodash/isEqual';
 import { listGameStatss, listPlayerStatss } from '../graphql/queries';
-import Layout from './Layout';
-import FilterBar from './FilterBar';
+import Layout from '../components/Layout';
+import FilterBar from '../components/FilterBar';
 import styles from '../pages/pages.module.css';
 import configuration from '../aws-exports';
 
@@ -22,7 +22,7 @@ const defaultFilters = {
 // Store data outside of component context to prevent
 // excessive network queries in the same app session
 const dataMap = new Map();
-const withFilterBar = (Page) => {
+const dataProvider = (Page) => {
     return class PageWithFilters extends Component {
         static propTypes = {
             location: PropTypes.shape(),
@@ -89,7 +89,7 @@ const withFilterBar = (Page) => {
                         }));
                     }
                 } catch (error) {
-                    throw new Error(`withFilterBar: ${error}`);
+                    throw new Error(`dataProvider: ${error}`);
                 }
             }
         }
@@ -256,4 +256,4 @@ const withFilterBar = (Page) => {
     };
 };
 
-export default withFilterBar;
+export default dataProvider;

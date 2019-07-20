@@ -14,7 +14,7 @@ import PlayerSplitStats from './PlayerSplitStats';
 import SortTeams from './SortTeams';
 import StatsTable from './StatsTable';
 import SuccessImage from './SuccessImage';
-import withFilterBar from './withFilterBar';
+import withFilterBar from '../utils/dataProvider';
 
 export {
     AdminStatsTable,

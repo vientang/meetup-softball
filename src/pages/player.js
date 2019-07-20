@@ -2,13 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import isEqual from 'lodash/isEqual';
-import {
-    withFilterBar,
-    CareerStats,
-    PlayerGameLog,
-    PlayerInfo,
-    PlayerSplitStats,
-} from '../components';
+import dataProvider from '../utils/dataProvider';
+import { CareerStats, PlayerGameLog, PlayerInfo, PlayerSplitStats } from '../components';
 
 const careerStatsByYear = [
     {
@@ -273,4 +268,4 @@ Player.defaultProps = {
     location: {},
 };
 
-export default withFilterBar(Player);
+export default dataProvider(Player);
