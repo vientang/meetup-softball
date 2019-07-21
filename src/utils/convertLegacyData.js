@@ -2,34 +2,36 @@
 import fetchJsonp from 'fetch-jsonp';
 import { getHits, getOuts } from './statsCalc';
 import { convertStringStatsToNumbers } from './helpers';
+import notFound from '../../__mocks__/notFound';
 
 const legacyPlayerList = new Map();
+const legacyGameList = new Map();
+const gameIds = new Map();
+
 /**
  * Convert legacy data structure to adapt to PlayerStats schema
  * @param {Array}
  * @return {Array}
  */
 export async function convertLegacyPlayerData(data) {
-    legacyPlayerList.clear();
-    // remove this when we're ready to migrate all legacy stats
-    // in order to persist the running count of game id's
-    localStorage.removeItem('gameIds');
-
-    for (const [i, datum] of data.entries()) {
-        const legacyPlayerId = datum.id.toString();
+    for (const datum of data) {
+        const legacyPlayerId = `${datum.id}`;
         const legacyPlayer = legacyPlayerList.get(legacyPlayerId);
 
         // format game data and calculate stats
-        const gameData = buildGameData(datum, data[i - 1]);
+        const gameData = buildGameData(datum);
         const gameStats = buildGameStats(datum, legacyPlayer);
 
         if (legacyPlayer) {
             legacyPlayer.games.push({ ...gameData, ...gameStats });
         } else {
             const playerData = await getPlayerDataFromMeetup(datum.id);
-            if (playerData.data.errors) {
+
+            // exclude players not found
+            if (!playerData || playerData.data.errors) {
                 continue;
             }
+
             const player = await transformMeetupData({
                 ...playerData.data,
                 id: datum.id,
@@ -46,17 +48,17 @@ export async function convertLegacyPlayerData(data) {
         }
     }
 
-    return legacyPlayerList;
+    return [...legacyPlayerList.values()];
 }
 
-const legacyGameList = new Map();
 export function convertLegacyGameData(data) {
-    legacyGameList.clear();
-
-    for (const [i, datum] of data.entries()) {
+    for (const datum of data) {
         // get player data && delete the games array
-        const legacyPlayerId = datum.id.toString();
+        const legacyPlayerId = `${datum.id}`;
+
         const playerData = getPlayerDataForGameStats(legacyPlayerId);
+
+        // member data no longer available on meetup
         if (!playerData) {
             continue;
         }
@@ -65,11 +67,12 @@ export function convertLegacyGameData(data) {
         const playerStats = getPlayerStatsWithDerivedStats(datum);
         const { singles, doubles, triples, hr, r } = playerStats;
         const hits = getHits(singles, doubles, triples, hr);
+
         // combine data and stats
         const player = { ...playerData, ...playerStats };
 
         // set up game data properties - date, field, time, gameId, etc.
-        const gameData = buildGameData(datum, data[i - 1]);
+        const gameData = buildGameData(datum);
         const legacyGame = legacyGameList.get(gameData.gameId);
         const isWinner = isOnWinningTeam(datum);
 
@@ -84,18 +87,8 @@ export function convertLegacyGameData(data) {
                 legacyGame.losers.players.push(player);
             }
         } else {
-            gameData.losers = {
-                name: 'Losers',
-                players: [],
-                runsScored: 0,
-                totalHits: 0,
-            };
-            gameData.winners = {
-                name: 'Winners',
-                players: [],
-                runsScored: 0,
-                totalHits: 0,
-            };
+            gameData.winners = buildTeamData('Winners');
+            gameData.losers = buildTeamData('Losers');
 
             if (isWinner) {
                 gameData.winners.runsScored = r;
@@ -115,19 +108,19 @@ export function convertLegacyGameData(data) {
 }
 
 const currentGameData = new Map();
-function buildGameData(data = {}, prevEntry) {
-    const gameId = getGameId(data, prevEntry);
+function buildGameData({ date, field, time }) {
+    const gameId = getGameId(date, time);
     const gameData = {
-        date: new Date(data.date).toString().slice(0, 15), // Wed Nov 13 2013
-        field: data.field,
-        time: data.time,
-        timeStamp: Date.parse(`${data.date} ${data.time}`).toString(),
+        date: `${new Date(date)}`.slice(0, 15), // Wed Nov 13 2013
+        timeStamp: `${Date.parse(`${date} ${time}`)}`,
+        field,
+        time,
         gameId,
     };
 
     const gameDate = currentGameData.get('date');
 
-    if (gameDate === data.date) {
+    if (gameDate === date) {
         // on current game
         gameData.name = currentGameData.get('name');
         gameData.year = currentGameData.get('year');
@@ -136,9 +129,9 @@ function buildGameData(data = {}, prevEntry) {
         // on a different game
         currentGameData.clear();
 
-        const name = `Game ${gameId} @ ${data.field}`;
-        const year = parseCurrentYear(data.date);
-        const month = parseCurrentMonth(data.date);
+        const name = `Game ${gameId} @ ${field}`;
+        const year = parseCurrentYear(date);
+        const month = parseCurrentMonth(date);
 
         gameData.name = name;
         gameData.year = year;
@@ -146,7 +139,7 @@ function buildGameData(data = {}, prevEntry) {
 
         // date is used to match against current date
         // to avoid parsing dates and logic for getting name
-        currentGameData.set('date', data.date);
+        currentGameData.set('date', date);
         currentGameData.set('name', name);
         currentGameData.set('year', year);
         currentGameData.set('month', month);
@@ -168,38 +161,24 @@ function buildGameStats(data, legacyPlayer) {
     return withUntrackedStats(stats);
 }
 
-/**
- * Persist gameId's in localStorage - derive from team numbers
- * @param {Object} data
- * @param {String} prevEntry use previous gameId to build the next gameId
- * @return {Number}
- */
-function getGameId(data, prevEntry = {}) {
-    const { date, time } = data;
+function buildTeamData(name) {
+    return {
+        name,
+        players: [],
+        runsScored: 0,
+        totalHits: 0,
+    };
+}
+
+export function getGameId(date, time) {
     const key = `${date}-${time}`;
-    const prevKey = `${prevEntry.date}-${prevEntry.time}`;
-    let gameIds = localStorage.getItem('gameIds');
-
-    // initialize gameIds in localstorage
-    if (!gameIds) {
-        const games = {
-            [key]: 1,
-        };
-        localStorage.setItem('gameIds', JSON.stringify(games));
-        return 1;
+    if (gameIds.has(key)) {
+        return gameIds.get(key);
     }
+    const gameId = gameIds.size + 1;
+    gameIds.set(key, gameId);
 
-    // gameIds exists in localStorage
-    gameIds = JSON.parse(gameIds);
-    if (gameIds[key]) {
-        return gameIds[key];
-    }
-
-    // new gameId
-    // should only be here when iterating over players, not games
-    gameIds[key] = gameIds[prevKey] + 1;
-    localStorage.setItem('gameIds', JSON.stringify(gameIds));
-    return gameIds[key] + 1;
+    return gameId;
 }
 
 /**
@@ -241,14 +220,25 @@ function parseCurrentMonth(date) {
 }
 
 async function getPlayerDataFromMeetup(id) {
+    let meetupId = id;
+    if (notFound.id) {
+        // dirty ids match so assume player closed their account on meetup
+        meetupId = notFound.id !== id ? notFound.id : null;
+    }
+
+    if (!meetupId) {
+        return null;
+    }
+
     const playerData = await fetchJsonp(
-        `${process.env.PLAYER_URL}${id}?&sign=true&photo-host=public`,
+        `${process.env.PLAYER_URL}/${meetupId}?&sign=true&photo-host=public`,
     )
         .then((response) => response.json())
         .then((playerResult) => playerResult)
         .catch((error) => {
             throw new Error(error);
         });
+
     return playerData;
 }
 
@@ -260,10 +250,10 @@ function transformMeetupData(data) {
     const { name, joined, gender, group_profile, is_pro_admin, id, photo, status } = data;
 
     return {
-        id: id.toString(),
+        id: `${id}`,
         admin: is_pro_admin,
         gender: getGender(gender),
-        joined: joined.toString(),
+        joined: `${joined}`,
         photos: JSON.stringify(photo),
         profile: JSON.stringify(group_profile),
         name,
@@ -272,13 +262,11 @@ function transformMeetupData(data) {
 }
 
 /**
- * TEAM_1 is an identifier
- * team is the team id that the player was on
  * @param {Object} player
  */
 function isOnWinningTeam(player) {
-    const { TEAM_1, team } = player;
-    return TEAM_1 === team;
+    const { winner, team } = player;
+    return winner === team;
 }
 
 /**
@@ -316,4 +304,8 @@ function withUntrackedStats(stats) {
         cs: null,
     };
     return { ...untracked, ...stats };
+}
+
+function writeToFile(blockedPlayers) {
+    console.log('write to file', JSON.stringify([...blockedPlayers]));
 }

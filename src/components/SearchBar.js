@@ -34,7 +34,7 @@ class SearchBar extends React.Component {
         const childState = get(instance, 'props.children.props.state', {});
 
         navigate(`/player?name=${slug}`, {
-            state: { player: childState.player },
+            state: { playerId: childState.playerId },
         });
     };
 
@@ -85,7 +85,7 @@ function renderPlayerLink(player) {
     const slug = createSlug(player.name);
 
     return (
-        <Link to={`/player?name=${slug}`} state={{ player }}>
+        <Link to={`/player?name=${slug}`} state={{ playerId: player.id }}>
             {player.name}
         </Link>
     );

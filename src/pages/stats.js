@@ -13,8 +13,9 @@ import { createSlug, formatCellValue, sortHighToLow } from '../utils/helpers';
 import { statPageCategories } from '../utils/constants';
 import pageStyles from './pages.module.css';
 import legacyData from '../../__mocks__/mockData';
+// import legacyPlayerData from '../../__mocks__/mockData';
+// import legacyGameData from '../../__mocks__/mockData';
 import { convertLegacyPlayerData, convertLegacyGameData } from '../utils/convertLegacyData';
-
 import { createGameStats, createPlayerStats, updatePlayerStats } from '../graphql/mutations';
 import { getPlayerStats, listGameStatss, listPlayerStatss } from '../graphql/queries';
 
@@ -41,16 +42,17 @@ class Stats extends React.Component {
         };
     }
 
-    // async componentDidMount() {
-    //     const playerdata = await convertLegacyPlayerData(legacyData);
-    //     const gamedata = await convertLegacyGameData(legacyData);
-    //     const uniqPlayers = uniqBy(playerdata, 'id');
-    //     console.log('player data', { uniqPlayers, gamedata, playerdata });
-    //     console.time('submit data');
-    //     this.submitPlayerStats(playerdata);
-    //     this.submitGameStats(gamedata);
-    //     console.timeEnd('submit data');
-    // }
+    async componentDidMount() {
+        // const playerdata = await convertLegacyPlayerData(legacyData);
+        // const gamedata = await convertLegacyGameData(legacyData);
+        // const dupes = uniqBy(playerdata, 'id');
+        // console.log('player data', { dupes, playerdata, strData: JSON.stringify(playerdata) });
+        // console.time('submit data');
+        // slice legacy data
+        // this.submitPlayerStats(legacyPlayerData);
+        // this.submitGameStats(legacyGameData);
+        // console.timeEnd('submit data');
+    }
 
     componentDidUpdate(prevProps) {
         if (this.shouldUpdateStats(prevProps.gameData)) {
@@ -72,33 +74,14 @@ class Stats extends React.Component {
      */
     submitPlayerStats = async (playerStats = []) => {
         playerStats.forEach(async (player) => {
-            const existingPlayer = await this.fetchExistingPlayer(player);
-
-            if (existingPlayer) {
-                // player already exists in database
-                const { id, games } = existingPlayer;
-                const parsedGames = JSON.parse(games);
-                const updatedGames = [...player.games, ...parsedGames];
-
-                await API.graphql(
-                    graphqlOperation(updatePlayerStats, {
-                        input: { id },
-                        games: JSON.stringify(updatedGames),
-                    }),
-                );
-            } else {
-                // player does not yet exist in database
-                const newPlayer = {
-                    ...player,
-                    games: JSON.stringify(player.games),
-                };
-
-                await API.graphql(
-                    graphqlOperation(createPlayerStats, {
-                        input: newPlayer,
-                    }),
-                );
-            }
+            await API.graphql(
+                graphqlOperation(createPlayerStats, {
+                    input: {
+                        ...player,
+                        games: JSON.stringify(player.games),
+                    },
+                }),
+            );
         });
     };
 
@@ -134,7 +117,7 @@ class Stats extends React.Component {
             <Link
                 to={`/player?name=${slug}`}
                 className={pageStyles.playerName}
-                state={{ player: playerData }}
+                state={{ playerId }}
             >
                 <PlayerAvatar image={playerImg} name={playerName} />
                 {playerName}

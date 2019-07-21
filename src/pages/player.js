@@ -123,39 +123,48 @@ class Player extends React.Component {
     }
 
     async componentDidMount() {
-        // playerData contains name, games, profile, photos, etc.
-        const playerData = get(this.props, 'location.state.player', {});
-
-        if (playerData.id && playerData.games) {
-            // routed by user action - selecting player by search or link
-            await localStorage.setItem('currentPlayer', JSON.stringify(playerData));
-            const filteredGames = filterGameStats(this.props.filters, playerData.games);
-            this.updateState({ player: playerData, games: filteredGames });
-        } else {
-            // routed by browser navigation or browser refresh
-            // local state doesn't persist and props.location.state is gone
-            // but we've saved it in localStorage so we're good!
-            const playerDataInMemory =
-                (await JSON.parse(localStorage.getItem('currentPlayer'))) || {};
-            const filteredGames = filterGameStats(this.props.filters, playerDataInMemory.games);
+        const playerData = getPlayerData(this.props);
+        if (playerData) {
             this.updateState({
-                player: playerDataInMemory,
-                games: filteredGames,
+                player: playerData,
             });
         }
+        // if (playerId && playerData.games) {
+        //     // routed by user action - selecting player by search or link
+        //     await localStorage.setItem('currentPlayer', JSON.stringify(playerData));
+        //     const filteredGames = filterGameStats(this.props.filters, playerData.games);
+        //     this.updateState({ player: playerData, games: filteredGames });
+        // } else {
+        //     // routed by browser navigation or browser refresh
+        //     // local state doesn't persist and props.location.state is gone
+        //     // but we've saved it in localStorage so we're good!
+        //     const playerDataInMemory =
+        //         (await JSON.parse(localStorage.getItem('currentPlayer'))) || {};
+        //     const filteredGames = filterGameStats(this.props.filters, playerDataInMemory.games);
+        //     this.updateState({
+        //         player: playerDataInMemory,
+        //         games: filteredGames,
+        //     });
+        // }
     }
 
     componentDidUpdate(prevProps) {
         const { player } = this.state;
         const { filters } = this.props;
+        const playerData = getPlayerData(this.props);
 
-        const playerData = get(this.props, 'location.state.player', {});
-        // update games log only when filters have changed or if different player
-        if (!isEqual(prevProps.filters, filters) || playerData.id !== player.id) {
-            const gamesToFilter = player.games || playerData.games;
-            const filteredGames = filterGameStats(filters, gamesToFilter);
-            this.updateState({ player: playerData, games: filteredGames });
+        if (playerData && playerData.id !== player.id) {
+            this.updateState({
+                games: filterGameStats(filters, playerData.games),
+                player: playerData,
+            });
         }
+        // update games log only when filters have changed or if different player
+        // if (!isEqual(prevProps.filters, filters) || playerId !== player.id) {
+        //     const gamesToFilter = player.games || playerData.games;
+        //     const filteredGames = filterGameStats(filters, gamesToFilter);
+        //     this.updateState({ player: playerData, games: filteredGames });
+        // }
     }
 
     componentWillUnmount() {
@@ -171,9 +180,9 @@ class Player extends React.Component {
         const careerStats = calculatePlayerCareerStats(allGames);
 
         this.setState(() => ({
-            player,
-            games,
             careerStats,
+            games,
+            player,
         }));
     };
 
@@ -196,10 +205,7 @@ class Player extends React.Component {
                     careerStatsByYear={careerStatsByYear || careerStats}
                     statsTableStyle={statsTableStyle}
                 />
-                <PlayerGameLog
-                    stats={games.length ? games : gameStats}
-                    statsTableStyle={statsTableStyle}
-                />
+                <PlayerGameLog stats={games} statsTableStyle={statsTableStyle} />
             </>
         );
     }
@@ -241,6 +247,16 @@ function filterGameStats(filters, games) {
             ab: game.ab,
             sac: game.sac,
         }));
+}
+
+function getPlayerData(props) {
+    const playerId = get(props, 'location.state.playerId', null);
+
+    if (!playerId) {
+        return null;
+    }
+
+    return props.allPlayers.find((player) => player.id === playerId);
 }
 
 /**
