@@ -9,7 +9,12 @@ import { API, graphqlOperation } from 'aws-amplify';
 import dataProvider from '../utils/dataProvider';
 import { NotFoundImage, StatsTable } from '../components';
 import { getAllPlayerStats } from '../utils/apiService';
-import { createSlug, formatCellValue, sortHighToLow } from '../utils/helpers';
+import {
+    createSlug,
+    getDefaultSortedColumn,
+    formatCellValue,
+    sortHighToLow,
+} from '../utils/helpers';
 import { statPageCategories } from '../utils/constants';
 import pageStyles from './pages.module.css';
 import legacyData from '../../__mocks__/mockData';
@@ -25,13 +30,6 @@ const statsTableStyle = {
 };
 
 const skeletonConfig = { rows: 20, width: '1165px' };
-
-const defaultSorted = [
-    {
-        id: 'gp',
-        desc: false,
-    },
-];
 
 class Stats extends React.Component {
     constructor(props) {
@@ -60,13 +58,6 @@ class Stats extends React.Component {
             this.updatePlayerStats(playerStats);
         }
     }
-
-    fetchExistingPlayer = async (player) => {
-        const existingPlayer = await API.graphql(
-            graphqlOperation(getPlayerStats, { id: player.id }),
-        );
-        return get(existingPlayer, 'data.getPlayerStats', null);
-    };
 
     /**
      * Update a players game log or create a new player
@@ -108,14 +99,9 @@ class Stats extends React.Component {
     renderPlayerCell = (playerStats, cellInfo) => {
         const { playerId, playerName, playerImg } = getPlayerMetaData(playerStats, cellInfo);
 
-        const slug = createSlug(playerName);
-
-        // playerData contains name, games, profile, photos, etc.
-        const playerData = findPlayer(this.props.allPlayers, playerId);
-
         return (
             <Link
-                to={`/player?name=${slug}`}
+                to={`/player?name=${createSlug(playerName)}`}
                 className={pageStyles.playerName}
                 state={{ playerId }}
             >
@@ -137,7 +123,7 @@ class Stats extends React.Component {
     };
 
     render() {
-        const { gameData, allPlayers } = this.props;
+        const { gameData } = this.props;
         const { playerStats, sortedColumn } = this.state;
 
         if (gameData.length < 0) {
@@ -157,7 +143,7 @@ class Stats extends React.Component {
                 <StatsTable
                     categories={statPageCategories}
                     cellRenderer={this.renderCell}
-                    defaultSorted={defaultSorted}
+                    defaultSorted={getDefaultSortedColumn('gp', false)}
                     onSortedChange={this.handleColumnSort}
                     sortedColumn={sortedColumn}
                     sortMethod={sortHighToLow}
@@ -183,13 +169,6 @@ function PlayerAvatar({ image, name }) {
     return <Avatar {...avatarProps} shape="square" />;
 }
 
-function findPlayer(playerStats, playerId) {
-    if (!playerId) {
-        return {};
-    }
-    return playerStats.find((player) => Number(player.id) === playerId) || {};
-}
-
 function getPlayerMetaData(playerStats, cellInfo) {
     const playerId = playerStats[cellInfo.index].id;
     const playerName = playerStats[cellInfo.index].name;
@@ -199,12 +178,10 @@ function getPlayerMetaData(playerStats, cellInfo) {
 
 Stats.propTypes = {
     gameData: PropTypes.arrayOf(PropTypes.shape),
-    allPlayers: PropTypes.arrayOf(PropTypes.shape),
 };
 
 Stats.defaultProps = {
     gameData: [],
-    allPlayers: [],
 };
 
 export default dataProvider(Stats);

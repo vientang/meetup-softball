@@ -1,22 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import get from 'lodash/get';
 import { Avatar } from 'antd';
 import componentStyles from './components.module.css';
 
-const PlayerInfo = (props) => {
-    const { playerInfo } = props;
-    const { name } = playerInfo;
+const PlayerInfo = ({ data }) => {
+    const profile = data.profile ? JSON.parse(data.profile) : {};
+    const { answers = [], title } = profile;
 
-    const playerImg = get(
-        playerInfo,
-        'photos.highres_link',
-        get(playerInfo, 'photos.photo_link', get(playerInfo, 'thumb_link', '')),
-    );
-    const questions = get(playerInfo, 'profile.answers', []);
-    const title = get(playerInfo, 'profile.title', '');
+    const photos = data.photos ? JSON.parse(data.photos) : {};
+    const { highres_link, photo_link, thumb_link } = photos;
+
+    const playerImg = highres_link || photo_link || thumb_link;
+
     const image = playerImg ? (
-        <img src={playerImg} className={componentStyles.playerInfoPhoto} alt={name} />
+        <img src={playerImg} className={componentStyles.playerInfoPhoto} alt={data.name} />
     ) : (
         <Avatar src={playerImg} size={212} shape="square" icon="user" />
     );
@@ -26,22 +23,20 @@ const PlayerInfo = (props) => {
             <div className={componentStyles.playerInfoCardGroup}>
                 {image}
                 <div className={componentStyles.playerInfoCardBio}>
-                    <p className={componentStyles.playerInfoName}>{name}</p>
+                    <p className={componentStyles.playerInfoName}>{data.name}</p>
                     <p className={componentStyles.playerInfoTitle}>{title}</p>
                 </div>
             </div>
             <div className={componentStyles.playerInfoCardQuestionsGroup}>
                 <ul className={componentStyles.playerInfoCardQuestionsList}>
-                    {questions.map((q) => {
+                    {answers.map((qa, idx) => {
                         return (
-                            <li
-                                key={q.answer}
-                                className={componentStyles.playerInfoCardQuestionGroup}
-                            >
+                            // eslint-disable-next-line react/no-array-index-key
+                            <li key={idx} className={componentStyles.playerInfoCardQuestionGroup}>
                                 <p className={componentStyles.playerInfoCardQuestion}>
-                                    {q.question}
+                                    {qa.question}
                                 </p>
-                                <p className={componentStyles.playerInfoCardAnswer}>{q.answer}</p>
+                                <p className={componentStyles.playerInfoCardAnswer}>{qa.answer}</p>
                             </li>
                         );
                     })}
@@ -52,11 +47,11 @@ const PlayerInfo = (props) => {
 };
 
 PlayerInfo.propTypes = {
-    playerInfo: PropTypes.shape(),
+    data: PropTypes.shape(),
 };
 
 PlayerInfo.defaultProps = {
-    playerInfo: {},
+    data: {},
 };
 
 export default PlayerInfo;

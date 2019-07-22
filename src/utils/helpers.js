@@ -1,3 +1,6 @@
+import { API, graphqlOperation } from 'aws-amplify';
+import get from 'lodash/get';
+import { getPlayerStats, listPlayerStatss } from '../graphql/queries';
 import {
     getAtBats,
     getAverage,
@@ -9,6 +12,21 @@ import {
     getWOBA,
     getRunsCreated,
 } from './statsCalc';
+
+export async function fetchPlayer(id) {
+    const existingPlayer = await API.graphql(graphqlOperation(getPlayerStats, { id }));
+    return get(existingPlayer, 'data.getPlayerStats', null);
+}
+
+export async function fetchAllPlayers() {
+    const queryLimit = 1000;
+    const allPlayers = await API.graphql(
+        graphqlOperation(listPlayerStatss, {
+            limit: queryLimit,
+        }),
+    );
+    return get(allPlayers, 'data.listPlayerStatss.items', null);
+}
 
 export function createSlug(name) {
     let slug = name
@@ -28,6 +46,10 @@ export function getMeridiem(time) {
         return Number(time.substring(0, 2)) < 12 ? 'am' : 'pm';
     }
     return '';
+}
+
+export function getDefaultSortedColumn(id, desc) {
+    return [{ id, desc }];
 }
 
 export function sortByNameLength(a, b) {

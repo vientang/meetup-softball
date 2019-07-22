@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { API, graphqlOperation } from 'aws-amplify';
 import isEqual from 'lodash/isEqual';
-import { listGameStatss, listPlayerStatss } from '../graphql/queries';
+import { listGameStatss } from '../graphql/queries';
 import Layout from '../components/Layout';
 import FilterBar from '../components/FilterBar';
 import styles from '../pages/pages.module.css';
@@ -44,12 +44,10 @@ const dataProvider = (Page) => {
         async componentDidMount() {
             this.mounted = true;
             const gameData = dataMap.get('gameData');
-            const playerData = dataMap.get('playerData');
-            if (gameData && playerData) {
+            if (gameData) {
                 if (this.mounted) {
                     this.setState(() => ({
                         gameStats: gameData.data.listGameStatss.items,
-                        playerStats: playerData.data.listPlayerStatss.items,
                         years: dataMap.get('years'),
                         fields: dataMap.get('fields'),
                     }));
@@ -65,25 +63,18 @@ const dataProvider = (Page) => {
                         limit: queryLimit,
                     }),
                 );
-                const playerStats = await API.graphql(
-                    graphqlOperation(listPlayerStatss, {
-                        limit: queryLimit,
-                    }),
-                );
 
                 try {
                     const years = this.getFilterMenu(gameStats.data.listGameStatss.items, 'year');
                     const fields = this.getFilterMenu(gameStats.data.listGameStatss.items, 'field');
 
                     dataMap.set('gameData', gameStats);
-                    dataMap.set('playerData', playerStats);
                     dataMap.set('years', years);
                     dataMap.set('fields', fields);
 
                     if (this.mounted) {
                         this.setState(() => ({
                             gameStats: gameStats.data.listGameStatss.items,
-                            playerStats: playerStats.data.listPlayerStatss.items,
                             fields,
                             years,
                         }));
@@ -140,17 +131,6 @@ const dataProvider = (Page) => {
                 : API.graphql(graphqlOperation(listGameStatss));
 
         /**
-         * Player stats
-         * PlayerCard
-         * LeaderBoard
-         * PlayerPreview
-         * LeaderCards
-         * PlayerInfo
-         * PlayerGameLog
-         */
-        getPlayerStats = () => {};
-
-        /**
          * FilterBar years menu
          */
         getFilterMenu = (gameStats = [], key) => {
@@ -162,15 +142,6 @@ const dataProvider = (Page) => {
             });
             return Object.values(storage);
         };
-
-        /**
-         * LeaderBoard and LeaderCards
-         */
-        calculateLeaderStats = () => {};
-
-        calculateAllPlayersStats = () => {};
-
-        calculatePlayerStats = () => {};
 
         /**
          * Validate that we have gameStats before triggering
@@ -223,12 +194,11 @@ const dataProvider = (Page) => {
         };
 
         renderFilterBar = () => {
-            const { activeFilters, fields, filterTypes, playerStats, years } = this.state;
+            const { activeFilters, fields, filterTypes, years } = this.state;
 
             return (
                 <FilterBar
                     activeFilters={activeFilters}
-                    allPlayers={playerStats}
                     fields={fields}
                     filterTypes={filterTypes}
                     years={years}
@@ -240,12 +210,11 @@ const dataProvider = (Page) => {
         };
 
         render() {
-            const { activeFilters, gameStats, playerStats } = this.state;
+            const { activeFilters, gameStats } = this.state;
 
             return (
                 <Layout className={styles.pageLayout} filterBar={this.renderFilterBar()}>
                     <Page
-                        allPlayers={playerStats}
                         filters={activeFilters}
                         gameData={gameStats}
                         location={this.props.location}

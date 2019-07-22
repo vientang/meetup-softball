@@ -111,6 +111,8 @@ function formatColumnWidth(props) {
     switch (category) {
         case 'player':
             return 135;
+        case 'date':
+            return 100;
         case 'game':
             return 175;
         case 'battingOrder':
@@ -119,7 +121,7 @@ function formatColumnWidth(props) {
         case 'field':
             return 100;
         case 'w':
-            return 75;
+            return 65;
         case 'gp':
             return 35;
         case '':
@@ -129,7 +131,7 @@ function formatColumnWidth(props) {
     }
 }
 
-const nonStatHeaders = ['player', 'game', 'gp', 'battingOrder', 'season', 'field'];
+const nonStatHeaders = ['date', 'player', 'game', 'gp', 'battingOrder', 'season', 'field'];
 
 function formatHeaderStyle(props) {
     const { category, lastColumn } = props;

@@ -8,9 +8,9 @@ import JoinUs from './JoinUs';
 import Layout from './Layout';
 import LeaderCard from './LeaderCard';
 import NotFoundImage from './NotFoundImage';
-import PlayerGameLog from './PlayerGameLog';
+import GameLog from './GameLog';
 import PlayerInfo from './PlayerInfo';
-import PlayerSplitStats from './PlayerSplitStats';
+import SplitStats from './SplitStats';
 import SortTeams from './SortTeams';
 import StatsTable from './StatsTable';
 import SuccessImage from './SuccessImage';
@@ -22,14 +22,14 @@ export {
     BoxScore,
     CareerStats,
     GameDetails,
+    GameLog,
     GameMenu,
     JoinUs,
     Layout,
     LeaderCard,
     NotFoundImage,
-    PlayerGameLog,
     PlayerInfo,
-    PlayerSplitStats,
+    SplitStats,
     SortTeams,
     StatsTable,
     SuccessImage,

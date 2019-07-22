@@ -12,14 +12,14 @@ const menuItemStyle = {
 };
 
 const FilterBar = (props) => {
-    const { allPlayers, onResetFilters } = props;
+    const { onResetFilters } = props;
     return (
         <div className={componentStyles.filterRow}>
             <div className={componentStyles.filterRowSection}>
                 <FilterTypes {...props} />
                 <ResetFilters onClick={onResetFilters} />
             </div>
-            <SearchBar allPlayers={allPlayers} />
+            <SearchBar />
         </div>
     );
 };
@@ -103,7 +103,6 @@ FilterBar.displayName = 'FilterBar';
 /* eslint-disable react/no-unused-prop-types */
 FilterBar.propTypes = {
     activeFilters: PropTypes.shape(),
-    allPlayers: PropTypes.arrayOf(PropTypes.shape),
     battingPositions: PropTypes.arrayOf(PropTypes.number),
     fields: PropTypes.arrayOf(PropTypes.string),
     filterTypes: PropTypes.arrayOf(PropTypes.string),
@@ -115,7 +114,6 @@ FilterBar.propTypes = {
 };
 
 FilterBar.defaultProps = {
-    allPlayers: [],
     battingPositions: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
     fields: ['West Sunset', 'Parkside', 'Westlake'],
     filterTypes: ['2019', 'MONTHS', 'FIELDS', 'BATTING'],

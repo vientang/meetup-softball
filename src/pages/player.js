@@ -1,54 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
-import isEqual from 'lodash/isEqual';
 import dataProvider from '../utils/dataProvider';
-import { CareerStats, PlayerGameLog, PlayerInfo, PlayerSplitStats } from '../components';
+import { CareerStats, GameLog, PlayerInfo, SplitStats } from '../components';
+import { fetchPlayer } from '../utils/helpers';
+import {
+    getAtBats,
+    getAverage,
+    getHits,
+    getOnBasePercentage,
+    getOPS,
+    getRunsCreated,
+    getSlugging,
+    getTotalBases,
+    getWOBA,
+} from '../utils/statsCalc';
 
-const careerStatsByYear = [
-    {
-        season: '2019',
-        gp: '29',
-        w: '.529',
-        singles: '10',
-        doubles: '11',
-        triples: '12',
-        hr: '1',
-        rbi: '1',
-        r: '1',
-        sb: '1',
-        cs: '0',
-        k: '1',
-        bb: '1',
-        avg: '.600',
-        ab: '1',
-        tb: '1',
-        rc: '.800',
-        h: '1',
-        sac: '1',
-    },
-    {
-        season: '2018',
-        gp: '52',
-        w: '.529',
-        singles: '1',
-        doubles: '1',
-        triples: '1',
-        hr: '1',
-        rbi: '1',
-        r: '1',
-        sb: '1',
-        cs: '0',
-        k: '1',
-        bb: '1',
-        avg: '.600',
-        ab: '1',
-        tb: '1',
-        rc: '.800',
-        h: '1',
-        sac: '1',
-    },
-];
 const careerStatsByField = [
     {
         field: 'Parkside',
@@ -93,39 +60,25 @@ const careerStatsByField = [
         sac: '1',
     },
 ];
-const gameStats = [
-    {
-        game: 'Game 245 WWS',
-        singles: '1',
-        doubles: '1',
-        triples: '1',
-        hr: '1',
-        rbi: '1',
-        r: '1',
-        sb: '1',
-        cs: '0',
-        k: '1',
-        bb: '1',
-        avg: '.600',
-        ab: '1',
-        sac: '1',
-    },
-];
 
 class Player extends React.Component {
     constructor() {
         super();
         this.state = {
-            careerStats: {},
+            careerStatsByYear: [],
             games: [],
             player: {},
         };
     }
 
     async componentDidMount() {
-        const playerData = getPlayerData(this.props);
+        const { filters, location } = this.props;
+
+        const playerData = await fetchPlayer(get(location, 'state.playerId', null));
+
         if (playerData) {
             this.updateState({
+                games: filterGameStats(filters, playerData.games),
                 player: playerData,
             });
         }
@@ -148,10 +101,11 @@ class Player extends React.Component {
         // }
     }
 
-    componentDidUpdate(prevProps) {
+    async componentDidUpdate(prevProps) {
         const { player } = this.state;
-        const { filters } = this.props;
-        const playerData = getPlayerData(this.props);
+        const { filters, location } = this.props;
+
+        const playerData = await fetchPlayer(get(location, 'state.playerId', null));
 
         if (playerData && playerData.id !== player.id) {
             this.updateState({
@@ -159,12 +113,6 @@ class Player extends React.Component {
                 player: playerData,
             });
         }
-        // update games log only when filters have changed or if different player
-        // if (!isEqual(prevProps.filters, filters) || playerId !== player.id) {
-        //     const gamesToFilter = player.games || playerData.games;
-        //     const filteredGames = filterGameStats(filters, gamesToFilter);
-        //     this.updateState({ player: playerData, games: filteredGames });
-        // }
     }
 
     componentWillUnmount() {
@@ -177,17 +125,15 @@ class Player extends React.Component {
 
     updateState = ({ player, games }) => {
         const allGames = player.games || [];
-        const careerStats = calculatePlayerCareerStats(allGames);
-
         this.setState(() => ({
-            careerStats,
+            careerStatsByYear: calculateCareerStats(allGames, { type: 'year', value: '2013' }),
             games,
             player,
         }));
     };
 
     render() {
-        const { careerStats, games, player } = this.state;
+        const { careerStatsByYear, games, player } = this.state;
 
         const statsTableStyle = {
             width: 1155,
@@ -195,17 +141,14 @@ class Player extends React.Component {
 
         return (
             <>
-                <PlayerInfo playerInfo={player} />
-                <PlayerSplitStats
-                    filteredStats={careerStatsByField}
-                    statsTableStyle={statsTableStyle}
-                />
+                <PlayerInfo data={player} />
+                <SplitStats stats={careerStatsByField} style={statsTableStyle} />
                 <CareerStats
-                    careerStatsByField={careerStatsByField}
-                    careerStatsByYear={careerStatsByYear || careerStats}
-                    statsTableStyle={statsTableStyle}
+                    statsByField={careerStatsByField}
+                    statsByYear={careerStatsByYear}
+                    style={statsTableStyle}
                 />
-                <PlayerGameLog stats={games} statsTableStyle={statsTableStyle} />
+                <GameLog stats={games} style={statsTableStyle} />
             </>
         );
     }
@@ -232,6 +175,7 @@ function filterGameStats(filters, games) {
                 game.batting === filters.batting,
         )
         .map((game) => ({
+            date: game.date.slice(3),
             game: game.name,
             battingOrder: game.battingOrder,
             singles: game.singles,
@@ -249,38 +193,100 @@ function filterGameStats(filters, games) {
         }));
 }
 
-function getPlayerData(props) {
-    const playerId = get(props, 'location.state.playerId', null);
-
-    if (!playerId) {
-        return null;
+/**
+ * Calculate career stats
+ * @param {Array} games
+ * @param {Object} options - { type: 'year', value: '2019' }
+ */
+function calculateCareerStats(games, options) {
+    // TODO: cache return value to avoid recalculating stats
+    let careerStats = {};
+    let parsedGames = typeof games === 'string' ? JSON.parse(games) : games;
+    if (options) {
+        parsedGames = parsedGames.filter((game) => game[options.type] === options.value);
     }
 
-    return props.allPlayers.find((player) => player.id === playerId);
+    parsedGames.forEach((game) => {
+        careerStats = calculateTotals(careerStats, game);
+    });
+
+    return [careerStats];
 }
 
-/**
- * Calculate career stats based on non-filtered games
- * This should be called only once in componentDidMount
- * @param {Object} games
- */
-function calculatePlayerCareerStats(games) {
-    // TODO: cache return value to avoid recalculating stats
-    return games;
+function calculateTotals(existingStats = {}, currentStats = {}) {
+    const { bb, cs, singles, doubles, sb, triples, hr, o, sac } = currentStats;
+
+    const totalSingles = addStat(singles, existingStats.singles);
+    const totalDoubles = addStat(doubles, existingStats.doubles);
+    const totalTriples = addStat(triples, existingStats.triples);
+    const totalHr = addStat(hr, existingStats.hr);
+    const totalOuts = addStat(o, existingStats.o);
+    const totalHits = getHits(totalSingles, totalDoubles, totalTriples, totalHr);
+    const totalAb = getAtBats(totalHits, totalOuts);
+    const totalTb = getTotalBases(totalSingles, totalDoubles, totalTriples, totalHr);
+    const totalWalks = addStat(bb, existingStats.bb);
+    const totalSacs = addStat(sac, existingStats.sac);
+    const totalStls = addStat(sb, existingStats.sb);
+    const totalCs = addStat(cs, existingStats.cs);
+    const obp = getOnBasePercentage(totalHits, totalWalks, totalAb, totalSacs);
+    const slg = getSlugging(totalTb, totalAb);
+    const cumulativeAvg = getAverage(totalHits, totalAb);
+    const rc = getRunsCreated(totalHits, totalWalks, totalCs, totalTb, totalStls, totalAb);
+    const ops = getOPS(obp, slg);
+    const woba = getWOBA(
+        totalWalks,
+        totalSingles,
+        totalDoubles,
+        totalTriples,
+        totalHr,
+        totalAb,
+        totalSacs,
+    );
+
+    return {
+        ab: totalAb,
+        avg: cumulativeAvg,
+        bb: totalWalks,
+        cs: totalCs,
+        doubles: totalDoubles,
+        gp: addStat(currentStats.gp, existingStats.gp),
+        h: totalHits,
+        hr: totalHr,
+        k: addStat(currentStats.k, existingStats.k),
+        l: addStat(currentStats.l, existingStats.l),
+        o: totalOuts,
+        rbi: addStat(currentStats.rbi, existingStats.rbi),
+        r: addStat(currentStats.r, existingStats.r),
+        sac: totalSacs,
+        sb: totalStls,
+        singles: totalSingles,
+        tb: totalTb,
+        triples: totalTriples,
+        w: addStat(currentStats.w, existingStats.w),
+        obp,
+        ops,
+        rc,
+        slg,
+        woba,
+    };
+}
+
+function addStat(currentStat, existingStat) {
+    if (!existingStat) {
+        return Number(currentStat);
+    }
+
+    return Number(existingStat) + Number(currentStat);
 }
 
 Player.displayName = 'Player';
 Player.propTypes = {
-    allPlayers: PropTypes.arrayOf(PropTypes.shape),
     filters: PropTypes.shape(),
-    gameData: PropTypes.arrayOf(PropTypes.shape),
     location: PropTypes.shape(),
 };
 
 Player.defaultProps = {
-    allPlayers: [],
     filters: {},
-    gameData: [],
     location: {},
 };
 

@@ -1,9 +1,8 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import { Link, navigate } from 'gatsby';
 import { Icon, Input, AutoComplete } from 'antd';
-import { createSlug } from '../utils/helpers';
+import { createSlug, fetchAllPlayers } from '../utils/helpers';
 import componentStyles from './components.module.css';
 
 const { Option } = AutoComplete;
@@ -12,28 +11,32 @@ class SearchBar extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            allPlayers: props.allPlayers,
+            players: [],
         };
     }
 
-    componentDidMount = () => {
-        if (this.props.allPlayers.length === 0) {
+    componentDidMount = async () => {
+        this.mounted = true;
+        const players = await fetchAllPlayers();
+        if (players && players.length > 0 && this.mounted) {
             this.setState(() => ({
-                allPlayers: renderOptions(this.props.allPlayers),
+                players: renderOptions(players),
             }));
         }
     };
 
+    componentWillUnmount() {
+        this.mounted = false;
+    }
+
     handleSearch = (value) => {
-        const filteredOptions = filterOptions(this.props.allPlayers, value);
-        this.setState(() => ({ allPlayers: filteredOptions }));
+        this.setState((prevState) => ({ players: filterOptions(prevState.players, value) }));
     };
 
     handleSelect = (value, instance) => {
-        const slug = createSlug(value);
         const childState = get(instance, 'props.children.props.state', {});
 
-        navigate(`/player?name=${slug}`, {
+        navigate(`/player?name=${createSlug(value)}`, {
             state: { playerId: childState.playerId },
         });
     };
@@ -44,7 +47,7 @@ class SearchBar extends React.Component {
         return (
             <div className={componentStyles.searchBarContainer}>
                 <AutoComplete
-                    dataSource={this.state.allPlayers}
+                    dataSource={this.state.players}
                     dropdownMatchSelectWidth={false}
                     dropdownStyle={dropdownStyle}
                     onSelect={this.handleSelect}
@@ -61,8 +64,8 @@ class SearchBar extends React.Component {
     }
 }
 
-function filterOptions(allPlayers, value) {
-    return allPlayers
+function filterOptions(players, value) {
+    return players
         .filter((player) => {
             return player.name.toLowerCase().includes(value.toLowerCase());
         })
@@ -73,30 +76,20 @@ function filterOptions(allPlayers, value) {
         ));
 }
 
-function renderOptions(allPlayers) {
-    return allPlayers.map((player) => (
+function renderOptions(players) {
+    return players.map((player) => (
         <Option key={player.id} value={player.name}>
-            {this.renderPlayerLink(player)}
+            {renderPlayerLink(player)}
         </Option>
     ));
 }
 
 function renderPlayerLink(player) {
-    const slug = createSlug(player.name);
-
     return (
-        <Link to={`/player?name=${slug}`} state={{ playerId: player.id }}>
+        <Link to={`/player?name=${createSlug(player.name)}`} state={{ playerId: player.id }}>
             {player.name}
         </Link>
     );
 }
-
-SearchBar.propTypes = {
-    allPlayers: PropTypes.arrayOf(PropTypes.shape),
-};
-
-SearchBar.defaultProps = {
-    allPlayers: [],
-};
 
 export default SearchBar;

@@ -149,6 +149,7 @@ const statPageCategories = [
 ];
 
 const gameLogCategories = [
+    'date',
     'game',
     'battingOrder',
     'ab',
@@ -156,10 +157,9 @@ const gameLogCategories = [
     'singles',
     'doubles',
     'triples',
+    'hr',
     'r',
     'rbi',
-    'hr',
-    'avg',
     'sb',
     'cs',
     'bb',

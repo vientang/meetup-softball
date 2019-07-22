@@ -5,32 +5,38 @@ import { sortHighToLow } from '../utils/helpers';
 import { careerStatCatsByYear, careerStatCatsByField } from '../utils/constants';
 import componentStyles from './components.module.css';
 
-const CareerStats = ({ careerStatsByField, careerStatsByYear, statsTableStyle }) => {
-    return (
-        <div className={componentStyles.playerPageSection}>
-            <p className={componentStyles.playerPageSectionTitle}>Career stats</p>
-            <StatsTable
-                style={statsTableStyle}
-                categories={careerStatCatsByYear}
-                stats={careerStatsByYear}
-                sortMethod={sortHighToLow}
-                striped=""
-            />
-            <StatsTable
-                style={statsTableStyle}
-                categories={careerStatCatsByField}
-                stats={careerStatsByField}
-                sortMethod={sortHighToLow}
-                striped=""
-            />
-        </div>
-    );
-};
+const CareerStats = ({ statsByField, statsByYear, style }) => (
+    <div className={componentStyles.playerPageSection}>
+        <p className={componentStyles.playerPageSectionTitle}>Career stats</p>
+        <StatsTable
+            style={style}
+            cellRenderer={renderCell}
+            categories={careerStatCatsByYear}
+            stats={statsByYear}
+            sortMethod={sortHighToLow}
+            striped=""
+        />
+        <StatsTable
+            style={style}
+            categories={careerStatCatsByField}
+            stats={statsByField}
+            sortMethod={sortHighToLow}
+            striped=""
+        />
+    </div>
+);
+
+function renderCell(cellInfo) {
+    if (cellInfo.column.Header === 'SEASON') {
+        return '';
+    }
+    return cellInfo.value || '0';
+}
 
 CareerStats.propTypes = {
-    careerStatsByField: PropTypes.arrayOf(PropTypes.shape()),
-    careerStatsByYear: PropTypes.arrayOf(PropTypes.shape()),
-    statsTableStyle: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
+    statsByField: PropTypes.arrayOf(PropTypes.shape()),
+    statsByYear: PropTypes.arrayOf(PropTypes.shape()),
+    style: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
 };
 
 export default CareerStats;

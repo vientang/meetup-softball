@@ -107,7 +107,7 @@ function mergeExistingPlayerStats(existingStats = {}, currentStats = {}) {
  * @param {Object} currentStats
  * @return {Object} updated stats for an individual player
  */
-function calculateTotals(existingStats = {}, currentStats = {}) {
+export function calculateTotals(existingStats = {}, currentStats = {}) {
     const { bb, cs, singles, doubles, sb, triples, hr, o, sac } = currentStats;
 
     const totalSingles = addStat(singles, existingStats.singles);
