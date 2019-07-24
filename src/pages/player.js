@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
-import dataProvider from '../utils/dataProvider';
-import { CareerStats, GameLog, PlayerInfo, SplitStats } from '../components';
+import { CareerStats, GameLog, Layout, PlayerInfo, SplitStats } from '../components';
 import { fetchPlayer } from '../utils/helpers';
 import {
     getAtBats,
@@ -15,8 +14,9 @@ import {
     getTotalBases,
     getWOBA,
 } from '../utils/statsCalc';
+import styles from './pages.module.css';
 
-const careerStatsByField = [
+const splitStats = [
     {
         field: 'Parkside',
         gp: '29',
@@ -65,7 +65,8 @@ class Player extends React.Component {
     constructor() {
         super();
         this.state = {
-            careerStatsByYear: [],
+            statsByYear: [],
+            statsByField: [],
             games: [],
             player: {},
         };
@@ -125,31 +126,67 @@ class Player extends React.Component {
 
     updateState = ({ player, games }) => {
         const allGames = player.games || [];
+
         this.setState(() => ({
-            careerStatsByYear: calculateCareerStats(allGames, { type: 'year', value: '2013' }),
+            statsByYear: this.calculateCareerStats(allGames),
+            statsByField: this.calculateFieldStats(allGames),
             games,
             player,
         }));
     };
 
+    calculateCareerStats = (games) => {
+        if (this.careerStats) {
+            return this.careerStats;
+        }
+        const careerStats = {};
+        const parsedGames = typeof games === 'string' ? JSON.parse(games) : games;
+        parsedGames.forEach((game) => {
+            if (careerStats[game.year]) {
+                careerStats[game.year] = [calculateTotals(careerStats[game.year], game)];
+            } else {
+                careerStats[game.year] = [];
+                careerStats[game.year].push(calculateTotals(careerStats[game.year], game));
+            }
+        });
+        return transformCareerStats(careerStats, 'year');
+    };
+
+    calculateFieldStats = (games) => {
+        if (this.fieldStats) {
+            return this.fieldStats;
+        }
+        const fieldStats = {};
+        const parsedGames = typeof games === 'string' ? JSON.parse(games) : games;
+        parsedGames.forEach((game) => {
+            if (fieldStats[game.field]) {
+                fieldStats[game.field] = [calculateTotals(fieldStats[game.field], game)];
+            } else {
+                fieldStats[game.field] = [];
+                fieldStats[game.field].push(calculateTotals(fieldStats[game.field], game));
+            }
+        });
+        return transformCareerStats(fieldStats, 'field');
+    };
+
     render() {
-        const { careerStatsByYear, games, player } = this.state;
+        const { statsByField, statsByYear, games, player } = this.state;
 
         const statsTableStyle = {
             width: 1155,
         };
 
         return (
-            <>
+            <Layout className={styles.pageLayout}>
                 <PlayerInfo data={player} />
-                <SplitStats stats={careerStatsByField} style={statsTableStyle} />
+                <SplitStats stats={splitStats} style={statsTableStyle} />
                 <CareerStats
-                    statsByField={careerStatsByField}
-                    statsByYear={careerStatsByYear}
+                    statsByField={statsByField}
+                    statsByYear={statsByYear}
                     style={statsTableStyle}
                 />
                 <GameLog stats={games} style={statsTableStyle} />
-            </>
+            </Layout>
         );
     }
 }
@@ -193,24 +230,12 @@ function filterGameStats(filters, games) {
         }));
 }
 
-/**
- * Calculate career stats
- * @param {Array} games
- * @param {Object} options - { type: 'year', value: '2019' }
- */
-function calculateCareerStats(games, options) {
-    // TODO: cache return value to avoid recalculating stats
-    let careerStats = {};
-    let parsedGames = typeof games === 'string' ? JSON.parse(games) : games;
-    if (options) {
-        parsedGames = parsedGames.filter((game) => game[options.type] === options.value);
-    }
-
-    parsedGames.forEach((game) => {
-        careerStats = calculateTotals(careerStats, game);
+function transformCareerStats(careerStats, key) {
+    return Object.keys(careerStats).map((type) => {
+        const stats = careerStats[type][0];
+        stats[key] = type;
+        return stats;
     });
-
-    return [careerStats];
 }
 
 function calculateTotals(existingStats = {}, currentStats = {}) {
@@ -287,7 +312,12 @@ Player.propTypes = {
 
 Player.defaultProps = {
     filters: {},
-    location: {},
+    location: {
+        year: '2013',
+        month: '',
+        field: '',
+        batting: '',
+    },
 };
 
-export default dataProvider(Player);
+export default Player;

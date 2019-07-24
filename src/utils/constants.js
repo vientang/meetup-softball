@@ -185,7 +185,7 @@ const adminStatCategories = [
 ];
 
 const careerStatCatsByYear = [
-    'season',
+    'year',
     'gp',
     'w',
     'h',

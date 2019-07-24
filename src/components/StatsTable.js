@@ -86,8 +86,6 @@ function formatHeaderLabel(category) {
             return '3B';
         case 'player':
             return 'PLAYER';
-        case 'season':
-            return 'SEASON';
         case 'field':
             return 'FIELD';
         case 'w':
@@ -117,7 +115,7 @@ function formatColumnWidth(props) {
             return 175;
         case 'battingOrder':
             return 35;
-        case 'season':
+        case 'year':
         case 'field':
             return 100;
         case 'w':
@@ -131,7 +129,7 @@ function formatColumnWidth(props) {
     }
 }
 
-const nonStatHeaders = ['date', 'player', 'game', 'gp', 'battingOrder', 'season', 'field'];
+const nonStatHeaders = ['date', 'year', 'player', 'game', 'gp', 'battingOrder', 'season', 'field'];
 
 function formatHeaderStyle(props) {
     const { category, lastColumn } = props;
