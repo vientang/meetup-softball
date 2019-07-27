@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
-import { CareerStats, GameLog, Layout, PlayerInfo, SplitStats } from '../components';
+import { CareerStats, FilterBar, GameLog, Layout, PlayerInfo } from '../components';
 import { fetchPlayer } from '../utils/helpers';
 import {
     getAtBats,
@@ -15,51 +15,6 @@ import {
     getWOBA,
 } from '../utils/statsCalc';
 import styles from './pages.module.css';
-
-const splitStats = [
-    {
-        field: 'Parkside',
-        gp: '29',
-        w: '.529',
-        singles: '10',
-        doubles: '11',
-        triples: '12',
-        hr: '1',
-        rbi: '1',
-        r: '1',
-        sb: '1',
-        cs: '0',
-        k: '1',
-        bb: '1',
-        avg: '.600',
-        ab: '1',
-        tb: '1',
-        rc: '.800',
-        h: '1',
-        sac: '1',
-    },
-    {
-        field: 'Aptos',
-        gp: '52',
-        w: '.529',
-        singles: '1',
-        doubles: '1',
-        triples: '1',
-        hr: '1',
-        rbi: '1',
-        r: '1',
-        sb: '1',
-        cs: '0',
-        k: '1',
-        bb: '1',
-        avg: '.600',
-        ab: '1',
-        tb: '1',
-        rc: '.800',
-        h: '1',
-        sac: '1',
-    },
-];
 
 class Player extends React.Component {
     constructor() {
@@ -177,9 +132,8 @@ class Player extends React.Component {
         };
 
         return (
-            <Layout className={styles.pageLayout}>
+            <Layout className={styles.pageLayout} filterBar={<FilterBar disabled />}>
                 <PlayerInfo data={player} />
-                <SplitStats stats={splitStats} style={statsTableStyle} />
                 <CareerStats
                     statsByField={statsByField}
                     statsByYear={statsByYear}

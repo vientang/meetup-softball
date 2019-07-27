@@ -12,12 +12,13 @@ const menuItemStyle = {
 };
 
 const FilterBar = (props) => {
-    const { onResetFilters } = props;
+    const { disabled, onResetFilters } = props;
+
     return (
         <div className={componentStyles.filterRow}>
             <div className={componentStyles.filterRowSection}>
                 <FilterTypes {...props} />
-                <ResetFilters onClick={onResetFilters} />
+                <ResetFilters onClick={onResetFilters} disabled={disabled} />
             </div>
             <SearchBar />
         </div>
@@ -27,8 +28,9 @@ const FilterBar = (props) => {
 /* eslint-disable react/prop-types */
 function FilterTypes(props) {
     const {
-        activeFilters,
+        activeFilters = {},
         battingPositions,
+        disabled,
         filterTypes,
         fields,
         months,
@@ -39,24 +41,30 @@ function FilterTypes(props) {
 
     const menus = [years, months, fields, battingPositions];
 
+    const filterTypeClass = cn({
+        [componentStyles.filterType]: true,
+        [componentStyles.filterDisabled]: disabled,
+    });
+
     return (
         <div className={componentStyles.filterTypesGroup}>
             {filterTypes.map((filter, i) => {
                 const filterName = activeFilters[filter] || filter;
-                const filterBarClass = cn({
-                    [componentStyles.filterBarLabelActive]: activeFilters[filter],
-                    [componentStyles.filterBarLabelTypes]: !activeFilters[filter],
+                const filterLabelClass = cn({
+                    [componentStyles.filterLabels]: !activeFilters[filter],
+                    [componentStyles.filterLabelActive]: activeFilters[filter],
+                    [componentStyles.filterLabelDisabled]: disabled,
                 });
 
                 return (
-                    <div key={filter} className={componentStyles.filterType}>
+                    <div key={filter} className={filterTypeClass}>
                         <Dropdown overlay={createMenu(menus[i], onFilterChange)}>
                             <span
-                                className={filterBarClass}
+                                className={filterLabelClass}
                                 onMouseEnter={onMouseEnter}
                                 id={filter}
                             >
-                                <span className={componentStyles.filterBarLabelName} id={filter}>
+                                <span className={componentStyles.filterLabel} id={filter}>
                                     {filterName.toUpperCase()}
                                 </span>
                                 <Icon type="down" />
@@ -69,10 +77,20 @@ function FilterTypes(props) {
     );
 }
 
-function ResetFilters({ onClick }) {
+function ResetFilters({ disabled, onClick }) {
+    const resetContainerClass = cn({
+        [componentStyles.filterResetContainer]: true,
+        [componentStyles.filterDisabled]: disabled,
+    });
+
+    const resetLabelClass = cn({
+        [componentStyles.filterReset]: true,
+        [componentStyles.filterLabelDisabled]: disabled,
+    });
+    
     return (
-        <div className={componentStyles.filterBarLabelResetContainer}>
-            <span className={componentStyles.filterBarLabelReset} onClick={onClick}>
+        <div className={resetContainerClass}>
+            <span className={resetLabelClass} onClick={onClick}>
                 <Icon type="filter" />
                 reset filters
             </span>
@@ -104,6 +122,7 @@ FilterBar.displayName = 'FilterBar';
 FilterBar.propTypes = {
     activeFilters: PropTypes.shape(),
     battingPositions: PropTypes.arrayOf(PropTypes.number),
+    disabled: PropTypes.bool,
     fields: PropTypes.arrayOf(PropTypes.string),
     filterTypes: PropTypes.arrayOf(PropTypes.string),
     months: PropTypes.arrayOf(PropTypes.string),
@@ -115,6 +134,7 @@ FilterBar.propTypes = {
 
 FilterBar.defaultProps = {
     battingPositions: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    disabled: false,
     fields: ['West Sunset', 'Parkside', 'Westlake'],
     filterTypes: ['2019', 'MONTHS', 'FIELDS', 'BATTING'],
     months: [

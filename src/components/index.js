@@ -2,6 +2,7 @@ import AdminStatsTable from './AdminStatsTable';
 import BoxScoreGroup from './BoxScoreGroup';
 import BoxScore from './BoxScore';
 import CareerStats from './CareerStats';
+import FilterBar from './FilterBar';
 import GameDetails from './GameDetails';
 import GameMenu from './GameMenu';
 import JoinUs from './JoinUs';
@@ -21,6 +22,7 @@ export {
     BoxScoreGroup,
     BoxScore,
     CareerStats,
+    FilterBar,
     GameDetails,
     GameLog,
     GameMenu,

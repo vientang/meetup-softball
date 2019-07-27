@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import { API, graphqlOperation } from 'aws-amplify';
 import isEqual from 'lodash/isEqual';
 import { listGameStatss } from '../graphql/queries';
-import Layout from '../components/Layout';
-import FilterBar from '../components/FilterBar';
+import { FilterBar, Layout } from '../components';
 import styles from '../pages/pages.module.css';
 import configuration from '../aws-exports';
 
