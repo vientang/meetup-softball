@@ -6,7 +6,7 @@ import { sortHighToLow } from '../utils/helpers';
 import { gameLogCategories } from '../utils/constants';
 import componentStyles from './components.module.css';
 
-const GameLog = ({ stats, style }) => (
+const GameLog = ({ stats }) => (
     <div className={componentStyles.playerPageSection}>
         <p className={componentStyles.playerPageSectionTitle}>Games</p>
         <StatsTable
@@ -14,7 +14,6 @@ const GameLog = ({ stats, style }) => (
             cellRenderer={renderCell}
             sortMethod={sortHighToLow}
             stats={stats}
-            style={style}
         />
     </div>
 );
@@ -28,7 +27,6 @@ function renderCell(cellInfo) {
 
 GameLog.propTypes = {
     stats: PropTypes.arrayOf(PropTypes.shape()),
-    style: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
 };
 
 export default GameLog;

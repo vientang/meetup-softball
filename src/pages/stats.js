@@ -2,19 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import isEqual from 'lodash/isEqual';
 import get from 'lodash/get';
-import uniqBy from 'lodash/uniqBy';
 import { Link } from 'gatsby';
 import { Avatar, Skeleton } from 'antd';
 import { API, graphqlOperation } from 'aws-amplify';
 import dataProvider from '../utils/dataProvider';
 import { NotFoundImage, StatsTable } from '../components';
 import { getAllPlayerStats } from '../utils/apiService';
-import {
-    createSlug,
-    getDefaultSortedColumn,
-    formatCellValue,
-    sortHighToLow,
-} from '../utils/helpers';
+import { getDefaultSortedColumn, formatCellValue, sortHighToLow } from '../utils/helpers';
 import { statPageCategories } from '../utils/constants';
 import pageStyles from './pages.module.css';
 import legacyData from '../../__mocks__/mockData';
@@ -23,13 +17,6 @@ import legacyData from '../../__mocks__/mockData';
 import { convertLegacyPlayerData, convertLegacyGameData } from '../utils/convertLegacyData';
 import { createGameStats, createPlayerStats, updatePlayerStats } from '../graphql/mutations';
 import { getPlayerStats, listGameStatss, listPlayerStatss } from '../graphql/queries';
-
-const statsTableStyle = {
-    height: 800,
-    width: 1170,
-};
-
-const skeletonConfig = { rows: 20, width: '1165px' };
 
 class Stats extends React.Component {
     constructor(props) {
@@ -100,11 +87,7 @@ class Stats extends React.Component {
         const { playerId, playerName, playerImg } = getPlayerMetaData(playerStats, cellInfo);
 
         return (
-            <Link
-                to={`/player?name=${createSlug(playerName)}`}
-                className={pageStyles.playerName}
-                state={{ playerId }}
-            >
+            <Link to={`/player?id=${playerId}`} className={pageStyles.playerName}>
                 <PlayerAvatar image={playerImg} name={playerName} />
                 {playerName}
             </Link>
@@ -131,12 +114,18 @@ class Stats extends React.Component {
         }
 
         if (playerStats.length === 0) {
+            const skeletonConfig = { rows: 20, width: '1170px' };
+
             return (
                 <div className={pageStyles.statsSection}>
                     <Skeleton active paragraph={skeletonConfig} title={false} />
                 </div>
             );
         }
+
+        const statsTableStyle = {
+            height: 800,
+        };
 
         return (
             <div className={pageStyles.statsSection}>

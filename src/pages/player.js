@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import get from 'lodash/get';
 import { CareerStats, FilterBar, GameLog, Layout, PlayerInfo } from '../components';
 import { fetchPlayer } from '../utils/helpers';
 import {
@@ -30,52 +29,29 @@ class Player extends React.Component {
     async componentDidMount() {
         const { filters, location } = this.props;
 
-        const playerData = await fetchPlayer(get(location, 'state.playerId', null));
+        const playerId = location.href.split('=').pop();
 
-        if (playerData) {
+        if (playerId) {
+            const playerData = await fetchPlayer(playerId);
             this.updateState({
                 games: filterGameStats(filters, playerData.games),
                 player: playerData,
             });
         }
-        // if (playerId && playerData.games) {
-        //     // routed by user action - selecting player by search or link
-        //     await localStorage.setItem('currentPlayer', JSON.stringify(playerData));
-        //     const filteredGames = filterGameStats(this.props.filters, playerData.games);
-        //     this.updateState({ player: playerData, games: filteredGames });
-        // } else {
-        //     // routed by browser navigation or browser refresh
-        //     // local state doesn't persist and props.location.state is gone
-        //     // but we've saved it in localStorage so we're good!
-        //     const playerDataInMemory =
-        //         (await JSON.parse(localStorage.getItem('currentPlayer'))) || {};
-        //     const filteredGames = filterGameStats(this.props.filters, playerDataInMemory.games);
-        //     this.updateState({
-        //         player: playerDataInMemory,
-        //         games: filteredGames,
-        //     });
-        // }
     }
 
-    async componentDidUpdate(prevProps) {
+    async componentDidUpdate() {
         const { player } = this.state;
         const { filters, location } = this.props;
 
-        const playerData = await fetchPlayer(get(location, 'state.playerId', null));
+        const playerId = location.href.split('=').pop();
 
-        if (playerData && playerData.id !== player.id) {
+        if (playerId && playerId !== player.id) {
+            const playerData = await fetchPlayer(playerId);
             this.updateState({
                 games: filterGameStats(filters, playerData.games),
                 player: playerData,
             });
-        }
-    }
-
-    componentWillUnmount() {
-        const playerInMemory = localStorage.getItem('currentPlayer');
-
-        if (playerInMemory) {
-            localStorage.removeItem('currentPlayer');
         }
     }
 
@@ -127,19 +103,11 @@ class Player extends React.Component {
     render() {
         const { statsByField, statsByYear, games, player } = this.state;
 
-        const statsTableStyle = {
-            width: 1155,
-        };
-
         return (
             <Layout className={styles.pageLayout} filterBar={<FilterBar disabled />}>
                 <PlayerInfo data={player} />
-                <CareerStats
-                    statsByField={statsByField}
-                    statsByYear={statsByYear}
-                    style={statsTableStyle}
-                />
-                <GameLog stats={games} style={statsTableStyle} />
+                <CareerStats statsByField={statsByField} statsByYear={statsByYear} />
+                <GameLog stats={games} />
             </Layout>
         );
     }
@@ -151,7 +119,7 @@ class Player extends React.Component {
  * @param {Object} filters
  * @param {Array} games
  */
-function filterGameStats(filters, games) {
+function filterGameStats(filters = {}, games) {
     let parsedGames = games || [];
     if (typeof games === 'string') {
         parsedGames = JSON.parse(games);
@@ -258,20 +226,9 @@ function addStat(currentStat, existingStat) {
     return Number(existingStat) + Number(currentStat);
 }
 
-Player.displayName = 'Player';
 Player.propTypes = {
     filters: PropTypes.shape(),
     location: PropTypes.shape(),
-};
-
-Player.defaultProps = {
-    filters: {},
-    location: {
-        year: '2013',
-        month: '',
-        field: '',
-        batting: '',
-    },
 };
 
 export default Player;

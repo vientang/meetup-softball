@@ -2,7 +2,7 @@ import React from 'react';
 import get from 'lodash/get';
 import { Link, navigate } from 'gatsby';
 import { Icon, Input, AutoComplete } from 'antd';
-import { createSlug, fetchAllPlayers } from '../utils/helpers';
+import { fetchAllPlayers } from '../utils/helpers';
 import componentStyles from './components.module.css';
 
 const { Option } = AutoComplete;
@@ -36,9 +36,7 @@ class SearchBar extends React.Component {
     handleSelect = (value, instance) => {
         const childState = get(instance, 'props.children.props.state', {});
 
-        navigate(`/player?name=${createSlug(value)}`, {
-            state: { playerId: childState.playerId },
-        });
+        navigate(`/player?/id=${childState.playerId}`);
     };
 
     render() {
@@ -66,12 +64,10 @@ class SearchBar extends React.Component {
 
 function filterOptions(players, value) {
     return players
-        .filter((player) => {
-            return player.name.toLowerCase().includes(value.toLowerCase());
-        })
+        .filter((player) => player.name.toLowerCase().includes(value.toLowerCase()))
         .map((player) => (
             <Option key={player.id} value={player.name}>
-                {renderPlayerLink(player)}
+                <Link to={`/player?id=${player.id}`}>{player.name}</Link>
             </Option>
         ));
 }
@@ -79,17 +75,9 @@ function filterOptions(players, value) {
 function renderOptions(players) {
     return players.map((player) => (
         <Option key={player.id} value={player.name}>
-            {renderPlayerLink(player)}
+            <Link to={`/player?id=${player.id}`}>{player.name}</Link>
         </Option>
     ));
-}
-
-function renderPlayerLink(player) {
-    return (
-        <Link to={`/player?name=${createSlug(player.name)}`} state={{ playerId: player.id }}>
-            {player.name}
-        </Link>
-    );
 }
 
 export default SearchBar;

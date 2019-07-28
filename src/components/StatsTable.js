@@ -21,10 +21,11 @@ const StatsTable = (props) => {
     const statsTableStyle = {
         fontSize: 12,
         boxShadow: '0px 0px 20px -15px #243b55',
+        width: 1170,
         ...style,
     };
     const statsLegendStyle = {
-        width: style.width,
+        width: 1170,
     };
 
     if (!stats || stats.length < 1) {

@@ -5,11 +5,10 @@ import { sortHighToLow } from '../utils/helpers';
 import { careerStatCatsByYear, careerStatCatsByField } from '../utils/constants';
 import componentStyles from './components.module.css';
 
-const CareerStats = ({ statsByField, statsByYear, style }) => (
+const CareerStats = ({ statsByField, statsByYear }) => (
     <div className={componentStyles.playerPageSection}>
         <p className={componentStyles.playerPageSectionTitle}>Career stats</p>
         <StatsTable
-            style={style}
             cellRenderer={renderCell}
             categories={careerStatCatsByYear}
             stats={statsByYear}
@@ -17,7 +16,6 @@ const CareerStats = ({ statsByField, statsByYear, style }) => (
             striped=""
         />
         <StatsTable
-            style={style}
             categories={careerStatCatsByField}
             stats={statsByField}
             sortMethod={sortHighToLow}
@@ -36,7 +34,6 @@ function renderCell(cellInfo) {
 CareerStats.propTypes = {
     statsByField: PropTypes.arrayOf(PropTypes.shape()),
     statsByYear: PropTypes.arrayOf(PropTypes.shape()),
-    style: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
 };
 
 export default CareerStats;

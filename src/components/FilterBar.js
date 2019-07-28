@@ -87,7 +87,7 @@ function ResetFilters({ disabled, onClick }) {
         [componentStyles.filterReset]: true,
         [componentStyles.filterLabelDisabled]: disabled,
     });
-    
+
     return (
         <div className={resetContainerClass}>
             <span className={resetLabelClass} onClick={onClick}>

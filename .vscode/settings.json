@@ -1,4 +1,6 @@
 {
     "editor.wordWrap": "wordWrapColumn",
-    "maven.view": "hierarchical"
+    "maven.view": "hierarchical",
+    "files.autoSave": "afterDelay",
+    "editor.formatOnSave": true
 }
