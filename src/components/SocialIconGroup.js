@@ -4,34 +4,31 @@ import { Icon } from 'antd';
 import MeetupIcon from './MeetupIcon';
 import componentStyles from './components.module.css';
 
-const SocialIconGroup = ({ types, uri }) => {
-    const fontSize = 14;
+const SocialIconGroup = ({ types }) => {
+    const fontSize = 18;
     const meetupIcon = () => <MeetupIcon size={fontSize} />;
     const iconStyle = {
         verticalAlign: -1,
-        color: '#4267B2',
+        padding: '0.1rem',
+        color: '#c43045',
         fontSize,
     };
     return (
         <div className={componentStyles.iconGroup}>
-            {types.map((icon, i) => {
-                const iconLinkStyle = {
-                    right: i === 0 ? 100 : 70,
-                };
+            {types.map((icon) => {
                 const socialIcon =
                     icon.type === 'meetup' ? (
-                        <Icon component={meetupIcon} style={iconStyle} />
+                        <Icon component={meetupIcon} />
                     ) : (
                         <Icon type={icon.type} style={iconStyle} />
                     );
                 return (
                     <a
                         key={icon.type}
-                        href={icon.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={iconLinkStyle}
                         className={componentStyles.iconLink}
+                        href={icon.url}
+                        rel="noopener noreferrer"
+                        target="_blank"
                     >
                         {socialIcon}
                     </a>
@@ -44,7 +41,6 @@ const SocialIconGroup = ({ types, uri }) => {
 SocialIconGroup.displayName = 'SocialIconGroup';
 SocialIconGroup.propTypes = {
     types: PropTypes.arrayOf(PropTypes.shape),
-    uri: PropTypes.string,
 };
 SocialIconGroup.defaultProps = {
     types: [],

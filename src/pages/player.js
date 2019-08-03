@@ -30,9 +30,10 @@ class Player extends React.Component {
         const { filters, location } = this.props;
 
         const playerId = location.href.split('=').pop();
-
-        if (playerId) {
-            const playerData = await fetchPlayer(playerId);
+        console.log('cdn id', playerId);
+        const playerData = await fetchPlayer(playerId);
+        
+        if (playerData && playerData.id) {
             this.updateState({
                 games: filterGameStats(filters, playerData.games),
                 player: playerData,
@@ -45,9 +46,10 @@ class Player extends React.Component {
         const { filters, location } = this.props;
 
         const playerId = location.href.split('=').pop();
+        console.log('cdu id', playerId);
+        const playerData = await fetchPlayer(playerId);
 
-        if (playerId && playerId !== player.id) {
-            const playerData = await fetchPlayer(playerId);
+        if (playerData && playerData.id !== player.id) {
             this.updateState({
                 games: filterGameStats(filters, playerData.games),
                 player: playerData,

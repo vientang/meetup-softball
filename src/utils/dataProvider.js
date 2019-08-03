@@ -25,6 +25,7 @@ const dataProvider = (Page) => {
     return class PageWithFilters extends Component {
         static propTypes = {
             location: PropTypes.shape(),
+            uri: PropTypes.string,
         };
 
         constructor(props) {
@@ -209,15 +210,12 @@ const dataProvider = (Page) => {
         };
 
         render() {
+            const { location, uri } = this.props;
             const { activeFilters, gameStats } = this.state;
 
             return (
-                <Layout className={styles.pageLayout} filterBar={this.renderFilterBar()}>
-                    <Page
-                        filters={activeFilters}
-                        gameData={gameStats}
-                        location={this.props.location}
-                    />
+                <Layout className={styles.pageLayout} filterBar={this.renderFilterBar()} uri={uri}>
+                    <Page filters={activeFilters} gameData={gameStats} location={location} />
                 </Layout>
             );
         }

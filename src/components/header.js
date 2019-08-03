@@ -17,23 +17,27 @@ const Header = () => ({ siteTitle, uri }) => {
     }
 
     return (
-        <header className={componentStyles.header} style={headerStyle}>
-            <Logo siteTitle={siteTitle} uri={uri} />
-            <SocialIconGroup
-                types={[
-                    {
-                        type: 'facebook',
-                        url: 'https://www.facebook.com/groups/SFsoftballmeetup/',
-                    },
-                    {
-                        type: 'meetup',
-                        url: 'https://www.meetup.com/San-Francisco-Softball-Players/',
-                    },
-                ]}
-                uri={uri}
-            />
-            <NavLinks />
-        </header>
+        <>
+            <header className={componentStyles.header} style={headerStyle}>
+                <Logo siteTitle={siteTitle} uri={uri} />
+                <NavLinks />
+            </header>
+            {uri === '/' && (
+                <SocialIconGroup
+                    types={[
+                        {
+                            type: 'facebook',
+                            url: 'https://www.facebook.com/groups/SFsoftballmeetup/',
+                        },
+                        {
+                            type: 'meetup',
+                            url: 'https://www.meetup.com/San-Francisco-Softball-Players/',
+                        },
+                    ]}
+                    uri={uri}
+                />
+            )}
+        </>
     );
 };
 
