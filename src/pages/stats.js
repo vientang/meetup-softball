@@ -4,16 +4,13 @@ import isEqual from 'lodash/isEqual';
 import get from 'lodash/get';
 import { Link } from 'gatsby';
 import { Avatar, Skeleton } from 'antd';
-import { API, graphqlOperation, JS } from 'aws-amplify';
+import { API, graphqlOperation } from 'aws-amplify';
 import dataProvider from '../utils/dataProvider';
 import { NotFoundImage, StatsTable } from '../components';
 import { getAllPlayerStats } from '../utils/apiService';
 import { getDefaultSortedColumn, formatCellValue, sortHighToLow } from '../utils/helpers';
 import { statPageCategories } from '../utils/constants';
 import pageStyles from './pages.module.css';
-import legacyData from '../../__mocks__/mockData';
-// import legacyPlayerData from '../../__mocks__/mockData';
-// import legacyGameData from '../../__mocks__/mockData';
 import { convertLegacyPlayerData, convertLegacyGameData } from '../utils/convertLegacyData';
 import { createGameStats, createPlayerStats, updatePlayerStats } from '../graphql/mutations';
 import { getPlayerStats, listGameStatss, listPlayerStatss } from '../graphql/queries';
@@ -33,11 +30,11 @@ class Stats extends React.Component {
         // const gamedata = await convertLegacyGameData(legacyData);
         // console.timeEnd('converting legacy data')
         // const dupes = uniqBy(playerdata, 'id');
-        // console.log('legacy data', { 
-        //     playerdata, 
-        //     strData: JSON.stringify(playerdata), 
+        // console.log('legacy data', {
+        //     playerdata,
+        //     strData: JSON.stringify(playerdata),
         //     gamedata,
-        //     strGameData: JSON.stringify(gamedata) 
+        //     strGameData: JSON.stringify(gamedata)
         // });
         // console.time('submit data');
         // slice legacy data

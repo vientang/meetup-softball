@@ -2,7 +2,6 @@
 import fetchJsonp from 'fetch-jsonp';
 import { getHits, getOuts } from './statsCalc';
 import { convertStringStatsToNumbers } from './helpers';
-import dirtyIds from '../../__mocks__/dirtyIds';
 
 const legacyPlayerList = new Map();
 const legacyGameList = new Map();
@@ -220,18 +219,12 @@ function parseCurrentMonth(date) {
 }
 
 async function getPlayerDataFromMeetup(id) {
-    let meetupId = id;
-    if (dirtyIds[id]) {
-        // dirty ids match so assume player closed their account on meetup
-        meetupId = dirtyIds[id].realId || null;
-    }
-
-    if (!meetupId) {
+    if (!id) {
         return null;
     }
 
     const playerData = await fetchJsonp(
-        `${process.env.PLAYER_URL}/${meetupId}?&sign=true&photo-host=public`,
+        `${process.env.PLAYER_URL}/${id}?&sign=true&photo-host=public`,
     )
         .then((response) => response.json())
         .then((playerResult) => playerResult)
