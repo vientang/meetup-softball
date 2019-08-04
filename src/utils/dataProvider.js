@@ -53,16 +53,7 @@ const dataProvider = (Page) => {
                     }));
                 }
             } else {
-                const gameStats = await API.graphql(
-                    graphqlOperation(listGameStatss, {
-                        filter: {
-                            year: {
-                                eq: defaultFilter,
-                            },
-                        },
-                        limit: queryLimit,
-                    }),
-                );
+                const gameStats = await API.graphql(graphqlOperation(listGameStatss));
 
                 try {
                     const years = this.getFilterMenu(gameStats.data.listGameStatss.items, 'year');

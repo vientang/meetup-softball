@@ -14,7 +14,7 @@ const BoxScoreGroup = () => {
             let allGames = await API.graphql(graphqlOperation(listGameStatss));
             allGames = await allGames.data.listGameStatss.items.sort(sortTimeStamp);
             if (isMounted) {
-                setRecentGameData(createBoxScoreData([allGames[1], allGames[0]]));
+                setRecentGameData(createBoxScoreData([allGames[1], allGames[0]].filter(Boolean)));
             }
         }
         fetchData();
@@ -36,7 +36,7 @@ const BoxScoreGroup = () => {
 };
 
 function createBoxScoreData(games) {
-    if (!games) {
+    if (!games || !games.length) {
         return [];
     }
     return games.map((game) => {

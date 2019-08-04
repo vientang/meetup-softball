@@ -4,7 +4,7 @@ import isEqual from 'lodash/isEqual';
 import get from 'lodash/get';
 import { Link } from 'gatsby';
 import { Avatar, Skeleton } from 'antd';
-import { API, graphqlOperation } from 'aws-amplify';
+import { API, graphqlOperation, JS } from 'aws-amplify';
 import dataProvider from '../utils/dataProvider';
 import { NotFoundImage, StatsTable } from '../components';
 import { getAllPlayerStats } from '../utils/apiService';
@@ -28,14 +28,21 @@ class Stats extends React.Component {
     }
 
     async componentDidMount() {
+        // console.time('converting legacy data')
         // const playerdata = await convertLegacyPlayerData(legacyData);
         // const gamedata = await convertLegacyGameData(legacyData);
+        // console.timeEnd('converting legacy data')
         // const dupes = uniqBy(playerdata, 'id');
-        // console.log('player data', { dupes, playerdata, strData: JSON.stringify(playerdata) });
+        // console.log('legacy data', { 
+        //     playerdata, 
+        //     strData: JSON.stringify(playerdata), 
+        //     gamedata,
+        //     strGameData: JSON.stringify(gamedata) 
+        // });
         // console.time('submit data');
         // slice legacy data
-        // this.submitPlayerStats(legacyPlayerData);
-        // this.submitGameStats(legacyGameData);
+        // this.submitPlayerStats(playerdata);
+        // this.submitGameStats(gamedata);
         // console.timeEnd('submit data');
     }
 
@@ -64,7 +71,7 @@ class Stats extends React.Component {
     };
 
     submitGameStats = async (gameStats) => {
-        gameStats.forEach(async (value, key, map) => {
+        gameStats.forEach(async (value) => {
             const game = { ...value };
             game.winners = JSON.stringify(value.winners);
             game.losers = JSON.stringify(value.losers);

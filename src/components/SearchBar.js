@@ -35,8 +35,6 @@ class SearchBar extends React.Component {
 
     handleSelect = (value, instance) => {
         const childState = get(instance, 'props.children.props.state', {});
-        console.log('child state', childState);
-        
         navigate(`/player?/id=${childState.playerId}`);
     };
 
@@ -64,7 +62,6 @@ class SearchBar extends React.Component {
 }
 
 function filterOptions(players, value) {
-    console.log('filter', { players, value })
     return players
         .filter((player) => player.name.toLowerCase().includes(value.toLowerCase()))
         .map((player) => (
@@ -75,7 +72,6 @@ function filterOptions(players, value) {
 }
 
 function renderOptions(players) {
-    console.log('renderOptions', { players })
     return players.map((player) => (
         <Option key={player.id} value={player.name}>
             <Link to={`/player?id=${player.id}`}>{player.name}</Link>

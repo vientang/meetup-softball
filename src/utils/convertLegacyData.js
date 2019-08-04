@@ -2,7 +2,7 @@
 import fetchJsonp from 'fetch-jsonp';
 import { getHits, getOuts } from './statsCalc';
 import { convertStringStatsToNumbers } from './helpers';
-import notFound from '../../__mocks__/notFound';
+import dirtyIds from '../../__mocks__/dirtyIds';
 
 const legacyPlayerList = new Map();
 const legacyGameList = new Map();
@@ -104,7 +104,7 @@ export function convertLegacyGameData(data) {
         }
     }
 
-    return legacyGameList;
+    return [...legacyGameList.values()];
 }
 
 const currentGameData = new Map();
@@ -221,9 +221,9 @@ function parseCurrentMonth(date) {
 
 async function getPlayerDataFromMeetup(id) {
     let meetupId = id;
-    if (notFound.id) {
+    if (dirtyIds[id]) {
         // dirty ids match so assume player closed their account on meetup
-        meetupId = notFound.id !== id ? notFound.id : null;
+        meetupId = dirtyIds[id].realId || null;
     }
 
     if (!meetupId) {
