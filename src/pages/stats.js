@@ -6,7 +6,7 @@ import { Link } from 'gatsby';
 import { Avatar, Skeleton } from 'antd';
 import { API, graphqlOperation } from 'aws-amplify';
 import dataProvider from '../utils/dataProvider';
-import { NotFoundImage, StatsTable } from '../components';
+import { FilterBar, Layout, StatsTable } from '../components';
 import { getAllPlayerStats } from '../utils/apiService';
 import { getDefaultSortedColumn, formatCellValue, sortHighToLow } from '../utils/helpers';
 import { statPageCategories } from '../utils/constants';
@@ -15,16 +15,32 @@ import { convertLegacyPlayerData, convertLegacyGameData } from '../utils/convert
 import { createGameStats, createPlayerStats, updatePlayerStats } from '../graphql/mutations';
 import { getPlayerStats, listGameStatss, listPlayerStatss } from '../graphql/queries';
 
+const defaultFilters = {
+    year: '2018',
+    month: '',
+    field: '',
+};
 class Stats extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            filters: {
+                year: '2018',
+                month: '',
+                field: '',
+            },
+            currentFilter: 'year',
             playerStats: [],
             sortedColumn: '',
         };
     }
 
     async componentDidMount() {
+        this.mounted = true;
+        if (this.mounted) {
+            const games = await API.graphql(graphqlOperation(listGameStatss));
+            this.updateState({ playerStats: getAllPlayerStats(games.data.listGameStatss.items) });
+        }
         // console.time('converting legacy data')
         // const playerdata = await convertLegacyPlayerData(legacyData);
         // const gamedata = await convertLegacyGameData(legacyData);
@@ -43,12 +59,20 @@ class Stats extends React.Component {
         // console.timeEnd('submit data');
     }
 
-    componentDidUpdate(prevProps) {
-        if (this.shouldUpdateStats(prevProps.gameData)) {
-            const playerStats = getAllPlayerStats(this.props.gameData);
-            this.updatePlayerStats(playerStats);
+    async componentDidUpdate() {
+        if (!this.state.playerStats.length) {
+            const games = await API.graphql(graphqlOperation(listGameStatss));
+            this.updateState({ playerStats: getAllPlayerStats(games.data.listGameStatss.items) });
         }
     }
+
+    componentWillUnmount() {
+        this.mounted = false;
+    }
+
+    updateState = (newState) => {
+        this.setState(() => newState);
+    };
 
     /**
      * Update a players game log or create a new player
@@ -79,17 +103,12 @@ class Stats extends React.Component {
     shouldUpdateStats = (prevGameData) =>
         prevGameData.length <= 0 || !isEqual(prevGameData, this.props.gameData);
 
-    updatePlayerStats = (playerStats) => {
-        this.setState(() => ({ playerStats }));
-    };
-
     handleColumnSort = (newSorted, column) => {
-        this.setState(() => ({ sortedColumn: column.id }));
+        this.updateState({ sortedColumn: column.id });
     };
 
     renderPlayerCell = (playerStats, cellInfo) => {
         const { playerId, playerName, playerImg } = getPlayerMetaData(playerStats, cellInfo);
-
         return (
             <Link to={`/player?id=${playerId}`} className={pageStyles.playerName}>
                 <PlayerAvatar image={playerImg} name={playerName} />
@@ -100,30 +119,48 @@ class Stats extends React.Component {
 
     renderCell = (cellInfo) => {
         const { playerStats } = this.state;
-
         const playerName = playerStats[cellInfo.index].name;
         const cellValue = playerStats[cellInfo.index][cellInfo.column.id];
-
         return cellValue === playerName
             ? this.renderPlayerCell(playerStats, cellInfo)
             : formatCellValue(cellValue);
     };
 
-    render() {
-        const { gameData } = this.props;
-        const { playerStats, sortedColumn } = this.state;
+    /**
+     * Update active filters from FilterBar selections
+     */
+    handleFilterChange = async (params) => {
+        this.setState((prevState) => ({
+            filters: {
+                ...prevState.filters,
+                [prevState.currentFilter]: params.key === 'all' ? '' : params.key,
+            },
+        }));
+    };
 
-        if (gameData.length < 0) {
-            return <NotFoundImage />;
+    /**
+     * Detect the filter that will be selected
+     * Use in handleFilterChange for optimizations
+     */
+    handleCurrentFilter = (e) => {
+        const currentFilter = e.target.id;
+        if (currentFilter && currentFilter !== this.state.currentFilter) {
+            this.updateState({ currentFilter });
         }
+    };
+
+    handleResetFilters = () => {
+        this.updateState({ filters: { ...defaultFilters } });
+    };
+
+    render() {
+        const { filters, playerStats, sortedColumn } = this.state;
 
         if (playerStats.length === 0) {
-            const skeletonConfig = { rows: 20, width: '1170px' };
-
             return (
-                <div className={pageStyles.statsSection}>
-                    <Skeleton active paragraph={skeletonConfig} title={false} />
-                </div>
+                <Layout className={pageStyles.pageLayout}>
+                    <Skeleton active paragraph={{ rows: 20, width: '1170px' }} title={false} />
+                </Layout>
             );
         }
 
@@ -132,7 +169,17 @@ class Stats extends React.Component {
         };
 
         return (
-            <div className={pageStyles.statsSection}>
+            <Layout
+                className={pageStyles.pageLayout}
+                filterBar={
+                    <FilterBar
+                        filters={filters}
+                        onFilterChange={this.handleFilterChange}
+                        onMouseEnter={this.handleCurrentFilter}
+                        onResetFilters={this.handleResetFilters}
+                    />
+                }
+            >
                 <StatsTable
                     categories={statPageCategories}
                     cellRenderer={this.renderCell}
@@ -144,7 +191,7 @@ class Stats extends React.Component {
                     style={statsTableStyle}
                     showLegend
                 />
-            </div>
+            </Layout>
         );
     }
 }
@@ -169,12 +216,4 @@ function getPlayerMetaData(playerStats, cellInfo) {
     return { playerId, playerName, playerImg };
 }
 
-Stats.propTypes = {
-    gameData: PropTypes.arrayOf(PropTypes.shape),
-};
-
-Stats.defaultProps = {
-    gameData: [],
-};
-
-export default dataProvider(Stats);
+export default Stats;

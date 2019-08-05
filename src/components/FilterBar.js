@@ -5,6 +5,24 @@ import { Dropdown, Menu, Icon } from 'antd';
 import SearchBar from './SearchBar';
 import componentStyles from './components.module.css';
 
+const years = ['2019', '2018', '2017', '2016', '2015', '2014', '2013'];
+const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+];
+const fields = ['West Sunset', 'Parkside', 'Westlake'];
+const battingPositions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
 const menuItemStyle = {
     fontSize: 10,
     paddingTop: 0,
@@ -27,17 +45,7 @@ const FilterBar = (props) => {
 
 /* eslint-disable react/prop-types */
 function FilterTypes(props) {
-    const {
-        activeFilters = {},
-        battingPositions,
-        disabled,
-        filterTypes,
-        fields,
-        months,
-        onFilterChange,
-        onMouseEnter,
-        years,
-    } = props;
+    const { filters = {}, disabled, onFilterChange, onMouseEnter } = props;
 
     const menus = [years, months, fields, battingPositions];
 
@@ -48,14 +56,12 @@ function FilterTypes(props) {
 
     return (
         <div className={componentStyles.filterTypesGroup}>
-            {filterTypes.map((filter, i) => {
-                const filterName = activeFilters[filter] || filter;
+            {Object.keys(filters).map((filter, i) => {
                 const filterLabelClass = cn({
-                    [componentStyles.filterLabels]: !activeFilters[filter],
-                    [componentStyles.filterLabelActive]: activeFilters[filter],
+                    [componentStyles.filterLabels]: !filters[filter],
+                    [componentStyles.filterLabelActive]: filters[filter],
                     [componentStyles.filterLabelDisabled]: disabled,
                 });
-
                 return (
                     <div key={filter} className={filterTypeClass}>
                         <Dropdown overlay={createMenu(menus[i], onFilterChange)}>
@@ -65,7 +71,7 @@ function FilterTypes(props) {
                                 id={filter}
                             >
                                 <span className={componentStyles.filterLabel} id={filter}>
-                                    {filterName.toUpperCase()}
+                                    {filters[filter] || filter.toUpperCase()}
                                 </span>
                                 <Icon type="down" />
                             </span>
@@ -120,38 +126,15 @@ function createMenu(menus, onFilterChange) {
 FilterBar.displayName = 'FilterBar';
 /* eslint-disable react/no-unused-prop-types */
 FilterBar.propTypes = {
-    activeFilters: PropTypes.shape(),
-    battingPositions: PropTypes.arrayOf(PropTypes.number),
+    filters: PropTypes.shape(),
     disabled: PropTypes.bool,
-    fields: PropTypes.arrayOf(PropTypes.string),
-    filterTypes: PropTypes.arrayOf(PropTypes.string),
-    months: PropTypes.arrayOf(PropTypes.string),
     onFilterChange: PropTypes.func,
     onMouseEnter: PropTypes.func,
     onResetFilters: PropTypes.func,
-    years: PropTypes.arrayOf(PropTypes.string),
 };
 
 FilterBar.defaultProps = {
-    battingPositions: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
     disabled: false,
-    fields: ['West Sunset', 'Parkside', 'Westlake'],
-    filterTypes: ['2019', 'MONTHS', 'FIELDS', 'BATTING'],
-    months: [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December',
-    ],
-    years: ['2019', '2018', '2017', '2016', '2015', '2014'],
 };
 
 export default FilterBar;

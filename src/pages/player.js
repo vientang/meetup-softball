@@ -13,7 +13,7 @@ import {
     getTotalBases,
     getWOBA,
 } from '../utils/statsCalc';
-import styles from './pages.module.css';
+import pageStyles from './pages.module.css';
 
 class Player extends React.Component {
     constructor() {
@@ -30,9 +30,8 @@ class Player extends React.Component {
         const { filters, location } = this.props;
 
         const playerId = location.href.split('=').pop();
-        console.log('cdn id', playerId);
         const playerData = await fetchPlayer(playerId);
-        
+
         if (playerData && playerData.id) {
             this.updateState({
                 games: filterGameStats(filters, playerData.games),
@@ -46,7 +45,6 @@ class Player extends React.Component {
         const { filters, location } = this.props;
 
         const playerId = location.href.split('=').pop();
-        console.log('cdu id', playerId);
         const playerData = await fetchPlayer(playerId);
 
         if (playerData && playerData.id !== player.id) {
@@ -106,7 +104,7 @@ class Player extends React.Component {
         const { statsByField, statsByYear, games, player } = this.state;
 
         return (
-            <Layout className={styles.pageLayout} filterBar={<FilterBar disabled />}>
+            <Layout className={pageStyles.pageLayout} filterBar={<FilterBar disabled />}>
                 <PlayerInfo data={player} />
                 <CareerStats statsByField={statsByField} statsByYear={statsByYear} />
                 <GameLog stats={games} />
