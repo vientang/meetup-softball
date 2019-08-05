@@ -21,11 +21,11 @@ const StatsTable = (props) => {
     const statsTableStyle = {
         fontSize: 12,
         boxShadow: '0px 0px 20px -15px #243b55',
-        width: 1170,
+        width: 1185,
         ...style,
     };
     const statsLegendStyle = {
-        width: 1170,
+        width: 1185,
     };
 
     if (!stats || stats.length < 1) {
@@ -122,7 +122,7 @@ function formatColumnWidth(props) {
         case 'w':
             return 65;
         case 'gp':
-            return 35;
+            return 45;
         case '':
             return 150;
         default:

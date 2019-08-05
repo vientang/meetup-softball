@@ -21,6 +21,8 @@ const defaultFilters = {
     field: '',
 };
 class Stats extends React.Component {
+    games = [];
+
     constructor(props) {
         super(props);
         this.state = {
@@ -38,8 +40,15 @@ class Stats extends React.Component {
     async componentDidMount() {
         this.mounted = true;
         if (this.mounted) {
-            const games = await API.graphql(graphqlOperation(listGameStatss));
-            this.updateState({ playerStats: getAllPlayerStats(games.data.listGameStatss.items) });
+            const allGames = await this.fetchAllGames({
+                filter: { year: { eq: this.state.filters.year } },
+                limit: 100,
+            });
+            try {
+                this.updateState({ playerStats: getAllPlayerStats(allGames) });
+            } catch (error) {
+                throw new Error(error);
+            }
         }
         // console.time('converting legacy data')
         // const playerdata = await convertLegacyPlayerData(legacyData);
@@ -69,6 +78,18 @@ class Stats extends React.Component {
     componentWillUnmount() {
         this.mounted = false;
     }
+
+    fetchAllGames = async (queryParams = {}) => {
+        const games = await API.graphql(graphqlOperation(listGameStatss, queryParams));
+        const { items, nextToken } = games.data.listGameStatss;
+        this.games.push(...items);
+        if (nextToken) {
+            const queries = { ...queryParams };
+            queries.nextToken = nextToken;
+            await this.fetchAllGames(queries);
+        }
+        return this.games;
+    };
 
     updateState = (newState) => {
         this.setState(() => newState);
@@ -100,9 +121,6 @@ class Stats extends React.Component {
         });
     };
 
-    shouldUpdateStats = (prevGameData) =>
-        prevGameData.length <= 0 || !isEqual(prevGameData, this.props.gameData);
-
     handleColumnSort = (newSorted, column) => {
         this.updateState({ sortedColumn: column.id });
     };
@@ -126,16 +144,35 @@ class Stats extends React.Component {
             : formatCellValue(cellValue);
     };
 
+    setQueryFilters = (filters) => {
+        return Object.keys(filters).reduce((queryFilters, key) => {
+            if (filters[key]) {
+                const queries = { ...queryFilters };
+                queries[key] = { eq: filters[key] };
+            }
+            return queryFilters;
+        }, {});
+    };
+
     /**
      * Update active filters from FilterBar selections
      */
     handleFilterChange = async (params) => {
-        this.setState((prevState) => ({
-            filters: {
-                ...prevState.filters,
-                [prevState.currentFilter]: params.key === 'all' ? '' : params.key,
-            },
-        }));
+        const { currentFilter } = this.state;
+        const filters = {
+            ...this.state.filters,
+            [currentFilter]: params.key === 'all' ? '' : params.key,
+        };
+        this.games = [];
+        const allGames = await this.fetchAllGames({
+            filter: this.setQueryFilters(filters),
+            limit: 100,
+        });
+        try {
+            this.updateState({ filters, playerStats: getAllPlayerStats(allGames) });
+        } catch (error) {
+            throw new Error(error);
+        }
     };
 
     /**
