@@ -673,7 +673,9 @@
 
 .player-info-card {
     justify-content: space-between;
-    width: 1170px;
+    width: 100%;
+    min-width: 1170px;
+    max-width: 1250px;
     height: 250px;
     padding: var(--pad-3);
     background: var(--white-1);
@@ -713,12 +715,10 @@
 .player-info-photo {
     display: inline-block;
     width: 200px;
-    /* height: 200px; */
     margin: 5px;
-    /* background-position: center center; */
-    /* background-size: cover; */
     object-fit: cover;
     object-position: 100% 0;
+    border: 2px solid var(--muGold);
     border-radius: 5px;
     box-shadow: var(--shadow-1);
 }

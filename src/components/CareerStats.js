@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import StatsTable from './StatsTable';
-import { sortHighToLow } from '../utils/helpers';
+import { getDefaultSortedColumn, sortHighToLow, sortTimeStamp } from '../utils/helpers';
 import { careerStatCatsByYear, careerStatCatsByField } from '../utils/constants';
 import componentStyles from './components.module.css';
 
@@ -11,8 +11,9 @@ const CareerStats = ({ statsByField, statsByYear }) => (
         <StatsTable
             cellRenderer={renderCell}
             categories={careerStatCatsByYear}
+            defaultSorted={getDefaultSortedColumn('year', false)}
             stats={statsByYear}
-            sortMethod={sortHighToLow}
+            sortMethod={sortTimeStamp}
             striped=""
         />
         <StatsTable

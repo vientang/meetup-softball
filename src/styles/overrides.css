@@ -7,3 +7,7 @@
 .ReactTable .rt-tr {
     background: #ffffff;
 }
+.ant-avatar > img {
+    object-fit: cover;
+    object-position: 100% 0;
+}

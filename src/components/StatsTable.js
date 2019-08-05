@@ -21,11 +21,15 @@ const StatsTable = (props) => {
     const statsTableStyle = {
         fontSize: 12,
         boxShadow: '0px 0px 20px -15px #243b55',
-        width: 1185,
+        width: '100%',
+        minWidth: 1170,
+        maxWidth: 1250,
         ...style,
     };
     const statsLegendStyle = {
-        width: 1185,
+        width: '100%',
+        minWidth: 1170,
+        maxWidth: 1250,
     };
 
     if (!stats || stats.length < 1) {
@@ -109,16 +113,17 @@ function formatColumnWidth(props) {
     }
     switch (category) {
         case 'player':
-            return 135;
+            return 200;
         case 'date':
             return 100;
         case 'game':
-            return 175;
+            return 250;
         case 'battingOrder':
             return 35;
         case 'year':
+            return 65;
         case 'field':
-            return 100;
+            return 150;
         case 'w':
             return 65;
         case 'gp':
@@ -148,7 +153,17 @@ function formatHeaderStyle(props) {
 
 function formatCellStyle(props) {
     const { adminPage, category, lastColumn, sortedColumn } = props;
-    const cellsWithBorders = ['player', 'gp', 'season', 'field'];
+    const cellsWithBorders = [
+        'player',
+        'gp',
+        'season',
+        'field',
+        'date',
+        'game',
+        'battingOrder',
+        'year',
+        'w',
+    ];
 
     const cellStyle = {
         borderRight: 0,

@@ -1,11 +1,8 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import isEqual from 'lodash/isEqual';
 import get from 'lodash/get';
 import { Link } from 'gatsby';
 import { Avatar, Skeleton } from 'antd';
 import { API, graphqlOperation } from 'aws-amplify';
-import dataProvider from '../utils/dataProvider';
 import { FilterBar, Layout, StatsTable } from '../components';
 import { getAllPlayerStats } from '../utils/apiService';
 import { getDefaultSortedColumn, formatCellValue, sortHighToLow } from '../utils/helpers';
@@ -235,7 +232,12 @@ class Stats extends React.Component {
 
 /* eslint-disable react/prop-types */
 function PlayerAvatar({ image, name }) {
-    const avatarStyle = { marginRight: '0.5rem' };
+    const avatarStyle = {
+        marginRight: '0.5rem',
+        border: '1px solid #f7b639',
+        objectFit: 'cover',
+        objectPosition: '100% 0',
+    };
     const avatarProps = { style: avatarStyle, alt: name };
     if (image) {
         avatarProps.src = image;
