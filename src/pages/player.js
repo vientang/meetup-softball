@@ -19,10 +19,15 @@ class Player extends React.Component {
     constructor() {
         super();
         this.state = {
-            statsByYear: [],
-            statsByField: [],
+            filters: {
+                year: '2018',
+                month: '',
+                field: '',
+            },
             games: [],
             player: {},
+            statsByYear: [],
+            statsByField: [],
         };
     }
 
@@ -101,10 +106,13 @@ class Player extends React.Component {
     };
 
     render() {
-        const { statsByField, statsByYear, games, player } = this.state;
+        const { filters, statsByField, statsByYear, games, player } = this.state;
 
         return (
-            <Layout className={pageStyles.pageLayout} filterBar={<FilterBar disabled />}>
+            <Layout
+                className={pageStyles.pageLayout}
+                filterBar={<FilterBar filters={filters} disabled />}
+            >
                 <PlayerInfo data={player} />
                 <CareerStats statsByField={statsByField} statsByYear={statsByYear} />
                 <GameLog stats={games} />

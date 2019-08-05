@@ -58,8 +58,8 @@ function FilterTypes(props) {
         <div className={componentStyles.filterTypesGroup}>
             {Object.keys(filters).map((filter, i) => {
                 const filterLabelClass = cn({
-                    [componentStyles.filterLabels]: !filters[filter],
-                    [componentStyles.filterLabelActive]: filters[filter],
+                    [componentStyles.filterLabels]: true,
+                    [componentStyles.filterLabelActive]: filters[filter] && !disabled,
                     [componentStyles.filterLabelDisabled]: disabled,
                 });
                 return (
