@@ -8,6 +8,7 @@ import { getAllPlayerStats } from '../utils/apiService';
 import { getDefaultSortedColumn, formatCellValue, sortHighToLow } from '../utils/helpers';
 import { statPageCategories } from '../utils/constants';
 import pageStyles from './pages.module.css';
+// import gamedata from '../../__mocks__/GameStats.json';
 import { convertLegacyPlayerData, convertLegacyGameData } from '../utils/convertLegacyData';
 import { createGameStats, createPlayerStats, updatePlayerStats } from '../graphql/mutations';
 import { getPlayerStats, listGameStatss, listPlayerStatss } from '../graphql/queries';
@@ -35,22 +36,27 @@ class Stats extends React.Component {
     }
 
     async componentDidMount() {
-        this.mounted = true;
-        if (this.mounted) {
-            const allGames = await this.fetchAllGames({
-                filter: { year: { eq: this.state.filters.year } },
-                limit: 100,
-            });
-            try {
-                this.updateState({ playerStats: getAllPlayerStats(allGames) });
-            } catch (error) {
-                throw new Error(error);
+        const summarizedStats = localStorage.getItem('allGames');
+        if (summarizedStats) {
+            this.updateState({ playerStats: JSON.parse(summarizedStats) });
+        } else {
+            this.mounted = true;
+            if (this.mounted) {
+                const allGames = await this.fetchAllGames({
+                    limit: 50,
+                });
+                try {
+                    const playerStats = getAllPlayerStats(allGames);
+                    localStorage.setItem('allGames', JSON.stringify(playerStats));
+                    this.updateState({ playerStats });
+                } catch (error) {
+                    throw new Error(error);
+                }
             }
         }
-        // console.time('converting legacy data')
+
         // const playerdata = await convertLegacyPlayerData(legacyData);
         // const gamedata = await convertLegacyGameData(legacyData);
-        // console.timeEnd('converting legacy data')
         // const dupes = uniqBy(playerdata, 'id');
         // console.log('legacy data', {
         //     playerdata,
@@ -66,9 +72,9 @@ class Stats extends React.Component {
     }
 
     async componentDidUpdate() {
+        const allGames = localStorage.getItem('allGames');
         if (!this.state.playerStats.length) {
-            const games = await API.graphql(graphqlOperation(listGameStatss));
-            this.updateState({ playerStats: getAllPlayerStats(games.data.listGameStatss.items) });
+            this.updateState({ playerStats: JSON.parse(allGames) });
         }
     }
 
@@ -85,6 +91,7 @@ class Stats extends React.Component {
             queries.nextToken = nextToken;
             await this.fetchAllGames(queries);
         }
+
         return this.games;
     };
 
@@ -155,21 +162,22 @@ class Stats extends React.Component {
      * Update active filters from FilterBar selections
      */
     handleFilterChange = async (params) => {
-        const { currentFilter } = this.state;
-        const filters = {
-            ...this.state.filters,
-            [currentFilter]: params.key === 'all' ? '' : params.key,
-        };
-        this.games = [];
-        const allGames = await this.fetchAllGames({
-            filter: this.setQueryFilters(filters),
-            limit: 100,
-        });
-        try {
-            this.updateState({ filters, playerStats: getAllPlayerStats(allGames) });
-        } catch (error) {
-            throw new Error(error);
-        }
+        // const { currentFilter } = this.state;
+        // const filters = {
+        //     ...this.state.filters,
+        //     [currentFilter]: params.key === 'all' ? '' : params.key,
+        // };
+        // this.games = [];
+        // const allGames = JSON.parse(localStorage.getItem('allGames'));
+        // const allGames = await this.fetchAllGames({
+        //     filter: this.setQueryFilters(filters),
+        //     limit: 100,
+        // });
+        // try {
+        //     this.updateState({ filters, playerStats: getAllPlayerStats(summarizedStats) });
+        // } catch (error) {
+        //     throw new Error(error);
+        // }
     };
 
     /**

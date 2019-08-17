@@ -194,6 +194,7 @@ function getPlayerDataForGameStats(legacyPlayerId) {
 
     const playerDataForGameStats = { ...playerData };
     delete playerDataForGameStats.games;
+    delete playerDataForGameStats.profile;
 
     return playerDataForGameStats;
 }
