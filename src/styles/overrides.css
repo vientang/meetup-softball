@@ -11,7 +11,11 @@
     object-fit: cover;
     object-position: 100% 0;
 }
-
 .ant-avatar-square {
     border-radius: 0;
+}
+.ant-select-auto-complete.ant-select .ant-input,
+.ant-select-auto-complete.ant-select .ant-input:focus {
+    border: 0;
+    box-shadow: none;
 }

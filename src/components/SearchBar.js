@@ -1,5 +1,4 @@
 import React from 'react';
-import get from 'lodash/get';
 import { Link, navigate } from 'gatsby';
 import { Icon, Input, AutoComplete } from 'antd';
 import { fetchAllPlayers } from '../utils/helpers';
@@ -12,15 +11,19 @@ class SearchBar extends React.Component {
         super(props);
         this.state = {
             players: [],
+            searchList: [],
         };
     }
 
     componentDidMount = async () => {
         this.mounted = true;
-        const players = await fetchAllPlayers();
+        const players = await fetchAllPlayers({ limit: 1000 });
+
         if (players && players.length > 0 && this.mounted) {
+            const allPlayers = renderOptions(players);
             this.setState(() => ({
-                players: renderOptions(players),
+                players: allPlayers,
+                searchList: allPlayers,
             }));
         }
     };
@@ -30,26 +33,26 @@ class SearchBar extends React.Component {
     }
 
     handleSearch = (value) => {
-        this.setState((prevState) => ({ players: filterOptions(prevState.players, value) }));
+        this.setState((prevState) => ({ searchList: filterOptions(prevState.players, value) }));
     };
 
     handleSelect = (value, instance) => {
-        const childState = get(instance, 'props.children.props.state', {});
-        navigate(`/player?/id=${childState.playerId}`);
+        navigate(`/player?/id=${instance.key}`);
     };
 
     render() {
+        const { searchList } = this.state;
         const dropdownStyle = { width: 200, fontSize: 12 };
         const autoCompleteStyle = { width: 150, fontSize: 12 };
         return (
             <div className={componentStyles.searchBarContainer}>
                 <AutoComplete
-                    dataSource={this.state.players}
+                    dataSource={searchList}
                     dropdownMatchSelectWidth={false}
                     dropdownStyle={dropdownStyle}
                     onSelect={this.handleSelect}
                     onSearch={this.handleSearch}
-                    optionLabelProp="value"
+                    optionLabelProp="name"
                     placeholder="Search for player"
                     size="small"
                     style={autoCompleteStyle}
@@ -63,20 +66,30 @@ class SearchBar extends React.Component {
 
 function filterOptions(players, value) {
     return players
-        .filter((player) => player.name.toLowerCase().includes(value.toLowerCase()))
-        .map((player) => (
-            <Option key={player.id} value={player.name}>
-                <Link to={`/player?id=${player.id}`}>{player.name}</Link>
-            </Option>
-        ));
+        .filter((player) => {
+            return player.props.name
+                ? player.props.name.toLowerCase().includes(value.toLowerCase())
+                : false;
+        })
+        .map((player) => {
+            const { id, name } = player.props;
+            return (
+                <Option key={id} value={`${name}-${id}`} name={name} id={id}>
+                    <Link to={`/player?id=${id}`}>{name}</Link>
+                </Option>
+            );
+        });
 }
 
 function renderOptions(players) {
-    return players.map((player) => (
-        <Option key={player.id} value={player.name}>
-            <Link to={`/player?id=${player.id}`}>{player.name}</Link>
-        </Option>
-    ));
+    return players.map((player) => {
+        const { id, name } = player;
+        return (
+            <Option key={id} value={`${name}-${id}`} name={name} id={id}>
+                <Link to={`/player?id=${id}`}>{name}</Link>
+            </Option>
+        );
+    });
 }
 
 export default SearchBar;

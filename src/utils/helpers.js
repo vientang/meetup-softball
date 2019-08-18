@@ -18,14 +18,17 @@ export async function fetchPlayer(id) {
     return get(existingPlayer, 'data.getPlayerStats', null);
 }
 
-export async function fetchAllPlayers() {
-    const queryLimit = 1000;
-    const allPlayers = await API.graphql(
-        graphqlOperation(listPlayerStatss, {
-            limit: queryLimit,
-        }),
-    );
-    return get(allPlayers, 'data.listPlayerStatss.items', null);
+const players = [];
+export async function fetchAllPlayers(queryParams = {}) {
+    const fetchedPlayers = await API.graphql(graphqlOperation(listPlayerStatss, queryParams));
+    const { items, nextToken } = fetchedPlayers.data.listPlayerStatss;
+    players.push(...items);
+    if (nextToken) {
+        const queries = { ...queryParams };
+        queries.nextToken = nextToken;
+        await fetchAllPlayers(queries);
+    }
+    return players;
 }
 
 const games = [];

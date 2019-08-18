@@ -83,6 +83,7 @@ function sortLeaders({ leaders, player, stat }) {
             ];
         }
     }
+
     return sortedLeaders;
 }
 export default LeaderBoard;
