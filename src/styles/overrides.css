@@ -11,3 +11,7 @@
     object-fit: cover;
     object-position: 100% 0;
 }
+
+.ant-avatar-square {
+    border-radius: 0;
+}

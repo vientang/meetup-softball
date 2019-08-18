@@ -1,38 +1,5 @@
 /* eslint-disable no-undef */
-import { setTopLeaders, formatCellValue, createSlug } from '../helpers';
-import mockData from '../mockData';
-
-const { mockLeaderBoard } = mockData;
-
-describe('Leaderboard Stats', () => {
-    it('Get top 5 of counting stat', () => {
-        expect(setTopLeaders(mockLeaderBoard, 'hr')[0].total).toBe(3);
-        expect(setTopLeaders(mockLeaderBoard, 'hr')[1].total).toBe(2);
-        expect(setTopLeaders(mockLeaderBoard, 'hr')[2].total).toBe(1);
-        expect(setTopLeaders(mockLeaderBoard, 'hr')[3].total).toBe(1);
-        expect(setTopLeaders(mockLeaderBoard, 'hr')[4].total).toBe(1);
-    });
-
-    it('Get top 5 OPS', () => {
-        expect(setTopLeaders(mockLeaderBoard, 'ops')).toEqual([
-            { playerName: 'carlos', total: 2.715 },
-            { playerName: 'vien', total: 2.339 },
-            { playerName: 'mike', total: 2.217 },
-            { playerName: 'santiago', total: 1.847 },
-            { playerName: 'laura', total: 1.778 },
-        ]);
-    });
-
-    it('Get top 5 Runs Created', () => {
-        expect(setTopLeaders(mockLeaderBoard, 'rc')).toEqual([
-            { playerName: 'carlos', total: 25.317 },
-            { playerName: 'mike', total: 18.487 },
-            { playerName: 'vien', total: 16.107 },
-            { playerName: 'santiago', total: 12.969 },
-            { playerName: 'laura', total: 11.972 },
-        ]);
-    });
-});
+import { formatCellValue, createSlug } from '../helpers';
 
 describe('Format cell values', () => {
     it('remove leading zero', () => {

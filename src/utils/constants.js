@@ -1,3 +1,4 @@
+// used in StatsLegend
 const definitions = {
     // write definitions for stats using key/value pairs. These will be seen on // stats table
     rc: {
@@ -86,22 +87,6 @@ const definitions = {
         formula: 'Singles x 1 + Doubles x 2 + Triples x 3 + Home Runs x 4',
     },
 };
-
-const qualifiers = 'game minimum';
-
-const cardTitles = [
-    { name: 'Home Runs', abbr: 'hr' },
-    { name: 'Average', abbr: 'avg' },
-    { name: 'Runs Created', abbr: 'rc' },
-    { name: 'Runs Batted In', abbr: 'rbi' },
-    { name: 'Runs', abbr: 'r' },
-    { name: 'Doubles', abbr: 'doubles' },
-    { name: 'Triples', abbr: 'triples' },
-    { name: 'Stolen Bases', abbr: 'sb' },
-    { name: 'OPS', abbr: 'ops' },
-    { name: 'wOBA', abbr: 'woba' },
-    // { name: 'Winning Percentage', abbr: 'wp' },
-];
 
 const defaultStatCategories = [
     '',
@@ -288,13 +273,11 @@ export {
     adminStatCategories,
     careerStatCatsByField,
     careerStatCatsByYear,
-    cardTitles,
     defaultStatCategories,
     definitions,
     gameLogCategories,
     gameProperties,
     playerProfileKeys,
-    qualifiers,
     splitStatCategories,
     statPageCategories,
 };

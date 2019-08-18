@@ -1,55 +1,52 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Icon, Tooltip } from 'antd';
+import PlayerAvatar from './PlayerAvatar';
 import componentStyles from './components.module.css';
-import { qualifiers } from '../utils/constants';
 
-const LeaderCard = ({ players, title, rate }) => {
-    const cardTitle = rate ? (
-        <Tooltip title={qualifiers.avg}>
-            <li className={componentStyles.leaderStatTitle}>
-                <span>{title.name}</span>
-                <Icon type="question-circle" />
-            </li>
-        </Tooltip>
-    ) : (
+const LeaderCard = ({ leaders, stat }) => (
+    <ul className={componentStyles.leaderCard}>
         <li className={componentStyles.leaderStatTitle}>
-            <span>{title.name}</span>
+            <span>{stat.toUpperCase()}</span>
         </li>
-    );
+        {leaders.map((player, i) => (
+            <li key={player.name} className={componentStyles.leaderCardItem}>
+                {i === 0 ? (
+                    <TopPlayer player={player} stat={stat} />
+                ) : (
+                    <div className={componentStyles.leaderCardItemPlayerInfo}>
+                        <span>{player.name}</span>
+                        <span className={componentStyles.leaderCardStat}>{player[stat]}</span>
+                    </div>
+                )}
+            </li>
+        ))}
+    </ul>
+);
+
+/* eslint-disable react/prop-types */
+const TopPlayer = ({ player, stat }) => {
     return (
-        <ul className={componentStyles.leaderCard}>
-            {cardTitle}
-            {players.map((player, i) => {
-                if (i === 0) {
-                    return (
-                        <li key={player.playerName} className={componentStyles.leaderCardItem}>
-                            <Icon type="trophy" />
-                            <span>{player.playerName}</span>
-                            <span className={componentStyles.leaderCardStat}>{player.total}</span>
-                        </li>
-                    );
-                }
-                return (
-                    <li key={player.playerName} className={componentStyles.leaderCardItem}>
-                        <span>{player.playerName}</span>
-                        <span className={componentStyles.leaderCardStat}>{player.total}</span>
-                    </li>
-                );
-            })}
-        </ul>
+        <>
+            <PlayerAvatar
+                image={player.photo.highres_link}
+                name={player.name}
+                style={{ width: '100%', height: 300 }}
+            />
+            <div className={componentStyles.leaderCardItemTopPlayerInfo}>
+                <span>{player.name}</span>
+                <span className={componentStyles.leaderCardStat}>{player[stat]}</span>
+            </div>
+        </>
     );
 };
 
 LeaderCard.propTypes = {
-    players: PropTypes.arrayOf(PropTypes.object),
-    title: PropTypes.shape(),
-    rate: PropTypes.bool,
+    leaders: PropTypes.arrayOf(PropTypes.object),
+    stat: PropTypes.string,
 };
 
 LeaderCard.defaultProps = {
-    players: [],
-    rate: false,
+    leaders: [],
 };
 
 export default LeaderCard;

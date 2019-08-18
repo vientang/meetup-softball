@@ -1,11 +1,16 @@
 import React from 'react';
 import get from 'lodash/get';
 import { Link } from 'gatsby';
-import { Avatar, Skeleton } from 'antd';
+import { Skeleton } from 'antd';
 import { API, graphqlOperation } from 'aws-amplify';
-import { FilterBar, Layout, StatsTable } from '../components';
+import { FilterBar, Layout, PlayerAvatar, StatsTable } from '../components';
 import { getAllPlayerStats } from '../utils/apiService';
-import { getDefaultSortedColumn, formatCellValue, sortHighToLow } from '../utils/helpers';
+import {
+    fetchAllGames,
+    getDefaultSortedColumn,
+    formatCellValue,
+    sortHighToLow,
+} from '../utils/helpers';
 import { statPageCategories } from '../utils/constants';
 import pageStyles from './pages.module.css';
 // import gamedata from '../../__mocks__/GameStats.json';
@@ -42,9 +47,7 @@ class Stats extends React.Component {
         } else {
             this.mounted = true;
             if (this.mounted) {
-                const allGames = await this.fetchAllGames({
-                    limit: 50,
-                });
+                const allGames = await fetchAllGames({ limit: 50 });
                 try {
                     const playerStats = getAllPlayerStats(allGames);
                     localStorage.setItem('allGames', JSON.stringify(playerStats));
@@ -81,19 +84,6 @@ class Stats extends React.Component {
     componentWillUnmount() {
         this.mounted = false;
     }
-
-    fetchAllGames = async (queryParams = {}) => {
-        const games = await API.graphql(graphqlOperation(listGameStatss, queryParams));
-        const { items, nextToken } = games.data.listGameStatss;
-        this.games.push(...items);
-        if (nextToken) {
-            const queries = { ...queryParams };
-            queries.nextToken = nextToken;
-            await this.fetchAllGames(queries);
-        }
-
-        return this.games;
-    };
 
     updateState = (newState) => {
         this.setState(() => newState);
@@ -133,7 +123,11 @@ class Stats extends React.Component {
         const { playerId, playerName, playerImg } = getPlayerMetaData(playerStats, cellInfo);
         return (
             <Link to={`/player?id=${playerId}`} className={pageStyles.playerName}>
-                <PlayerAvatar image={playerImg} name={playerName} />
+                <PlayerAvatar
+                    image={playerImg}
+                    name={playerName}
+                    style={{ marginRight: '0.5rem', border: '1px solid #f7b639' }}
+                />
                 {playerName}
             </Link>
         );
@@ -148,16 +142,6 @@ class Stats extends React.Component {
             : formatCellValue(cellValue);
     };
 
-    setQueryFilters = (filters) => {
-        return Object.keys(filters).reduce((queryFilters, key) => {
-            if (filters[key]) {
-                const queries = { ...queryFilters };
-                queries[key] = { eq: filters[key] };
-            }
-            return queryFilters;
-        }, {});
-    };
-
     /**
      * Update active filters from FilterBar selections
      */
@@ -169,8 +153,8 @@ class Stats extends React.Component {
         // };
         // this.games = [];
         // const allGames = JSON.parse(localStorage.getItem('allGames'));
-        // const allGames = await this.fetchAllGames({
-        //     filter: this.setQueryFilters(filters),
+        // const allGames = await fetchAllGames({
+        //     filter: setQueryFilters(filters),
         //     limit: 100,
         // });
         // try {
@@ -238,29 +222,21 @@ class Stats extends React.Component {
     }
 }
 
-/* eslint-disable react/prop-types */
-function PlayerAvatar({ image, name }) {
-    const avatarStyle = {
-        marginRight: '0.5rem',
-        border: '1px solid #f7b639',
-        objectFit: 'cover',
-        objectPosition: '100% 0',
-    };
-    const avatarProps = { style: avatarStyle, alt: name };
-    if (image) {
-        avatarProps.src = image;
-    } else {
-        avatarProps.icon = 'user';
-    }
-
-    return <Avatar {...avatarProps} shape="square" />;
-}
-
 function getPlayerMetaData(playerStats, cellInfo) {
     const playerId = playerStats[cellInfo.index].id;
     const playerName = playerStats[cellInfo.index].name;
     const playerImg = get(playerStats[cellInfo.index], 'photos.thumb_link', '');
     return { playerId, playerName, playerImg };
+}
+
+function setQueryFilters(filters) {
+    return Object.keys(filters).reduce((queryFilters, key) => {
+        if (filters[key]) {
+            const queries = { ...queryFilters };
+            queries[key] = { eq: filters[key] };
+        }
+        return queryFilters;
+    }, {});
 }
 
 export default Stats;

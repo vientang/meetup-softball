@@ -10,6 +10,7 @@ import Layout from './Layout';
 import LeaderCard from './LeaderCard';
 import NotFoundImage from './NotFoundImage';
 import GameLog from './GameLog';
+import PlayerAvatar from './PlayerAvatar';
 import PlayerInfo from './PlayerInfo';
 import SplitStats from './SplitStats';
 import SortTeams from './SortTeams';
@@ -29,6 +30,7 @@ export {
     Layout,
     LeaderCard,
     NotFoundImage,
+    PlayerAvatar,
     PlayerInfo,
     SplitStats,
     SortTeams,

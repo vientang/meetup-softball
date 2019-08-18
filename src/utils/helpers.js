@@ -1,6 +1,6 @@
 import { API, graphqlOperation } from 'aws-amplify';
 import get from 'lodash/get';
-import { getPlayerStats, listPlayerStatss } from '../graphql/queries';
+import { getPlayerStats, listGameStatss, listPlayerStatss } from '../graphql/queries';
 import {
     getAtBats,
     getAverage,
@@ -26,6 +26,20 @@ export async function fetchAllPlayers() {
         }),
     );
     return get(allPlayers, 'data.listPlayerStatss.items', null);
+}
+
+const games = [];
+export async function fetchAllGames(queryParams = {}) {
+    const fetchedGames = await API.graphql(graphqlOperation(listGameStatss, queryParams));
+    const { items, nextToken } = fetchedGames.data.listGameStatss;
+    games.push(...items);
+    if (nextToken) {
+        const queries = { ...queryParams };
+        queries.nextToken = nextToken;
+        await fetchAllGames(queries);
+    }
+
+    return games;
 }
 
 export function createSlug(name) {
@@ -112,48 +126,6 @@ export function formatCellValue(value) {
     }
 
     return formattedValue || '0';
-}
-
-export function setTopLeaders(players, stat) {
-    // return an array of 5 objects
-    // describing the player name and their stat total
-    let topLeaders = [];
-    let comparison = [];
-    let total;
-    players.forEach((player) => {
-        const playerName = player.name;
-
-        // switch on woba/obp/ops/avg to do either rate or counting stat
-        switch (stat) {
-            case 'avg':
-            case 'obp':
-            case 'ops':
-            case 'woba':
-                total = getRateStatTotal(player.games, stat);
-                break;
-            case 'rc':
-                total = getRunsCreatedTotal(player.games);
-                break;
-            default:
-                total = getCountingStatTotal(player.games, stat);
-                break;
-        }
-        comparison.push({ playerName, total });
-    });
-
-    comparison = comparison.sort((a, b) => (a.total > b.total ? -1 : 1));
-
-    topLeaders = comparison.slice(0, 5);
-
-    // is there a tie for the 5th spot?
-    comparison.slice(5).some((player) => {
-        if (player.total === topLeaders[4].total) {
-            topLeaders.push(player);
-            return false;
-        }
-        return true;
-    });
-    return topLeaders;
 }
 
 /** ***************************** PRIVATE FUNCTIONS ***************************** */
@@ -276,30 +248,9 @@ function getRateStatTotal(games, statToCount) {
     }
 }
 
-/**
- * Combine multiple functions into one
- */
-const chainedFunc = (...funcs) =>
-    funcs
-        .filter((f) => f != null)
-        .reduce((acc, f) => {
-            if (typeof f !== 'function') {
-                throw new Error(
-                    'Invalid Argument Type, must only provide functions, undefined, or null.',
-                );
-            }
-            if (acc === null) {
-                return f;
-            }
-            return function chainedFunction(...args) {
-                acc.apply(this, args);
-                f.apply(this, args);
-            };
-        }, null);
 /** ***************************** END OF PRIVATE FUNCTIONS ***************************** */
 
 export default {
-    chainedFunc,
     formatCellValue,
     getRateStatTotal,
     getRunsCreatedTotal,
