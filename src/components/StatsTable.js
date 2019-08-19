@@ -9,11 +9,14 @@ import 'react-table/react-table.css';
 
 const StatsTable = (props) => {
     const {
+        defaultPageSize,
         defaultSorted,
         onSortedChange,
+        PaginationComponent,
         stats,
         showLegend,
-        showPagination,
+        showPaginationTop,
+        showPaginationBottom,
         striped,
         style,
     } = props;
@@ -43,10 +46,12 @@ const StatsTable = (props) => {
                     data={stats}
                     className={`-${striped} -highlight`}
                     columns={renderColumns(props)}
-                    defaultPageSize={stats.length}
+                    defaultPageSize={defaultPageSize || stats.length}
                     defaultSorted={defaultSorted}
                     onSortedChange={onSortedChange}
-                    showPaginationBottom={showPagination}
+                    PaginationComponent={PaginationComponent}
+                    showPaginationTop={showPaginationTop}
+                    showPaginationBottom={showPaginationBottom}
                     style={statsTableStyle}
                 />
                 {showLegend && <StatsLegend style={statsLegendStyle} />}
@@ -193,10 +198,12 @@ StatsTable.propTypes = {
     adminPage: PropTypes.bool,
     categories: PropTypes.arrayOf(PropTypes.string),
     cellRenderer: PropTypes.func,
+    defaultPageSize: PropTypes.number,
     defaultSorted: PropTypes.arrayOf(PropTypes.shape),
     onSortedChange: PropTypes.func,
     showLegend: PropTypes.bool,
-    showPagination: PropTypes.bool,
+    showPaginationTop: PropTypes.bool,
+    showPaginationBottom: PropTypes.bool,
     sortedColumn: PropTypes.string,
     sortMethod: PropTypes.func,
     stats: PropTypes.arrayOf(PropTypes.object),
@@ -208,7 +215,8 @@ StatsTable.defaultProps = {
     adminPage: false,
     categories: defaultStatCategories,
     showLegend: false,
-    showPagination: false,
+    showPaginationTop: false,
+    showPaginationBottom: false,
     stats: [],
     striped: 'striped',
     style: {},

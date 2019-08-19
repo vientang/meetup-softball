@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'gatsby';
 import StatsTable from './StatsTable';
+import Pagination from './Pagination';
 import { getDefaultSortedColumn, sortHighToLow } from '../utils/helpers';
 import { gameLogCategories } from '../utils/constants';
 import componentStyles from './components.module.css';
@@ -12,9 +13,12 @@ const GameLog = ({ stats }) => (
         <StatsTable
             categories={gameLogCategories}
             cellRenderer={renderCell}
+            defaultPageSize={10}
             defaultSorted={getDefaultSortedColumn('date', false)}
+            PaginationComponent={Pagination}
             sortMethod={sortHighToLow}
             stats={stats}
+            showPaginationTop
         />
     </div>
 );

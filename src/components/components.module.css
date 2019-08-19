@@ -776,3 +776,32 @@
     margin-bottom: var(--margin-2);
 }
 /********************************/
+.pagination {
+    display: flex;
+    justify-content: flex-end;
+    padding: var(--pad-2);
+}
+
+.page-button {
+    font-size: var(--font-large);
+    color: var(--grey-3);
+    outline: none;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.page-button-active {
+    color: var(--muBlue-2);
+    font-weight: bold;
+}
+
+.Table__pageButton:disabled {
+    cursor: not-allowed;
+    color: gray;
+}
+
+                .Table__itemCount {
+                    /* margin-top: 10px; */
+                    font-size: 14px;
+                  }
