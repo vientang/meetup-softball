@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import cn from 'classnames';
 import componentStyles from './components.module.css';
 
 /* eslint-disable react/prop-types */
@@ -50,10 +51,20 @@ const Pagination = (props) => {
         setActivePage(activePage);
     }, [pages]);
 
+    const prevButtonClass = cn({
+        [componentStyles.pageButton]: true,
+        [componentStyles.pageButtonDisabled]: activePage === 1,
+    });
+
+    const nextButtonClass = cn({
+        [componentStyles.pageButton]: true,
+        [componentStyles.pageButtonDisabled]: activePage === pages,
+    });
+
     return (
         <div className={componentStyles.pagination}>
             <PageButtonComponent
-                className={componentStyles.pageButton}
+                className={prevButtonClass}
                 onClick={handlePrevPage(activePage - 1)}
                 disabled={activePage === 1}
             >
@@ -72,7 +83,7 @@ const Pagination = (props) => {
                 );
             })}
             <PageButtonComponent
-                className={componentStyles.pageButton}
+                className={nextButtonClass}
                 onClick={handleNextPage(activePage + 1)}
                 disabled={activePage === pages}
             >

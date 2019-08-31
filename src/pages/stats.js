@@ -80,11 +80,6 @@ class Stats extends React.Component {
     }
 
     async componentDidMount() {
-        // query for summarized stats by year (default)
-        // parse stats
-        // adapt to array for stats table
-
-
         const summarizedStats = localStorage.getItem('allGames');
         console.log('json summary', memorySizeOf(summarizedStats));
         console.log('js summary', memorySizeOf(JSON.parse(summarizedStats)));
@@ -96,7 +91,10 @@ class Stats extends React.Component {
             delete player.photos;
             return true;
         });
-        console.log('js no profile summary', { summarizedNoProfile, size: memorySizeOf(summarizedNoProfile) });
+        console.log('js no profile summary', {
+            summarizedNoProfile,
+            size: memorySizeOf(summarizedNoProfile),
+        });
 
         if (summarizedStats) {
             this.updateState({ playerStats: JSON.parse(summarizedStats) });

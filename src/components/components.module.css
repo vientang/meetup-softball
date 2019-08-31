@@ -795,3 +795,9 @@
     color: var(--muBlue-2);
     font-weight: bold;
 }
+
+.page-button-disabled {
+    color: var(--grey-2);
+    pointer-events: none;
+    cursor: default;
+}
