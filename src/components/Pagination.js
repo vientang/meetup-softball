@@ -84,7 +84,7 @@ const Pagination = (props) => {
 
 function getVisiblePages(page, total) {
     if (total < 7) {
-        return this.filterPages([1, 2, 3, 4, 5, 6], total);
+        return filterPages([1, 2, 3, 4, 5, 6], total);
     }
     if (page % 5 >= 0 && page > 4 && page + 2 < total) {
         return [1, page - 1, page, page + 1, total];

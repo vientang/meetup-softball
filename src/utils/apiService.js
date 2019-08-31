@@ -47,7 +47,11 @@ export function getAllPlayerStats(games) {
  * @return {Array} list of players and their stats
  */
 function getPlayerStats(game) {
+    console.log('getPlayerStats', game);
+    
     getWinnersAndLosers(game).forEach((player) => {
+        console.log('player', player);
+        
         if (masterList.has(player.id)) {
             masterList.set(player.id, mergeExistingPlayerStats(masterList.get(player.id), player));
         } else {

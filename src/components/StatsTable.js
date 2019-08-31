@@ -48,6 +48,7 @@ const StatsTable = (props) => {
                     columns={renderColumns(props)}
                     defaultPageSize={defaultPageSize || stats.length}
                     defaultSorted={defaultSorted}
+                    minRows={0}
                     onSortedChange={onSortedChange}
                     PaginationComponent={PaginationComponent}
                     showPaginationTop={showPaginationTop}
@@ -201,6 +202,7 @@ StatsTable.propTypes = {
     defaultPageSize: PropTypes.number,
     defaultSorted: PropTypes.arrayOf(PropTypes.shape),
     onSortedChange: PropTypes.func,
+    PaginationComponent: PropTypes.oneOfType([PropTypes.element, PropTypes.func]),
     showLegend: PropTypes.bool,
     showPaginationTop: PropTypes.bool,
     showPaginationBottom: PropTypes.bool,

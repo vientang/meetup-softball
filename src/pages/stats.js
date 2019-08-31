@@ -18,6 +18,45 @@ import { convertLegacyPlayerData, convertLegacyGameData } from '../utils/convert
 import { createGameStats, createPlayerStats, updatePlayerStats } from '../graphql/mutations';
 import { getPlayerStats, listGameStatss, listPlayerStatss } from '../graphql/queries';
 
+function memorySizeOf(obj) {
+    let bytes = 0;
+
+    function sizeOf(obj) {
+        if (obj !== null && obj !== undefined) {
+            switch (typeof obj) {
+                case 'number':
+                    bytes += 8;
+                    break;
+                case 'string':
+                    bytes += obj.length * 2;
+                    break;
+                case 'boolean':
+                    bytes += 4;
+                    break;
+                case 'object':
+                    var objClass = Object.prototype.toString.call(obj).slice(8, -1);
+                    if (objClass === 'Object' || objClass === 'Array') {
+                        for (const key in obj) {
+                            if (!obj.hasOwnProperty(key)) continue;
+                            sizeOf(obj[key]);
+                        }
+                    } else bytes += obj.toString().length * 2;
+                    break;
+            }
+        }
+        return bytes;
+    }
+
+    function formatByteSize(bytes) {
+        if (bytes < 1024) return `${bytes} bytes`;
+        if (bytes < 1048576) return `${(bytes / 1024).toFixed(3)} KiB`;
+        if (bytes < 1073741824) return `${(bytes / 1048576).toFixed(3)} MiB`;
+        return `${(bytes / 1073741824).toFixed(3)} GiB`;
+    }
+
+    return formatByteSize(sizeOf(obj));
+}
+
 const defaultFilters = {
     year: '2018',
     month: '',
@@ -41,7 +80,24 @@ class Stats extends React.Component {
     }
 
     async componentDidMount() {
+        // query for summarized stats by year (default)
+        // parse stats
+        // adapt to array for stats table
+
+
         const summarizedStats = localStorage.getItem('allGames');
+        console.log('json summary', memorySizeOf(summarizedStats));
+        console.log('js summary', memorySizeOf(JSON.parse(summarizedStats)));
+        const summarizedNoProfile = JSON.parse(summarizedStats).filter(player => {
+            delete player.profile;
+            delete player.admin;
+            delete player.status;
+            player.photo = player.photos.thumb_link;
+            delete player.photos;
+            return true;
+        });
+        console.log('js no profile summary', { summarizedNoProfile, size: memorySizeOf(summarizedNoProfile) });
+
         if (summarizedStats) {
             this.updateState({ playerStats: JSON.parse(summarizedStats) });
         } else {
