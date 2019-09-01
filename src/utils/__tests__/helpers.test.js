@@ -1,7 +1,161 @@
 /* eslint-disable no-undef */
-import { formatCellValue, createSlug } from '../helpers';
+import {
+    findPlayerById,
+    formatCellValue,
+    convertStringStatsToNumbers,
+    createSlug,
+    getDefaultSortedColumn,
+    getIdFromFilterParams,
+    getMeridiem,
+    parseStats,
+    serializeStats,
+} from '../helpers';
 
-describe('Format cell values', () => {
+describe('findPlayerById', () => {
+    it('find player by id', () => {
+        expect(findPlayerById('111', { 111: { name: 'playerA' } })).toEqual({ name: 'playerA' });
+        expect(findPlayerById('111', [{ id: '111', name: 'playerA' }])).toEqual({
+            id: '111',
+            name: 'playerA',
+        });
+    });
+
+    it('cannot find player', () => {
+        expect(findPlayerById(null, { 111: { name: 'playerA' } })).toBe(null);
+        expect(findPlayerById('111', { 110: { name: 'playerA' } })).toBe(undefined);
+        expect(findPlayerById('111', [{ 110: { name: 'playerA' } }])).toBe(undefined);
+    });
+});
+
+describe('serializeStats', () => {
+    it('serialize object', () => {
+        expect(serializeStats({ name: 'playerA' })).toEqual(JSON.stringify({ name: 'playerA' }));
+    });
+
+    it('serialize array', () => {
+        expect(serializeStats([{ name: 'playerA' }])).toEqual(
+            JSON.stringify([{ name: 'playerA' }]),
+        );
+    });
+
+    it('should not serialize', () => {
+        expect(serializeStats()).toBe(null);
+        expect(serializeStats(1)).toBe(null);
+        expect(serializeStats('1')).toBe(null);
+    });
+});
+
+describe('parseStats', () => {
+    it('parse JSON string', () => {
+        expect(parseStats(JSON.stringify([{ name: 'playerA' }]))).toEqual([{ name: 'playerA' }]);
+        expect(parseStats(JSON.stringify({ name: 'playerA' }))).toEqual({ name: 'playerA' });
+    });
+
+    it('should not need to parse', () => {
+        const stats = [{ name: 'playerA' }];
+        expect(parseStats(stats)).toEqual([{ name: 'playerA' }]);
+    });
+
+    it('nothing to parse', () => {
+        expect(parseStats()).toEqual(null);
+        expect(parseStats(undefined)).toEqual(null);
+        expect(parseStats('')).toEqual(null);
+        expect(parseStats('undefined')).toEqual(null);
+    });
+});
+
+describe('getIdFromFilterParams', () => {
+    it('year as id', () => {
+        const params = {
+            year: '2019',
+        };
+        expect(getIdFromFilterParams(params)).toBe('_2019');
+    });
+
+    it('year and field as id', () => {
+        const params = {
+            year: '2019',
+            field: 'westlake',
+        };
+        expect(getIdFromFilterParams(params)).toBe('_2019_westlake');
+    });
+
+    it('year, month and field as id', () => {
+        const params = {
+            year: '2019',
+            field: 'westlake',
+            month: '09',
+        };
+        expect(getIdFromFilterParams(params)).toBe('_2019_09_westlake');
+    });
+
+    it('field as id', () => {
+        const params = {
+            field: 'westlake',
+        };
+        expect(getIdFromFilterParams(params)).toBe('_westlake');
+    });
+
+    it('month as id', () => {
+        const params = {
+            month: '09',
+        };
+        expect(getIdFromFilterParams(params)).toBe('_09');
+    });
+
+    it('field and month as id', () => {
+        const params = {
+            month: '09',
+            field: 'westlake',
+        };
+        expect(getIdFromFilterParams(params)).toBe('_09_westlake');
+    });
+
+    it('null as id', () => {
+        expect(getIdFromFilterParams()).toBe(null);
+        expect(getIdFromFilterParams(undefined)).toBe(null);
+        expect(getIdFromFilterParams({})).toBe(null);
+    });
+});
+
+describe('getDefaultSortedColumn', () => {
+    const id = '111';
+    const desc = 'desc';
+    expect(getDefaultSortedColumn(id, desc)).toEqual([{ id, desc }]);
+});
+
+describe('convertStringStatsToNumbers', () => {
+    it('return numbers', () => {
+        const stats = {
+            ab: '1',
+            r: '1',
+            singles: '1',
+            doubles: '1',
+            triples: '1',
+            hr: '1',
+            rbi: '1',
+            bb: '1',
+            k: '1',
+            sac: '1',
+            sb: '0',
+        };
+        expect(convertStringStatsToNumbers(stats)).toEqual({
+            ab: 1,
+            r: 1,
+            singles: 1,
+            doubles: 1,
+            triples: 1,
+            hr: 1,
+            rbi: 1,
+            bb: 1,
+            k: 1,
+            sac: 1,
+            sb: 0,
+        });
+    });
+});
+
+describe('formatCellValue', () => {
     it('remove leading zero', () => {
         expect(formatCellValue('0.123')).toEqual('.123');
     });
@@ -27,7 +181,7 @@ describe('Format cell values', () => {
     });
 });
 
-describe('Create slug for url', () => {
+describe('createSlug', () => {
     it('joins name with space', () => {
         const name = 'fresh basta';
         expect(createSlug(name)).toBe('fresh_basta');
@@ -41,5 +195,22 @@ describe('Create slug for url', () => {
     it('remove dot', () => {
         const name = 'Steven C.';
         expect(createSlug(name)).toBe('steven_c');
+    });
+});
+
+describe('getMeridiem', () => {
+    it('am', () => {
+        const time = '10:30';
+        expect(getMeridiem(time)).toBe('am');
+    });
+
+    it('pm', () => {
+        const time = '1:30';
+        expect(getMeridiem(time)).toBe('pm');
+    });
+
+    it('empty string', () => {
+        const time = undefined;
+        expect(getMeridiem(time)).toBe('');
     });
 });

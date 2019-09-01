@@ -102,6 +102,64 @@ export function convertStringStatsToNumbers(stats) {
 }
 
 /**
+ * Lookup player in an array or object
+ */
+export function findPlayerById(id, players) {
+    if (!id || !players) {
+        return null;
+    }
+    if (Array.isArray(players)) {
+        return players.find((player) => player.id === id);
+    }
+    return players[id];
+}
+
+export function serializeStats(stats) {
+    if (!stats || typeof stats !== 'object') {
+        return null;
+    }
+    return JSON.stringify(stats);
+}
+
+export function parseStats(stats) {
+    if (Array.isArray(stats)) {
+        return stats;
+    }
+
+    if (!stats || typeof stats !== 'string') {
+        return null;
+    }
+
+    const isArray = typeof stats === 'string' && stats[0] === '[';
+    const isObject = typeof stats === 'string' && stats[0] === '{';
+    if (!isArray && !isObject) {
+        return null;
+    }
+
+    return JSON.parse(stats);
+}
+/**
+ * Use properties of argument to construct an id
+ * Order is important - year > month > field
+ */
+export function getIdFromFilterParams({ year, month, field } = {}) {
+    if (!year && !month && !field) {
+        return null;
+    }
+    let id = '';
+    if (year) {
+        id = `_${year}`;
+    }
+    if (month) {
+        id += `_${month}`;
+    }
+    if (field) {
+        id += `_${field}`;
+    }
+    return id;
+}
+
+/**
  * Format cell value to 4 decimal points
  * 0.567 becomes .567 || 1.234567 becomes 1.234 || 0.8 becomes .800
  * @param {String} value

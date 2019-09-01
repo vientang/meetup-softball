@@ -172,7 +172,10 @@ const mergedPlayerStats = [
         ],
     },
 ];
-
+// convertStatsForTable
+// calcPlayerStats
+// updateSummarizedStats - mocks
+// postSummarizedStats - mocks
 describe('Player stats', () => {
     const winners = [
         {
