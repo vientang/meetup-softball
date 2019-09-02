@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { CareerStats, FilterBar, GameLog, Layout, PlayerInfo } from '../components';
-import { fetchPlayer } from '../utils/helpers';
+import { fetchPlayer } from '../utils/apiService';
 import {
     getAtBats,
     getAverage,

@@ -1,6 +1,3 @@
-import { API, graphqlOperation } from 'aws-amplify';
-import get from 'lodash/get';
-import { getPlayerStats, listGameStatss, listPlayerStatss } from '../graphql/queries';
 import {
     getAtBats,
     getAverage,
@@ -12,38 +9,6 @@ import {
     getWOBA,
     getRunsCreated,
 } from './statsCalc';
-
-export async function fetchPlayer(id) {
-    const existingPlayer = await API.graphql(graphqlOperation(getPlayerStats, { id }));
-    return get(existingPlayer, 'data.getPlayerStats', null);
-}
-
-const players = [];
-export async function fetchAllPlayers(queryParams = {}) {
-    const fetchedPlayers = await API.graphql(graphqlOperation(listPlayerStatss, queryParams));
-    const { items, nextToken } = fetchedPlayers.data.listPlayerStatss;
-    players.push(...items);
-    if (nextToken) {
-        const queries = { ...queryParams };
-        queries.nextToken = nextToken;
-        await fetchAllPlayers(queries);
-    }
-    return players;
-}
-
-const games = [];
-export async function fetchAllGames(queryParams = {}) {
-    const fetchedGames = await API.graphql(graphqlOperation(listGameStatss, queryParams));
-    const { items, nextToken } = fetchedGames.data.listGameStatss;
-    games.push(...items);
-    if (nextToken) {
-        const queries = { ...queryParams };
-        queries.nextToken = nextToken;
-        await fetchAllGames(queries);
-    }
-
-    return games;
-}
 
 export function createSlug(name) {
     let slug = name
@@ -82,6 +47,16 @@ export function sortHighToLow(a, b) {
 
 export function sortTimeStamp(a, b) {
     return Number(a.timeStamp) < Number(b.timeStamp) ? 1 : -1;
+}
+
+export function convertStatsForTable(stats) {
+    if (!stats) {
+        return null;
+    }
+    if (Array.isArray(stats)) {
+        return stats;
+    }
+    return Object.values(stats);
 }
 
 export function convertStringStatsToNumbers(stats) {
@@ -189,68 +164,7 @@ export function formatCellValue(value) {
     return formattedValue || '0';
 }
 
-/** ***************************** PRIVATE FUNCTIONS ***************************** */
-function formatValueLength(value, max) {
-    if (!value.includes('.')) {
-        return value;
-    }
-
-    if (value.length > max) {
-        return value.slice(0, max);
-    }
-
-    let formattedValue = value;
-    while (formattedValue.length < max) {
-        formattedValue += '0';
-    }
-
-    return formattedValue;
-}
-
-// Loop through all players
-// Calculate their counting stat totals
-// Check if it belongs in the top 5
-// If yes, save the player name and stat total
-// If no, don't save
-function getCountingStatTotal(games, statToCount) {
-    return games.reduce((acc, cur) => {
-        let total = acc;
-        if (typeof cur[statToCount] === 'number') {
-            total += cur[statToCount];
-        } else {
-            total += 0;
-        }
-        return total;
-    }, 0);
-}
-
-function getRunsCreatedTotal(games) {
-    const hits = getHits(
-        getCountingStatTotal(games, 'singles'),
-        getCountingStatTotal(games, 'doubles'),
-        getCountingStatTotal(games, 'triples'),
-        getCountingStatTotal(games, 'hr'),
-    );
-
-    const atBats = getAtBats(hits, getCountingStatTotal(games, 'o'));
-    const totalBases = getTotalBases(
-        getCountingStatTotal(games, 'singles'),
-        getCountingStatTotal(games, 'doubles'),
-        getCountingStatTotal(games, 'triples'),
-        getCountingStatTotal(games, 'hr'),
-    );
-
-    return getRunsCreated(
-        hits,
-        getCountingStatTotal(games, 'bb'),
-        getCountingStatTotal(games, 'cs'),
-        totalBases,
-        getCountingStatTotal(games, 'sb'),
-        atBats,
-    );
-}
-
-function getRateStatTotal(games, statToCount) {
+export function getRateStatTotal(games, statToCount) {
     // switch case for each rate stat and calculate for setTopLeaders
     // think about how to involve getCountingStatTotal
     // test in utils.test.js
@@ -309,13 +223,64 @@ function getRateStatTotal(games, statToCount) {
     }
 }
 
-/** ***************************** END OF PRIVATE FUNCTIONS ***************************** */
+export function getRunsCreatedTotal(games) {
+    const hits = getHits(
+        getCountingStatTotal(games, 'singles'),
+        getCountingStatTotal(games, 'doubles'),
+        getCountingStatTotal(games, 'triples'),
+        getCountingStatTotal(games, 'hr'),
+    );
 
-export default {
-    formatCellValue,
-    getRateStatTotal,
-    getRunsCreatedTotal,
-    sortByNameLength,
-    sortHighToLow,
-    sortTimeStamp,
-};
+    const atBats = getAtBats(hits, getCountingStatTotal(games, 'o'));
+    const totalBases = getTotalBases(
+        getCountingStatTotal(games, 'singles'),
+        getCountingStatTotal(games, 'doubles'),
+        getCountingStatTotal(games, 'triples'),
+        getCountingStatTotal(games, 'hr'),
+    );
+
+    return getRunsCreated(
+        hits,
+        getCountingStatTotal(games, 'bb'),
+        getCountingStatTotal(games, 'cs'),
+        totalBases,
+        getCountingStatTotal(games, 'sb'),
+        atBats,
+    );
+}
+/** ***************************** PRIVATE FUNCTIONS ***************************** */
+function formatValueLength(value, max) {
+    if (!value.includes('.')) {
+        return value;
+    }
+
+    if (value.length > max) {
+        return value.slice(0, max);
+    }
+
+    let formattedValue = value;
+    while (formattedValue.length < max) {
+        formattedValue += '0';
+    }
+
+    return formattedValue;
+}
+
+// Loop through all players
+// Calculate their counting stat totals
+// Check if it belongs in the top 5
+// If yes, save the player name and stat total
+// If no, don't save
+function getCountingStatTotal(games, statToCount) {
+    return games.reduce((acc, cur) => {
+        let total = acc;
+        if (typeof cur[statToCount] === 'number') {
+            total += cur[statToCount];
+        } else {
+            total += 0;
+        }
+        return total;
+    }, 0);
+}
+
+/** ***************************** END OF PRIVATE FUNCTIONS ***************************** */

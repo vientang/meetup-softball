@@ -2,6 +2,7 @@
 import {
     findPlayerById,
     formatCellValue,
+    convertStatsForTable,
     convertStringStatsToNumbers,
     createSlug,
     getDefaultSortedColumn,
@@ -10,6 +11,38 @@ import {
     parseStats,
     serializeStats,
 } from '../helpers';
+
+describe('convertStatsForTable', () => {
+    it('convert object values to array', () => {
+        const stats = {
+            '111': {
+                name: 'playerA',
+                hr: 1,
+            },
+        };
+        expect(convertStatsForTable(stats)).toEqual([
+            {
+                name: 'playerA',
+                hr: 1,
+            },
+        ]);
+    });
+
+    it('no conversion needed', () => {
+        const stats = [
+            {
+                name: 'playerA',
+                hr: 1,
+            },
+        ]
+        expect(convertStatsForTable(stats)).toEqual(stats);
+    });
+
+    it('should not convert', () => {
+        expect(convertStatsForTable()).toEqual(null);
+        expect(convertStatsForTable(null)).toEqual(null);
+    });
+});
 
 describe('findPlayerById', () => {
     it('find player by id', () => {

@@ -4,13 +4,8 @@ import { Link } from 'gatsby';
 import { Skeleton } from 'antd';
 import { API, graphqlOperation } from 'aws-amplify';
 import { FilterBar, Layout, PlayerAvatar, StatsTable } from '../components';
-import { getAllPlayerStats } from '../utils/apiService';
-import {
-    fetchAllGames,
-    getDefaultSortedColumn,
-    formatCellValue,
-    sortHighToLow,
-} from '../utils/helpers';
+import { fetchAllGames, getAllPlayerStats } from '../utils/apiService';
+import { getDefaultSortedColumn, formatCellValue, sortHighToLow } from '../utils/helpers';
 import { statPageCategories } from '../utils/constants';
 import pageStyles from './pages.module.css';
 // import gamedata from '../../__mocks__/GameStats.json';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, navigate } from 'gatsby';
 import { Icon, Input, AutoComplete } from 'antd';
-import { fetchAllPlayers } from '../utils/helpers';
+import { fetchAllPlayers } from '../utils/apiService';
 import componentStyles from './components.module.css';
 
 const { Option } = AutoComplete;

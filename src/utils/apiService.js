@@ -1,5 +1,8 @@
+import { API, graphqlOperation } from 'aws-amplify';
+import get from 'lodash/get';
 import pick from 'lodash/pick';
 import omit from 'lodash/omit';
+import { getPlayerStats, listGameStatss, listPlayerStatss } from '../graphql/queries';
 import {
     getAtBats,
     getAverage,
@@ -14,6 +17,38 @@ import {
     getWOBA,
 } from './statsCalc';
 import { gameProperties, playerProfileKeys } from './constants';
+
+export async function fetchPlayer(id) {
+    const existingPlayer = await API.graphql(graphqlOperation(getPlayerStats, { id }));
+    return get(existingPlayer, 'data.getPlayerStats', null);
+}
+
+const players = [];
+export async function fetchAllPlayers(queryParams = {}) {
+    const fetchedPlayers = await API.graphql(graphqlOperation(listPlayerStatss, queryParams));
+    const { items, nextToken } = fetchedPlayers.data.listPlayerStatss;
+    players.push(...items);
+    if (nextToken) {
+        const queries = { ...queryParams };
+        queries.nextToken = nextToken;
+        await fetchAllPlayers(queries);
+    }
+    return players;
+}
+
+const games = [];
+export async function fetchAllGames(queryParams = {}) {
+    const fetchedGames = await API.graphql(graphqlOperation(listGameStatss, queryParams));
+    const { items, nextToken } = fetchedGames.data.listGameStatss;
+    games.push(...items);
+    if (nextToken) {
+        const queries = { ...queryParams };
+        queries.nextToken = nextToken;
+        await fetchAllGames(queries);
+    }
+
+    return games;
+}
 
 /**
  * LIST OF PLAYER STATS
@@ -36,7 +71,7 @@ export function getAllPlayerStats(games) {
     let playerStats = [];
 
     games.forEach((game) => {
-        playerStats = getPlayerStats(game);
+        playerStats = getIndividualPlayerStats(game);
     });
 
     return playerStats;
@@ -46,12 +81,8 @@ export function getAllPlayerStats(games) {
  * Update master stats list at runtime
  * @return {Array} list of players and their stats
  */
-function getPlayerStats(game) {
-    console.log('getPlayerStats', game);
-    
+function getIndividualPlayerStats(game) {
     getWinnersAndLosers(game).forEach((player) => {
-        console.log('player', player);
-        
         if (masterList.has(player.id)) {
             masterList.set(player.id, mergeExistingPlayerStats(masterList.get(player.id), player));
         } else {
@@ -114,6 +145,7 @@ function mergeExistingPlayerStats(existingStats = {}, currentStats = {}) {
 export function calculateTotals(existingStats = {}, currentStats = {}) {
     const { bb, cs, singles, doubles, sb, triples, hr, o, sac } = currentStats;
 
+    // counting stats
     const totalSingles = addStat(singles, existingStats.singles);
     const totalDoubles = addStat(doubles, existingStats.doubles);
     const totalTriples = addStat(triples, existingStats.triples);
@@ -126,6 +158,8 @@ export function calculateTotals(existingStats = {}, currentStats = {}) {
     const totalSacs = addStat(sac, existingStats.sac);
     const totalStls = addStat(sb, existingStats.sb);
     const totalCs = addStat(cs, existingStats.cs);
+
+    // rate stats
     const obp = getOnBasePercentage(totalHits, totalWalks, totalAb, totalSacs);
     const slg = getSlugging(totalTb, totalAb);
     const cumulativeAvg = getAverage(totalHits, totalAb);
