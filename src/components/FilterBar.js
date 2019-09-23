@@ -38,7 +38,7 @@ const FilterBar = (props) => {
                 <FilterTypes {...props} />
                 <ResetFilters onClick={onResetFilters} disabled={disabled} />
             </div>
-            <SearchBar />
+            <SearchBar disabled={disabled} />
         </div>
     );
 };

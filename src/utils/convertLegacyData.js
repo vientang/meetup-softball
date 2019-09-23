@@ -1,11 +1,19 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
-import fetchJsonp from 'fetch-jsonp';
-import { getHits, getOuts } from './statsCalc';
-import { convertStringStatsToNumbers } from './helpers';
+import { getPlayerDataFromMeetup } from './apiService';
+import { calculateTotals, getHits, getOuts } from './statsCalc';
+import {
+    convertStringStatsToNumbers,
+    getIdFromFilterParams,
+    parseCurrentYear,
+    parseCurrentMonth,
+} from './helpers';
 
-const legacyPlayerList = new Map();
+const legacyPlayerStats = new Map();
+const legacyPlayers = new Map();
 const legacyGameList = new Map();
+const legacySummarizedStats = new Map();
 const gameIds = new Map();
+const currentGameData = new Map();
 
 /**
  * Convert legacy data structure to adapt to PlayerStats schema
@@ -15,50 +23,57 @@ const gameIds = new Map();
 export async function convertLegacyPlayerData(data) {
     for (const datum of data) {
         const legacyPlayerId = `${datum.id}`;
-        const legacyPlayer = legacyPlayerList.get(legacyPlayerId);
+        const legacyStats = legacyPlayerStats.get(legacyPlayerId);
 
         // format game data and calculate stats
         const gameData = buildGameData(datum);
-        const gameStats = buildGameStats(datum, legacyPlayer);
+        const gameStats = buildGameStats(datum, legacyStats);
 
-        if (legacyPlayer) {
-            legacyPlayer.games.push({ ...gameData, ...gameStats });
+        if (legacyStats) {
+            legacyStats.games.push({ ...gameData, ...gameStats });
         } else {
-            const playerData = await getPlayerDataFromMeetup(datum.id);
+            const playerDataFromMeetup = await getPlayerDataFromMeetup(datum.id);
 
             // exclude players not found
-            if (!playerData || playerData.data.errors) {
+            if (!playerDataFromMeetup || playerDataFromMeetup.data.errors) {
                 continue;
             }
 
-            const player = await transformMeetupData({
-                ...playerData.data,
+            const playerStats = {
+                id: `${datum.id}`,
+                name: playerDataFromMeetup.data.name,
+            };
+
+            const playerInfo = await adaptForPlayersAPI({
+                ...playerDataFromMeetup.data,
                 id: datum.id,
-                gender: datum.gender,
+                gender: Number(datum.gender),
             });
 
             try {
-                player.games = [];
-                player.games.push({ ...gameData, ...gameStats });
-                legacyPlayerList.set(legacyPlayerId, player);
+                playerStats.games = [];
+                playerStats.games.push({ ...gameData, ...gameStats });
+                legacyPlayerStats.set(legacyPlayerId, playerStats);
+                legacyPlayers.set(legacyPlayerId, playerInfo);
             } catch (error) {
                 throw new Error(error);
             }
         }
     }
 
-    return [...legacyPlayerList.values()];
+    return {
+        playerStats: [...legacyPlayerStats.values()],
+        playerInfo: [...legacyPlayers.values()],
+    };
 }
 
 export function convertLegacyGameData(data) {
     for (const datum of data) {
-        // get player data && delete the games array
         const legacyPlayerId = `${datum.id}`;
-
-        const playerData = getPlayerDataForGameStats(legacyPlayerId);
+        const playerDataFromMeetup = getPlayerDataForGameStats(legacyPlayerId);
 
         // member data no longer available on meetup
-        if (!playerData) {
+        if (!playerDataFromMeetup) {
             continue;
         }
 
@@ -68,7 +83,7 @@ export function convertLegacyGameData(data) {
         const hits = getHits(singles, doubles, triples, hr);
 
         // combine data and stats
-        const player = { ...playerData, ...playerStats };
+        const player = { ...playerDataFromMeetup, ...playerStats };
 
         // set up game data properties - date, field, time, gameId, etc.
         const gameData = buildGameData(datum);
@@ -106,7 +121,61 @@ export function convertLegacyGameData(data) {
     return [...legacyGameList.values()];
 }
 
-const currentGameData = new Map();
+export function buildSummarizedStats(games) {
+    for (const game of games) {
+        const { field, month, year } = game;
+        const filterYear = getIdFromFilterParams({ year });
+        updateSummarizedStats(game, filterYear);
+        const filterMonth = getIdFromFilterParams({ month });
+        updateSummarizedStats(game, filterMonth);
+        const filterYearMonth = getIdFromFilterParams({ year, month });
+        updateSummarizedStats(game, filterYearMonth);
+        const filterYearMonthField = getIdFromFilterParams({ year, month, field });
+        updateSummarizedStats(game, filterYearMonthField);
+        const filterMonthField = getIdFromFilterParams({ month, field });
+        updateSummarizedStats(game, filterMonthField);
+        const filterYearField = getIdFromFilterParams({ year, field });
+        updateSummarizedStats(game, filterYearField);
+        const filterField = getIdFromFilterParams({ field });
+        updateSummarizedStats(game, filterField);
+    }
+    return legacySummarizedStats.entries();
+}
+
+function updateSummarizedStats(game, filter) {
+    if (legacySummarizedStats.has(filter)) {
+        const existingPlayers = legacySummarizedStats.get(filter);
+        const currentPlayers = getWinnersAndLosers(game);
+        const summarizedStats = mergePlayerStatsForSummary(existingPlayers, currentPlayers);
+        legacySummarizedStats.set(filter, summarizedStats);
+    } else {
+        const stats = getWinnersAndLosers(game);
+        legacySummarizedStats.set(filter, stats);
+    }
+}
+
+function getWinnersAndLosers(game) {
+    return game.winners.players.concat(game.losers.players);
+}
+
+function mergePlayerStatsForSummary(existingPlayers, currentPlayers) {
+    const summarizedStats = currentPlayers.map((currentPlayer) => {
+        const existingPlayerIndex = existingPlayers.findIndex(
+            (existing) => existing.id === currentPlayer.id,
+        );
+        if (existingPlayerIndex >= 0) {
+            const existingPlayer = existingPlayers.splice(existingPlayerIndex, 1)[0];
+            const summarizedPlayer = calculateTotals(existingPlayer, currentPlayer);
+            summarizedPlayer.id = currentPlayer.id;
+            summarizedPlayer.name = currentPlayer.name;
+            return summarizedPlayer;
+        }
+        return currentPlayer;
+    });
+
+    return [...summarizedStats, ...existingPlayers];
+}
+
 function buildGameData({ date, field, time }) {
     const gameId = getGameId(date, time);
     const gameData = {
@@ -181,22 +250,21 @@ export function getGameId(date, time) {
 }
 
 /**
- * Get player data from legacyPlayerList map
+ * Get player data from legacyPlayerStats map
  * Then remove games - not needed for GameStats
  * @param {String} legacyPlayerId
  */
 function getPlayerDataForGameStats(legacyPlayerId) {
-    const playerData = legacyPlayerList.get(legacyPlayerId);
+    const playerData = legacyPlayerStats.get(legacyPlayerId);
 
     if (!playerData) {
         return null;
     }
 
-    const playerDataForGameStats = { ...playerData };
-    delete playerDataForGameStats.games;
-    delete playerDataForGameStats.profile;
-
-    return playerDataForGameStats;
+    return {
+        id: playerData.id,
+        name: playerData.name,
+    };
 }
 
 function getPlayerStatsWithDerivedStats(datum) {
@@ -211,36 +279,11 @@ function getPlayerStatsWithDerivedStats(datum) {
     return withUntrackedStats(playerStats);
 }
 
-function parseCurrentYear(date) {
-    return date.split('/')[2];
-}
-
-function parseCurrentMonth(date) {
-    return date.split('/')[0];
-}
-
-async function getPlayerDataFromMeetup(id) {
-    if (!id) {
-        return null;
-    }
-
-    const playerData = await fetchJsonp(
-        `${process.env.PLAYER_URL}/${id}?&sign=true&photo-host=public`,
-    )
-        .then((response) => response.json())
-        .then((playerResult) => playerResult)
-        .catch((error) => {
-            throw new Error(error);
-        });
-
-    return playerData;
-}
-
 /**
- * Transform Meetup data properties
+ * Transform Meetup data properties for Players API
  * @param {Object} data
  */
-function transformMeetupData(data) {
+function adaptForPlayersAPI(data) {
     const { name, joined, gender, group_profile, is_pro_admin, id, photo, status } = data;
 
     return {
@@ -298,8 +341,4 @@ function withUntrackedStats(stats) {
         cs: null,
     };
     return { ...untracked, ...stats };
-}
-
-function writeToFile(blockedPlayers) {
-    console.log('write to file', JSON.stringify([...blockedPlayers]));
 }

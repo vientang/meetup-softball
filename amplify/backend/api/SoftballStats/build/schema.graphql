@@ -12,23 +12,34 @@ type GameStats {
   lon: String
   time: String
   timeStamp: String
-  rsvps: String
-  waitListCount: String
+  rsvps: Int
+  waitListCount: Int
   winners: AWSJSON
   losers: AWSJSON
 }
 
 type PlayerStats {
   id: ID!
+  name: String
+  games: AWSJSON
+}
+
+type Players {
+  id: ID!
   name: String!
+  email: String
+  password: String
   joined: String
-  meetupId: String
   profile: AWSJSON
   admin: Boolean
   photos: AWSJSON
   status: String
   gender: String
-  games: AWSJSON
+}
+
+type SummarizedStats {
+  id: ID!
+  stats: AWSJSON
 }
 
 enum ModelSortDirection {
@@ -110,8 +121,8 @@ input ModelGameStatsFilterInput {
   lon: ModelStringFilterInput
   time: ModelStringFilterInput
   timeStamp: ModelStringFilterInput
-  rsvps: ModelStringFilterInput
-  waitListCount: ModelStringFilterInput
+  rsvps: ModelIntFilterInput
+  waitListCount: ModelIntFilterInput
   winners: ModelStringFilterInput
   losers: ModelStringFilterInput
   and: [ModelGameStatsFilterInput]
@@ -124,6 +135,10 @@ type Query {
   listGameStatss(filter: ModelGameStatsFilterInput, limit: Int, nextToken: String): ModelGameStatsConnection
   getPlayerStats(id: ID!): PlayerStats
   listPlayerStatss(filter: ModelPlayerStatsFilterInput, limit: Int, nextToken: String): ModelPlayerStatsConnection
+  getPlayers(id: ID!): Players
+  listPlayerss(filter: ModelPlayersFilterInput, limit: Int, nextToken: String): ModelPlayersConnection
+  getSummarizedStats(id: ID!): SummarizedStats
+  listSummarizedStatss(filter: ModelSummarizedStatsFilterInput, limit: Int, nextToken: String): ModelSummarizedStatsConnection
 }
 
 input CreateGameStatsInput {
@@ -140,8 +155,8 @@ input CreateGameStatsInput {
   lon: String
   time: String
   timeStamp: String
-  rsvps: String
-  waitListCount: String
+  rsvps: Int
+  waitListCount: Int
   winners: AWSJSON
   losers: AWSJSON
 }
@@ -160,8 +175,8 @@ input UpdateGameStatsInput {
   lon: String
   time: String
   timeStamp: String
-  rsvps: String
-  waitListCount: String
+  rsvps: Int
+  waitListCount: Int
   winners: AWSJSON
   losers: AWSJSON
 }
@@ -177,6 +192,12 @@ type Mutation {
   createPlayerStats(input: CreatePlayerStatsInput!): PlayerStats
   updatePlayerStats(input: UpdatePlayerStatsInput!): PlayerStats
   deletePlayerStats(input: DeletePlayerStatsInput!): PlayerStats
+  createPlayers(input: CreatePlayersInput!): Players
+  updatePlayers(input: UpdatePlayersInput!): Players
+  deletePlayers(input: DeletePlayersInput!): Players
+  createSummarizedStats(input: CreateSummarizedStatsInput!): SummarizedStats
+  updateSummarizedStats(input: UpdateSummarizedStatsInput!): SummarizedStats
+  deleteSummarizedStats(input: DeleteSummarizedStatsInput!): SummarizedStats
 }
 
 type Subscription {
@@ -186,6 +207,12 @@ type Subscription {
   onCreatePlayerStats: PlayerStats @aws_subscribe(mutations: ["createPlayerStats"])
   onUpdatePlayerStats: PlayerStats @aws_subscribe(mutations: ["updatePlayerStats"])
   onDeletePlayerStats: PlayerStats @aws_subscribe(mutations: ["deletePlayerStats"])
+  onCreatePlayers: Players @aws_subscribe(mutations: ["createPlayers"])
+  onUpdatePlayers: Players @aws_subscribe(mutations: ["updatePlayers"])
+  onDeletePlayers: Players @aws_subscribe(mutations: ["deletePlayers"])
+  onCreateSummarizedStats: SummarizedStats @aws_subscribe(mutations: ["createSummarizedStats"])
+  onUpdateSummarizedStats: SummarizedStats @aws_subscribe(mutations: ["updateSummarizedStats"])
+  onDeleteSummarizedStats: SummarizedStats @aws_subscribe(mutations: ["deleteSummarizedStats"])
 }
 
 type ModelPlayerStatsConnection {
@@ -196,13 +223,6 @@ type ModelPlayerStatsConnection {
 input ModelPlayerStatsFilterInput {
   id: ModelIDFilterInput
   name: ModelStringFilterInput
-  joined: ModelStringFilterInput
-  meetupId: ModelStringFilterInput
-  profile: ModelStringFilterInput
-  admin: ModelBooleanFilterInput
-  photos: ModelStringFilterInput
-  status: ModelStringFilterInput
-  gender: ModelStringFilterInput
   games: ModelStringFilterInput
   and: [ModelPlayerStatsFilterInput]
   or: [ModelPlayerStatsFilterInput]
@@ -211,30 +231,94 @@ input ModelPlayerStatsFilterInput {
 
 input CreatePlayerStatsInput {
   id: ID
-  name: String!
-  joined: String
-  meetupId: String
-  profile: AWSJSON
-  admin: Boolean
-  photos: AWSJSON
-  status: String
-  gender: String
+  name: String
   games: AWSJSON
 }
 
 input UpdatePlayerStatsInput {
   id: ID!
   name: String
+  games: AWSJSON
+}
+
+input DeletePlayerStatsInput {
+  id: ID
+}
+
+type ModelPlayersConnection {
+  items: [Players]
+  nextToken: String
+}
+
+input ModelPlayersFilterInput {
+  id: ModelIDFilterInput
+  name: ModelStringFilterInput
+  email: ModelStringFilterInput
+  password: ModelStringFilterInput
+  joined: ModelStringFilterInput
+  profile: ModelStringFilterInput
+  admin: ModelBooleanFilterInput
+  photos: ModelStringFilterInput
+  status: ModelStringFilterInput
+  gender: ModelStringFilterInput
+  and: [ModelPlayersFilterInput]
+  or: [ModelPlayersFilterInput]
+  not: ModelPlayersFilterInput
+}
+
+input CreatePlayersInput {
+  id: ID
+  name: String!
+  email: String
+  password: String
   joined: String
-  meetupId: String
   profile: AWSJSON
   admin: Boolean
   photos: AWSJSON
   status: String
   gender: String
-  games: AWSJSON
 }
 
-input DeletePlayerStatsInput {
+input UpdatePlayersInput {
+  id: ID!
+  name: String
+  email: String
+  password: String
+  joined: String
+  profile: AWSJSON
+  admin: Boolean
+  photos: AWSJSON
+  status: String
+  gender: String
+}
+
+input DeletePlayersInput {
+  id: ID
+}
+
+type ModelSummarizedStatsConnection {
+  items: [SummarizedStats]
+  nextToken: String
+}
+
+input ModelSummarizedStatsFilterInput {
+  id: ModelIDFilterInput
+  stats: ModelStringFilterInput
+  and: [ModelSummarizedStatsFilterInput]
+  or: [ModelSummarizedStatsFilterInput]
+  not: ModelSummarizedStatsFilterInput
+}
+
+input CreateSummarizedStatsInput {
+  id: ID
+  stats: AWSJSON
+}
+
+input UpdateSummarizedStatsInput {
+  id: ID!
+  stats: AWSJSON
+}
+
+input DeleteSummarizedStatsInput {
   id: ID
 }

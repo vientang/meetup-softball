@@ -12,21 +12,32 @@ type GameStats @model {
   lon: String
   time: String
   timeStamp: String
-  rsvps: String
-  waitListCount: String
+  rsvps: Int
+  waitListCount: Int
   winners: AWSJSON
   losers: AWSJSON
 }
 
 type PlayerStats @model {
     id: ID!
+    name: String
+    games: AWSJSON
+}
+
+type Players @model {
+    id: ID!
     name: String!
+	  email: String
+    password: String
     joined: String
-    meetupId: String
     profile: AWSJSON
     admin: Boolean
     photos: AWSJSON
     status: String
     gender: String
-    games: AWSJSON
+}
+
+type SummarizedStats @model {
+    id: ID!
+    stats: AWSJSON
 }

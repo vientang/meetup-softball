@@ -1,4 +1,4 @@
-// eslint-disable
+/* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
 export const onCreateGameStats = `subscription OnCreateGameStats {
@@ -71,13 +71,6 @@ export const onCreatePlayerStats = `subscription OnCreatePlayerStats {
   onCreatePlayerStats {
     id
     name
-    joined
-    meetupId
-    profile
-    admin
-    photos
-    status
-    gender
     games
   }
 }
@@ -86,13 +79,6 @@ export const onUpdatePlayerStats = `subscription OnUpdatePlayerStats {
   onUpdatePlayerStats {
     id
     name
-    joined
-    meetupId
-    profile
-    admin
-    photos
-    status
-    gender
     games
   }
 }
@@ -101,14 +87,73 @@ export const onDeletePlayerStats = `subscription OnDeletePlayerStats {
   onDeletePlayerStats {
     id
     name
+    games
+  }
+}
+`;
+export const onCreatePlayers = `subscription OnCreatePlayers {
+  onCreatePlayers {
+    id
+    name
+    email
+    password
     joined
-    meetupId
     profile
     admin
     photos
     status
     gender
-    games
+  }
+}
+`;
+export const onUpdatePlayers = `subscription OnUpdatePlayers {
+  onUpdatePlayers {
+    id
+    name
+    email
+    password
+    joined
+    profile
+    admin
+    photos
+    status
+    gender
+  }
+}
+`;
+export const onDeletePlayers = `subscription OnDeletePlayers {
+  onDeletePlayers {
+    id
+    name
+    email
+    password
+    joined
+    profile
+    admin
+    photos
+    status
+    gender
+  }
+}
+`;
+export const onCreateSummarizedStats = `subscription OnCreateSummarizedStats {
+  onCreateSummarizedStats {
+    id
+    stats
+  }
+}
+`;
+export const onUpdateSummarizedStats = `subscription OnUpdateSummarizedStats {
+  onUpdateSummarizedStats {
+    id
+    stats
+  }
+}
+`;
+export const onDeleteSummarizedStats = `subscription OnDeleteSummarizedStats {
+  onDeleteSummarizedStats {
+    id
+    stats
   }
 }
 `;

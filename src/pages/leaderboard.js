@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { fetchSummarizedStats } from '../utils/apiService';
 import { FilterBar, Layout, LeaderCard } from '../components';
 import pageStyles from './pages.module.css';
 
@@ -11,8 +12,11 @@ const filters = {
 const LeaderBoard = () => {
     const [leaderStats, setLeaders] = useState({});
     useEffect(() => {
-        const summarizedStats = JSON.parse(localStorage.getItem('allGames'));
-        setLeaders(createLeaderBoard(summarizedStats));
+        const fetchStats = async () => {
+            const summarizedStats = await fetchSummarizedStats('_2018');
+            setLeaders(createLeaderBoard(summarizedStats));
+        };
+        fetchStats();
     }, []);
 
     return (

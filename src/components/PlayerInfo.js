@@ -1,19 +1,33 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Avatar } from 'antd';
 import componentStyles from './components.module.css';
+import { fetchPlayerInfo } from '../utils/apiService';
+import { parsePhotosAndProfile } from '../utils/helpers';
 
-const PlayerInfo = ({ data }) => {
-    const profile = data.profile ? JSON.parse(data.profile) : {};
+const PlayerInfo = ({ meetupId }) => {
+    const [playerInfo, setPlayerInfo] = useState(null);
+    useEffect(() => {
+        async function fetchPlayer() {
+            if (meetupId) {
+                const playerInfo = await fetchPlayerInfo(meetupId);
+                setPlayerInfo(playerInfo);
+            }
+        }
+        fetchPlayer();
+    }, [meetupId]);
+
+    if (!playerInfo) {
+        return <div className={componentStyles.playerInfoCard} />;
+    }
+
+    const { photos, profile } = parsePhotosAndProfile(playerInfo);
     const { answers = [], title } = profile;
-
-    const photos = data.photos ? JSON.parse(data.photos) : {};
     const { highres_link, photo_link, thumb_link } = photos;
-
     const playerImg = highres_link || photo_link || thumb_link;
-
+    
     const image = playerImg ? (
-        <img src={playerImg} className={componentStyles.playerInfoPhoto} alt={data.name} />
+        <img src={playerImg} className={componentStyles.playerInfoPhoto} alt={playerInfo.name} />
     ) : (
         <Avatar src={playerImg} size={212} shape="square" icon="user" />
     );
@@ -23,7 +37,7 @@ const PlayerInfo = ({ data }) => {
             <div className={componentStyles.playerInfoCardGroup}>
                 {image}
                 <div className={componentStyles.playerInfoCardBio}>
-                    <p className={componentStyles.playerInfoName}>{data.name}</p>
+                    <p className={componentStyles.playerInfoName}>{playerInfo.name}</p>
                     <p className={componentStyles.playerInfoTitle}>{title}</p>
                 </div>
             </div>
@@ -47,11 +61,7 @@ const PlayerInfo = ({ data }) => {
 };
 
 PlayerInfo.propTypes = {
-    data: PropTypes.shape(),
-};
-
-PlayerInfo.defaultProps = {
-    data: {},
+    meetupId: PropTypes.string,
 };
 
 export default PlayerInfo;

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { API, graphqlOperation } from 'aws-amplify';
 import { Icon, AutoComplete } from 'antd';
-import { listPlayerStatss } from '../graphql/queries';
+import { fetchAllPlayers } from '../utils/apiService';
 import componentStyles from './components.module.css';
 
 const { Option } = AutoComplete;
@@ -14,8 +13,8 @@ const AddPlayer = ({ allRsvpIds, listCount, listType, onAddPlayer }) => {
 
     useEffect(() => {
         async function fetchData() {
-            let allPlayersList = await API.graphql(graphqlOperation(listPlayerStatss));
-            allPlayersList = allPlayersList.data.listPlayerStatss.items.filter((player) => {
+            let allPlayersList = await fetchAllPlayers();
+            allPlayersList = allPlayersList.filter((player) => {
                 const playerFound = allRsvpIds.find(
                     (playerId) => playerId.toString() === player.id,
                 );
@@ -79,19 +78,6 @@ const AddPlayer = ({ allRsvpIds, listCount, listType, onAddPlayer }) => {
         </div>
     );
 };
-
-/**
- * Change the background of the page when in search mode
- * @param {Object} listRef
- * @param {Boolean} searchMode
- */
-function changeListTheme(searchMode) {
-    if (searchMode) {
-        document.body.style.setProperty('--transfer-list-background', 'rgba(0, 0, 0, 0.5)');
-    } else {
-        document.body.style.setProperty('--transfer-list-background', '#ffffff');
-    }
-}
 
 /**
  * Creates a player object in the shape needed for AdminStatsTable

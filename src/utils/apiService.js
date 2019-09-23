@@ -1,32 +1,106 @@
 import { API, graphqlOperation } from 'aws-amplify';
+import fetchJsonp from 'fetch-jsonp';
 import get from 'lodash/get';
-import pick from 'lodash/pick';
-import omit from 'lodash/omit';
-import { getPlayerStats, listGameStatss, listPlayerStatss } from '../graphql/queries';
 import {
-    getAtBats,
-    getAverage,
-    getHits,
-    getOnBasePercentage,
-    getOPS,
-    getRunsCreated,
-    getSlugging,
-    getTeamRunsScored,
-    getTeamTotalHits,
-    getTotalBases,
-    getWOBA,
-} from './statsCalc';
-import { gameProperties, playerProfileKeys } from './constants';
+    getPlayers,
+    getPlayerStats,
+    listGameStatss,
+    listPlayerss,
+    getSummarizedStats,
+} from '../graphql/queries';
+import {
+    createGameStats,
+    createPlayerStats,
+    createPlayers,
+    createSummarizedStats,
+    updatePlayerStats,
+} from '../graphql/mutations';
+import { createGame } from './helpers';
 
-export async function fetchPlayer(id) {
-    const existingPlayer = await API.graphql(graphqlOperation(getPlayerStats, { id }));
+export async function fetchPlayerStats(id) {
+    const existingPlayer = await API.graphql(graphqlOperation(getPlayerStats, { id }));    
     return get(existingPlayer, 'data.getPlayerStats', null);
 }
 
-const players = [];
+export async function fetchPlayerInfo(id) {
+    const existingPlayer = await API.graphql(graphqlOperation(getPlayers, { id }));
+    return get(existingPlayer, 'data.getPlayers', null);
+}
+
+export async function fetchSummarizedStats(id) {
+    const summarizedStats = await API.graphql(graphqlOperation(getSummarizedStats, { id }));
+    return get(summarizedStats, 'data.getSummarizedStats.stats', null);
+}
+
+export async function updateExistingPlayer(input) {
+    await API.graphql(graphqlOperation(updatePlayerStats, input));
+}
+
+export async function createNewPlayerStats(input) {
+    await API.graphql(graphqlOperation(createPlayerStats, input));
+}
+
+export async function submitNewGameStats(input) {
+    await API.graphql(graphqlOperation(createGameStats, input));
+}
+
+export async function submitSerializeSummary(summarized) {
+    for (const [k, v] of summarized) {
+        await API.graphql(
+            graphqlOperation(createSummarizedStats, {
+                input: {
+                    id: k,
+                    stats: JSON.stringify(v),
+                },
+            }),
+        );
+    }
+}
+
+export async function submitPlayerInfo(playerInfo = []) {
+    playerInfo.forEach(async (player) => {
+        await API.graphql(
+            graphqlOperation(createPlayers, {
+                input: player,
+            }),
+        );
+    });
+}
+
+/**
+ * Update a players game log or create a new player
+ * @param {Array} playerStats
+ */
+export async function submitPlayerStats(playerStats = []) {
+    playerStats.forEach(async (player) => {
+        await API.graphql(
+            graphqlOperation(createPlayerStats, {
+                input: {
+                    ...player,
+                    games: JSON.stringify(player.games),
+                },
+            }),
+        );
+    });
+}
+
+export async function submitGameStats(gameStats) {
+    gameStats.forEach(async (value) => {
+        const game = { ...value };
+        game.winners = JSON.stringify(value.winners);
+        game.losers = JSON.stringify(value.losers);
+        await API.graphql(graphqlOperation(createGameStats, { input: game }));
+    });
+}
+
+let players = [];
+export function clearAllPlayers() {
+    players = [];
+}
+
 export async function fetchAllPlayers(queryParams = {}) {
-    const fetchedPlayers = await API.graphql(graphqlOperation(listPlayerStatss, queryParams));
-    const { items, nextToken } = fetchedPlayers.data.listPlayerStatss;
+    const fetchedPlayers = await API.graphql(graphqlOperation(listPlayerss, queryParams));
+    const { items, nextToken } = fetchedPlayers.data.listPlayerss;
     players.push(...items);
     if (nextToken) {
         const queries = { ...queryParams };
@@ -50,285 +124,88 @@ export async function fetchAllGames(queryParams = {}) {
     return games;
 }
 
-/**
- * LIST OF PLAYER STATS
- * HOLDS ALL OF THE RESOLVED STATS BASED ON A SPECIFIC FILTER
- */
-const masterList = new Map();
-export function clearMasterList() {
-    masterList.clear();
-}
-
-/**
- * StatsPage
- * Runs a double loop to accumulate stats
- * of all players in every game
- * @param {Array} games
- * @return {Array} list of players and their stats
- */
-export function getAllPlayerStats(games) {
-    masterList.clear();
-    let playerStats = [];
-
-    games.forEach((game) => {
-        playerStats = getIndividualPlayerStats(game);
-    });
-
-    return playerStats;
-}
-
-/**
- * Update master stats list at runtime
- * @return {Array} list of players and their stats
- */
-function getIndividualPlayerStats(game) {
-    getWinnersAndLosers(game).forEach((player) => {
-        if (masterList.has(player.id)) {
-            masterList.set(player.id, mergeExistingPlayerStats(masterList.get(player.id), player));
-        } else {
-            masterList.set(player.id, initNewPlayerStats(player));
-        }
-    });
-
-    return Array.from(masterList.values());
-}
-
-/**
- * Prepare initial stat values
- * @return {Object} legacy player data
- */
-function initNewPlayerStats(player) {
-    const { bb, cs, singles, doubles, sb, triples, hr, o, sac } = player;
-
-    const h = getHits(singles, doubles, triples, hr);
-    const ab = getAtBats(h, o);
-    const tb = getTotalBases(singles, doubles, triples, hr);
-    const obp = getOnBasePercentage(h, bb, ab, sac);
-    const slg = getSlugging(tb, ab);
-
-    const derivedStats = {
-        avg: getAverage(h, ab),
-        rc: getRunsCreated(h, bb, cs, tb, sb, ab),
-        ops: getOPS(obp, slg),
-        woba: getWOBA(bb, singles, doubles, triples, hr, ab, sac),
-        h,
-        ab,
-        tb,
-        slg,
-        obp,
-    };
-
-    const metaData = parsePhotosAndProfile(player);
-
-    return { ...player, ...metaData, ...derivedStats };
-}
-
-/**
- * Merge player profile properties with calculated stat totals
- * @param {Object} existingStats
- * @param {Object} currentStats
- * @return {Object}
- */
-function mergeExistingPlayerStats(existingStats = {}, currentStats = {}) {
-    const playerData = pick(existingStats, playerProfileKeys);
-    const total = calculateTotals(existingStats, currentStats);
-
-    return { ...playerData, ...total };
-}
-
-/**
- * Calculate cumulative stats from the current game and the running total
- * @param {Object} existingStats
- * @param {Object} currentStats
- * @return {Object} updated stats for an individual player
- */
-export function calculateTotals(existingStats = {}, currentStats = {}) {
-    const { bb, cs, singles, doubles, sb, triples, hr, o, sac } = currentStats;
-
-    // counting stats
-    const totalSingles = addStat(singles, existingStats.singles);
-    const totalDoubles = addStat(doubles, existingStats.doubles);
-    const totalTriples = addStat(triples, existingStats.triples);
-    const totalHr = addStat(hr, existingStats.hr);
-    const totalOuts = addStat(o, existingStats.o);
-    const totalHits = getHits(totalSingles, totalDoubles, totalTriples, totalHr);
-    const totalAb = getAtBats(totalHits, totalOuts);
-    const totalTb = getTotalBases(totalSingles, totalDoubles, totalTriples, totalHr);
-    const totalWalks = addStat(bb, existingStats.bb);
-    const totalSacs = addStat(sac, existingStats.sac);
-    const totalStls = addStat(sb, existingStats.sb);
-    const totalCs = addStat(cs, existingStats.cs);
-
-    // rate stats
-    const obp = getOnBasePercentage(totalHits, totalWalks, totalAb, totalSacs);
-    const slg = getSlugging(totalTb, totalAb);
-    const cumulativeAvg = getAverage(totalHits, totalAb);
-    const rc = getRunsCreated(totalHits, totalWalks, totalCs, totalTb, totalStls, totalAb);
-    const ops = getOPS(obp, slg);
-    const woba = getWOBA(
-        totalWalks,
-        totalSingles,
-        totalDoubles,
-        totalTriples,
-        totalHr,
-        totalAb,
-        totalSacs,
-    );
-
-    return {
-        ab: totalAb,
-        avg: cumulativeAvg,
-        bb: totalWalks,
-        cs: totalCs,
-        doubles: totalDoubles,
-        gp: addStat(currentStats.gp, existingStats.gp),
-        h: totalHits,
-        hr: totalHr,
-        k: addStat(currentStats.k, existingStats.k),
-        l: addStat(currentStats.l, existingStats.l),
-        o: totalOuts,
-        rbi: addStat(currentStats.rbi, existingStats.rbi),
-        r: addStat(currentStats.r, existingStats.r),
-        sac: totalSacs,
-        sb: totalStls,
-        singles: totalSingles,
-        tb: totalTb,
-        triples: totalTriples,
-        w: addStat(currentStats.w, existingStats.w),
-        obp,
-        ops,
-        rc,
-        slg,
-        woba,
-    };
-}
-
-function addStat(currentStat, existingStat) {
-    if (existingStat === null) {
-        return existingStat;
+export async function getPlayerDataFromMeetup(id) {
+    const meetupId = id;
+    if (!meetupId) {
+        return null;
     }
 
-    return Number(existingStat) + Number(currentStat);
+    const playerData = await fetchJsonp(
+        `${process.env.PLAYER_URL}/${meetupId}?&sign=true&photo-host=public`,
+    )
+        .then((response) => response.json())
+        .then((playerResult) => playerResult)
+        .catch((error) => {
+            throw new Error(error);
+        });
+
+    return playerData;
 }
 
 /**
- * Parse the profile and photos object from meetup
- * @param {Object} players
- * @return {Object}
+ * Get data from meetup api - games and players
+ * Find those players in our API to get existing stats
+ * Merge each player name and meetup id with the stats categories
  */
-function parsePhotosAndProfile(player) {
-    return {
-        photos: player.photos ? JSON.parse(player.photos) : {},
-        profile: player.profile ? JSON.parse(player.profile) : {},
-    };
+export async function fetchGamesFromMeetup() {
+    const lastGameTimeStamp = await this.getLastGameRecorded();
+
+    const games = [];
+
+    await fetchJsonp(process.env.GAMES_URL)
+        .then((response) => response.json())
+        .then((result) => {
+            result.data.forEach((game) => {
+                // prevent overfetching games from meetup
+                if (lastGameTimeStamp >= game.time) {
+                    return;
+                }
+                games.push(createGame(game));
+            });
+        })
+        .catch((error) => {
+            throw new Error(error);
+        });
+
+    // sort games by time for GamesMenu
+    games.sort((a, b) => new Date(a.timeStamp) - new Date(b.timeStamp));
+
+    return games;
+}
+
+export async function fetchRsvpList(gameId) {
+    const RSVPS = `${process.env.RSVP_URL}${gameId}/attendance?&sign=true&photo-host=public`;
+
+    let rsvpList = await fetchJsonp(RSVPS)
+        .then((response) => response.json())
+        .then((result) => result.data.filter(filterAttendees))
+        .catch((error) => {
+            throw new Error(error);
+        });
+
+    rsvpList = await rsvpList.map((player) =>
+        fetchJsonp(`${process.env.PLAYER_URL}${player.member.id}?&sign=true&photo-host=public`)
+            .then((response) => response.json())
+            .then((playerResult) => playerResult),
+    );
+
+    return rsvpList;
 }
 
 /**
- * Parse and concat winners and losers
- * @return {Array} list of winners and losers
+ * Data from Meetup API is inconsistent
+ * Catch the different permutations of attendance
+ * @param {Object} player
+ * @return {Boolean}
  */
-function getWinnersAndLosers(game) {
-    return JSON.parse(game.winners).players.concat(JSON.parse(game.losers).players);
-}
-
-/**
- * Add stats that can be derived from playing a game
- * Admins do not need to enter these
- * @param {Array} players
- * @param {Boolean} winner
- * @param {Boolean} isTie
- * @return {Array}
- */
-export function addDerivedStats(players, isTie, winner) {
-    return players.map((player) => {
-        const derivedStats = { ...player };
-        derivedStats.w = winner ? '1' : '0';
-        derivedStats.l = winner ? '0' : '1';
-        derivedStats.gp = '1';
-        if (isTie) {
-            derivedStats.w = '0';
-            derivedStats.l = '0';
-        }
-        return derivedStats;
-    });
-}
-
-/**
- * GAMESTATS Adaptor to combine data from meetup and current game stats
- * @param {Array} meetupData - data from meetup api
- * @param {Array} w - winners
- * @param {Array} l - losers
- * @return {Object} currentGameStats
- */
-export function mergeGameStats(meetupData, w, l) {
-    const currentGameStats = omit(meetupData, ['players']);
-    const isTie = getTeamRunsScored(w) === getTeamRunsScored(l);
-
-    const winningTeam = addDerivedStats(w, isTie, true);
-    const losingTeam = addDerivedStats(l, isTie, false);
-
-    const winners = {
-        name: 'Winners',
-        runsScored: getTeamRunsScored(winningTeam),
-        totalHits: getTeamTotalHits(winningTeam),
-        players: winningTeam,
-    };
-    const losers = {
-        name: 'Losers',
-        runsScored: getTeamRunsScored(losingTeam),
-        totalHits: getTeamTotalHits(losingTeam),
-        players: losingTeam,
-    };
-
-    currentGameStats.winners = JSON.stringify(winners);
-    currentGameStats.losers = JSON.stringify(losers);
-
-    return currentGameStats;
-}
-
-/**
- * PLAYERSTATS Adaptor to combine data from meetup and current game stats
- * @param {Array} meetupData - data from meetup api
- * @param {Array} w - winners
- * @param {Array} l - losers
- * @return {Array} list of players and their stats
- */
-export function mergePlayerStats(meetupData, w, l) {
-    const currentGameStats = pick(meetupData, gameProperties);
-    const isTie = getTeamRunsScored(w) === getTeamRunsScored(l);
-    const winners = createPlayerData(addDerivedStats(w, isTie, true), currentGameStats);
-    const losers = createPlayerData(addDerivedStats(l, isTie), currentGameStats);
-
-    return winners.concat(losers);
-}
-
-/**
- * Create player data
- * @param {*} players
- * @param {*} currentGameStats
- */
-function createPlayerData(players, currentGameStats) {
-    return players.map((player) => {
-        const gameStats = omit(player, [
-            'name',
-            'joined',
-            'meetupId',
-            'photos',
-            'profile',
-            'admin',
-        ]);
-        const playerStats = {};
-        playerStats.id = player.meetupId;
-        playerStats.name = player.name;
-        playerStats.joined = player.joined;
-        playerStats.admin = player.admin;
-        playerStats.profile = JSON.stringify(player.profile);
-        playerStats.photos = JSON.stringify(player.photos);
-        playerStats.status = player.status || 'active';
-        playerStats.gender = player.gender || 'n/a';
-        playerStats.games = [];
-        playerStats.games.push({ ...currentGameStats, ...gameStats });
-
-        return playerStats;
-    });
+function filterAttendees(player = {}) {
+    const status = get(player, 'status');
+    const response = get(player, 'rsvp.response');
+    if ((status && status === 'absent') || status === 'noshow') {
+        return false;
+    }
+    if (response === 'yes') {
+        return true;
+    }
+    return status === 'attended';
 }

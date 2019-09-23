@@ -1,17 +1,5 @@
 /* eslint-disable no-undef */
-import { convertLegacyPlayerData, getGameId } from '../convertLegacyData';
-import legacyData from '../../../__mocks__/mockData';
-
-xdescribe('Legacy data', () => {
-    beforeEach(() => {
-        clearlegacyPlayerList();
-    });
-
-    it('equal size as input data', async () => {
-        const convertedData = await convertLegacyPlayerData(legacyData);
-        expect(convertedData.size).toBe(legacyData.length);
-    });
-});
+import { getGameId } from '../convertLegacyData';
 
 describe('Game Ids', () => {
     it('create first game id', async () => {

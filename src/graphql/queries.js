@@ -1,4 +1,4 @@
-// eslint-disable
+/* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
 export const getGameStats = `query GetGameStats($id: ID!) {
@@ -56,13 +56,6 @@ export const getPlayerStats = `query GetPlayerStats($id: ID!) {
   getPlayerStats(id: $id) {
     id
     name
-    joined
-    meetupId
-    profile
-    admin
-    photos
-    status
-    gender
     games
   }
 }
@@ -76,14 +69,65 @@ export const listPlayerStatss = `query ListPlayerStatss(
     items {
       id
       name
+      games
+    }
+    nextToken
+  }
+}
+`;
+export const getPlayers = `query GetPlayers($id: ID!) {
+  getPlayers(id: $id) {
+    id
+    name
+    email
+    password
+    joined
+    profile
+    admin
+    photos
+    status
+    gender
+  }
+}
+`;
+export const listPlayerss = `query ListPlayerss(
+  $filter: ModelPlayersFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listPlayerss(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      name
+      email
+      password
       joined
-      meetupId
       profile
       admin
       photos
       status
       gender
-      games
+    }
+    nextToken
+  }
+}
+`;
+export const getSummarizedStats = `query GetSummarizedStats($id: ID!) {
+  getSummarizedStats(id: $id) {
+    id
+    stats
+  }
+}
+`;
+export const listSummarizedStatss = `query ListSummarizedStatss(
+  $filter: ModelSummarizedStatsFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listSummarizedStatss(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      stats
     }
     nextToken
   }

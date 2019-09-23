@@ -1,10 +1,7 @@
 {
-    "projectName": "meetupsoftball",
-    "projectPath": "/Users/vientang/Documents/playground/meetup-softball",
-    "defaultEditor": "code",
-    "frontendHandler": {
-        "javascript": "/usr/local/lib/node_modules/@aws-amplify/cli/node_modules/amplify-frontend-javascript"
-    },
+    "projectName": "meetup-softball",
+    "version": "2.0",
+    "frontend": "javascript",
     "javascript": {
         "framework": "react",
         "config": {
@@ -14,7 +11,7 @@
             "StartCommand": "npm run-script start"
         }
     },
-    "providers": {
-        "awscloudformation": "/usr/local/lib/node_modules/@aws-amplify/cli/node_modules/amplify-provider-awscloudformation"
-    }
+    "providers": [
+        "awscloudformation"
+    ]
 }

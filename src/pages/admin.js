@@ -1,9 +1,7 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
-import fetchJsonp from 'fetch-jsonp';
 import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
-import { API, graphqlOperation } from 'aws-amplify';
 import { withAuthenticator, SignIn, Greetings } from 'aws-amplify-react';
 import {
     AdminStatsTable,
@@ -13,10 +11,17 @@ import {
     SortTeams,
     SuccessImage,
 } from '../components';
-import { createGameStats, createPlayerStats, updatePlayerStats } from '../graphql/mutations';
-import { getPlayerStats, listGameStatss } from '../graphql/queries';
-import { mergePlayerStats, mergeGameStats } from '../utils/apiService';
-import { sortTimeStamp } from '../utils/helpers';
+import {
+    createNewPlayerStats,
+    fetchAllGames,
+    fetchGamesFromMeetup,
+    fetchPlayerStats,
+    fetchRsvpList,
+    submitNewGameStats,
+    updateExistingPlayer,
+} from '../utils/apiService';
+import { mergePlayerStats, mergeGameStats } from '../utils/statsCalc';
+import { createPlayer, findCurrentGame, filterCurrentGame, sortTimeStamp } from '../utils/helpers';
 import styles from './pages.module.css';
 
 class Admin extends React.Component {
@@ -37,7 +42,7 @@ class Admin extends React.Component {
      */
     async componentDidMount() {
         this.mounted = true;
-        const games = await this.fetchGames();
+        const games = await fetchGamesFromMeetup();
 
         const currentGame = games[0];
         currentGame.players = await this.getCurrentGamePlayers(currentGame);
@@ -62,8 +67,8 @@ class Admin extends React.Component {
             return lastGameRecorded;
         }
 
-        const games = await API.graphql(graphqlOperation(listGameStatss));
-        const gamesSorted = games.data.listGameStatss.items.sort(sortTimeStamp);
+        const games = await fetchAllGames();
+        const gamesSorted = games.sort(sortTimeStamp);
 
         return Number(gamesSorted[0].timeStamp);
     };
@@ -73,17 +78,10 @@ class Admin extends React.Component {
             return currentGame.players;
         }
 
-        const rsvpList = await this.fetchRsvpList(currentGame.id);
+        const rsvpList = await fetchRsvpList(currentGame.id);
         const results = await Promise.all(rsvpList);
 
         return results.map((player) => createPlayer(player));
-    };
-
-    fetchExistingPlayer = async (player) => {
-        const existingPlayer = await API.graphql(
-            graphqlOperation(getPlayerStats, { id: player.id }),
-        );
-        return get(existingPlayer, 'data.getPlayerStats', null);
     };
 
     /**
@@ -92,7 +90,7 @@ class Admin extends React.Component {
      */
     submitPlayerStats = async (playerStats = []) => {
         playerStats.forEach(async (player) => {
-            const existingPlayer = this.fetchExistingPlayer(player);
+            const existingPlayer = await fetchPlayerStats(player.id);
 
             try {
                 if (existingPlayer) {
@@ -100,34 +98,26 @@ class Admin extends React.Component {
                     const { id, games } = existingPlayer;
                     const parsedGames = JSON.parse(games);
                     const updatedGames = [player.games[0], ...parsedGames];
-
-                    await API.graphql(
-                        graphqlOperation(updatePlayerStats, {
-                            input: { id },
-                            games: JSON.stringify(updatedGames),
-                        }),
-                    );
+                    await updateExistingPlayer({
+                        input: { id },
+                        games: JSON.stringify(updatedGames),
+                    });
                 } else {
                     // player does not yet exist in database
                     const newPlayer = {
                         ...player,
                         games: JSON.stringify(player.games),
                     };
-
-                    await API.graphql(
-                        graphqlOperation(createPlayerStats, {
-                            input: newPlayer,
-                        }),
-                    );
+                    await createNewPlayerStats({ input: newPlayer });
                 }
             } catch (e) {
-                console.log('error saving player', { e, existingPlayer, player });
+                throw new Error(`Error saving player ${existingPlayer.name}: ${e}`);
             }
         });
     };
 
     submitGameStats = async (gameStats) => {
-        await API.graphql(graphqlOperation(createGameStats, { input: gameStats }));
+        await submitNewGameStats({ input: gameStats });
     };
 
     /**
@@ -166,6 +156,7 @@ class Admin extends React.Component {
         const currentGame = this.state.games.find(findCurrentGame(selectedGameId));
         const currentPlayers = await this.getCurrentGamePlayers(currentGame);
         currentGame.players = currentPlayers;
+
         this.setState(() => ({ currentGame, selectedGameId }));
     };
 
@@ -190,56 +181,6 @@ class Admin extends React.Component {
     handleSetTeams = (winners, losers) => {
         this.setState(() => ({ areTeamsSorted: true, winners, losers }));
     };
-
-    /**
-     * Get data from meetup api - games and players
-     * Find those players in our API to get existing stats
-     * Merge each player name and meetup id with the stats categories
-     */
-    async fetchGames() {
-        const lastGameTimeStamp = await this.getLastGameRecorded();
-
-        const games = [];
-
-        await fetchJsonp(process.env.GAMES_URL)
-            .then((response) => response.json())
-            .then((result) => {
-                result.data.forEach((game) => {
-                    // prevent overfetching games from meetup
-                    if (lastGameTimeStamp >= game.time) {
-                        return;
-                    }
-                    games.push(createGame(game));
-                });
-            })
-            .catch((error) => {
-                throw new Error(error);
-            });
-
-        // sort games by time for GamesMenu
-        games.sort((a, b) => new Date(a.timeStamp) - new Date(b.timeStamp));
-
-        return games;
-    }
-
-    async fetchRsvpList(gameId) {
-        const RSVPS = `${process.env.RSVP_URL}${gameId}/attendance?&sign=true&photo-host=public`;
-
-        let rsvpList = await fetchJsonp(RSVPS)
-            .then((response) => response.json())
-            .then((result) => result.data.filter(filterAttendees))
-            .catch((error) => {
-                throw new Error(error);
-            });
-
-        rsvpList = await rsvpList.map((player) =>
-            fetchJsonp(`${process.env.PLAYER_URL}${player.member.id}?&sign=true&photo-host=public`)
-                .then((response) => response.json())
-                .then((playerResult) => playerResult),
-        );
-
-        return rsvpList;
-    }
 
     render() {
         const { areTeamsSorted, currentGame, games, losers, selectedGameId, winners } = this.state;
@@ -285,94 +226,6 @@ class Admin extends React.Component {
             </Layout>
         );
     }
-}
-
-/**
- * Schema matching GameStats
- * Adaptor to create game object from meetup data and admin stats
- * @param {Object} player
- */
-function createGame(game) {
-    const { id, local_date, local_time, rsvp_limit, time, venue, waitlist_count } = game;
-
-    const gameDate = new Date(time).toDateString();
-    const [year, month] = local_date.split('-');
-    const { lat, lon, name } = venue;
-    const gameId = game.name.split(' ')[1];
-
-    const newGame = {};
-    newGame.date = gameDate;
-    newGame.field = name;
-    newGame.gameId = gameId;
-    newGame.lat = lat;
-    newGame.lon = lon;
-    newGame.id = id;
-    newGame.month = month;
-    newGame.name = game.name;
-    newGame.rsvps = rsvp_limit;
-    newGame.time = local_time;
-    newGame.timeStamp = time;
-    newGame.tournamentName = game.name;
-    newGame.waitListCount = waitlist_count;
-    newGame.year = year;
-
-    return newGame;
-}
-
-/**
- * Schema matching PlayerStats
- * Adaptor to create player object from meetup data and admin stats
- * @param {Object} player
- */
-function createPlayer(player) {
-    const { name, id, joined, group_profile, is_pro_admin, photo, status } = player.data;
-    return {
-        id,
-        name,
-        joined,
-        status,
-        profile: group_profile,
-        admin: is_pro_admin,
-        photos: photo,
-        singles: null,
-        doubles: null,
-        triples: null,
-        bb: null,
-        cs: null,
-        hr: null,
-        k: null,
-        o: null,
-        r: null,
-        rbi: null,
-        sac: null,
-        sb: null,
-    };
-}
-
-function findCurrentGame(selectedGameId) {
-    return (game) => game.id === selectedGameId;
-}
-
-function filterCurrentGame(selectedGameId) {
-    return (game) => game.id !== selectedGameId;
-}
-
-/**
- * Data from Meetup API is inconsistent
- * Catch the different permutations of attendance
- * @param {Object} player
- * @return {Boolean}
- */
-function filterAttendees(player = {}) {
-    const status = get(player, 'status');
-    const response = get(player, 'rsvp.response');
-    if ((status && status === 'absent') || status === 'noshow') {
-        return false;
-    }
-    if (response === 'yes') {
-        return true;
-    }
-    return status === 'attended';
 }
 
 /**

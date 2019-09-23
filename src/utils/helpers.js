@@ -10,6 +10,76 @@ import {
     getRunsCreated,
 } from './statsCalc';
 
+/**
+ * Schema matching GameStats
+ * Adaptor to create game object from meetup data and admin stats
+ * @param {Object} player
+ */
+export function createGame(game) {
+    const { id, local_date, local_time, rsvp_limit, time, venue, waitlist_count } = game;
+
+    const gameDate = new Date(time).toDateString();
+    const [year, month] = local_date.split('-');
+    const { lat, lon, name } = venue;
+    const gameId = game.name.split(' ')[1];
+
+    const newGame = {};
+    newGame.date = gameDate;
+    newGame.field = name;
+    newGame.gameId = gameId;
+    newGame.lat = lat;
+    newGame.lon = lon;
+    newGame.id = id;
+    newGame.month = month;
+    newGame.name = game.name;
+    newGame.rsvps = rsvp_limit;
+    newGame.time = local_time;
+    newGame.timeStamp = time;
+    newGame.tournamentName = game.name;
+    newGame.waitListCount = waitlist_count;
+    newGame.year = year;
+
+    return newGame;
+}
+
+/**
+ * Schema matching PlayerStats
+ * Adaptor to create player object from meetup data and admin stats
+ * @param {Object} player
+ */
+export function createPlayer(player) {
+    const { name, id, joined, group_profile, is_pro_admin, photo, status } = player.data;
+    return {
+        id,
+        name,
+        joined,
+        status,
+        profile: group_profile,
+        admin: is_pro_admin,
+        photos: photo,
+        singles: null,
+        doubles: null,
+        triples: null,
+        bb: null,
+        cs: null,
+        hr: null,
+        k: null,
+        o: null,
+        r: null,
+        rbi: null,
+        sac: null,
+        sb: null,
+    };
+}
+
+export function findCurrentGame(selectedGameId) {
+    return (game) => game.id === selectedGameId;
+}
+
+export function filterCurrentGame(selectedGameId) {
+    return (game) => game.id !== selectedGameId;
+}
+
 export function createSlug(name) {
     let slug = name
         .split(' ')
@@ -21,6 +91,26 @@ export function createSlug(name) {
     }
 
     return slug;
+}
+
+export function parseCurrentYear(date) {
+    return date.split('/')[2];
+}
+
+export function parseCurrentMonth(date) {
+    return date.split('/')[0];
+}
+
+/**
+ * Parse the profile and photos object from meetup
+ * @param {Object} players
+ * @return {Object}
+ */
+export function parsePhotosAndProfile(player) {
+    return {
+        photos: player.photos ? JSON.parse(player.photos) : {},
+        profile: player.profile ? JSON.parse(player.profile) : {},
+    };
 }
 
 export function getMeridiem(time) {
@@ -47,6 +137,10 @@ export function sortHighToLow(a, b) {
 
 export function sortTimeStamp(a, b) {
     return Number(a.timeStamp) < Number(b.timeStamp) ? 1 : -1;
+}
+
+export function sortByYear(a, b) {
+    return Number(a.year) < Number(b.year) ? 1 : -1;
 }
 
 export function convertStatsForTable(stats) {
@@ -129,7 +223,9 @@ export function getIdFromFilterParams({ year, month, field } = {}) {
         id += `_${month}`;
     }
     if (field) {
-        id += `_${field}`;
+        const regexSpace = / /g;
+        const fieldTrimmed = field.toLowerCase().replace(regexSpace, '_');
+        id += `_${fieldTrimmed}`;
     }
     return id;
 }
@@ -140,7 +236,7 @@ export function getIdFromFilterParams({ year, month, field } = {}) {
  * @param {String} value
  */
 export function formatCellValue(value) {
-    if (value === null) {
+    if (value === null || value === undefined) {
         return '0';
     }
 

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { API, graphqlOperation } from 'aws-amplify';
-import { listGameStatss } from '../graphql/queries';
+import { fetchAllGames } from '../utils/apiService';
 import { sortTimeStamp } from '../utils/helpers';
 import BoxScore from './BoxScore';
 import JoinUs from './JoinUs';
@@ -11,8 +10,8 @@ const BoxScoreGroup = () => {
     useEffect(() => {
         let isMounted = true;
         async function fetchData() {
-            let allGames = await API.graphql(graphqlOperation(listGameStatss));
-            allGames = await allGames.data.listGameStatss.items.sort(sortTimeStamp);
+            let allGames = await fetchAllGames();
+            allGames = allGames.sort(sortTimeStamp);
             if (isMounted) {
                 setRecentGameData(createBoxScoreData([allGames[1], allGames[0]].filter(Boolean)));
             }

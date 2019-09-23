@@ -37,16 +37,11 @@
 					"Statement": [
 						{
 							"Sid": "",
-							"Effect": "Allow",
+							"Effect": "Deny",
 							"Principal": {
 								"Federated": "cognito-identity.amazonaws.com"
 							},
-							"Action": "sts:AssumeRoleWithWebIdentity",
-							"Condition": {
-								"ForAnyValue:StringLike": {
-									"cognito-identity.amazonaws.com:amr": "authenticated"
-								}
-							}
+							"Action": "sts:AssumeRoleWithWebIdentity"
 						}
 					]
 				}
@@ -63,96 +58,255 @@
 					"Statement": [
 						{
 							"Sid": "",
-							"Effect": "Allow",
+							"Effect": "Deny",
 							"Principal": {
 								"Federated": "cognito-identity.amazonaws.com"
 							},
-							"Action": "sts:AssumeRoleWithWebIdentity",
-							"Condition": {
-								"ForAnyValue:StringLike": {
-									"cognito-identity.amazonaws.com:amr": "unauthenticated"
-								}
-							}
+							"Action": "sts:AssumeRoleWithWebIdentity"
 						}
 					]
 				}
 			}
 		},
-		"hostingS3AndCloudFront": {
+		"authmeetupsoftball810f14c9": {
 			"Type": "AWS::CloudFormation::Stack",
 			"Properties": {
-				"TemplateURL": "https://s3.amazonaws.com/meetupsoftball-20190217175319-deployment/amplify-cfn-templates/hosting/template.json",
-				"Parameters": {}
-			}
-		},
-		"authcognitoeadcb98b": {
-			"Type": "AWS::CloudFormation::Stack",
-			"Properties": {
-				"TemplateURL": "https://s3.amazonaws.com/meetupsoftball-20190217175319-deployment/amplify-cfn-templates/auth/cognitoeadcb98b-cloudformation-template.yml",
+				"TemplateURL": "https://s3.amazonaws.com/meetup-softball-master-20190902084613-deployment/amplify-cfn-templates/auth/meetupsoftball810f14c9-cloudformation-template.yml",
 				"Parameters": {
-					"identityPoolName": "cognitoeadcb98b_identitypool_eadcb98b",
+					"identityPoolName": "meetupsoftball810f14c9_identitypool_810f14c9",
 					"allowUnauthenticatedIdentities": false,
-					"thirdPartyAuth": false,
-					"lambdaLogPolicy": "cognitoeadcb98b_lambda_log_policy",
-					"openIdLambdaRoleName": "cognitoeadcb98b_openid_lambda_role",
-					"openIdRolePolicy": "cognitoeadcb98b_openid_pass_role_policy",
-					"openIdLambdaIAMPolicy": "cognitoeadcb98b_openid_lambda_iam_policy",
-					"openIdLogPolicy": "cognitoeadcb98b_openid_lambda_log_policy",
-					"userPoolName": "cognitoeadcb98b_userpool_eadcb98b",
+					"resourceNameTruncated": "meetup810f14c9",
+					"userPoolName": "meetupsoftball810f14c9_userpool_810f14c9",
 					"autoVerifiedAttributes": "email",
 					"mfaConfiguration": "OFF",
 					"mfaTypes": "SMS Text Message",
-					"roleName": "cognitoeadcb98b_sns-role",
-					"roleExternalId": "cognitoeadcb98b_role_external_id",
-					"policyName": "cognitoeadcb98b-sns-policy",
 					"smsAuthenticationMessage": "Your authentication code is {####}",
 					"smsVerificationMessage": "Your verification code is {####}",
 					"emailVerificationSubject": "Your verification code",
 					"emailVerificationMessage": "Your verification code is {####}",
 					"defaultPasswordPolicy": false,
 					"passwordPolicyMinLength": 8,
-					"passwordPolicyCharacters": "Requires Lowercase,Requires Uppercase,Requires Numbers,Requires Symbols",
+					"passwordPolicyCharacters": "",
 					"requiredAttributes": "email",
-					"userpoolClientName": "cognitoeadcb98b_app_client",
 					"userpoolClientGenerateSecret": true,
 					"userpoolClientRefreshTokenValidity": 30,
+					"userpoolClientWriteAttributes": "email",
 					"userpoolClientReadAttributes": "email",
-					"mfaLambdaRole": "cognitoeadcb98b_totp_lambda_role",
-					"mfaLambdaLogPolicy": "cognitoeadcb98b_totp_lambda_log_policy",
-					"mfaPassRolePolicy": "cognitoeadcb98b_totp_pass_role_policy",
-					"mfaLambdaIAMPolicy": "cognitoeadcb98b_totp_lambda_iam_policy",
-					"userpoolClientLambdaRole": "cognitoeadcb98b_userpoolclient_lambda_role",
-					"userpoolClientLogPolicy": "cognitoeadcb98b_userpoolclient_lambda_log_policy",
-					"userpoolClientLambdaPolicy": "cognitoeadcb98b_userpoolclient_lambda_iam_policy",
+					"userpoolClientLambdaRole": "meetup810f14c9_userpoolclient_lambda_role",
 					"userpoolClientSetAttributes": false,
+					"resourceName": "meetupsoftball810f14c9",
+					"authSelections": "identityPoolAndUserPool",
+					"authRoleArn": {
+						"Fn::GetAtt": [
+							"AuthRole",
+							"Arn"
+						]
+					},
+					"unauthRoleArn": {
+						"Fn::GetAtt": [
+							"UnauthRole",
+							"Arn"
+						]
+					},
 					"useDefault": "default",
-					"unAuthRoleName": "meetupsoftball-20190217175319-unauthRole",
-					"authRoleName": "meetupsoftball-20190217175319-authRole",
-					"unAuthRoleArn": "arn:aws:iam::312743227043:role/meetupsoftball-20190217175319-unauthRole",
-					"authRoleArn": "arn:aws:iam::312743227043:role/meetupsoftball-20190217175319-authRole",
-					"resourceName": "cognitoeadcb98b",
-					"authSelections": "identityPoolAndUserPool"
+					"dependsOn": "",
+					"env": "master"
 				}
 			}
 		},
 		"apiSoftballStats": {
 			"Type": "AWS::CloudFormation::Stack",
 			"Properties": {
-				"TemplateURL": "https://s3.amazonaws.com/meetupsoftball-20190217175319-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+				"TemplateURL": "https://s3.amazonaws.com/meetup-softball-master-20190902084613-deployment/amplify-cfn-templates/api/cloudformation-template.json",
 				"Parameters": {
 					"AppSyncApiName": "SoftballStats",
-					"AuthCognitoUserPoolId": {
-						"Fn::GetAtt": [
-							"authcognitoeadcb98b",
-							"Outputs.UserPoolId"
-						]
-					},
-					"schemaGraphql": "s3://meetupsoftball-20190217175319-deployment/amplify-appsync-files/schema.graphql.1554613090597",
-					"ResolverBucket": "meetupsoftball-20190217175319-deployment",
-					"ResolverRootKey": "amplify-appsync-files",
-					"DeploymentTimestamp": "1554613090597",
-					"APIKeyExpirationEpoch": "-1"
+					"DynamoDBBillingMode": "PAY_PER_REQUEST",
+					"DynamoDBEnableServerSideEncryption": "false",
+					"S3DeploymentBucket": "meetup-softball-master-20190902084613-deployment",
+					"S3DeploymentRootKey": "amplify-appsync-files/328cc86eca3c0115b0e83bc714fe2fc928ed0e0f",
+					"env": "master"
 				}
+			}
+		},
+		"hostingS3AndCloudFront": {
+			"Type": "AWS::CloudFormation::Stack",
+			"Properties": {
+				"TemplateURL": "https://s3.amazonaws.com/meetup-softball-master-20190902084613-deployment/amplify-cfn-templates/hosting/template.json",
+				"Parameters": {
+					"bucketName": "meetup-softball-20190902190346-hostingbucket",
+					"env": "master"
+				}
+			}
+		},
+		"UpdateRolesWithIDPFunction": {
+			"DependsOn": [
+				"AuthRole",
+				"UnauthRole",
+				"authmeetupsoftball810f14c9"
+			],
+			"Type": "AWS::Lambda::Function",
+			"Properties": {
+				"Code": {
+					"ZipFile": {
+						"Fn::Join": [
+							"\n",
+							[
+								"const response = require('cfn-response');",
+								"const aws = require('aws-sdk');",
+								"let responseData = {};",
+								"exports.handler = function(event, context) {",
+								"  try {",
+								"    let authRoleName = event.ResourceProperties.authRoleName;",
+								"    let unauthRoleName = event.ResourceProperties.unauthRoleName;",
+								"    let idpId = event.ResourceProperties.idpId;",
+								"    let promises = [];",
+								"    let authParamsJson = { 'Version': '2012-10-17','Statement': [{'Effect': 'Allow','Principal': {'Federated': 'cognito-identity.amazonaws.com'},'Action': 'sts:AssumeRoleWithWebIdentity','Condition': {'StringEquals': {'cognito-identity.amazonaws.com:aud': idpId},'ForAnyValue:StringLike': {'cognito-identity.amazonaws.com:amr': 'authenticated'}}}]};",
+								"    let unauthParamsJson = { 'Version': '2012-10-17','Statement': [{'Effect': 'Allow','Principal': {'Federated': 'cognito-identity.amazonaws.com'},'Action': 'sts:AssumeRoleWithWebIdentity','Condition': {'StringEquals': {'cognito-identity.amazonaws.com:aud': idpId},'ForAnyValue:StringLike': {'cognito-identity.amazonaws.com:amr': 'unauthenticated'}}}]};",
+								"    if (event.RequestType == 'Delete') {",
+								"        delete authParamsJson.Statement.Condition;",
+								"        delete unauthParamsJson.Statement.Condition;",
+								"        let authParams = { PolicyDocument: JSON.stringify(authParamsJson),RoleName: authRoleName};",
+								"        let unauthParams = {PolicyDocument: JSON.stringify(unauthParamsJson),RoleName: unauthRoleName};",
+								"        const iam = new aws.IAM({ apiVersion: '2010-05-08', region: event.ResourceProperties.region});",
+								"        promises.push(iam.updateAssumeRolePolicy(authParams).promise());",
+								"        promises.push(iam.updateAssumeRolePolicy(unauthParams).promise());",
+								"        Promise.all(promises)",
+								"         .then((res) => {",
+								"            console.log(\"delete\" + res);",
+								"            console.log(\"response data\" + JSON.stringify(res));",
+								"            response.send(event, context, response.SUCCESS, res);",
+								"         });",
+								"    }",
+								"    if (event.RequestType == 'Update' || event.RequestType == 'Create') {",
+								"       const iam = new aws.IAM({ apiVersion: '2010-05-08', region: event.ResourceProperties.region});",
+								"        let authParams = { PolicyDocument: JSON.stringify(authParamsJson),RoleName: authRoleName};",
+								"        let unauthParams = {PolicyDocument: JSON.stringify(unauthParamsJson),RoleName: unauthRoleName};",
+								"        promises.push(iam.updateAssumeRolePolicy(authParams).promise());",
+								"        promises.push(iam.updateAssumeRolePolicy(unauthParams).promise());",
+								"        Promise.all(promises)",
+								"         .then((res) => {",
+								"            console.log(\"createORupdate\" + res);",
+								"            console.log(\"response data\" + JSON.stringify(res));",
+								"            response.send(event, context, response.SUCCESS, {});",
+								"         });",
+								"    }",
+								"  } catch(err) {",
+								"       console.log(err.stack);",
+								"       responseData = {Error: err};",
+								"       response.send(event, context, response.FAILED, responseData);",
+								"       throw err;",
+								"  }",
+								"};"
+							]
+						]
+					}
+				},
+				"Handler": "index.handler",
+				"Runtime": "nodejs8.10",
+				"Timeout": "300",
+				"Role": {
+					"Fn::GetAtt": [
+						"UpdateRolesWithIDPFunctionRole",
+						"Arn"
+					]
+				}
+			}
+		},
+		"UpdateRolesWithIDPFunctionOutputs": {
+			"Type": "Custom::LambdaCallout",
+			"Properties": {
+				"ServiceToken": {
+					"Fn::GetAtt": [
+						"UpdateRolesWithIDPFunction",
+						"Arn"
+					]
+				},
+				"region": {
+					"Ref": "AWS::Region"
+				},
+				"idpId": {
+					"Fn::GetAtt": [
+						"authmeetupsoftball810f14c9",
+						"Outputs.IdentityPoolId"
+					]
+				},
+				"authRoleName": {
+					"Ref": "AuthRoleName"
+				},
+				"unauthRoleName": {
+					"Ref": "UnauthRoleName"
+				}
+			}
+		},
+		"UpdateRolesWithIDPFunctionRole": {
+			"Type": "AWS::IAM::Role",
+			"Properties": {
+				"RoleName": {
+					"Fn::Join": [
+						"",
+						[
+							{
+								"Ref": "AuthRoleName"
+							},
+							"-idp"
+						]
+					]
+				},
+				"AssumeRolePolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [
+						{
+							"Effect": "Allow",
+							"Principal": {
+								"Service": [
+									"lambda.amazonaws.com"
+								]
+							},
+							"Action": [
+								"sts:AssumeRole"
+							]
+						}
+					]
+				},
+				"Policies": [
+					{
+						"PolicyName": "UpdateRolesWithIDPFunctionPolicy",
+						"PolicyDocument": {
+							"Version": "2012-10-17",
+							"Statement": [
+								{
+									"Effect": "Allow",
+									"Action": [
+										"logs:CreateLogGroup",
+										"logs:CreateLogStream",
+										"logs:PutLogEvents"
+									],
+									"Resource": "arn:aws:logs:*:*:*"
+								},
+								{
+									"Effect": "Allow",
+									"Action": "iam:UpdateAssumeRolePolicy",
+									"Resource": {
+										"Fn::GetAtt": [
+											"AuthRole",
+											"Arn"
+										]
+									}
+								},
+								{
+									"Effect": "Allow",
+									"Action": "iam:UpdateAssumeRolePolicy",
+									"Resource": {
+										"Fn::GetAtt": [
+											"UnauthRole",
+											"Arn"
+										]
+									}
+								}
+							]
+						}
+					}
+				]
 			}
 		}
 	},
