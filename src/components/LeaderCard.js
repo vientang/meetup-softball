@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import PlayerAvatar from './PlayerAvatar';
 import componentStyles from './components.module.css';
+import TopPlayer from './TopPlayer';
 
 const LeaderCard = ({ leaders, stat }) => (
     <ul className={componentStyles.leaderCard}>
@@ -11,7 +11,7 @@ const LeaderCard = ({ leaders, stat }) => (
         {leaders.map((player, i) => (
             <li key={player.name} className={componentStyles.leaderCardItem}>
                 {i === 0 ? (
-                    <TopPlayer player={player} stat={stat} />
+                    <TopPlayer meetupId={player.id} stat={stat} />
                 ) : (
                     <div className={componentStyles.leaderCardItemPlayerInfo}>
                         <span>{player.name}</span>
@@ -22,23 +22,6 @@ const LeaderCard = ({ leaders, stat }) => (
         ))}
     </ul>
 );
-
-/* eslint-disable react/prop-types */
-const TopPlayer = ({ player, stat }) => {
-    return (
-        <>
-            <PlayerAvatar
-                image={player.photo.highres_link}
-                name={player.name}
-                style={{ width: '100%', height: 300 }}
-            />
-            <div className={componentStyles.leaderCardItemTopPlayerInfo}>
-                <span>{player.name}</span>
-                <span className={componentStyles.leaderCardStat}>{player[stat]}</span>
-            </div>
-        </>
-    );
-};
 
 LeaderCard.propTypes = {
     leaders: PropTypes.arrayOf(PropTypes.object),

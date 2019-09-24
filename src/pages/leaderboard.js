@@ -14,7 +14,8 @@ const LeaderBoard = () => {
     useEffect(() => {
         const fetchStats = async () => {
             const summarizedStats = await fetchSummarizedStats('_2018');
-            setLeaders(createLeaderBoard(summarizedStats));
+            const leaders = createLeaderBoard(JSON.parse(summarizedStats));
+            setLeaders(leaders);
         };
         fetchStats();
     }, []);
@@ -48,11 +49,12 @@ function createLeaderBoard(summarizedStats = []) {
 
 function getLeaders(summarizedStats = [], stat) {
     let leaders = [];
+
     summarizedStats.forEach((player) => {
         const playerToInsert = {
             name: player.name,
+            id: player.id,
             [stat]: player[stat],
-            photo: player.photos,
             gp: player.gp,
         };
         // build leaders with first 5 players
