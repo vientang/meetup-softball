@@ -18,7 +18,7 @@ import {
 import { createGame } from './helpers';
 
 export async function fetchPlayerStats(id) {
-    const existingPlayer = await API.graphql(graphqlOperation(getPlayerStats, { id }));    
+    const existingPlayer = await API.graphql(graphqlOperation(getPlayerStats, { id }));
     return get(existingPlayer, 'data.getPlayerStats', null);
 }
 

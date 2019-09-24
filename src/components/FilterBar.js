@@ -7,18 +7,18 @@ import componentStyles from './components.module.css';
 
 const years = ['2019', '2018', '2017', '2016', '2015', '2014', '2013'];
 const months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
+    ['January', '01'],
+    ['February', '02'],
+    ['March', '03'],
+    ['April', '04'],
+    ['May', '05'],
+    ['June', '06'],
+    ['July', '07'],
+    ['August', '08'],
+    ['September', '09'],
+    ['October', '10'],
+    ['November', '11'],
+    ['December', '12'],
 ];
 const fields = ['West Sunset', 'Parkside', 'Westlake'];
 const battingPositions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -113,9 +113,11 @@ function createMenu(menus, onFilterChange) {
             </Menu.Item>
             <Menu.Divider />
             {menus.map((menuItem) => {
+                const label = Array.isArray(menuItem) ? menuItem[0] : menuItem;
+                const key = Array.isArray(menuItem) ? menuItem[1] : menuItem;
                 return (
-                    <Menu.Item key={menuItem} className={componentStyles.filterMenuItem}>
-                        <span className={componentStyles.filterMenuItemLabel}>{menuItem}</span>
+                    <Menu.Item key={key} className={componentStyles.filterMenuItem}>
+                        <span className={componentStyles.filterMenuItemLabel}>{label}</span>
                     </Menu.Item>
                 );
             })}

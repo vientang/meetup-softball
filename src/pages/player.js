@@ -99,10 +99,7 @@ class Player extends React.Component {
         const { filters, statsByField, statsByYear, games, player } = this.state;
 
         return (
-            <Layout
-                className={pageStyles.pageLayout}
-                filterBar={<FilterBar filters={filters} />}
-            >
+            <Layout className={pageStyles.pageLayout} filterBar={<FilterBar filters={filters} />}>
                 <PlayerInfo meetupId={player.id} />
                 <CareerStats statsByField={statsByField} statsByYear={statsByYear} />
                 <GameLog stats={games} />

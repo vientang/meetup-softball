@@ -33,13 +33,17 @@ class Stats extends React.Component {
 
     async componentDidMount() {
         this.mounted = true;
-        const stats = await fetchSummarizedStats('_2018');
+        const { field, month, year } = this.state.filters;
+        const summarizedId = getIdFromFilterParams({ field, month, year });
+        const stats = await fetchSummarizedStats(summarizedId);
         this.setState(() => ({ playerStats: JSON.parse(stats) }));
     }
 
     async componentDidUpdate() {
         if (this.mounted && !this.state.playerStats.length) {
-            const stats = await fetchSummarizedStats('_2018');
+            const { field, month, year } = this.state.filters;
+            const summarizedId = getIdFromFilterParams({ field, month, year });
+            const stats = await fetchSummarizedStats(summarizedId);
             this.updateState({ playerStats: JSON.parse(stats) });
         }
     }
@@ -85,6 +89,7 @@ class Stats extends React.Component {
      */
     handleFilterMouseEnter = (e) => {
         const currentFilter = e.target.id;
+
         if (currentFilter && currentFilter !== this.state.currentFilter) {
             this.updateState({ currentFilter });
         }
@@ -99,19 +104,28 @@ class Stats extends React.Component {
             ...filters,
             [currentFilter]: params.key === 'all' ? '' : params.key,
         };
+
         if (!isEqual(filters, updatedFilters)) {
             const { field, month, year } = updatedFilters;
             const summarizedStatsId = getIdFromFilterParams({ field, month, year });
             const filteredStats = await fetchSummarizedStats(summarizedStatsId);
+
             this.updateState({
                 filters: updatedFilters,
-                playerStats: filteredStats,
+                playerStats: JSON.parse(filteredStats),
             });
         }
     };
 
-    handleResetFilters = () => {
-        this.updateState({ filters: { ...defaultFilters } });
+    handleResetFilters = async () => {
+        const filters = { ...defaultFilters };
+        const { field, month, year } = filters;
+        const summarizedId = getIdFromFilterParams({ field, month, year });
+        const stats = await fetchSummarizedStats(summarizedId);
+        this.updateState({
+            playerStats: JSON.parse(stats),
+            filters,
+        });
     };
 
     render() {
@@ -137,9 +151,9 @@ class Stats extends React.Component {
                 className={pageStyles.pageLayout}
                 filterBar={
                     <FilterBar
-                        filters={filters}                        
+                        filters={filters}
                         onFilterChange={this.handleFilterChange}
-                        onMouseEnter={this.handleMouseEnter}
+                        onMouseEnter={this.handleFilterMouseEnter}
                         onResetFilters={this.handleResetFilters}
                     />
                 }
