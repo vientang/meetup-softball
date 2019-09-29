@@ -5,11 +5,6 @@ import { StaticQuery, graphql } from 'gatsby';
 import Header from './Header';
 import Footer from './Footer';
 
-// Layout.js is the entry point for stylesheets
-import 'antd/dist/antd.css';
-import '../styles/index.css';
-import '../styles/overrides.css';
-
 const Layout = ({ className, children, filterBar, style, uri }) => (
     <StaticQuery
         query={graphql`

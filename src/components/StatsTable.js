@@ -5,7 +5,6 @@ import ErrorBoundary from './ErrorBoundary';
 import StatsLegend from './StatsLegend';
 import { defaultStatCategories } from '../utils/constants';
 import componentStyles from './components.module.css';
-import 'react-table/react-table.css';
 
 const StatsTable = (props) => {
     const {

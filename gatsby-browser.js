@@ -3,5 +3,7 @@
  *
  * See: https://www.gatsbyjs.org/docs/browser-apis/
  */
-
-// You can delete this file if you're not using it
+import 'react-table/react-table.css';
+import 'antd/dist/antd.css';
+import './src/styles/index.css';
+import './src/styles/overrides.css';
