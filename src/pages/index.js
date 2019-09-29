@@ -11,8 +11,12 @@ import 'typeface-shrikhand';
 Amplify.configure(configuration);
 
 const layoutStyle = {
+    position: 'static',
     margin: '0 auto',
     maxWidth: 1170,
+    minHeight: 0,
+    minWidth: 0,
+    background: 'transparent',
     padding: '1.45rem 1.0875rem',
 };
 

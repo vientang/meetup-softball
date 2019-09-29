@@ -10,6 +10,20 @@ import componentStyles from './components.module.css';
 
 const loadingText = 'Loading ...';
 
+// eslint-disable-next-line react/prop-types
+const ActionBar = ({ className, disabled, filterBarOptions, uri }) => {
+    if (uri === '/') {
+        return null;
+    }
+
+    return (
+        <div className={`${componentStyles.filterRow} ${className}`}>
+            <FilterBar {...filterBarOptions} disabled={disabled} />
+            <SearchBar disabled={disabled} />
+        </div>
+    );
+};
+
 const Layout = ({ className, children, filterBarOptions, loading, style, uri }) => (
     <StaticQuery
         query={graphql`
@@ -22,6 +36,7 @@ const Layout = ({ className, children, filterBarOptions, loading, style, uri }) 
             }
         `}
         render={(data) => {
+            const disabled = filterBarOptions ? filterBarOptions.disabled : false;
             return (
                 <>
                     <Helmet
@@ -40,10 +55,12 @@ const Layout = ({ className, children, filterBarOptions, loading, style, uri }) 
                         <html lang="en" />
                     </Helmet>
                     <Header siteTitle={data.site.siteMetadata.title} uri={uri} />
-                    <div className={`${componentStyles.filterRow} ${className}`}>
-                        <FilterBar {...filterBarOptions} />
-                        <SearchBar disabled={filterBarOptions.disabled} />
-                    </div>
+                    <ActionBar
+                        disabled={disabled}
+                        className={className}
+                        filterBarOptions={filterBarOptions}
+                        uri={uri}
+                    />
                     <main className={componentStyles.pageLayout} style={style}>
                         {loading ? loadingText : children}
                     </main>
@@ -59,7 +76,6 @@ Layout.propTypes = {
     className: PropTypes.string,
     children: PropTypes.node.isRequired,
     filterBarOptions: PropTypes.shape(),
-    filterBar: PropTypes.node,
     loading: PropTypes.bool,
     style: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
     uri: PropTypes.string,
