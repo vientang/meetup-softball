@@ -15,21 +15,32 @@ import {
     createSummarizedStats,
     updatePlayerStats,
 } from '../graphql/mutations';
-import { createGame } from './helpers';
+import { createGame, parsePhotosAndProfile } from './helpers';
 
 export async function fetchPlayerStats(id) {
-    const existingPlayer = await API.graphql(graphqlOperation(getPlayerStats, { id }));
-    return get(existingPlayer, 'data.getPlayerStats', null);
+    let existingPlayer = await API.graphql(graphqlOperation(getPlayerStats, { id }));
+    existingPlayer = get(existingPlayer, 'data.getPlayerStats', null);
+    if (existingPlayer) {
+        existingPlayer.games = JSON.parse(existingPlayer.games);
+    }
+    return existingPlayer;
 }
 
 export async function fetchPlayerInfo(id) {
-    const existingPlayer = await API.graphql(graphqlOperation(getPlayers, { id }));
-    return get(existingPlayer, 'data.getPlayers', null);
+    let existingPlayer = await API.graphql(graphqlOperation(getPlayers, { id }));
+    existingPlayer = get(existingPlayer, 'data.getPlayers', null);
+    if (existingPlayer) {
+        const { photos, profile } = parsePhotosAndProfile(existingPlayer);
+        existingPlayer.photos = photos;
+        existingPlayer.profile = profile;
+    }
+    return existingPlayer;
 }
 
 export async function fetchSummarizedStats(id) {
-    const summarizedStats = await API.graphql(graphqlOperation(getSummarizedStats, { id }));
-    return get(summarizedStats, 'data.getSummarizedStats.stats', null);
+    let summarizedStats = await API.graphql(graphqlOperation(getSummarizedStats, { id }));
+    summarizedStats = get(summarizedStats, 'data.getSummarizedStats.stats', null);
+    return summarizedStats && JSON.parse(summarizedStats);
 }
 
 export async function updateExistingPlayer(input) {

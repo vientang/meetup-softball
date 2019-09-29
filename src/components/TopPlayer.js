@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { fetchPlayerInfo } from '../utils/apiService';
-import { parsePhotosAndProfile } from '../utils/helpers';
 import PlayerAvatar from './PlayerAvatar';
 import componentStyles from './components.module.css';
 
@@ -21,17 +20,17 @@ const TopPlayer = ({ meetupId, stat }) => {
         return null;
     }
 
-    const { photos } = parsePhotosAndProfile(playerInfo);
+    const { name, photos } = playerInfo;
 
     return (
         <>
             <PlayerAvatar
                 image={photos.highres_link}
-                name={playerInfo.name}
+                name={name}
                 style={{ width: '100%', height: 300 }}
             />
             <div className={componentStyles.leaderCardItemTopPlayerInfo}>
-                <span>{playerInfo.name}</span>
+                <span>{name}</span>
                 <span className={componentStyles.leaderCardStat}>{stat}</span>
             </div>
         </>

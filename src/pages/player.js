@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { CareerStats, FilterBar, GameLog, Layout, PlayerInfo } from '../components';
+import { CareerStats, GameLog, Layout, PlayerInfo } from '../components';
 import { fetchPlayerStats } from '../utils/apiService';
 import { calculateTotals } from '../utils/statsCalc';
-import pageStyles from './pages.module.css';
 
 const defaultFilters = {
     year: '2018',
@@ -69,9 +68,7 @@ class Player extends React.Component {
 
     calculateCareerStats = (games) => {
         const careerStats = {};
-        const parsedGames = typeof games === 'string' ? JSON.parse(games) : games;
-
-        parsedGames.forEach((game) => {
+        games.forEach((game) => {
             if (careerStats[game.year]) {
                 careerStats[game.year] = calculateTotals(careerStats[game.year], game);
             } else {
@@ -84,8 +81,7 @@ class Player extends React.Component {
 
     calculateFieldStats = (games) => {
         const fieldStats = {};
-        const parsedGames = typeof games === 'string' ? JSON.parse(games) : games;
-        parsedGames.forEach((game) => {
+        games.forEach((game) => {
             if (fieldStats[game.field]) {
                 fieldStats[game.field] = calculateTotals(fieldStats[game.field], game);
             } else {
@@ -120,14 +116,9 @@ class Player extends React.Component {
  * @param {Object} filters
  * @param {Array} games
  */
-function filterGameStats(filters = {}, games) {
-    let parsedGames = games || [];
-    if (typeof games === 'string') {
-        parsedGames = JSON.parse(games);
-    }
-
+function filterGameStats(filters = {}, games = []) {
     // TODO: cache return value to avoid unnecessary filter operations
-    return parsedGames
+    return games
         .filter(
             (game) =>
                 game.year === filters.year ||

@@ -14,7 +14,7 @@ const LeaderBoard = () => {
     useEffect(() => {
         const fetchStats = async () => {
             const summarizedStats = await fetchSummarizedStats('_2018');
-            const leaders = createLeaderBoard(JSON.parse(summarizedStats));
+            const leaders = createLeaderBoard(summarizedStats);
             setLeaders(leaders);
         };
         fetchStats();

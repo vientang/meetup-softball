@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Avatar } from 'antd';
 import componentStyles from './components.module.css';
 import { fetchPlayerInfo } from '../utils/apiService';
-import { parsePhotosAndProfile } from '../utils/helpers';
 
 const PlayerInfo = ({ meetupId }) => {
     const [playerInfo, setPlayerInfo] = useState(null);
@@ -21,11 +20,11 @@ const PlayerInfo = ({ meetupId }) => {
         return <div className={componentStyles.playerInfoCard} />;
     }
 
-    const { photos, profile } = parsePhotosAndProfile(playerInfo);
+    const { photos, profile } = playerInfo;
     const { answers = [], title } = profile;
     const { highres_link, photo_link, thumb_link } = photos;
     const playerImg = highres_link || photo_link || thumb_link;
-    
+
     const image = playerImg ? (
         <img src={playerImg} className={componentStyles.playerInfoPhoto} alt={playerInfo.name} />
     ) : (

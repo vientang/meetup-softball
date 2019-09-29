@@ -35,7 +35,7 @@ class Stats extends React.Component {
         const { field, month, year } = this.state.filters;
         const summarizedId = getIdFromFilterParams({ field, month, year });
         const stats = await fetchSummarizedStats(summarizedId);
-        this.setState(() => ({ playerStats: JSON.parse(stats) }));
+        this.setState(() => ({ playerStats: stats }));
     }
 
     async componentDidUpdate() {
@@ -43,7 +43,7 @@ class Stats extends React.Component {
             const { field, month, year } = this.state.filters;
             const summarizedId = getIdFromFilterParams({ field, month, year });
             const stats = await fetchSummarizedStats(summarizedId);
-            this.updateState({ playerStats: JSON.parse(stats) });
+            this.updateState({ playerStats: stats });
         }
     }
 
@@ -111,7 +111,7 @@ class Stats extends React.Component {
 
             this.updateState({
                 filters: updatedFilters,
-                playerStats: JSON.parse(filteredStats),
+                playerStats: filteredStats,
             });
         }
     };
@@ -122,7 +122,7 @@ class Stats extends React.Component {
         const summarizedId = getIdFromFilterParams({ field, month, year });
         const stats = await fetchSummarizedStats(summarizedId);
         this.updateState({
-            playerStats: JSON.parse(stats),
+            playerStats: stats,
             filters,
         });
     };
