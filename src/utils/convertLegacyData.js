@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
-import { getPlayerDataFromMeetup } from './apiService';
+import { fetchPlayerStats, fetchSummarizedStats, getPlayerDataFromMeetup } from './apiService';
 import { calculateTotals, getHits, getOuts } from './statsCalc';
 import {
     convertStringStatsToNumbers,
@@ -14,6 +14,7 @@ const legacyGameList = new Map();
 const legacySummarizedStats = new Map();
 const gameIds = new Map();
 const currentGameData = new Map();
+const CURRENT_GAME_SIZE = 513;
 
 /**
  * Convert legacy data structure to adapt to PlayerStats schema
@@ -23,7 +24,7 @@ const currentGameData = new Map();
 export async function convertLegacyPlayerData(data) {
     for (const datum of data) {
         const legacyPlayerId = `${datum.id}`;
-        const legacyStats = legacyPlayerStats.get(legacyPlayerId);
+        const legacyStats = await getLegacyPlayerStats(legacyPlayerId);
 
         // format game data and calculate stats
         const gameData = buildGameData(datum);
@@ -143,8 +144,8 @@ export function buildSummarizedStats(games) {
 }
 
 function updateSummarizedStats(game, filter) {
-    if (legacySummarizedStats.has(filter)) {
-        const existingPlayers = legacySummarizedStats.get(filter);
+    const existingPlayers = getLegacySummarizedStats(filter);
+    if (existingPlayers) {
         const currentPlayers = getWinnersAndLosers(game);
         const summarizedStats = mergePlayerStatsForSummary(existingPlayers, currentPlayers);
         legacySummarizedStats.set(filter, summarizedStats);
@@ -243,7 +244,7 @@ export function getGameId(date, time) {
     if (gameIds.has(key)) {
         return gameIds.get(key);
     }
-    const gameId = gameIds.size + 1;
+    const gameId = gameIds.size + CURRENT_GAME_SIZE;
     gameIds.set(key, gameId);
 
     return gameId;
@@ -316,6 +317,22 @@ function getGender(gender) {
         return 'n/a';
     }
     return gender === 1 ? 'm' : 'f';
+}
+
+async function getLegacyPlayerStats(playerId) {
+    let legacyStats = await fetchPlayerStats(playerId);
+    if (!legacyStats) {
+        legacyStats = legacyPlayerStats.get(playerId);
+    }
+    return legacyStats;
+}
+
+async function getLegacySummarizedStats(filterId) {
+    let legacyStats = await fetchSummarizedStats(filterId);
+    if (!legacyStats) {
+        legacyStats = legacySummarizedStats.get(filterId);
+    }
+    return legacyStats;
 }
 
 /**

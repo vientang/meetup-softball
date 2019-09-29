@@ -14,6 +14,7 @@ import {
     createPlayers,
     createSummarizedStats,
     updatePlayerStats,
+    updateSummarizedStats,
 } from '../graphql/mutations';
 import { createGame, parsePhotosAndProfile } from './helpers';
 
@@ -45,6 +46,10 @@ export async function fetchSummarizedStats(id) {
 
 export async function updateExistingPlayer(input) {
     await API.graphql(graphqlOperation(updatePlayerStats, input));
+}
+
+export async function updateExistingSummarizedStats(input) {
+    await API.graphql(graphqlOperation(updateSummarizedStats, input));
 }
 
 export async function createNewPlayerStats(input) {
