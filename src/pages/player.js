@@ -98,8 +98,14 @@ class Player extends React.Component {
     render() {
         const { filters, statsByField, statsByYear, games, player } = this.state;
 
+        const dataLoaded = player && statsByField.length && statsByYear.length && games.length;
+        const filterBarOptions = {
+            disabled: true,
+            filters,
+        };
+
         return (
-            <Layout className={pageStyles.pageLayout} filterBar={<FilterBar filters={filters} />}>
+            <Layout filterBarOptions={filterBarOptions} loading={!dataLoaded}>
                 <PlayerInfo meetupId={player.id} />
                 <CareerStats statsByField={statsByField} statsByYear={statsByYear} />
                 <GameLog stats={games} />

@@ -32,7 +32,7 @@ const TopPlayer = ({ meetupId, stat }) => {
             />
             <div className={componentStyles.leaderCardItemTopPlayerInfo}>
                 <span>{playerInfo.name}</span>
-                <span className={componentStyles.leaderCardStat}>{playerInfo[stat]}</span>
+                <span className={componentStyles.leaderCardStat}>{stat}</span>
             </div>
         </>
     );
@@ -40,7 +40,7 @@ const TopPlayer = ({ meetupId, stat }) => {
 
 TopPlayer.propTypes = {
     meetupId: PropTypes.string,
-    stat: PropTypes.string,
+    stat: PropTypes.number,
 };
 
 export default TopPlayer;

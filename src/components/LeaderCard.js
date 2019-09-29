@@ -11,7 +11,7 @@ const LeaderCard = ({ leaders, stat }) => (
         {leaders.map((player, i) => (
             <li key={player.name} className={componentStyles.leaderCardItem}>
                 {i === 0 ? (
-                    <TopPlayer meetupId={player.id} stat={stat} />
+                    <TopPlayer meetupId={player.id} stat={player[stat]} />
                 ) : (
                     <div className={componentStyles.leaderCardItemPlayerInfo}>
                         <span>{player.name}</span>

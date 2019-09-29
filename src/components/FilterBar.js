@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import cn from 'classnames';
 import { Dropdown, Menu, Icon } from 'antd';
-import SearchBar from './SearchBar';
 import componentStyles from './components.module.css';
 
 const years = ['2019', '2018', '2017', '2016', '2015', '2014', '2013'];
@@ -33,12 +32,9 @@ const FilterBar = (props) => {
     const { disabled, onResetFilters } = props;
 
     return (
-        <div className={componentStyles.filterRow}>
-            <div className={componentStyles.filterRowSection}>
-                <FilterTypes {...props} />
-                <ResetFilters onClick={onResetFilters} disabled={disabled} />
-            </div>
-            <SearchBar disabled={disabled} />
+        <div className={componentStyles.filterRowSection}>
+            <FilterTypes {...props} />
+            <ResetFilters onClick={onResetFilters} disabled={disabled} />
         </div>
     );
 };

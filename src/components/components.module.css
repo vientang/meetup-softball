@@ -6,6 +6,7 @@
         format('woff2');
 }
 
+.admin-section,
 .box-score,
 .box-score-group,
 .box-score-heading,
@@ -21,18 +22,18 @@
 .leader-card-item-player-info,
 .leader-stat-title,
 .nav-links,
-.admin-section,
+.page-layout,
+.player-info-card,
+.player-info-card-group,
+.player-info-card-questions-group,
+.player-info-card-questions-list,
+.player-info-card-bio,
 .team-transfer-box-count,
 .team-transfer-list,
 .team-transfer-header,
 .team-transfer-operations,
 .team-transfer-sort-operations,
-.team-transfer-title,
-.player-info-card,
-.player-info-card-group,
-.player-info-card-questions-group,
-.player-info-card-questions-list,
-.player-info-card-bio {
+.team-transfer-title {
     display: flex;
     box-sizing: border-box;
 }
@@ -118,6 +119,16 @@
     position: relative;
     margin-left: auto;
     line-height: normal;
+}
+
+.page-layout {
+    position: relative;
+    flex-direction: column;
+    min-height: 900px;
+    min-width: 1225px;
+    padding: 3rem;
+    background: linear-gradient(#f5f5f5, #e2ebf0);
+    overflow: hidden;
 }
 /**********************/
 

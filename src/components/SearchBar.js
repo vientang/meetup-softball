@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Link, navigate } from 'gatsby';
 import { Icon, Input, AutoComplete } from 'antd';
@@ -7,100 +7,70 @@ import componentStyles from './components.module.css';
 
 const { Option } = AutoComplete;
 
-class SearchBar extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            players: [],
-            searchList: [],
-            value: '',
-        };
-    }
+const SearchBar = ({ disabled }) => {
+    const [players, setPlayers] = useState([]);
+    const [searchList, setSearchList] = useState([]);
+    const [value, setValue] = useState('');
 
-    componentDidMount = async () => {
-        const { disabled } = this.props;
-        this.mounted = true;
-
-        if (!disabled) {
-            const allPlayers = await fetchAllPlayers({ limit: 500 });
-            
-            if (allPlayers && allPlayers.length > 0 && this.mounted) {
-                const playersAsOptions = renderOptions(allPlayers);
-                this.setState(() => ({
-                    players: playersAsOptions,
-                    searchList: playersAsOptions,
-                }));
-            }
-        }
-
-        clearAllPlayers();
-    };
-
-    componentDidUpdate = async () => {
-        const { disabled } = this.props;
-        const { searchList, players, value } = this.state;
-        this.mounted = true;
+    useEffect(() => {
+        let mounted = true;
         if (!disabled && !searchList.length && !players.length) {
-            const allPlayers = await fetchAllPlayers({ limit: 500 });
-            
-            if (allPlayers && allPlayers.length > 0 && this.mounted) {
-                const playersAsOptions = renderOptions(allPlayers);                
-                this.setState(() => ({
-                    players: playersAsOptions,
-                    searchList: playersAsOptions,
-                }));
-            }
+            const getAllPlayers = async () => {
+                const allPlayers = await fetchAllPlayers({ limit: 500 });
+                if (allPlayers && allPlayers.length > 0 && mounted) {
+                    const playersAsOptions = renderOptions(allPlayers);
+                    setPlayers(playersAsOptions);
+                    setSearchList(playersAsOptions);
+                }
+            };
+            getAllPlayers();
         }
-
         clearAllPlayers();
-    }
 
-    componentWillUnmount() {
-        this.mounted = false;
-    }
+        return () => {
+            if (mounted) {
+                mounted = false;
+            }
+        };
+    }, [disabled, searchList, players]);
 
-    handleSearch = (value) => {
-        this.setState((prevState) => ({ searchList: filterOptions(prevState.players, value) }));
+    const handleSearch = (value) => {
+        setSearchList(filterOptions(players, value));
     };
 
-    handleSelect = (value, instance) => {
+    const handleSelect = (value, instance) => {
         navigate(`/player?/id=${instance.key}`);
-        this.setState(() => ({ value: instance.props.name }));
+        setValue(instance.props.name);
     };
 
-    handleChange = (value) => {
-        this.setState(() => ({ value }));
+    const handleChange = (value) => {
+        setValue(value);
     };
 
-    render() {
-        const { disabled } = this.props;
-        const { searchList, value } = this.state;
+    const dropdownStyle = { width: 200, fontSize: 12 };
+    const autoCompleteStyle = { width: 150, fontSize: 12 };
 
-        const dropdownStyle = { width: 200, fontSize: 12 };
-        const autoCompleteStyle = { width: 150, fontSize: 12 };
-
-        return (
-            <div className={componentStyles.searchBarContainer}>
-                <AutoComplete
-                    dataSource={searchList}
-                    disabled={disabled}
-                    dropdownMatchSelectWidth={false}
-                    dropdownStyle={dropdownStyle}
-                    onChange={this.handleChange}
-                    onSelect={this.handleSelect}
-                    onSearch={this.handleSearch}
-                    optionLabelProp="name"
-                    placeholder="Search for player"
-                    size="small"
-                    style={autoCompleteStyle}
-                    value={value}
-                >
-                    <Input suffix={<Icon type="search" />} />
-                </AutoComplete>
-            </div>
-        );
-    }
-}
+    return (
+        <div className={componentStyles.searchBarContainer}>
+            <AutoComplete
+                dataSource={searchList}
+                disabled={disabled}
+                dropdownMatchSelectWidth={false}
+                dropdownStyle={dropdownStyle}
+                onChange={handleChange}
+                onSelect={handleSelect}
+                onSearch={handleSearch}
+                optionLabelProp="name"
+                placeholder="Search for player"
+                size="small"
+                style={autoCompleteStyle}
+                value={value}
+            >
+                <Input suffix={<Icon type="search" />} />
+            </AutoComplete>
+        </div>
+    );
+};
 
 function filterOptions(players, value) {
     return players

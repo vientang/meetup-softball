@@ -1,9 +1,8 @@
 import React from 'react';
 import get from 'lodash/get';
 import { Link } from 'gatsby';
-import { Skeleton } from 'antd';
 import isEqual from 'lodash/isEqual';
-import { FilterBar, Layout, PlayerAvatar, StatsTable } from '../components';
+import { Layout, PlayerAvatar, StatsTable } from '../components';
 import {
     getDefaultSortedColumn,
     getIdFromFilterParams,
@@ -131,33 +130,20 @@ class Stats extends React.Component {
     render() {
         const { filters, playerStats, sortedColumn } = this.state;
 
-        if (playerStats.length === 0) {
-            return (
-                <Layout
-                    className={pageStyles.pageLayout}
-                    filterBar={<FilterBar filters={filters} disabled />}
-                >
-                    <Skeleton active paragraph={{ rows: 20, width: '1170px' }} title={false} />
-                </Layout>
-            );
-        }
-
         const statsTableStyle = {
             height: 800,
         };
 
+        const filterBarOptions = {
+            disabled: playerStats.length === 0,
+            onFilterChange: this.onFilterChange,
+            onMouseEnter: this.onMouseEnter,
+            onResetFilters: this.handleResetFilters,
+            filters,
+        };
+
         return (
-            <Layout
-                className={pageStyles.pageLayout}
-                filterBar={
-                    <FilterBar
-                        filters={filters}
-                        onFilterChange={this.handleFilterChange}
-                        onMouseEnter={this.handleFilterMouseEnter}
-                        onResetFilters={this.handleResetFilters}
-                    />
-                }
-            >
+            <Layout filterBarOptions={filterBarOptions} loading={playerStats.length === 0}>
                 <StatsTable
                     categories={statPageCategories}
                     cellRenderer={this.renderCell}

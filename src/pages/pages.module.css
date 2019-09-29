@@ -47,24 +47,24 @@
     }
 }
 
-.page-layout,
+/* .page-layout, */
 .stats-page,
 .loading-text-container {
     display: flex;
     box-sizing: border-box;
 }
 
-.page-layout,
+/* .page-layout, */
 .stats-page {
     flex-direction: column;
 }
 
-.page-layout {
+/* .page-layout {
     position: relative;
     min-width: 1225px;
     padding: 3rem;
     background: linear-gradient(#f5f5f5, #e2ebf0);
-}
+} */
 
 .stats-page {
     max-width: 100%;
