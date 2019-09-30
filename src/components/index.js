@@ -12,6 +12,7 @@ import NotFoundImage from './NotFoundImage';
 import GameLog from './GameLog';
 import PlayerAvatar from './PlayerAvatar';
 import PlayerInfo from './PlayerInfo';
+import SearchBar from './SearchBar';
 import SplitStats from './SplitStats';
 import SortTeams from './SortTeams';
 import StatsTable from './StatsTable';
@@ -32,6 +33,7 @@ export {
     NotFoundImage,
     PlayerAvatar,
     PlayerInfo,
+    SearchBar,
     SplitStats,
     SortTeams,
     StatsTable,

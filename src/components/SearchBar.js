@@ -1,38 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link, navigate } from 'gatsby';
 import { Icon, Input, AutoComplete } from 'antd';
-import { fetchAllPlayers, clearAllPlayers } from '../utils/apiService';
 import componentStyles from './components.module.css';
+import { usePlayerInfo } from '../utils/hooks';
 
 const { Option } = AutoComplete;
 
 const SearchBar = ({ disabled }) => {
-    const [players, setPlayers] = useState([]);
-    const [searchList, setSearchList] = useState([]);
     const [value, setValue] = useState('');
-
-    useEffect(() => {
-        let mounted = true;
-        if (!disabled && !searchList.length && !players.length) {
-            const getAllPlayers = async () => {
-                const allPlayers = await fetchAllPlayers({ limit: 500 });
-                if (allPlayers && allPlayers.length > 0 && mounted) {
-                    const playersAsOptions = renderOptions(allPlayers);
-                    setPlayers(playersAsOptions);
-                    setSearchList(playersAsOptions);
-                }
-            };
-            getAllPlayers();
-        }
-        clearAllPlayers();
-
-        return () => {
-            if (mounted) {
-                mounted = false;
-            }
-        };
-    }, [disabled, searchList, players]);
+    const { searchList, setSearchList, players } = usePlayerInfo(disabled);
 
     const handleSearch = (value) => {
         setSearchList(filterOptions(players, value));
@@ -75,29 +52,16 @@ const SearchBar = ({ disabled }) => {
 function filterOptions(players, value) {
     return players
         .filter((player) => {
-            return player.props.name
-                ? player.props.name.toLowerCase().includes(value.toLowerCase())
-                : false;
+            return player.name ? player.name.toLowerCase().includes(value.toLowerCase()) : false;
         })
         .map((player) => {
-            const { id, name } = player.props;
+            const { id, name } = player;
             return (
                 <Option key={id} value={`${name}-${id}`} name={name} id={id}>
                     <Link to={`/player?id=${id}`}>{name}</Link>
                 </Option>
             );
         });
-}
-
-function renderOptions(players) {
-    return players.map((player) => {
-        const { id, name } = player;
-        return (
-            <Option key={id} value={`${name}-${id}`} name={name} id={id}>
-                <Link to={`/player?id=${id}`}>{name}</Link>
-            </Option>
-        );
-    });
 }
 
 /**
