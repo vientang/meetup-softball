@@ -2,16 +2,13 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link, navigate } from 'gatsby';
 import { Icon, Input, AutoComplete } from 'antd';
-import DataContext from '../context/DataContext';
 import componentStyles from './components.module.css';
-import { usePlayerInfo } from '../utils/hooks';
 
 const { Option } = AutoComplete;
 
-const SearchBar = ({ disabled }) => {
+const SearchBar = ({ disabled, players }) => {
     const [value, setValue] = useState('');
     const [filteredSearchList, setFilteredSearchList] = useState(null);
-    const { players } = usePlayerInfo(disabled);
 
     const handleSearch = (value) => {
         setFilteredSearchList(filterOptions(players, value));
@@ -32,30 +29,24 @@ const SearchBar = ({ disabled }) => {
     const searchList = filteredSearchList || renderOptions(players);
 
     return (
-        <DataContext.Consumer>
-            {(context) => {
-                return (
-                    <div className={componentStyles.searchBarContainer}>
-                        <AutoComplete
-                            dataSource={searchList}
-                            disabled={disabled}
-                            dropdownMatchSelectWidth={false}
-                            dropdownStyle={dropdownStyle}
-                            onChange={handleChange}
-                            onSelect={handleSelect}
-                            onSearch={handleSearch}
-                            optionLabelProp="name"
-                            placeholder="Search for player"
-                            size="small"
-                            style={autoCompleteStyle}
-                            value={value}
-                        >
-                            <Input suffix={<Icon type="search" />} />
-                        </AutoComplete>
-                    </div>
-                );
-            }}
-        </DataContext.Consumer>
+        <div className={componentStyles.searchBarContainer}>
+            <AutoComplete
+                dataSource={searchList}
+                disabled={disabled}
+                dropdownMatchSelectWidth={false}
+                dropdownStyle={dropdownStyle}
+                onChange={handleChange}
+                onSelect={handleSelect}
+                onSearch={handleSearch}
+                optionLabelProp="name"
+                placeholder="Search for player"
+                size="small"
+                style={autoCompleteStyle}
+                value={value}
+            >
+                <Input suffix={<Icon type="search" />} />
+            </AutoComplete>
+        </div>
     );
 };
 
@@ -101,10 +92,12 @@ SearchBar.displayName = 'SearchBar';
 /* eslint-disable react/no-unused-prop-types */
 SearchBar.propTypes = {
     disabled: PropTypes.bool,
+    players: PropTypes.arrayOf(PropTypes.shape),
 };
 
 SearchBar.defaultProps = {
     disabled: false,
+    players: [],
 };
 
 export default SearchBar;

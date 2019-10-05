@@ -1,5 +1,6 @@
 import React from 'react';
-import { useSummarizedStats } from '../utils/hooks';
+import PropTypes from 'prop-types';
+import { graphql } from 'gatsby';
 import { Layout, LeaderCard } from '../components';
 import pageStyles from './pages.module.css';
 
@@ -9,17 +10,43 @@ const filters = {
     field: '',
 };
 
-const LeaderBoard = () => {
-    const [summarizedStats] = useSummarizedStats('_2018');
+// graphql aliases https://graphql.org/learn/queries/#aliases
+export const query = graphql`
+    query {
+        softballstats {
+            players: listPlayerss(limit: 500) {
+                items {
+                    id
+                    name
+                    photos
+                }
+            }
+            summarized: getSummarizedStats(id: "_2018") {
+                id
+                stats
+            }
+        }
+    }
+`;
+
+const LeaderBoard = (props) => {
+    const {
+        data: {
+            softballstats: {
+                summarized: { stats },
+                players: { items },
+            },
+        },
+    } = props;
 
     const filterBarOptions = {
         disabled: true,
         filters,
     };
 
-    const leaders = createLeaderBoard(summarizedStats);
+    const leaders = createLeaderBoard(JSON.parse(stats));
     return (
-        <Layout filterBarOptions={filterBarOptions} loading={!leaders}>
+        <Layout filterBarOptions={filterBarOptions} loading={!leaders} players={items}>
             <div className={pageStyles.leaderBoardPage}>
                 {leaders &&
                     Object.keys(leaders).map((stat) => (
@@ -88,4 +115,13 @@ function sortLeaders({ leaders, player, stat }) {
 
     return sortedLeaders;
 }
+
+LeaderBoard.propTypes = {
+    data: PropTypes.shape(),
+};
+
+LeaderBoard.defaultProps = {
+    data: [],
+};
+
 export default LeaderBoard;

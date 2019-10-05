@@ -1,6 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import get from 'lodash/get';
-import { Link } from 'gatsby';
+import { Link, graphql } from 'gatsby';
 import isEqual from 'lodash/isEqual';
 import { Layout, PlayerAvatar, StatsTable } from '../components';
 import {
@@ -19,6 +20,25 @@ const defaultFilters = {
     field: '',
 };
 
+// graphql aliases https://graphql.org/learn/queries/#aliases
+export const query = graphql`
+    query {
+        softballstats {
+            players: listPlayerss(limit: 500) {
+                items {
+                    id
+                    name
+                    photos
+                }
+            }
+            summarized: getSummarizedStats(id: "_2018") {
+                id
+                stats
+            }
+        }
+    }
+`;
+
 class Stats extends React.Component {
     constructor(props) {
         super(props);
@@ -31,32 +51,19 @@ class Stats extends React.Component {
     }
 
     async componentDidMount() {
-        this.mounted = true;
-        const { field, month, year } = this.state.filters;
-        const summarizedId = getIdFromFilterParams({ field, month, year });
-        const stats = await fetchSummarizedStats(summarizedId);
-        this.setState(() => ({ playerStats: stats }));
+        const {
+            data: {
+                softballstats: {
+                    summarized: { stats },
+                },
+            },
+        } = this.props;
+        const summarizedStats = JSON.parse(stats);
+        this.setState(() => ({ playerStats: summarizedStats }));
     }
-
-    async componentDidUpdate() {
-        if (this.mounted && !this.state.playerStats.length) {
-            const { field, month, year } = this.state.filters;
-            const summarizedId = getIdFromFilterParams({ field, month, year });
-            const stats = await fetchSummarizedStats(summarizedId);
-            this.updateState({ playerStats: stats });
-        }
-    }
-
-    componentWillUnmount() {
-        this.mounted = false;
-    }
-
-    updateState = (newState) => {
-        this.setState(() => newState);
-    };
 
     handleColumnSort = (newSorted, column) => {
-        this.updateState({ sortedColumn: column.id });
+        this.setState(() => ({ sortedColumn: column.id }));
     };
 
     renderPlayerCell = (playerStats, cellInfo) => {
@@ -90,7 +97,7 @@ class Stats extends React.Component {
         const currentFilter = e.target.id;
 
         if (currentFilter && currentFilter !== this.state.currentFilter) {
-            this.updateState({ currentFilter });
+            this.setState(() => ({ currentFilter }));
         }
     };
 
@@ -109,10 +116,10 @@ class Stats extends React.Component {
             const summarizedStatsId = getIdFromFilterParams({ field, month, year });
             const filteredStats = await fetchSummarizedStats(summarizedStatsId);
 
-            this.updateState({
+            this.setState(() => ({
                 filters: updatedFilters,
                 playerStats: filteredStats,
-            });
+            }));
         }
     };
 
@@ -121,13 +128,21 @@ class Stats extends React.Component {
         const { field, month, year } = filters;
         const summarizedId = getIdFromFilterParams({ field, month, year });
         const stats = await fetchSummarizedStats(summarizedId);
-        this.updateState({
+        this.setState(() => ({
             playerStats: stats,
             filters,
-        });
+        }));
     };
 
     render() {
+        const {
+            data: {
+                softballstats: {
+                    players: { items },
+                },
+            },
+        } = this.props;
+
         const { filters, playerStats, sortedColumn } = this.state;
 
         const statsTableStyle = {
@@ -136,14 +151,18 @@ class Stats extends React.Component {
 
         const filterBarOptions = {
             disabled: playerStats.length === 0,
-            onFilterChange: this.onFilterChange,
-            onMouseEnter: this.onMouseEnter,
+            onFilterChange: this.handleFilterChange,
+            onMouseEnter: this.handleFilterMouseEnter,
             onResetFilters: this.handleResetFilters,
             filters,
         };
 
         return (
-            <Layout filterBarOptions={filterBarOptions} loading={playerStats.length === 0}>
+            <Layout
+                filterBarOptions={filterBarOptions} 
+                loading={playerStats.length === 0}
+                players={items}
+            >
                 <StatsTable
                     categories={statPageCategories}
                     cellRenderer={this.renderCell}
@@ -166,5 +185,13 @@ function getPlayerMetaData(playerStats, cellInfo) {
     const playerImg = get(playerStats[cellInfo.index], 'photos.thumb_link', '');
     return { playerId, playerName, playerImg };
 }
+
+Stats.propTypes = {
+    data: PropTypes.shape(),
+};
+
+Stats.defaultProps = {
+    data: [],
+};
 
 export default Stats;

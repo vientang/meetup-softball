@@ -1,15 +1,6 @@
-import React from 'react';
-import Amplify from 'aws-amplify';
-import configuration from '../aws-exports';
-import { fetchAllPlayers } from '../utils/apiService';
+import React, { useContext } from 'react';
 
-Amplify.configure(configuration);
+const DataContext = React.createContext();
 
-const getDefaultState = async () => {
-    // const players = await fetchAllPlayers({ limit: 500 });
-    // return { players };
-};
-
-const DataContext = React.createContext(getDefaultState());
-// export const useDataContext = () => useContext(DataContext);
+export const useDataContext = () => useContext(DataContext);
 export default DataContext;

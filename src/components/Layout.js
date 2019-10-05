@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import Helmet from 'react-helmet';
 import { StaticQuery, graphql } from 'gatsby';
 import get from 'lodash/get';
-import DataContext from '../context/DataContext';
 import Header from './Header';
 import Footer from './Footer';
 import FilterBar from './FilterBar';
@@ -23,7 +22,7 @@ const metaData = [
 ];
 
 // eslint-disable-next-line react/prop-types
-const ActionBar = ({ className, disabled, filterBarOptions, uri }) => {
+const ActionBar = ({ className, disabled, filterBarOptions, players, uri }) => {
     if (uri === '/') {
         return null;
     }
@@ -31,12 +30,12 @@ const ActionBar = ({ className, disabled, filterBarOptions, uri }) => {
     return (
         <div className={`${componentStyles.filterRow} ${className}`}>
             <FilterBar {...filterBarOptions} disabled={disabled} />
-            <SearchBar disabled={disabled} />
+            <SearchBar disabled={disabled} players={players} />
         </div>
     );
 };
 
-const Layout = ({ className, children, filterBarOptions, loading, style, uri }) => (
+const Layout = ({ className, children, filterBarOptions, loading, players, style, uri }) => (
     <StaticQuery
         query={graphql`
             query SiteTitleQuery {
@@ -51,30 +50,23 @@ const Layout = ({ className, children, filterBarOptions, loading, style, uri }) 
             const title = get(data, 'site.siteMetadata.title', 'Meetup Softball');
             const disabled = filterBarOptions ? filterBarOptions.disabled : false;
             return (
-                <DataContext.Consumer>
-                    {(value) => {
-                        // const players = value.then((val) => val.players);
-                        // console.log('players', {players, value});
-                        return (
-                            <>
-                                <Helmet title={title} meta={metaData}>
-                                    <html lang="en" />
-                                </Helmet>
-                                <Header siteTitle={title} uri={uri} />
-                                <ActionBar
-                                    disabled={disabled}
-                                    className={className}
-                                    filterBarOptions={filterBarOptions}
-                                    uri={uri}
-                                />
-                                <main className={componentStyles.pageLayout} style={style}>
-                                    {loading ? loadingText : children}
-                                </main>
-                                <Footer siteTitle={title} uri={uri} />
-                            </>
-                        );
-                    }}
-                </DataContext.Consumer>
+                <>
+                    <Helmet title={title} meta={metaData}>
+                        <html lang="en" />
+                    </Helmet>
+                    <Header siteTitle={title} uri={uri} />
+                    <ActionBar
+                        disabled={disabled}
+                        className={className}
+                        filterBarOptions={filterBarOptions}
+                        players={players}
+                        uri={uri}
+                    />
+                    <main className={componentStyles.pageLayout} style={style}>
+                        {loading ? loadingText : children}
+                    </main>
+                    <Footer siteTitle={title} uri={uri} />
+                </>
             );
         }}
     />

@@ -1,3 +1,8 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+require('dotenv').config({
+    path: `.env.${process.env.NODE_ENV}`,
+});
+
 module.exports = {
     siteMetadata: {
         title: 'Meetup Softball',
@@ -25,5 +30,19 @@ module.exports = {
             },
         },
         'gatsby-plugin-offline',
+        {
+            resolve: 'gatsby-source-graphql',
+            options: {
+                // This type will contain the remote schema Query type
+                typeName: 'SoftballStats',
+                // This is the field under which it's accessible
+                fieldName: 'softballstats',
+                // URL to query from
+                url: `${process.env.AWS_APPSYNC_API_URL}`,
+                headers: {
+                    'x-api-key': `${process.env.AWS_APPSYNC_API_KEY}`,
+                },
+            },
+        },
     ],
 };
