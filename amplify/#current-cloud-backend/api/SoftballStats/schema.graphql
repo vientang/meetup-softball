@@ -27,8 +27,6 @@ type PlayerStats @model {
 type Players @model {
     id: ID!
     name: String!
-	  email: String
-    password: String
     joined: String
     profile: AWSJSON
     admin: Boolean
@@ -40,4 +38,14 @@ type Players @model {
 type SummarizedStats @model {
     id: ID!
     stats: AWSJSON
+}
+
+type MetaData @model {
+    id: ID!
+    allFields: AWSJSON
+    allYears: AWSJSON
+    totalGamesPlayed: Int
+    totalPlayersCount: Int
+    recentGames: AWSJSON
+    recentGamesLength: Int
 }

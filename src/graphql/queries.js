@@ -79,8 +79,6 @@ export const getPlayers = `query GetPlayers($id: ID!) {
   getPlayers(id: $id) {
     id
     name
-    email
-    password
     joined
     profile
     admin
@@ -99,8 +97,6 @@ export const listPlayerss = `query ListPlayerss(
     items {
       id
       name
-      email
-      password
       joined
       profile
       admin
@@ -128,6 +124,37 @@ export const listSummarizedStatss = `query ListSummarizedStatss(
     items {
       id
       stats
+    }
+    nextToken
+  }
+}
+`;
+export const getMetaData = `query GetMetaData($id: ID!) {
+  getMetaData(id: $id) {
+    id
+    allFields
+    allYears
+    totalGamesPlayed
+    totalPlayersCount
+    recentGames
+    recentGamesLength
+  }
+}
+`;
+export const listMetaDatas = `query ListMetaDatas(
+  $filter: ModelMetaDataFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listMetaDatas(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      allFields
+      allYears
+      totalGamesPlayed
+      totalPlayersCount
+      recentGames
+      recentGamesLength
     }
     nextToken
   }

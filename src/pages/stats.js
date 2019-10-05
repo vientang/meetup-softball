@@ -191,7 +191,7 @@ Stats.propTypes = {
 };
 
 Stats.defaultProps = {
-    data: [],
+    data: {},
 };
 
 export default Stats;

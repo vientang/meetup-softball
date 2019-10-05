@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import Amplify from 'aws-amplify';
 import { graphql } from 'gatsby';
 import Img from 'gatsby-image';
+import get from 'lodash/get';
 import { BoxScoreGroup, Layout } from '../components';
 import pageStyles from './pages.module.css';
 import configuration from '../aws-exports';
-import 'typeface-shrikhand';
 
 Amplify.configure(configuration);
 
@@ -24,25 +24,25 @@ const imageStyle = {
     position: 'absolute',
 };
 
-const IndexPage = (props) => (
-    <>
-        <Img
-            fluid={props.data.imageOne.childImageSharp.fluid}
-            style={imageStyle}
-            className={pageStyles.homePageImage}
-        />
-        <a
-            href="https://unsplash.com/photos/sMV7U5ybJKs?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-            <p className={pageStyles.photoCredit}>Photo by Christopher Czermak on Unsplash</p>
-        </a>
-        <Layout style={layoutStyle} uri={props.uri}>
-            <BoxScoreGroup />
-        </Layout>
-    </>
-);
+const IndexPage = ({ data, uri }) => {
+    const recentGames = JSON.parse(get(data, 'softballstats.metadata.recentGames', []));
+    const fluidImage = get(data, 'imageOne.childImageSharp.fluid');
+    return (
+        <>
+            <Img fluid={fluidImage} style={imageStyle} className={pageStyles.homePageImage} />
+            <a
+                href="https://unsplash.com/photos/sMV7U5ybJKs?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                <p className={pageStyles.photoCredit}>Photo by Christopher Czermak on Unsplash</p>
+            </a>
+            <Layout style={layoutStyle} uri={uri}>
+                <BoxScoreGroup recentGames={recentGames} />
+            </Layout>
+        </>
+    );
+};
 
 IndexPage.displayName = 'IndexPage';
 IndexPage.propTypes = {
@@ -64,6 +64,12 @@ export const fluidImage = graphql`
 
 export const pageQuery = graphql`
     query {
+        softballstats {
+            metadata: getMetaData(id: "_metadata") {
+                id
+                recentGames
+            }
+        }
         imageOne: file(relativePath: { eq: "softball.jpg" }) {
             ...fluidImage
         }

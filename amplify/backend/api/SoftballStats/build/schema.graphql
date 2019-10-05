@@ -27,8 +27,6 @@ type PlayerStats {
 type Players {
   id: ID!
   name: String!
-  email: String
-  password: String
   joined: String
   profile: AWSJSON
   admin: Boolean
@@ -40,6 +38,16 @@ type Players {
 type SummarizedStats {
   id: ID!
   stats: AWSJSON
+}
+
+type MetaData {
+  id: ID!
+  allFields: AWSJSON
+  allYears: AWSJSON
+  totalGamesPlayed: Int
+  totalPlayersCount: Int
+  recentGames: AWSJSON
+  recentGamesLength: Int
 }
 
 enum ModelSortDirection {
@@ -139,6 +147,8 @@ type Query {
   listPlayerss(filter: ModelPlayersFilterInput, limit: Int, nextToken: String): ModelPlayersConnection
   getSummarizedStats(id: ID!): SummarizedStats
   listSummarizedStatss(filter: ModelSummarizedStatsFilterInput, limit: Int, nextToken: String): ModelSummarizedStatsConnection
+  getMetaData(id: ID!): MetaData
+  listMetaDatas(filter: ModelMetaDataFilterInput, limit: Int, nextToken: String): ModelMetaDataConnection
 }
 
 input CreateGameStatsInput {
@@ -198,6 +208,9 @@ type Mutation {
   createSummarizedStats(input: CreateSummarizedStatsInput!): SummarizedStats
   updateSummarizedStats(input: UpdateSummarizedStatsInput!): SummarizedStats
   deleteSummarizedStats(input: DeleteSummarizedStatsInput!): SummarizedStats
+  createMetaData(input: CreateMetaDataInput!): MetaData
+  updateMetaData(input: UpdateMetaDataInput!): MetaData
+  deleteMetaData(input: DeleteMetaDataInput!): MetaData
 }
 
 type Subscription {
@@ -213,6 +226,9 @@ type Subscription {
   onCreateSummarizedStats: SummarizedStats @aws_subscribe(mutations: ["createSummarizedStats"])
   onUpdateSummarizedStats: SummarizedStats @aws_subscribe(mutations: ["updateSummarizedStats"])
   onDeleteSummarizedStats: SummarizedStats @aws_subscribe(mutations: ["deleteSummarizedStats"])
+  onCreateMetaData: MetaData @aws_subscribe(mutations: ["createMetaData"])
+  onUpdateMetaData: MetaData @aws_subscribe(mutations: ["updateMetaData"])
+  onDeleteMetaData: MetaData @aws_subscribe(mutations: ["deleteMetaData"])
 }
 
 type ModelPlayerStatsConnection {
@@ -253,8 +269,6 @@ type ModelPlayersConnection {
 input ModelPlayersFilterInput {
   id: ModelIDFilterInput
   name: ModelStringFilterInput
-  email: ModelStringFilterInput
-  password: ModelStringFilterInput
   joined: ModelStringFilterInput
   profile: ModelStringFilterInput
   admin: ModelBooleanFilterInput
@@ -269,8 +283,6 @@ input ModelPlayersFilterInput {
 input CreatePlayersInput {
   id: ID
   name: String!
-  email: String
-  password: String
   joined: String
   profile: AWSJSON
   admin: Boolean
@@ -282,8 +294,6 @@ input CreatePlayersInput {
 input UpdatePlayersInput {
   id: ID!
   name: String
-  email: String
-  password: String
   joined: String
   profile: AWSJSON
   admin: Boolean
@@ -320,5 +330,47 @@ input UpdateSummarizedStatsInput {
 }
 
 input DeleteSummarizedStatsInput {
+  id: ID
+}
+
+type ModelMetaDataConnection {
+  items: [MetaData]
+  nextToken: String
+}
+
+input ModelMetaDataFilterInput {
+  id: ModelIDFilterInput
+  allFields: ModelStringFilterInput
+  allYears: ModelStringFilterInput
+  totalGamesPlayed: ModelIntFilterInput
+  totalPlayersCount: ModelIntFilterInput
+  recentGames: ModelStringFilterInput
+  recentGamesLength: ModelIntFilterInput
+  and: [ModelMetaDataFilterInput]
+  or: [ModelMetaDataFilterInput]
+  not: ModelMetaDataFilterInput
+}
+
+input CreateMetaDataInput {
+  id: ID
+  allFields: AWSJSON
+  allYears: AWSJSON
+  totalGamesPlayed: Int
+  totalPlayersCount: Int
+  recentGames: AWSJSON
+  recentGamesLength: Int
+}
+
+input UpdateMetaDataInput {
+  id: ID!
+  allFields: AWSJSON
+  allYears: AWSJSON
+  totalGamesPlayed: Int
+  totalPlayersCount: Int
+  recentGames: AWSJSON
+  recentGamesLength: Int
+}
+
+input DeleteMetaDataInput {
   id: ID
 }

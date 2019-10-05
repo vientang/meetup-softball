@@ -7,3 +7,4 @@ import 'react-table/react-table.css';
 import 'antd/dist/antd.css';
 import './src/styles/index.css';
 import './src/styles/overrides.css';
+import 'typeface-shrikhand';

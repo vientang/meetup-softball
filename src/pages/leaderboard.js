@@ -121,7 +121,7 @@ LeaderBoard.propTypes = {
 };
 
 LeaderBoard.defaultProps = {
-    data: [],
+    data: {},
 };
 
 export default LeaderBoard;

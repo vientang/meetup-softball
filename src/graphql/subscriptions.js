@@ -95,8 +95,6 @@ export const onCreatePlayers = `subscription OnCreatePlayers {
   onCreatePlayers {
     id
     name
-    email
-    password
     joined
     profile
     admin
@@ -110,8 +108,6 @@ export const onUpdatePlayers = `subscription OnUpdatePlayers {
   onUpdatePlayers {
     id
     name
-    email
-    password
     joined
     profile
     admin
@@ -125,8 +121,6 @@ export const onDeletePlayers = `subscription OnDeletePlayers {
   onDeletePlayers {
     id
     name
-    email
-    password
     joined
     profile
     admin
@@ -154,6 +148,42 @@ export const onDeleteSummarizedStats = `subscription OnDeleteSummarizedStats {
   onDeleteSummarizedStats {
     id
     stats
+  }
+}
+`;
+export const onCreateMetaData = `subscription OnCreateMetaData {
+  onCreateMetaData {
+    id
+    allFields
+    allYears
+    totalGamesPlayed
+    totalPlayersCount
+    recentGames
+    recentGamesLength
+  }
+}
+`;
+export const onUpdateMetaData = `subscription OnUpdateMetaData {
+  onUpdateMetaData {
+    id
+    allFields
+    allYears
+    totalGamesPlayed
+    totalPlayersCount
+    recentGames
+    recentGamesLength
+  }
+}
+`;
+export const onDeleteMetaData = `subscription OnDeleteMetaData {
+  onDeleteMetaData {
+    id
+    allFields
+    allYears
+    totalGamesPlayed
+    totalPlayersCount
+    recentGames
+    recentGamesLength
   }
 }
 `;

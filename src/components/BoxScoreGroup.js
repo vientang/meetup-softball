@@ -1,33 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { fetchAllGames } from '../utils/apiService';
-import { sortTimeStamp } from '../utils/helpers';
+import React from 'react';
+import PropTypes from 'prop-types';
 import BoxScore from './BoxScore';
 import JoinUs from './JoinUs';
 import componentStyles from './components.module.css';
 
-const BoxScoreGroup = () => {
-    const [recentGames, setRecentGameData] = useState([]);
-    // useEffect(() => {
-    //     let isMounted = true;
-    //     async function fetchData() {
-    //         let allGames = await fetchAllGames();
-    //         allGames = allGames.sort(sortTimeStamp);
-    //         if (isMounted) {
-    //             setRecentGameData(createBoxScoreData([allGames[1], allGames[0]].filter(Boolean)));
-    //         }
-    //     }
-    //     fetchData();
-    //     return () => (isMounted = false);
-    // }, []);
-
+const BoxScoreGroup = ({ recentGames }) => {
     if (!recentGames.length) {
         return null;
     }
+    const recentGameData = createBoxScoreData(recentGames.slice(0, 2));
 
     return (
         <div className={componentStyles.boxScoreGroup}>
             <JoinUs />
-            {recentGames.map((gameData) => (
+            {recentGameData.map((gameData) => (
                 <BoxScore key={gameData.gameId} gameData={gameData} />
             ))}
         </div>
@@ -53,5 +39,11 @@ function createBoxScoreData(games) {
 }
 
 BoxScoreGroup.displayName = 'BoxScoreGroup';
+BoxScoreGroup.propTypes = {
+    recentGames: PropTypes.arrayOf(PropTypes.shape),
+};
 
+BoxScoreGroup.defaultProps = {
+    recentGames: [],
+};
 export default BoxScoreGroup;

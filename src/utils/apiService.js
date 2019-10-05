@@ -2,6 +2,7 @@ import { API, graphqlOperation } from 'aws-amplify';
 import fetchJsonp from 'fetch-jsonp';
 import get from 'lodash/get';
 import {
+    getMetaData,
     getPlayers,
     getPlayerStats,
     listGameStatss,
@@ -10,14 +11,17 @@ import {
 } from '../graphql/queries';
 import {
     createGameStats,
+    createMetaData,
     createPlayerStats,
     createPlayers,
     createSummarizedStats,
+    updateMetaData,
     updatePlayerStats,
     updateSummarizedStats,
 } from '../graphql/mutations';
 import { createGame, parsePhotosAndProfile } from './helpers';
 
+/** PLAYER STATS */
 export async function fetchPlayerStats(id) {
     let existingPlayer = await API.graphql(graphqlOperation(getPlayerStats, { id }));
     existingPlayer = get(existingPlayer, 'data.getPlayerStats', null);
@@ -27,60 +31,12 @@ export async function fetchPlayerStats(id) {
     return existingPlayer;
 }
 
-export async function fetchPlayerInfo(id) {
-    let existingPlayer = await API.graphql(graphqlOperation(getPlayers, { id }));
-    existingPlayer = get(existingPlayer, 'data.getPlayers', null);
-    if (existingPlayer) {
-        const { photos, profile } = parsePhotosAndProfile(existingPlayer);
-        existingPlayer.photos = photos;
-        existingPlayer.profile = profile;
-    }
-    return existingPlayer;
-}
-
-export async function fetchSummarizedStats(id) {
-    let summarizedStats = await API.graphql(graphqlOperation(getSummarizedStats, { id }));
-    summarizedStats = get(summarizedStats, 'data.getSummarizedStats.stats', null);
-    return summarizedStats && JSON.parse(summarizedStats);
-}
-
-export async function updateExistingPlayer(input) {
-    await API.graphql(graphqlOperation(updatePlayerStats, input));
-}
-
-export async function updateExistingSummarizedStats(input) {
-    await API.graphql(graphqlOperation(updateSummarizedStats, input));
-}
-
 export async function createNewPlayerStats(input) {
     await API.graphql(graphqlOperation(createPlayerStats, input));
 }
 
-export async function submitNewGameStats(input) {
-    await API.graphql(graphqlOperation(createGameStats, input));
-}
-
-export async function submitSerializeSummary(summarized) {
-    for (const [k, v] of summarized) {
-        await API.graphql(
-            graphqlOperation(createSummarizedStats, {
-                input: {
-                    id: k,
-                    stats: JSON.stringify(v),
-                },
-            }),
-        );
-    }
-}
-
-export async function submitPlayerInfo(playerInfo = []) {
-    playerInfo.forEach(async (player) => {
-        await API.graphql(
-            graphqlOperation(createPlayers, {
-                input: player,
-            }),
-        );
-    });
+export async function updateExistingPlayer(input) {
+    await API.graphql(graphqlOperation(updatePlayerStats, input));
 }
 
 /**
@@ -100,15 +56,7 @@ export async function submitPlayerStats(playerStats = []) {
     });
 }
 
-export async function submitGameStats(gameStats) {
-    gameStats.forEach(async (value) => {
-        const game = { ...value };
-        game.winners = JSON.stringify(value.winners);
-        game.losers = JSON.stringify(value.losers);
-        await API.graphql(graphqlOperation(createGameStats, { input: game }));
-    });
-}
-
+/** PLAYER INFO */
 let players = [];
 export function clearAllPlayers() {
     players = [];
@@ -126,6 +74,83 @@ export async function fetchAllPlayers(queryParams = {}) {
     return players;
 }
 
+export async function fetchPlayerInfo(id) {
+    let existingPlayer = await API.graphql(graphqlOperation(getPlayers, { id }));
+    existingPlayer = get(existingPlayer, 'data.getPlayers', null);
+    if (existingPlayer) {
+        const { photos, profile } = parsePhotosAndProfile(existingPlayer);
+        existingPlayer.photos = photos;
+        existingPlayer.profile = profile;
+    }
+    return existingPlayer;
+}
+
+export async function submitPlayerInfo(playerInfo = []) {
+    playerInfo.forEach(async (player) => {
+        await API.graphql(
+            graphqlOperation(createPlayers, {
+                input: player,
+            }),
+        );
+    });
+}
+
+/** SUMMARIZED STATS */
+export async function fetchSummarizedStats(id) {
+    let summarizedStats = await API.graphql(graphqlOperation(getSummarizedStats, { id }));
+    summarizedStats = get(summarizedStats, 'data.getSummarizedStats.stats', null);
+    return summarizedStats && JSON.parse(summarizedStats);
+}
+
+export async function updateExistingSummarizedStats(input) {
+    await API.graphql(graphqlOperation(updateSummarizedStats, input));
+}
+
+export async function submitSerializeSummary(summarized) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const [k, v] of summarized) {
+        // eslint-disable-next-line no-await-in-loop
+        await API.graphql(
+            graphqlOperation(createSummarizedStats, {
+                input: {
+                    id: k,
+                    stats: JSON.stringify(v),
+                },
+            }),
+        );
+    }
+}
+
+/** META DATA */
+export async function fetchMetaData() {
+    // eslint-disable-next-line prettier/prettier
+    let metadata = await API.graphql(graphqlOperation(getMetaData, { id: "_metadata" }));
+    metadata = get(metadata, 'data.getMetaData', null);
+    return metadata;
+}
+
+export async function createMetaDataEntry(input) {
+    await API.graphql(graphqlOperation(createMetaData, input));
+}
+
+export async function updateMetaDataEntry(input) {
+    await API.graphql(graphqlOperation(updateMetaData, input));
+}
+
+export async function submitNewGameStats(input) {
+    await API.graphql(graphqlOperation(createGameStats, input));
+}
+
+/** GAME STATS */
+export async function submitGameStats(gameStats) {
+    gameStats.forEach(async (value) => {
+        const game = { ...value };
+        game.winners = JSON.stringify(value.winners);
+        game.losers = JSON.stringify(value.losers);
+        await API.graphql(graphqlOperation(createGameStats, { input: game }));
+    });
+}
+
 const games = [];
 export async function fetchAllGames(queryParams = {}) {
     const fetchedGames = await API.graphql(graphqlOperation(listGameStatss, queryParams));
@@ -140,6 +165,7 @@ export async function fetchAllGames(queryParams = {}) {
     return games;
 }
 
+/** MEETUP API */
 export async function getPlayerDataFromMeetup(id) {
     const meetupId = id;
     if (!meetupId) {

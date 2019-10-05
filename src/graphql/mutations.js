@@ -95,8 +95,6 @@ export const createPlayers = `mutation CreatePlayers($input: CreatePlayersInput!
   createPlayers(input: $input) {
     id
     name
-    email
-    password
     joined
     profile
     admin
@@ -110,8 +108,6 @@ export const updatePlayers = `mutation UpdatePlayers($input: UpdatePlayersInput!
   updatePlayers(input: $input) {
     id
     name
-    email
-    password
     joined
     profile
     admin
@@ -125,8 +121,6 @@ export const deletePlayers = `mutation DeletePlayers($input: DeletePlayersInput!
   deletePlayers(input: $input) {
     id
     name
-    email
-    password
     joined
     profile
     admin
@@ -154,6 +148,42 @@ export const deleteSummarizedStats = `mutation DeleteSummarizedStats($input: Del
   deleteSummarizedStats(input: $input) {
     id
     stats
+  }
+}
+`;
+export const createMetaData = `mutation CreateMetaData($input: CreateMetaDataInput!) {
+  createMetaData(input: $input) {
+    id
+    allFields
+    allYears
+    totalGamesPlayed
+    totalPlayersCount
+    recentGames
+    recentGamesLength
+  }
+}
+`;
+export const updateMetaData = `mutation UpdateMetaData($input: UpdateMetaDataInput!) {
+  updateMetaData(input: $input) {
+    id
+    allFields
+    allYears
+    totalGamesPlayed
+    totalPlayersCount
+    recentGames
+    recentGamesLength
+  }
+}
+`;
+export const deleteMetaData = `mutation DeleteMetaData($input: DeleteMetaDataInput!) {
+  deleteMetaData(input: $input) {
+    id
+    allFields
+    allYears
+    totalGamesPlayed
+    totalPlayersCount
+    recentGames
+    recentGamesLength
   }
 }
 `;
