@@ -117,6 +117,7 @@ export function clearAllPlayers() {
 export async function fetchAllPlayers(queryParams = {}) {
     const fetchedPlayers = await API.graphql(graphqlOperation(listPlayerss, queryParams));
     const { items, nextToken } = fetchedPlayers.data.listPlayerss;
+    console.log('fetch', { items, nextToken, queryParams })
     players.push(...items);
     if (nextToken) {
         const queries = { ...queryParams };

@@ -7,18 +7,18 @@ import componentStyles from './components.module.css';
 
 const BoxScoreGroup = () => {
     const [recentGames, setRecentGameData] = useState([]);
-    useEffect(() => {
-        let isMounted = true;
-        async function fetchData() {
-            let allGames = await fetchAllGames();
-            allGames = allGames.sort(sortTimeStamp);
-            if (isMounted) {
-                setRecentGameData(createBoxScoreData([allGames[1], allGames[0]].filter(Boolean)));
-            }
-        }
-        fetchData();
-        return () => (isMounted = false);
-    }, []);
+    // useEffect(() => {
+    //     let isMounted = true;
+    //     async function fetchData() {
+    //         let allGames = await fetchAllGames();
+    //         allGames = allGames.sort(sortTimeStamp);
+    //         if (isMounted) {
+    //             setRecentGameData(createBoxScoreData([allGames[1], allGames[0]].filter(Boolean)));
+    //         }
+    //     }
+    //     fetchData();
+    //     return () => (isMounted = false);
+    // }, []);
 
     if (!recentGames.length) {
         return null;

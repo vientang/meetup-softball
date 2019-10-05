@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link, navigate } from 'gatsby';
 import { Icon, Input, AutoComplete } from 'antd';
+import DataContext from '../context/DataContext';
 import componentStyles from './components.module.css';
 import { usePlayerInfo } from '../utils/hooks';
 
@@ -9,10 +10,11 @@ const { Option } = AutoComplete;
 
 const SearchBar = ({ disabled }) => {
     const [value, setValue] = useState('');
-    const { searchList, setSearchList, players } = usePlayerInfo(disabled);
+    const [filteredSearchList, setFilteredSearchList] = useState(null);
+    const { players } = usePlayerInfo(disabled);
 
     const handleSearch = (value) => {
-        setSearchList(filterOptions(players, value));
+        setFilteredSearchList(filterOptions(players, value));
     };
 
     const handleSelect = (value, instance) => {
@@ -27,25 +29,33 @@ const SearchBar = ({ disabled }) => {
     const dropdownStyle = { width: 200, fontSize: 12 };
     const autoCompleteStyle = { width: 150, fontSize: 12 };
 
+    const searchList = filteredSearchList || renderOptions(players);
+
     return (
-        <div className={componentStyles.searchBarContainer}>
-            <AutoComplete
-                dataSource={searchList}
-                disabled={disabled}
-                dropdownMatchSelectWidth={false}
-                dropdownStyle={dropdownStyle}
-                onChange={handleChange}
-                onSelect={handleSelect}
-                onSearch={handleSearch}
-                optionLabelProp="name"
-                placeholder="Search for player"
-                size="small"
-                style={autoCompleteStyle}
-                value={value}
-            >
-                <Input suffix={<Icon type="search" />} />
-            </AutoComplete>
-        </div>
+        <DataContext.Consumer>
+            {(context) => {
+                return (
+                    <div className={componentStyles.searchBarContainer}>
+                        <AutoComplete
+                            dataSource={searchList}
+                            disabled={disabled}
+                            dropdownMatchSelectWidth={false}
+                            dropdownStyle={dropdownStyle}
+                            onChange={handleChange}
+                            onSelect={handleSelect}
+                            onSearch={handleSearch}
+                            optionLabelProp="name"
+                            placeholder="Search for player"
+                            size="small"
+                            style={autoCompleteStyle}
+                            value={value}
+                        >
+                            <Input suffix={<Icon type="search" />} />
+                        </AutoComplete>
+                    </div>
+                );
+            }}
+        </DataContext.Consumer>
     );
 };
 
@@ -62,6 +72,17 @@ function filterOptions(players, value) {
                 </Option>
             );
         });
+}
+
+function renderOptions(players) {
+    return players.map((player) => {
+        const { id, name } = player;
+        return (
+            <Option key={id} value={`${name}-${id}`} name={name} id={id}>
+                <Link to={`/player?id=${id}`}>{name}</Link>
+            </Option>
+        );
+    });
 }
 
 /**

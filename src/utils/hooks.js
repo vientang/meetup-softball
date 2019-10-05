@@ -1,13 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'gatsby';
-import { AutoComplete } from 'antd';
-import { fetchAllPlayers, clearAllPlayers } from './apiService';
-
-const { Option } = AutoComplete;
+import { useState, useEffect } from 'react';
+import { fetchAllPlayers, fetchSummarizedStats, clearAllPlayers } from './apiService';
 
 export const usePlayerInfo = (disabled) => {
-    const [players, setPlayers] = useState(localStorage.getItem('players') || []);
-    const [searchList, setSearchList] = useState([]);
+    const [players, setPlayers] = useState([]);
 
     useEffect(() => {
         let mounted = true;
@@ -16,15 +11,12 @@ export const usePlayerInfo = (disabled) => {
                 const allPlayers = await fetchAllPlayers({ limit: 500 });
 
                 if (allPlayers && allPlayers.length > 0 && mounted) {
-                    const playersAsOptions = renderOptions(allPlayers);
                     setPlayers(allPlayers);
-                    setSearchList(playersAsOptions);
-                    localStorage.setItem('players', JSON.stringify(allPlayers));
+                    clearAllPlayers();
                 }
             };
             getAllPlayers();
         }
-        clearAllPlayers();
 
         return () => {
             if (mounted) {
@@ -35,19 +27,28 @@ export const usePlayerInfo = (disabled) => {
 
     return {
         players: typeof players === 'string' ? JSON.parse(players) : players,
-        searchList,
-        setSearchList,
         setPlayers,
     };
 };
 
-export function renderOptions(players) {
-    return players.map((player) => {
-        const { id, name } = player;
-        return (
-            <Option key={id} value={`${name}-${id}`} name={name} id={id}>
-                <Link to={`/player?id=${id}`}>{name}</Link>
-            </Option>
-        );
-    });
-}
+export const useSummarizedStats = (id) => {
+    const [summarizedStats, setSummarizedStats] = useState([]);
+    useEffect(() => {
+        let mounted = true;
+        if (mounted) {
+            const fetchStats = async () => {
+                const summarizedStats = await fetchSummarizedStats(id);
+                setSummarizedStats(summarizedStats);
+            };
+            fetchStats();
+        }
+
+        return () => {
+            if (mounted) {
+                mounted = false;
+            }
+        };
+    }, []);
+
+    return [summarizedStats, setSummarizedStats];
+};

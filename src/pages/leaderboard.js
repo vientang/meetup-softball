@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { fetchSummarizedStats } from '../utils/apiService';
+import React from 'react';
+import { useSummarizedStats } from '../utils/hooks';
 import { Layout, LeaderCard } from '../components';
 import pageStyles from './pages.module.css';
 
@@ -10,27 +10,20 @@ const filters = {
 };
 
 const LeaderBoard = () => {
-    const [leaderStats, setLeaders] = useState(null);
-    useEffect(() => {
-        const fetchStats = async () => {
-            const summarizedStats = await fetchSummarizedStats('_2018');
-            const leaders = createLeaderBoard(summarizedStats);
-            setLeaders(leaders);
-        };
-        fetchStats();
-    }, []);
+    const [summarizedStats] = useSummarizedStats('_2018');
 
     const filterBarOptions = {
         disabled: true,
         filters,
     };
 
+    const leaders = createLeaderBoard(summarizedStats);
     return (
-        <Layout filterBarOptions={filterBarOptions} loading={!leaderStats}>
+        <Layout filterBarOptions={filterBarOptions} loading={!leaders}>
             <div className={pageStyles.leaderBoardPage}>
-                {leaderStats &&
-                    Object.keys(leaderStats).map((stat) => (
-                        <LeaderCard key={stat} leaders={leaderStats[stat]} stat={stat} />
+                {leaders &&
+                    Object.keys(leaders).map((stat) => (
+                        <LeaderCard key={stat} leaders={leaders[stat]} stat={stat} />
                     ))}
             </div>
         </Layout>
