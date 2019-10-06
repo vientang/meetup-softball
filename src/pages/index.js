@@ -10,23 +10,10 @@ import configuration from '../aws-exports';
 
 Amplify.configure(configuration);
 
-const layoutStyle = {
-    position: 'static',
-    margin: '0 auto',
-    maxWidth: 1170,
-    minHeight: 0,
-    minWidth: 0,
-    background: 'transparent',
-    padding: '1.45rem 1.0875rem',
-};
-
-const imageStyle = {
-    position: 'absolute',
-};
-
 const IndexPage = ({ data, uri }) => {
     const recentGames = JSON.parse(get(data, 'softballstats.metadata.recentGames', []));
     const fluidImage = get(data, 'imageOne.childImageSharp.fluid');
+    const imageStyle = { position: 'absolute' };
     return (
         <>
             <Img fluid={fluidImage} style={imageStyle} className={pageStyles.homePageImage} />
@@ -37,7 +24,7 @@ const IndexPage = ({ data, uri }) => {
             >
                 <p className={pageStyles.photoCredit}>Photo by Christopher Czermak on Unsplash</p>
             </a>
-            <Layout style={layoutStyle} uri={uri}>
+            <Layout className={pageStyles.homePageLayout} uri={uri}>
                 <BoxScoreGroup recentGames={recentGames} />
             </Layout>
         </>

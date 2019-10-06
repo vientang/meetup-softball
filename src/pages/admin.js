@@ -86,10 +86,10 @@ class Admin extends React.Component {
 
     /**
      * Update a players game log or create a new player
-     * @param {Array} playerStats
+     * @param {Array} currentPlayers
      */
-    submitPlayerStats = async (playerStats = []) => {
-        playerStats.forEach(async (player) => {
+    submitPlayerStats = async (currentPlayers = []) => {
+        currentPlayers.forEach(async (player) => {
             const existingPlayer = await fetchPlayerStats(player.id);
 
             try {

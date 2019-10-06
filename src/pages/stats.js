@@ -54,11 +54,13 @@ class Stats extends React.Component {
         const {
             data: {
                 softballstats: {
+                    // players: { items },
                     summarized: { stats },
                 },
             },
         } = this.props;
         const summarizedStats = JSON.parse(stats);
+        // console.log('cdm', { summarizedStats, items })
         this.setState(() => ({ playerStats: summarizedStats }));
     }
 
@@ -159,7 +161,7 @@ class Stats extends React.Component {
 
         return (
             <Layout
-                filterBarOptions={filterBarOptions} 
+                filterBarOptions={filterBarOptions}
                 loading={playerStats.length === 0}
                 players={items}
             >

@@ -99,12 +99,15 @@ function sortLeaders({ leaders, player, stat }) {
     const minQualifier = lastPlayer[stat];
     const rankIndex = sortedLeaders.findIndex((leader) => statValue >= leader[stat]);
 
+    // TODO: inlude minimum number of games played into the condition
+
     // player met the minimum qualifier requirement
     if (statValue > minQualifier) {
         if (rankIndex === 0) {
             // player is top dawg
             sortedLeaders = [player, ...sortedLeaders.slice(0, lastIndex)];
         } else if (rankIndex > 0) {
+            // TODO: handle ties here
             sortedLeaders = [
                 ...sortedLeaders.slice(0, rankIndex),
                 player,
