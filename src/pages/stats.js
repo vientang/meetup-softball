@@ -3,11 +3,13 @@ import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import { Link, graphql } from 'gatsby';
 import isEqual from 'lodash/isEqual';
+import keyBy from 'lodash/keyBy';
 import { Layout, PlayerAvatar, StatsTable } from '../components';
 import {
+    formatCellValue,
     getDefaultSortedColumn,
     getIdFromFilterParams,
-    formatCellValue,
+    parsePhotosAndProfile,
     sortHighToLow,
 } from '../utils/helpers';
 import { statPageCategories } from '../utils/constants';
@@ -20,48 +22,24 @@ const defaultFilters = {
     field: '',
 };
 
-// graphql aliases https://graphql.org/learn/queries/#aliases
-export const query = graphql`
-    query {
-        softballstats {
-            players: listPlayerss(limit: 500) {
-                items {
-                    id
-                    name
-                    photos
-                }
-            }
-            summarized: getSummarizedStats(id: "_2018") {
-                id
-                stats
-            }
-        }
-    }
-`;
-
 class Stats extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            filters: defaultFilters,
-            currentFilter: 'year',
-            playerStats: [],
-            sortedColumn: '',
-        };
-    }
-
-    async componentDidMount() {
         const {
             data: {
                 softballstats: {
-                    // players: { items },
+                    players: { items },
                     summarized: { stats },
                 },
             },
-        } = this.props;
-        const summarizedStats = JSON.parse(stats);
-        // console.log('cdm', { summarizedStats, items })
-        this.setState(() => ({ playerStats: summarizedStats }));
+        } = props;
+        this.playersInfoMap = keyBy(items, 'id');
+        this.state = {
+            filters: defaultFilters,
+            currentFilter: 'year',
+            playerStats: this.mapPlayerPhotos(JSON.parse(stats), items),
+            sortedColumn: '',
+        };
     }
 
     handleColumnSort = (newSorted, column) => {
@@ -120,7 +98,7 @@ class Stats extends React.Component {
 
             this.setState(() => ({
                 filters: updatedFilters,
-                playerStats: filteredStats,
+                playerStats: this.mapPlayerPhotos(filteredStats),
             }));
         }
     };
@@ -131,10 +109,17 @@ class Stats extends React.Component {
         const summarizedId = getIdFromFilterParams({ field, month, year });
         const stats = await fetchSummarizedStats(summarizedId);
         this.setState(() => ({
-            playerStats: stats,
+            playerStats: this.mapPlayerPhotos(stats),
             filters,
         }));
     };
+
+    mapPlayerPhotos = (stats) =>
+        stats.map((player) => {
+            const playerWithPhotos = { ...player };
+            playerWithPhotos.photos = parsePhotosAndProfile(this.playersInfoMap[player.id]).photos;
+            return playerWithPhotos;
+        });
 
     render() {
         const {
@@ -187,6 +172,25 @@ function getPlayerMetaData(playerStats, cellInfo) {
     const playerImg = get(playerStats[cellInfo.index], 'photos.thumb_link', '');
     return { playerId, playerName, playerImg };
 }
+
+// graphql aliases https://graphql.org/learn/queries/#aliases
+export const query = graphql`
+    query {
+        softballstats {
+            players: listPlayerss(limit: 500) {
+                items {
+                    id
+                    name
+                    photos
+                }
+            }
+            summarized: getSummarizedStats(id: "_2018") {
+                id
+                stats
+            }
+        }
+    }
+`;
 
 Stats.propTypes = {
     data: PropTypes.shape(),
