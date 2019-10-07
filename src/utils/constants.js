@@ -1,3 +1,5 @@
+const rateStats = ['avg', 'obp', 'ops', 'woba'];
+
 // used in StatsLegend
 const definitions = {
     // write definitions for stats using key/value pairs. These will be seen on // stats table
@@ -278,6 +280,7 @@ export {
     gameLogCategories,
     gameProperties,
     playerProfileKeys,
+    rateStats,
     splitStatCategories,
     statPageCategories,
 };

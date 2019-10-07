@@ -124,6 +124,9 @@ export function addDerivedStats(players, isTie, winner) {
  * @return {Object} updated stats for an individual player
  */
 export function calculateTotals(existingStats = {}, currentStats = {}) {
+    if (!Object.keys(existingStats).length) {
+        return currentStats;
+    }
     const { bb, cs, singles, doubles, sb, triples, hr, o, sac } = currentStats;
 
     // counting stats

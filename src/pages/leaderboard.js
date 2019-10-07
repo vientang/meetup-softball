@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'gatsby';
 import { Layout, LeaderCard } from '../components';
+import { rateStats } from '../utils/constants';
 import pageStyles from './pages.module.css';
 
 const filters = {
@@ -10,31 +11,12 @@ const filters = {
     field: '',
 };
 
-// graphql aliases https://graphql.org/learn/queries/#aliases
-export const query = graphql`
-    query {
-        softballstats {
-            players: listPlayerss(limit: 500) {
-                items {
-                    id
-                    name
-                    photos
-                }
-            }
-            summarized: getSummarizedStats(id: "_2018") {
-                id
-                stats
-            }
-        }
-    }
-`;
-
 const LeaderBoard = (props) => {
     const {
         data: {
             softballstats: {
-                summarized: { stats },
                 players: { items },
+                summarized: { stats },
             },
         },
     } = props;
@@ -45,6 +27,7 @@ const LeaderBoard = (props) => {
     };
 
     const leaders = createLeaderBoard(JSON.parse(stats));
+
     return (
         <Layout filterBarOptions={filterBarOptions} loading={!leaders} players={items}>
             <div className={pageStyles.leaderBoardPage}>
@@ -74,50 +57,110 @@ function getLeaders(summarizedStats = [], stat) {
     let leaders = [];
 
     summarizedStats.forEach((player) => {
+        if (player[stat] === undefined) {
+            return;
+        }
+
         const playerToInsert = {
             name: player.name,
             id: player.id,
-            [stat]: player[stat],
             gp: player.gp,
+            [stat]: player[stat],
         };
+
         // build leaders with first 5 players
         if (leaders.length < 5) {
             leaders.push(playerToInsert);
         } else {
-            leaders = sortLeaders({ leaders, player: playerToInsert, stat });
+            leaders = sortLeaders({
+                gamesPlayed: summarizedStats.length,
+                player: playerToInsert,
+                leaders,
+                stat,
+            });
         }
     });
     return leaders;
 }
 
-function sortLeaders({ leaders, player, stat }) {
+function sortLeaders({ gamesPlayed, leaders, player, stat }) {
     const statValue = player[stat];
     const lastIndex = leaders.length - 1;
-    const lastPlayer = leaders[lastIndex];
     let sortedLeaders = leaders.sort((a, b) => (a[stat] < b[stat] ? 1 : -1));
-    // minimum qualifier is the last item in sorted array
-    const minQualifier = lastPlayer[stat];
     const rankIndex = sortedLeaders.findIndex((leader) => statValue >= leader[stat]);
 
-    // TODO: inlude minimum number of games played into the condition
+    const qualifed = isPlayerQualified({
+        gamesPlayed,
+        lastIndex,
+        leaders,
+        player,
+        stat,
+        statValue,
+    });
 
-    // player met the minimum qualifier requirement
-    if (statValue > minQualifier) {
+    if (qualifed) {
         if (rankIndex === 0) {
             // player is top dawg
-            sortedLeaders = [player, ...sortedLeaders.slice(0, lastIndex)];
+            sortedLeaders = [player, ...sortedLeaders];
         } else if (rankIndex > 0) {
-            // TODO: handle ties here
             sortedLeaders = [
                 ...sortedLeaders.slice(0, rankIndex),
                 player,
-                ...sortedLeaders.slice(rankIndex, lastIndex),
+                ...sortedLeaders.slice(rankIndex),
             ];
         }
     }
 
-    return sortedLeaders;
+    return getLeadersWithTies(sortedLeaders, stat);
 }
+
+function getLeadersWithTies(leaders, stat) {
+    const topFivePlayers = leaders.slice(0, 5);
+    const lastIndex = topFivePlayers.length - 1;
+    const remainingPlayers = leaders.slice(5);
+    const ties = [];
+    const hasTies = remainingPlayers.some((player) => {
+        if (player[stat] === topFivePlayers[lastIndex][stat]) {
+            ties.push(player);
+            return true;
+        }
+        return false;
+    });
+    return hasTies ? [...topFivePlayers, ...ties] : topFivePlayers;
+}
+
+function isPlayerQualified({ gamesPlayed, lastIndex, leaders, player, stat, statValue }) {
+    // minimum qualifier is the last item in sorted array
+    const minStatQualifier = leaders[lastIndex][stat];
+
+    // inlude minimum number of games played for rate stats
+    const isRateState = rateStats.includes(stat);
+    if (isRateState) {
+        const minGamesQualified = player.gp / gamesPlayed > 0.2;
+        return minGamesQualified ? statValue > minStatQualifier : false;
+    }
+
+    return statValue > minStatQualifier;
+}
+
+// graphql aliases https://graphql.org/learn/queries/#aliases
+export const query = graphql`
+    query {
+        softballstats {
+            players: listPlayerss(limit: 500) {
+                items {
+                    id
+                    name
+                    photos
+                }
+            }
+            summarized: getSummarizedStats(id: "_2018") {
+                id
+                stats
+            }
+        }
+    }
+`;
 
 LeaderBoard.propTypes = {
     data: PropTypes.shape(),
