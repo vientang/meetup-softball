@@ -2,13 +2,19 @@ import { updateExistingSummarizedStats } from './apiService';
 import { calculateTotals } from './statsCalc';
 
 // eslint-disable-next-line import/prefer-default-export
-export function updateSummarizedStats(stats) {
-    const allPlayers = findDifference(JSON.parse(stats));
+export function updateSummarizedStats(stats, id) {
+    let summarizedStats = stats;
+    if (typeof stats === 'string') {
+        summarizedStats = JSON.parse(stats);
+    }
+
+    const allPlayers = findDifference(summarizedStats);
     const mergedPlayerStats = mergeDifferences(allPlayers);
+
     submitSummarized({
         input: {
             // eslint-disable-next-line prettier/prettier
-            id: "_2018", 
+            id, 
             stats: JSON.stringify(mergedPlayerStats),
         },
     });

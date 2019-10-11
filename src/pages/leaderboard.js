@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'gatsby';
+import isEqual from 'lodash/isEqual';
 import { Layout, LeaderCard } from '../components';
+import { fetchSummarizedStats } from '../utils/apiService';
 import { rateStats } from '../utils/constants';
+import { getIdFromFilterParams } from '../utils/helpers';
 import pageStyles from './pages.module.css';
 
-const filters = {
+const defaultFilters = {
     year: '2018',
     month: '',
     field: '',
@@ -21,13 +24,53 @@ const LeaderBoard = (props) => {
         },
     } = props;
 
+    const [currentFilter, setCurrentFilter] = useState('year');
+    const [filters, setFilters] = useState(defaultFilters);
+    const [leaderStats, setLeaderStats] = useState(JSON.parse(stats));
+
+    const handleFilterMouseEnter = (e) => {
+        const filter = e.target.id;
+        setCurrentFilter(filter || currentFilter);
+    };
+
+    const handleFilterChange = async (params) => {
+        const updatedFilters = {
+            ...filters,
+            [currentFilter]: params.key === 'all' ? '' : params.key,
+        };
+
+        if (!isEqual(filters, updatedFilters)) {
+            const { field, month, year } = updatedFilters;
+            const id = getIdFromFilterParams({ field, month, year });
+            const stats = await fetchSummarizedStats(id);
+
+            if (stats) {
+                setFilters(updatedFilters);
+                setLeaderStats(stats);
+            }
+        }
+    };
+
+    const handleResetFilters = async () => {
+        const filters = { ...defaultFilters };
+        const { field, month, year } = filters;
+        const summarizedId = getIdFromFilterParams({ field, month, year });
+        const stats = await fetchSummarizedStats(summarizedId);
+        setFilters(filters);
+        setLeaderStats(stats);
+    };
+
     const filterBarOptions = {
         disabled: true,
+        onFilterChange: handleFilterChange,
+        onMouseEnter: handleFilterMouseEnter,
+        onResetFilters: handleResetFilters,
         filters,
     };
 
-    const leaders = createLeaderBoard(JSON.parse(stats));
-
+    const leaders = createLeaderBoard(leaderStats);
+    // TODO: create a new entry on summarized stats for every leader board filter
+    // _leaders_2018, _leaders_2017, _leaders_2016, etc.
     return (
         <Layout filterBarOptions={filterBarOptions} loading={!leaders} players={items}>
             <div className={pageStyles.leaderBoardPage}>
@@ -116,11 +159,11 @@ function sortLeaders({ gamesPlayed, leaders, player, stat }) {
 
 function getLeadersWithTies(leaders, stat) {
     const topFivePlayers = leaders.slice(0, 5);
-    const lastIndex = topFivePlayers.length - 1;
+    // const lastIndex = topFivePlayers.length - 1;
     const remainingPlayers = leaders.slice(5);
     const ties = [];
     const hasTies = remainingPlayers.some((player) => {
-        if (player[stat] === topFivePlayers[lastIndex][stat]) {
+        if (player[stat] === topFivePlayers[4][stat]) {
             ties.push(player);
             return true;
         }

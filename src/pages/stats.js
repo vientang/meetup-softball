@@ -14,7 +14,8 @@ import {
 } from '../utils/helpers';
 import { statPageCategories } from '../utils/constants';
 import pageStyles from './pages.module.css';
-import { fetchSummarizedStats } from '../utils/apiService';
+import { fetchSummarizedStats, fetchAllSummarizedStats } from '../utils/apiService';
+import { updateSummarizedStats } from '../utils/statsUpdater';
 
 const defaultFilters = {
     year: '2018',
@@ -41,6 +42,18 @@ class Stats extends React.Component {
             sortedColumn: '',
         };
     }
+
+    // async componentDidMount() {
+    //     const allStats = await fetchAllSummarizedStats({ limit: 500 });
+    //     // const allStats = this.props.data.softballstats.allSummarized.items;
+    //     const statsMap = keyBy(allStats, 'id');
+    //     Object.keys(statsMap).forEach(async (id) => {
+    //         const summarized = statsMap[id];
+    //         await updateSummarizedStats(summarized.stats, id);
+    //     });
+    //     // console.log('sum', this.props.data.softballstats.allSummarized);
+
+    // }
 
     handleColumnSort = (newSorted, column) => {
         this.setState(() => ({ sortedColumn: column.id }));
@@ -93,13 +106,15 @@ class Stats extends React.Component {
 
         if (!isEqual(filters, updatedFilters)) {
             const { field, month, year } = updatedFilters;
-            const summarizedStatsId = getIdFromFilterParams({ field, month, year });
-            const filteredStats = await fetchSummarizedStats(summarizedStatsId);
+            const id = getIdFromFilterParams({ field, month, year });
+            const stats = await fetchSummarizedStats(id);
 
-            this.setState(() => ({
-                filters: updatedFilters,
-                playerStats: this.mapPlayerPhotos(filteredStats),
-            }));
+            if (stats) {
+                this.setState(() => ({
+                    filters: updatedFilters,
+                    playerStats: this.mapPlayerPhotos(stats),
+                }));
+            }
         }
     };
 
@@ -187,6 +202,12 @@ export const query = graphql`
             summarized: getSummarizedStats(id: "_2018") {
                 id
                 stats
+            }
+            allSummarized: listSummarizedStatss(limit: 500) {
+                items {
+                    id
+                    stats
+                }
             }
         }
     }

@@ -51,6 +51,10 @@ const SearchBar = ({ disabled, players }) => {
 };
 
 function filterOptions(players, value) {
+    // TODO: implement smarter search when multiple players are found
+    // i.e. maybe sort by highest games played (need to add totalGamesPlayed to PlayersInfo)
+    // or last updated timestamp
+
     return players
         .filter((player) => {
             return player.name ? player.name.toLowerCase().includes(value.toLowerCase()) : false;

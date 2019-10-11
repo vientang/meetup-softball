@@ -6,6 +6,7 @@ import {
     getPlayers,
     getPlayerStats,
     listGameStatss,
+    listSummarizedStatss,
     listPlayerss,
     getSummarizedStats,
 } from '../graphql/queries';
@@ -100,6 +101,23 @@ export async function fetchSummarizedStats(id) {
     let summarizedStats = await API.graphql(graphqlOperation(getSummarizedStats, { id }));
     summarizedStats = get(summarizedStats, 'data.getSummarizedStats.stats', null);
     return summarizedStats && JSON.parse(summarizedStats);
+}
+
+let summarized = [];
+export function clearAllSummarized() {
+    summarized = [];
+}
+
+export async function fetchAllSummarizedStats(queryParams = {}) {
+    const summarizedStats = await API.graphql(graphqlOperation(listSummarizedStatss, queryParams));
+    const { items, nextToken } = summarizedStats.data.listSummarizedStatss;
+    summarized.push(...items);
+    if (nextToken) {
+        const queries = { ...queryParams };
+        queries.nextToken = nextToken;
+        await fetchAllSummarizedStats(queries);
+    }
+    return summarized;
 }
 
 export async function updateExistingSummarizedStats(input) {
