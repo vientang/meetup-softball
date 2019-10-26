@@ -14,7 +14,7 @@ import {
 } from '../utils/helpers';
 import { statPageCategories } from '../utils/constants';
 import pageStyles from './pages.module.css';
-import { fetchSummarizedStats, fetchAllSummarizedStats } from '../utils/apiService';
+import { fetchSummarizedStats, fetchAllGames, updateMetaDataEntry } from '../utils/apiService';
 import { updateSummarizedStats } from '../utils/statsUpdater';
 
 const defaultFilters = {
@@ -22,6 +22,17 @@ const defaultFilters = {
     month: '',
     field: '',
 };
+
+function buildFieldsList(games) {
+    const fields = {};
+    return games.reduce((list, game) => {
+        if (!fields[game.field]) {
+            fields[game.field] = game.field;
+            list.push(game.field);
+        }
+        return list;
+    }, []);
+}
 
 class Stats extends React.Component {
     constructor(props) {
@@ -43,17 +54,22 @@ class Stats extends React.Component {
         };
     }
 
-    // async componentDidMount() {
-    //     const allStats = await fetchAllSummarizedStats({ limit: 500 });
-    //     // const allStats = this.props.data.softballstats.allSummarized.items;
-    //     const statsMap = keyBy(allStats, 'id');
-    //     Object.keys(statsMap).forEach(async (id) => {
-    //         const summarized = statsMap[id];
-    //         await updateSummarizedStats(summarized.stats, id);
-    //     });
-    //     // console.log('sum', this.props.data.softballstats.allSummarized);
+    async componentDidMount() {
+        // const allGames = await fetchAllGames({ limit: 500 });
+        // const fieldsList = buildFieldsList(allGames);
+        // await updateMetaDataEntry({
+        //     input: {
+        //         id: '_metadata',
+        //         allFields: JSON.stringify(fieldsList),
+        //     },
+        // });
 
-    // }
+        // console.log('allGames', {
+        //     fieldsList,
+        //     allGames,
+        //     sortedFields: fieldsList.sort(sortHighToLow),
+        // });
+    }
 
     handleColumnSort = (newSorted, column) => {
         this.setState(() => ({ sortedColumn: column.id }));
@@ -141,6 +157,7 @@ class Stats extends React.Component {
             data: {
                 softballstats: {
                     players: { items },
+                    metadata,
                 },
             },
         } = this.props;
@@ -156,6 +173,9 @@ class Stats extends React.Component {
             onFilterChange: this.handleFilterChange,
             onMouseEnter: this.handleFilterMouseEnter,
             onResetFilters: this.handleResetFilters,
+            menu: {
+                years: Object.keys(JSON.parse(metadata.allYears)).sort(sortHighToLow),
+            },
             filters,
         };
 
@@ -208,6 +228,10 @@ export const query = graphql`
                     id
                     stats
                 }
+            }
+            metadata: getMetaData(id: "_metadata") {
+                id
+                allYears
             }
         }
     }

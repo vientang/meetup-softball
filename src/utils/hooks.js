@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react';
-import { fetchAllPlayers, fetchSummarizedStats, clearAllPlayers } from './apiService';
+import {
+    fetchAllPlayers,
+    fetchSummarizedStats,
+    clearAllPlayers,
+    createNewSummarizedStats,
+} from './apiService';
+import createLeaderBoard from './leadersCalc';
+import { getIdFromFilterParams } from './helpers';
 
 export const usePlayerInfo = (disabled) => {
     const [players, setPlayers] = useState([]);
@@ -51,4 +58,31 @@ export const useSummarizedStats = (id) => {
     }, []);
 
     return [summarizedStats, setSummarizedStats];
+};
+
+/**
+ * Post a new entry on summarized stats for every leader board filter
+ * _leaders_2018_westlake, _leaders_2017, _leaders_2016, etc.
+ * @param {Object} filters
+ * @param {Array} stats - summarized stats
+ */
+export const useCreateLeaders = (filters, stats) => {
+    useEffect(() => {
+        const { year } = filters;
+        const id = getIdFromFilterParams({ year });
+        const leaderBoard = createLeaderBoard(stats);
+
+        if (id !== '_2018') {
+            const createSummarizedLeaderboard = async () => {
+                await createNewSummarizedStats({
+                    input: {
+                        id: `_leaderboard${id}`,
+                        stats: JSON.stringify([leaderBoard]),
+                    },
+                });
+            };
+
+            createSummarizedLeaderboard();
+        }
+    }, [filters, stats]);
 };

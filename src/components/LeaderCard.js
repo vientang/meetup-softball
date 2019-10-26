@@ -9,7 +9,7 @@ const LeaderCard = ({ leaders, stat }) => (
             <span>{stat.toUpperCase()}</span>
         </li>
         {leaders.map((player, i) => (
-            <li key={player.name} className={componentStyles.leaderCardItem}>
+            <li key={player.id} className={componentStyles.leaderCardItem}>
                 {i === 0 ? (
                     <TopPlayer meetupId={player.id} stat={player[stat]} />
                 ) : (

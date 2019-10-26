@@ -124,6 +124,10 @@ export async function updateExistingSummarizedStats(input) {
     await API.graphql(graphqlOperation(updateSummarizedStats, input));
 }
 
+export async function createNewSummarizedStats(input) {
+    await API.graphql(graphqlOperation(createSummarizedStats, input));
+}
+
 export async function submitSerializeSummary(summarized) {
     // eslint-disable-next-line no-restricted-syntax
     for (const [k, v] of summarized) {

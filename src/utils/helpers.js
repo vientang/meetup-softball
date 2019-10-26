@@ -80,6 +80,10 @@ export function filterCurrentGame(selectedGameId) {
     return (game) => game.id !== selectedGameId;
 }
 
+export function getAllYears(metadata) {
+    return Object.keys(JSON.parse(metadata.allYears)).sort(sortHighToLow);
+}
+
 export function createSlug(name) {
     let slug = name
         .split(' ')

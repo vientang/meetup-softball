@@ -41,9 +41,9 @@ const FilterBar = (props) => {
 
 /* eslint-disable react/prop-types */
 function FilterTypes(props) {
-    const { filters = {}, disabled, onFilterChange, onMouseEnter } = props;
+    const { filters = {}, disabled, menu, onFilterChange, onMouseEnter } = props;
 
-    const menus = [years, months, fields, battingPositions];
+    const menus = [menu.years, months, fields, battingPositions];
 
     const filterTypeClass = cn({
         [componentStyles.filterType]: true,
@@ -101,7 +101,7 @@ function ResetFilters({ disabled, onClick }) {
 }
 
 function createMenu(menus, onFilterChange) {
-    const allStats = 'all';
+    const allStats = ''; // TODO: add all summarized stats
     return (
         <Menu onClick={onFilterChange}>
             <Menu.Item style={menuItemStyle} key={allStats}>
