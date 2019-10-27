@@ -4,22 +4,6 @@ import cn from 'classnames';
 import { Dropdown, Menu, Icon } from 'antd';
 import componentStyles from './components.module.css';
 
-const years = ['2019', '2018', '2017', '2016', '2015', '2014', '2013'];
-const months = [
-    ['January', '01'],
-    ['February', '02'],
-    ['March', '03'],
-    ['April', '04'],
-    ['May', '05'],
-    ['June', '06'],
-    ['July', '07'],
-    ['August', '08'],
-    ['September', '09'],
-    ['October', '10'],
-    ['November', '11'],
-    ['December', '12'],
-];
-const fields = ['West Sunset', 'Parkside', 'Westlake'];
 const battingPositions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 const menuItemStyle = {
@@ -41,9 +25,15 @@ const FilterBar = (props) => {
 
 /* eslint-disable react/prop-types */
 function FilterTypes(props) {
-    const { filters = {}, disabled, menu, onFilterChange, onMouseEnter } = props;
+    const {
+        filters = {},
+        disabled,
+        menu: { fields, months, years },
+        onFilterChange,
+        onMouseEnter,
+    } = props;
 
-    const menus = [menu.years, months, fields, battingPositions];
+    const menus = [years, months, fields, battingPositions];
 
     const filterTypeClass = cn({
         [componentStyles.filterType]: true,
@@ -60,7 +50,7 @@ function FilterTypes(props) {
                 });
                 return (
                     <div key={filter} className={filterTypeClass}>
-                        <Dropdown overlay={createMenu(menus[i], onFilterChange)}>
+                        <Dropdown overlay={createMenu(menus[i], onFilterChange, filter)}>
                             <span
                                 className={filterLabelClass}
                                 onMouseEnter={onMouseEnter}
@@ -100,8 +90,8 @@ function ResetFilters({ disabled, onClick }) {
     );
 }
 
-function createMenu(menus, onFilterChange) {
-    const allStats = ''; // TODO: add all summarized stats
+function createMenu(menus, onFilterChange, filter) {
+    const allStats = filter === 'year' ? '' : 'all'; // TODO: add all summarized stats
     return (
         <Menu onClick={onFilterChange}>
             <Menu.Item style={menuItemStyle} key={allStats}>
@@ -129,10 +119,12 @@ FilterBar.propTypes = {
     onFilterChange: PropTypes.func,
     onMouseEnter: PropTypes.func,
     onResetFilters: PropTypes.func,
+    menu: PropTypes.shape(),
 };
 
 FilterBar.defaultProps = {
     disabled: false,
+    menu: {},
 };
 
 export default FilterBar;

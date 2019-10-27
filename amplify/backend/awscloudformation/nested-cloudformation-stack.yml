@@ -123,7 +123,7 @@
 					"DynamoDBBillingMode": "PAY_PER_REQUEST",
 					"DynamoDBEnableServerSideEncryption": "false",
 					"S3DeploymentBucket": "meetup-softball-master-20190902084613-deployment",
-					"S3DeploymentRootKey": "amplify-appsync-files/dc054abc634ddf10138ead7d6059a210247223fe",
+					"S3DeploymentRootKey": "amplify-appsync-files/0301d39aa44ad69010ecc1af4b91fb9fab3ddcc9",
 					"env": "master"
 				}
 			}

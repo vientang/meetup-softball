@@ -72,16 +72,24 @@ export function createPlayer(player) {
     };
 }
 
+export function buildFilterMenu(filters, metadata) {
+    const { year } = filters;
+    const options = JSON.parse(metadata.perYear);
+    const years = Object.keys(options);
+    const { fields, months } = options[year];
+    return {
+        fields: Object.keys(fields),
+        years: years.sort(sortHighToLow),
+        months,
+    };
+}
+
 export function findCurrentGame(selectedGameId) {
     return (game) => game.id === selectedGameId;
 }
 
 export function filterCurrentGame(selectedGameId) {
     return (game) => game.id !== selectedGameId;
-}
-
-export function getAllYears(metadata) {
-    return Object.keys(JSON.parse(metadata.allYears)).sort(sortHighToLow);
 }
 
 export function createSlug(name) {

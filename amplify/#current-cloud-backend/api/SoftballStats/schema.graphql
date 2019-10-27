@@ -48,4 +48,5 @@ type MetaData @model {
     totalPlayersCount: Int
     recentGames: AWSJSON
     recentGamesLength: Int
+    perYear: AWSJSON
 }

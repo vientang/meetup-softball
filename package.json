@@ -9,7 +9,8 @@
         "build": "gatsby build",
         "format": "prettier --write \"src/**/*.js\"",
         "test": "jest",
-        "test:watch": "jest --watchAll"
+        "test:watch": "jest --watchAll",
+        "clean": "gatsby clean"
     },
     "dependencies": {
         "antd": "^3.15.1",

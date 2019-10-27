@@ -160,6 +160,7 @@ export const onCreateMetaData = `subscription OnCreateMetaData {
     totalPlayersCount
     recentGames
     recentGamesLength
+    perYear
   }
 }
 `;
@@ -172,6 +173,7 @@ export const onUpdateMetaData = `subscription OnUpdateMetaData {
     totalPlayersCount
     recentGames
     recentGamesLength
+    perYear
   }
 }
 `;
@@ -184,6 +186,7 @@ export const onDeleteMetaData = `subscription OnDeleteMetaData {
     totalPlayersCount
     recentGames
     recentGamesLength
+    perYear
   }
 }
 `;

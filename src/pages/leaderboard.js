@@ -2,9 +2,10 @@ import React, { useReducer } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'gatsby';
 import isEqual from 'lodash/isEqual';
+import { message } from 'antd';
 import { Layout, LeaderCard } from '../components';
 import { fetchSummarizedStats } from '../utils/apiService';
-import { getIdFromFilterParams, getAllYears } from '../utils/helpers';
+import { buildFilterMenu, getIdFromFilterParams } from '../utils/helpers';
 import pageStyles from './pages.module.css';
 
 const defaultFilters = {
@@ -34,6 +35,7 @@ const LeaderBoard = (props) => {
             },
         },
     } = props;
+
     const [{ currentFilter, filters, leaders }, dispatch] = useReducer(reducer, {
         currentFilter: 'year',
         filters: defaultFilters,
@@ -56,7 +58,9 @@ const LeaderBoard = (props) => {
             const id = getIdFromFilterParams({ field, month, year });
             const stats = await fetchSummarizedStats(`_leaderboard${id}`);
 
-            if (updatedFilters) {
+            if (!stats) {
+                message.error(`Try again. No games were played at ${field} in ${month}/${year}`);
+            } else {
                 dispatch({ type: 'FILTERS', payload: updatedFilters });
                 dispatch({ type: 'LEADERS', payload: stats });
             }
@@ -64,11 +68,11 @@ const LeaderBoard = (props) => {
     };
 
     const handleResetFilters = async () => {
-        const filters = { ...defaultFilters };
-        const { field, month, year } = filters;
-        const summarizedId = getIdFromFilterParams({ field, month, year });
-        const stats = await fetchSummarizedStats(summarizedId);
-        dispatch({ type: 'FILTERS', payload: filters });
+        const { field, month, year } = defaultFilters;
+        const id = getIdFromFilterParams({ field, month, year });
+        const stats = await fetchSummarizedStats(`_leaderboard${id}`);
+
+        dispatch({ type: 'FILTERS', payload: defaultFilters });
         dispatch({ type: 'LEADERS', payload: stats });
     };
 
@@ -76,9 +80,7 @@ const LeaderBoard = (props) => {
         onFilterChange: handleFilterChange,
         onMouseEnter: handleFilterMouseEnter,
         onResetFilters: handleResetFilters,
-        menu: {
-            years: getAllYears(metadata),
-        },
+        menu: buildFilterMenu(filters, metadata),
         filters,
     };
 
@@ -112,6 +114,7 @@ export const query = graphql`
             metadata: getMetaData(id: "_metadata") {
                 id
                 allYears
+                perYear
             }
         }
     }

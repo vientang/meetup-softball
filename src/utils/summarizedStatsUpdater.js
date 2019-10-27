@@ -1,6 +1,8 @@
 import { updateExistingSummarizedStats } from './apiService';
 import { calculateTotals } from './statsCalc';
 
+// Utility to make corrections to SummarizedStats
+
 // eslint-disable-next-line import/prefer-default-export
 export function updateSummarizedStats(stats, id) {
     let summarizedStats = stats;

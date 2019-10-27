@@ -138,6 +138,7 @@ export const getMetaData = `query GetMetaData($id: ID!) {
     totalPlayersCount
     recentGames
     recentGamesLength
+    perYear
   }
 }
 `;
@@ -155,6 +156,7 @@ export const listMetaDatas = `query ListMetaDatas(
       totalPlayersCount
       recentGames
       recentGamesLength
+      perYear
     }
     nextToken
   }

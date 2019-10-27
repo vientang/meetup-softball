@@ -2,10 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import { Link, graphql } from 'gatsby';
+import { message } from 'antd';
 import isEqual from 'lodash/isEqual';
 import keyBy from 'lodash/keyBy';
 import { Layout, PlayerAvatar, StatsTable } from '../components';
 import {
+    buildFilterMenu,
     formatCellValue,
     getDefaultSortedColumn,
     getIdFromFilterParams,
@@ -14,25 +16,13 @@ import {
 } from '../utils/helpers';
 import { statPageCategories } from '../utils/constants';
 import pageStyles from './pages.module.css';
-import { fetchSummarizedStats, fetchAllGames, updateMetaDataEntry } from '../utils/apiService';
-import { updateSummarizedStats } from '../utils/statsUpdater';
+import { fetchSummarizedStats } from '../utils/apiService';
 
 const defaultFilters = {
     year: '2018',
     month: '',
     field: '',
 };
-
-function buildFieldsList(games) {
-    const fields = {};
-    return games.reduce((list, game) => {
-        if (!fields[game.field]) {
-            fields[game.field] = game.field;
-            list.push(game.field);
-        }
-        return list;
-    }, []);
-}
 
 class Stats extends React.Component {
     constructor(props) {
@@ -52,23 +42,6 @@ class Stats extends React.Component {
             playerStats: this.mapPlayerPhotos(JSON.parse(stats), items),
             sortedColumn: '',
         };
-    }
-
-    async componentDidMount() {
-        // const allGames = await fetchAllGames({ limit: 500 });
-        // const fieldsList = buildFieldsList(allGames);
-        // await updateMetaDataEntry({
-        //     input: {
-        //         id: '_metadata',
-        //         allFields: JSON.stringify(fieldsList),
-        //     },
-        // });
-
-        // console.log('allGames', {
-        //     fieldsList,
-        //     allGames,
-        //     sortedFields: fieldsList.sort(sortHighToLow),
-        // });
     }
 
     handleColumnSort = (newSorted, column) => {
@@ -125,7 +98,9 @@ class Stats extends React.Component {
             const id = getIdFromFilterParams({ field, month, year });
             const stats = await fetchSummarizedStats(id);
 
-            if (stats) {
+            if (!stats) {
+                message.error(`Try again. No games were played at ${field} in ${month}/${year}`);
+            } else {
                 this.setState(() => ({
                     filters: updatedFilters,
                     playerStats: this.mapPlayerPhotos(stats),
@@ -173,9 +148,7 @@ class Stats extends React.Component {
             onFilterChange: this.handleFilterChange,
             onMouseEnter: this.handleFilterMouseEnter,
             onResetFilters: this.handleResetFilters,
-            menu: {
-                years: Object.keys(JSON.parse(metadata.allYears)).sort(sortHighToLow),
-            },
+            menu: buildFilterMenu(filters, metadata),
             filters,
         };
 
@@ -232,6 +205,7 @@ export const query = graphql`
             metadata: getMetaData(id: "_metadata") {
                 id
                 allYears
+                perYear
             }
         }
     }

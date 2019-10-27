@@ -1,8 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { graphql } from 'gatsby';
 import { CareerStats, GameLog, Layout, PlayerInfo } from '../components';
 import { fetchPlayerStats } from '../utils/apiService';
 import { calculateTotals } from '../utils/statsCalc';
+import { buildFilterMenu } from '../utils/helpers';
 
 const defaultFilters = {
     year: '2018',
@@ -92,10 +94,16 @@ class Player extends React.Component {
     };
 
     render() {
+        const {
+            data: {
+                softballstats: { metadata },
+            },
+        } = this.props;
         const { filters, statsByField, statsByYear, games, player } = this.state;
 
         const dataLoaded = player && statsByField.length && statsByYear.length && games.length;
         const filterBarOptions = {
+            menu: buildFilterMenu(filters, metadata),
             disabled: true,
             filters,
         };
@@ -153,9 +161,27 @@ function transformCareerStats(careerStats, key) {
     });
 }
 
+// graphql aliases https://graphql.org/learn/queries/#aliases
+export const query = graphql`
+    query {
+        softballstats {
+            metadata: getMetaData(id: "_metadata") {
+                id
+                allYears
+                perYear
+            }
+        }
+    }
+`;
+
 Player.propTypes = {
+    data: PropTypes.shape(),
     filters: PropTypes.shape(),
     location: PropTypes.shape(),
+};
+
+Player.defaultProps = {
+    data: {},
 };
 
 export default Player;
