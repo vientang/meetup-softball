@@ -144,7 +144,9 @@ export function sortByNameLength(a, b) {
 }
 
 export function sortHighToLow(a, b) {
-    return Number(a) < Number(b) ? 1 : -1;
+    const first = typeof a === 'undefined' ? 0 : a;
+    const second = typeof b === 'undefined' ? 0 : b;
+    return Number(first) < Number(second) ? 1 : -1;
 }
 
 export function sortTimeStamp(a, b) {
