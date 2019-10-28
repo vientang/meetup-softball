@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import componentStyles from './components.module.css';
 import TopPlayer from './TopPlayer';
+import { formatCellValue } from '../utils/helpers';
 
 const LeaderCard = ({ leaders, stat }) => (
     <ul className={componentStyles.leaderCard}>
@@ -11,11 +12,13 @@ const LeaderCard = ({ leaders, stat }) => (
         {leaders.map((player, i) => (
             <li key={player.id} className={componentStyles.leaderCardItem}>
                 {i === 0 ? (
-                    <TopPlayer meetupId={player.id} stat={player[stat]} />
+                    <TopPlayer meetupId={player.id} stat={formatCellValue(player[stat])} />
                 ) : (
                     <div className={componentStyles.leaderCardItemPlayerInfo}>
                         <span>{player.name}</span>
-                        <span className={componentStyles.leaderCardStat}>{player[stat]}</span>
+                        <span className={componentStyles.leaderCardStat}>
+                            {formatCellValue(player[stat])}
+                        </span>
                     </div>
                 )}
             </li>
