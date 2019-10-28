@@ -49,6 +49,8 @@ type MetaData {
   recentGames: AWSJSON
   recentGamesLength: Int
   perYear: AWSJSON
+  activePlayers: AWSJSON
+  inactivePlayers: AWSJSON
 }
 
 enum ModelSortDirection {
@@ -348,6 +350,8 @@ input ModelMetaDataFilterInput {
   recentGames: ModelStringFilterInput
   recentGamesLength: ModelIntFilterInput
   perYear: ModelStringFilterInput
+  activePlayers: ModelStringFilterInput
+  inactivePlayers: ModelStringFilterInput
   and: [ModelMetaDataFilterInput]
   or: [ModelMetaDataFilterInput]
   not: ModelMetaDataFilterInput
@@ -362,6 +366,8 @@ input CreateMetaDataInput {
   recentGames: AWSJSON
   recentGamesLength: Int
   perYear: AWSJSON
+  activePlayers: AWSJSON
+  inactivePlayers: AWSJSON
 }
 
 input UpdateMetaDataInput {
@@ -373,6 +379,8 @@ input UpdateMetaDataInput {
   recentGames: AWSJSON
   recentGamesLength: Int
   perYear: AWSJSON
+  activePlayers: AWSJSON
+  inactivePlayers: AWSJSON
 }
 
 input DeleteMetaDataInput {

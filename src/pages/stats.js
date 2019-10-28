@@ -130,10 +130,7 @@ class Stats extends React.Component {
     render() {
         const {
             data: {
-                softballstats: {
-                    players: { items },
-                    metadata,
-                },
+                softballstats: { metadata },
             },
         } = this.props;
 
@@ -156,7 +153,7 @@ class Stats extends React.Component {
             <Layout
                 filterBarOptions={filterBarOptions}
                 loading={playerStats.length === 0}
-                players={items}
+                players={JSON.parse(metadata.activePlayers)}
             >
                 <StatsTable
                     categories={statPageCategories}
@@ -204,7 +201,9 @@ export const query = graphql`
             }
             metadata: getMetaData(id: "_metadata") {
                 id
+                activePlayers
                 allYears
+                inactivePlayers
                 perYear
             }
         }

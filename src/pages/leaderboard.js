@@ -30,7 +30,6 @@ const LeaderBoard = (props) => {
         data: {
             softballstats: {
                 metadata,
-                players: { items },
                 summarized: { stats },
             },
         },
@@ -85,7 +84,11 @@ const LeaderBoard = (props) => {
     };
 
     return (
-        <Layout filterBarOptions={filterBarOptions} loading={!leaders} players={items}>
+        <Layout
+            filterBarOptions={filterBarOptions}
+            loading={!leaders}
+            players={JSON.parse(metadata.activePlayers)}
+        >
             <div className={pageStyles.leaderBoardPage}>
                 {leaders[0] &&
                     Object.keys(leaders[0]).map((stat) => (
@@ -100,19 +103,13 @@ const LeaderBoard = (props) => {
 export const query = graphql`
     query {
         softballstats {
-            players: listPlayerss(limit: 500) {
-                items {
-                    id
-                    name
-                    photos
-                }
-            }
             summarized: getSummarizedStats(id: "_leaderboard_2018") {
                 id
                 stats
             }
             metadata: getMetaData(id: "_metadata") {
                 id
+                activePlayers
                 allYears
                 perYear
             }

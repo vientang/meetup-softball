@@ -9,20 +9,21 @@ const LeaderCard = ({ leaders, stat }) => (
         <li className={componentStyles.leaderStatTitle}>
             <span>{stat.toUpperCase()}</span>
         </li>
-        {leaders.map((player, i) => (
-            <li key={player.id} className={componentStyles.leaderCardItem}>
-                {i === 0 ? (
-                    <TopPlayer meetupId={player.id} stat={formatCellValue(player[stat])} />
-                ) : (
-                    <div className={componentStyles.leaderCardItemPlayerInfo}>
-                        <span>{player.name}</span>
-                        <span className={componentStyles.leaderCardStat}>
-                            {formatCellValue(player[stat])}
-                        </span>
-                    </div>
-                )}
-            </li>
-        ))}
+        {leaders.map((player, i) => {
+            const playerStat = Number(formatCellValue(player[stat]));
+            return (
+                <li key={player.id} className={componentStyles.leaderCardItem}>
+                    {i === 0 ? (
+                        <TopPlayer meetupId={player.id} stat={playerStat} />
+                    ) : (
+                        <div className={componentStyles.leaderCardItemPlayerInfo}>
+                            <span>{player.name}</span>
+                            <span className={componentStyles.leaderCardStat}>{playerStat}</span>
+                        </div>
+                    )}
+                </li>
+            );
+        })}
     </ul>
 );
 

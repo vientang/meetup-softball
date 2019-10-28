@@ -161,6 +161,8 @@ export const createMetaData = `mutation CreateMetaData($input: CreateMetaDataInp
     recentGames
     recentGamesLength
     perYear
+    activePlayers
+    inactivePlayers
   }
 }
 `;
@@ -174,6 +176,8 @@ export const updateMetaData = `mutation UpdateMetaData($input: UpdateMetaDataInp
     recentGames
     recentGamesLength
     perYear
+    activePlayers
+    inactivePlayers
   }
 }
 `;
@@ -187,6 +191,8 @@ export const deleteMetaData = `mutation DeleteMetaData($input: DeleteMetaDataInp
     recentGames
     recentGamesLength
     perYear
+    activePlayers
+    inactivePlayers
   }
 }
 `;

@@ -109,7 +109,11 @@ class Player extends React.Component {
         };
 
         return (
-            <Layout filterBarOptions={filterBarOptions} loading={!dataLoaded}>
+            <Layout
+                filterBarOptions={filterBarOptions}
+                loading={!dataLoaded}
+                players={JSON.parse(metadata.activePlayers)}
+            >
                 <PlayerInfo meetupId={player.id} />
                 <CareerStats statsByField={statsByField} statsByYear={statsByYear} />
                 <GameLog stats={games} />
@@ -167,6 +171,7 @@ export const query = graphql`
         softballstats {
             metadata: getMetaData(id: "_metadata") {
                 id
+                activePlayers
                 allYears
                 perYear
             }
