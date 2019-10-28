@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import {
     fetchAllPlayers,
+    fetchNextGamesFromMeetup,
     fetchSummarizedStats,
     clearAllPlayers,
     createNewSummarizedStats,
@@ -85,4 +86,26 @@ export const useCreateLeaders = (filters, stats) => {
             createSummarizedLeaderboard();
         }
     }, [filters, stats]);
+};
+
+export const useFetchNextMeetupGames = () => {
+    const [nextGames, setNextGames] = useState([]);
+    useEffect(() => {
+        let mounted = true;
+        if (mounted) {
+            const fetchNextGame = async () => {
+                const nextGames = await fetchNextGamesFromMeetup();
+                setNextGames(nextGames);
+            };
+            fetchNextGame();
+        }
+
+        return () => {
+            if (mounted) {
+                mounted = false;
+            }
+        };
+    }, []);
+
+    return nextGames;
 };

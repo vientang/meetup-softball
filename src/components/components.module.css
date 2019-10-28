@@ -154,17 +154,24 @@
 }
 
 .join-us-title {
-    display: inline-block;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
     color: var(--white-2);
     font-size: var(--font-xsmall);
     font-weight: bold;
     text-transform: uppercase;
     line-height: 1.5;
-    transform: var(--skew-10);
 }
 
 .join-us-title:hover {
     color: var(--white-2);
+}
+
+.join-us-remaining-count {
+    font-size: var(--font-small);
+    transform: translateX(-10px);
 }
 
 .box-score-group {

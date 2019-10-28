@@ -206,6 +206,23 @@ export async function getPlayerDataFromMeetup(id) {
     return playerData;
 }
 
+export async function fetchNextGamesFromMeetup() {
+    const games = [];
+
+    await fetchJsonp(process.env.NEXT_MEETUP_GAMES_URL)
+        .then((response) => response.json())
+        .then((result) => {
+            games.push(...result.data);
+        })
+        .catch((error) => {
+            throw new Error(error);
+        });
+
+    games.sort((a, b) => new Date(a.time) - new Date(b.time));
+
+    return games;
+}
+
 /**
  * Get data from meetup api - games and players
  * Find those players in our API to get existing stats
@@ -216,7 +233,7 @@ export async function fetchGamesFromMeetup() {
 
     const games = [];
 
-    await fetchJsonp(process.env.GAMES_URL)
+    await fetchJsonp(process.env.PAST_MEETUP_GAMES_URL)
         .then((response) => response.json())
         .then((result) => {
             result.data.forEach((game) => {
