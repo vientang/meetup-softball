@@ -88,6 +88,7 @@ const LeaderBoard = (props) => {
             filterBarOptions={filterBarOptions}
             loading={!leaders}
             players={JSON.parse(metadata.activePlayers)}
+            inactivePlayers={JSON.parse(metadata.inactivePlayers)}
         >
             <div className={pageStyles.leaderBoardPage}>
                 {leaders[0] &&
@@ -111,6 +112,7 @@ export const query = graphql`
                 id
                 activePlayers
                 allYears
+                inactivePlayers
                 perYear
             }
         }

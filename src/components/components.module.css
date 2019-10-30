@@ -256,6 +256,15 @@
 .box-score-results > span {
     font-weight: bold;
 }
+
+.search-icon {
+    cursor: pointer;
+}
+
+.option-inactive {
+    font-size: 12px;
+    color: var(--grey-2);
+}
 /**********************/
 
 /* STATS TABLE */

@@ -20,7 +20,16 @@ const metaData = [
     },
 ];
 
-const Layout = ({ className, children, filterBarOptions, loading, players, style, uri }) => (
+const Layout = ({
+    className,
+    children,
+    filterBarOptions,
+    inactivePlayers,
+    loading,
+    players,
+    style,
+    uri,
+}) => (
     <StaticQuery
         query={graphql`
             query SiteTitleQuery {
@@ -43,6 +52,7 @@ const Layout = ({ className, children, filterBarOptions, loading, players, style
                     <ActionBar
                         disabled={disabled}
                         filterBarOptions={filterBarOptions}
+                        inactivePlayers={inactivePlayers}
                         players={players}
                         uri={uri}
                     />
@@ -62,12 +72,14 @@ Layout.propTypes = {
     children: PropTypes.node.isRequired,
     filterBarOptions: PropTypes.shape(),
     loading: PropTypes.bool,
+    inactivePlayers: PropTypes.arrayOf(PropTypes.shape),
     players: PropTypes.arrayOf(PropTypes.shape),
     style: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
     uri: PropTypes.string,
 };
 Layout.defaultProps = {
     filterBarOptions: {},
+    inactivePlayers: [],
     players: [],
 };
 

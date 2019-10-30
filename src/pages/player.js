@@ -113,6 +113,7 @@ class Player extends React.Component {
                 filterBarOptions={filterBarOptions}
                 loading={!dataLoaded}
                 players={JSON.parse(metadata.activePlayers)}
+                inactivePlayers={JSON.parse(metadata.inactivePlayers)}
             >
                 <PlayerInfo meetupId={player.id} />
                 <CareerStats statsByField={statsByField} statsByYear={statsByYear} />
@@ -173,6 +174,7 @@ export const query = graphql`
                 id
                 activePlayers
                 allYears
+                inactivePlayers
                 perYear
             }
         }

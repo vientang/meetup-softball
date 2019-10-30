@@ -154,6 +154,7 @@ class Stats extends React.Component {
                 filterBarOptions={filterBarOptions}
                 loading={playerStats.length === 0}
                 players={JSON.parse(metadata.activePlayers)}
+                inactivePlayers={JSON.parse(metadata.inactivePlayers)}
             >
                 <StatsTable
                     categories={statPageCategories}

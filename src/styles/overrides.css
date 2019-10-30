@@ -19,3 +19,11 @@
     border: 0;
     box-shadow: none;
 }
+
+.ant-select-dropdown {
+    box-shadow: none;
+}
+
+.ant-select-dropdown-menu {
+    max-height: 800px;
+}
