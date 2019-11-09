@@ -20,7 +20,7 @@
 				"s3TemplateURL": "https://s3.amazonaws.com/meetup-softball-master-20190902084613-deployment/amplify-cfn-templates/auth/meetupsoftball810f14c9-cloudformation-template.yml",
 				"logicalId": "authmeetupsoftball810f14c9"
 			},
-			"lastPushTimeStamp": "2019-10-28T03:22:22.891Z",
+			"lastPushTimeStamp": "2019-11-09T23:25:35.615Z",
 			"output": {
 				"AppClientSecret": "1v07hiu7ukslksfe7h9n4glmslogo8jg39emb6ldv7kg1a9aghim",
 				"UserPoolId": "us-east-1_B8ox6SDUq",
@@ -41,14 +41,14 @@
 				"securityType": "API_KEY",
 				"GraphQLAPIIdOutput": "xbbvkn6foraonabx5tyzlgoama",
 				"GraphQLAPIEndpointOutput": "https://vlupzsw6cbdyjcv43ikfbuifci.appsync-api.us-east-1.amazonaws.com/graphql",
-				"GraphQLAPIKeyOutput": "da2-klxgk56udra6hdpmgz4cyua7dm"
+				"GraphQLAPIKeyOutput": "da2-tu3idehfwzh5zkcbned5mczpbe"
 			},
 			"providerMetadata": {
 				"s3TemplateURL": "https://s3.amazonaws.com/meetup-softball-master-20190902084613-deployment/amplify-cfn-templates/api/cloudformation-template.json",
 				"logicalId": "apiSoftballStats"
 			},
-			"lastPushTimeStamp": "2019-10-28T03:22:24.277Z",
-			"lastPushDirHash": "lfUwzz0vwPejs4wVjMAr+D6INog="
+			"lastPushTimeStamp": "2019-11-09T23:25:37.736Z",
+			"lastPushDirHash": "MeZjndxWUxdZtKm0ua9/zbP1+rs="
 		}
 	},
 	"hosting": {
@@ -59,7 +59,7 @@
 				"s3TemplateURL": "https://s3.amazonaws.com/meetup-softball-master-20190902084613-deployment/amplify-cfn-templates/hosting/template.json",
 				"logicalId": "hostingS3AndCloudFront"
 			},
-			"lastPushTimeStamp": "2019-10-28T03:22:22.893Z",
+			"lastPushTimeStamp": "2019-11-09T23:25:35.616Z",
 			"output": {
 				"S3BucketSecureURL": "https://meetup-softball-20190902190346-hostingbucket-master.s3.amazonaws.com",
 				"WebsiteURL": "http://meetup-softball-20190902190346-hostingbucket-master.s3-website-us-east-1.amazonaws.com",

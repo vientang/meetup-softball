@@ -132,20 +132,7 @@ function renderOptions(players, showInactiveDrawer) {
         ]);
 }
 
-/**
- * Change the background of the page when in search mode
- * @param {Boolean} searchMode
- */
-function changeListTheme(searchMode) {
-    if (searchMode) {
-        document.body.style.setProperty('--transfer-list-background', 'rgba(0, 0, 0, 0.5)');
-    } else {
-        document.body.style.setProperty('--transfer-list-background', '#ffffff');
-    }
-}
-
 SearchBar.displayName = 'SearchBar';
-/* eslint-disable react/no-unused-prop-types */
 SearchBar.propTypes = {
     disabled: PropTypes.bool,
     players: PropTypes.arrayOf(PropTypes.shape),
