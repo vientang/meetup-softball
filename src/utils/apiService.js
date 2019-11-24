@@ -86,6 +86,10 @@ export async function fetchPlayerInfo(id) {
     return existingPlayer;
 }
 
+export async function createNewPlayerInfo(input) {
+    await API.graphql(graphqlOperation(createPlayers, input));
+}
+
 export async function submitPlayerInfo(playerInfo = []) {
     playerInfo.forEach(async (player) => {
         await API.graphql(
@@ -224,13 +228,9 @@ export async function fetchNextGamesFromMeetup() {
 }
 
 /**
- * Get data from meetup api - games and players
- * Find those players in our API to get existing stats
- * Merge each player name and meetup id with the stats categories
+ * Fetch past 5 games from meetup api
  */
-export async function fetchGamesFromMeetup() {
-    const lastGameTimeStamp = await this.getLastGameRecorded();
-
+export async function fetchGamesFromMeetup(lastGameTimeStamp) {
     const games = [];
 
     await fetchJsonp(process.env.PAST_MEETUP_GAMES_URL)
@@ -241,6 +241,7 @@ export async function fetchGamesFromMeetup() {
                 if (lastGameTimeStamp >= game.time) {
                     return;
                 }
+                // include games played after the last game
                 games.push(createGame(game));
             });
         })
@@ -255,7 +256,7 @@ export async function fetchGamesFromMeetup() {
 }
 
 export async function fetchRsvpList(gameId) {
-    const RSVPS = `${process.env.RSVP_URL}${gameId}/attendance?&sign=true&photo-host=public`;
+    const RSVPS = `${process.env.RSVP_URL}/${gameId}/attendance?&sign=true&photo-host=public`;
 
     let rsvpList = await fetchJsonp(RSVPS)
         .then((response) => response.json())
@@ -265,7 +266,7 @@ export async function fetchRsvpList(gameId) {
         });
 
     rsvpList = await rsvpList.map((player) =>
-        fetchJsonp(`${process.env.PLAYER_URL}${player.member.id}?&sign=true&photo-host=public`)
+        fetchJsonp(`${process.env.PLAYER_URL}/${player.member.id}?&sign=true&photo-host=public`)
             .then((response) => response.json())
             .then((playerResult) => playerResult),
     );

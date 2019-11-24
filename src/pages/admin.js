@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
+import { graphql } from 'gatsby';
 import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
 import { withAuthenticator, SignIn, Greetings } from 'aws-amplify-react';
@@ -11,17 +12,13 @@ import {
     SortTeams,
     SuccessImage,
 } from '../components';
-import {
-    createNewPlayerStats,
-    fetchAllGames,
-    fetchGamesFromMeetup,
-    fetchPlayerStats,
-    fetchRsvpList,
-    submitNewGameStats,
-    updateExistingPlayer,
-} from '../utils/apiService';
-import { mergePlayerStats, mergeGameStats } from '../utils/statsCalc';
-import { createPlayer, findCurrentGame, filterCurrentGame, sortTimeStamp } from '../utils/helpers';
+import { fetchGamesFromMeetup, fetchRsvpList } from '../utils/apiService';
+import SummarizeStats from '../utils/SummarizeStats';
+import GameStats from '../utils/GameStats';
+import PlayerStats, { mergePlayerStats } from '../utils/PlayerStats';
+import PlayerInfo from '../utils/PlayerInfo';
+import MetaData from '../utils/MetaData';
+import { createPlayer, getFieldName, findCurrentGame, filterCurrentGame } from '../utils/helpers';
 import styles from './pages.module.css';
 
 class Admin extends React.Component {
@@ -42,9 +39,12 @@ class Admin extends React.Component {
      */
     async componentDidMount() {
         this.mounted = true;
-        const games = await fetchGamesFromMeetup();
+        const allFields = JSON.parse(get(this.props.data, 'softballstats.metadata.allFields', {}));
 
+        const lastGameTimeStamp = this.getLastGameRecorded();
+        const games = await fetchGamesFromMeetup(lastGameTimeStamp);
         const currentGame = games[0];
+        currentGame.field = getFieldName(currentGame, allFields);
         currentGame.players = await this.getCurrentGamePlayers(currentGame);
 
         if (this.mounted) {
@@ -61,16 +61,10 @@ class Admin extends React.Component {
     }
 
     getLastGameRecorded = async () => {
-        const lastGameRecorded = localStorage.getItem('lastGameRecorded');
-
-        if (lastGameRecorded) {
-            return lastGameRecorded;
-        }
-
-        const games = await fetchAllGames();
-        const gamesSorted = games.sort(sortTimeStamp);
-
-        return Number(gamesSorted[0].timeStamp);
+        const recentGames = JSON.parse(
+            get(this.props.data, 'softballstats.metadata.recentGames', [{}]),
+        );
+        return Number(recentGames[0].timeStamp);
     };
 
     getCurrentGamePlayers = async (currentGame = {}) => {
@@ -85,54 +79,28 @@ class Admin extends React.Component {
     };
 
     /**
-     * Update a players game log or create a new player
-     * @param {Array} currentPlayers
-     */
-    submitPlayerStats = async (currentPlayers = []) => {
-        currentPlayers.forEach(async (player) => {
-            const existingPlayer = await fetchPlayerStats(player.id);
-
-            try {
-                if (existingPlayer) {
-                    // player already exists in database
-                    const { id, games } = existingPlayer;
-                    const parsedGames = JSON.parse(games);
-                    const updatedGames = [player.games[0], ...parsedGames];
-                    await updateExistingPlayer({
-                        input: { id },
-                        games: JSON.stringify(updatedGames),
-                    });
-                } else {
-                    // player does not yet exist in database
-                    const newPlayer = {
-                        ...player,
-                        games: JSON.stringify(player.games),
-                    };
-                    await createNewPlayerStats({ input: newPlayer });
-                }
-            } catch (e) {
-                throw new Error(`Error saving player ${existingPlayer.name}: ${e}`);
-            }
-        });
-    };
-
-    submitGameStats = async (gameStats) => {
-        await submitNewGameStats({ input: gameStats });
-    };
-
-    /**
      * Submit updated stats to PlayerStats & GameStats
      */
     handleSubmitData = async (winners, losers, selectedGameId) => {
+        const {
+            data: {
+                softballstats: { metadata },
+            },
+        } = this.props;
         const { currentGame, games } = this.state;
-        const playerStats = await mergePlayerStats(currentGame, winners, losers);
-        this.submitPlayerStats(playerStats);
 
-        const gameStats = await mergeGameStats(currentGame, winners, losers);
-        this.submitGameStats(gameStats);
+        const stats = mergePlayerStats(currentGame, winners, losers);
 
+        await PlayerStats.save(stats);
+        await SummarizeStats.save(currentGame, stats);
+        await GameStats.save(currentGame, winners, losers);
+        await PlayerInfo.save(winners, losers);
+        await MetaData.save(metadata, currentGame, winners, losers);
+
+        const allFields = JSON.parse(metadata.allFields) || {};
         const remainingGames = games.filter((game) => game.id !== selectedGameId);
         const nextGame = remainingGames[0];
+        nextGame.field = getFieldName(nextGame, allFields);
         nextGame.players = await this.getCurrentGamePlayers(remainingGames[0]);
 
         this.setState(() => {
@@ -143,8 +111,6 @@ class Admin extends React.Component {
                 selectedGameId: get(nextGame, 'id', ''),
             };
         });
-
-        localStorage.setItem('lastGameRecorded', gameStats.timeStamp);
     };
 
     /**
@@ -156,6 +122,9 @@ class Admin extends React.Component {
         const currentGame = this.state.games.find(findCurrentGame(selectedGameId));
         const currentPlayers = await this.getCurrentGamePlayers(currentGame);
         currentGame.players = currentPlayers;
+
+        const allFields = JSON.parse(get(this.props.data, 'softballstats.metadata.allFields', {}));
+        currentGame.field = getFieldName(currentGame, allFields);
 
         this.setState(() => ({ currentGame, selectedGameId }));
     };
@@ -170,6 +139,9 @@ class Admin extends React.Component {
         const games = this.state.games.filter(filterCurrentGame(selectedGameId));
         const nextGame = games[0];
         nextGame.players = await this.getCurrentGamePlayers(games[0]);
+
+        const allFields = JSON.parse(get(this.props.data, 'softballstats.metadata.allFields', {}));
+        nextGame.field = getFieldName(nextGame, allFields);
 
         this.setState(() => ({
             currentGame: nextGame,
@@ -186,14 +158,6 @@ class Admin extends React.Component {
         const { areTeamsSorted, currentGame, games, losers, selectedGameId, winners } = this.state;
         const adminPagePath = get(this.props.pageResources, 'page.path', null);
 
-        if (isEmpty(currentGame)) {
-            return (
-                <Layout className={styles.loadingTextContainer} uri={adminPagePath}>
-                    <div className={styles.loadingText}>LOADING</div>
-                </Layout>
-            );
-        }
-
         if (!currentGame) {
             return (
                 <Layout className={styles.adminPageSuccess}>
@@ -204,7 +168,7 @@ class Admin extends React.Component {
         }
 
         return (
-            <Layout className={styles.adminPage} uri={adminPagePath}>
+            <Layout className={styles.adminPage} loading={isEmpty(currentGame)} uri={adminPagePath}>
                 <GameDetails data={currentGame} />
 
                 {areTeamsSorted ? (
@@ -227,6 +191,43 @@ class Admin extends React.Component {
         );
     }
 }
+
+// graphql aliases https://graphql.org/learn/queries/#aliases
+export const query = graphql`
+    query {
+        softballstats {
+            players: listPlayerss(limit: 500) {
+                items {
+                    id
+                    name
+                    photos
+                }
+            }
+            summarized: getSummarizedStats(id: "_2018") {
+                id
+                stats
+            }
+            allSummarized: listSummarizedStatss(limit: 500) {
+                items {
+                    id
+                    stats
+                }
+            }
+            metadata: getMetaData(id: "_metadata") {
+                id
+                activePlayers
+                allFields
+                allYears
+                inactivePlayers
+                perYear
+                recentGames
+                recentGamesLength
+                totalGamesPlayed
+                totalPlayersCount
+            }
+        }
+    }
+`;
 
 /**
  * Admin | Display sign out button | Only include these Authenticator components | Federated configurations | Theme styling

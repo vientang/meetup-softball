@@ -39,7 +39,7 @@ const TopPlayer = ({ meetupId, stat }) => {
 
 TopPlayer.propTypes = {
     meetupId: PropTypes.string,
-    stat: PropTypes.number,
+    stat: PropTypes.string,
 };
 
 export default TopPlayer;

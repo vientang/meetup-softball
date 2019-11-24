@@ -1,10 +1,10 @@
 const meetupData = {
     id: 'mu-123',
-    date: '2019-01-01',
     gameId: '235',
+    name: 'Game 235 @???? @ 1030am',
+    date: '2019-01-01',
     year: '2019',
     month: 'January',
-    name: 'Game 235 @???? @ 1030am',
     field: 'Westlake Park',
     tournamentName: 'Halloween',
 };
@@ -87,14 +87,9 @@ const mergedPlayerStats = [
     {
         id: '123',
         name: 'Fresh Basta',
-        joined: 123,
-        admin: false,
-        status: 'active',
-        gender: 'n/a',
-        photos: '{}',
-        profile: '{}',
         games: [
             {
+                id: 'zzz',
                 ab: '1',
                 battingOrder: '1',
                 o: '1',
@@ -127,16 +122,11 @@ const mergedPlayerStats = [
         ],
     },
     {
-        id: '456',
+        id: '234',
         name: 'Steven',
-        joined: 234,
-        admin: true,
-        status: 'active',
-        gender: 'n/a',
-        photos: '{}',
-        profile: '{}',
         games: [
             {
+                id: 'zzz',
                 ab: '1',
                 battingOrder: '1',
                 o: '1',

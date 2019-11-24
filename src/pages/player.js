@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { graphql } from 'gatsby';
 import { CareerStats, GameLog, Layout, PlayerInfo } from '../components';
 import { fetchPlayerStats } from '../utils/apiService';
-import { calculateTotals } from '../utils/statsCalc';
 import { buildFilterMenu } from '../utils/helpers';
 
 const defaultFilters = {
@@ -19,8 +18,6 @@ class Player extends React.Component {
             filters: defaultFilters,
             games: [],
             player: {},
-            statsByYear: [],
-            statsByField: [],
         };
     }
 
@@ -58,39 +55,10 @@ class Player extends React.Component {
     }
 
     updateState = ({ player, games }) => {
-        const allGames = player.games || [];
-
         this.setState(() => ({
-            statsByYear: this.calculateCareerStats(allGames),
-            statsByField: this.calculateFieldStats(allGames),
             games,
             player,
         }));
-    };
-
-    calculateCareerStats = (games) => {
-        const careerStats = {};
-        games.forEach((game) => {
-            if (careerStats[game.year]) {
-                careerStats[game.year] = calculateTotals(careerStats[game.year], game);
-            } else {
-                careerStats[game.year] = game;
-            }
-        });
-
-        return transformCareerStats(careerStats, 'year');
-    };
-
-    calculateFieldStats = (games) => {
-        const fieldStats = {};
-        games.forEach((game) => {
-            if (fieldStats[game.field]) {
-                fieldStats[game.field] = calculateTotals(fieldStats[game.field], game);
-            } else {
-                fieldStats[game.field] = game;
-            }
-        });
-        return transformCareerStats(fieldStats, 'field');
     };
 
     render() {
@@ -99,9 +67,9 @@ class Player extends React.Component {
                 softballstats: { metadata },
             },
         } = this.props;
-        const { filters, statsByField, statsByYear, games, player } = this.state;
+        const { filters, games, player } = this.state;
 
-        const dataLoaded = player && statsByField.length && statsByYear.length && games.length;
+        const dataLoaded = player && games.length;
         const filterBarOptions = {
             menu: buildFilterMenu(filters, metadata),
             disabled: true,
@@ -116,7 +84,7 @@ class Player extends React.Component {
                 inactivePlayers={JSON.parse(metadata.inactivePlayers)}
             >
                 <PlayerInfo meetupId={player.id} />
-                <CareerStats statsByField={statsByField} statsByYear={statsByYear} />
+                <CareerStats stats={player.games} />
                 <GameLog stats={games} />
             </Layout>
         );
@@ -156,14 +124,6 @@ function filterGameStats(filters = {}, games = []) {
             ab: game.ab,
             sac: game.sac,
         }));
-}
-
-function transformCareerStats(careerStats, key) {
-    return Object.keys(careerStats).map((type) => {
-        const stats = careerStats[type];
-        stats[key] = type;
-        return stats;
-    });
 }
 
 // graphql aliases https://graphql.org/learn/queries/#aliases

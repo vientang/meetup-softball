@@ -7,7 +7,7 @@ import componentStyles from './components.module.css';
 
 const { Option, OptGroup } = AutoComplete;
 
-const SearchBar = ({ disabled, players, showInactiveDrawer }) => {
+const SearchBar = ({ disabled, open, players, showInactiveDrawer }) => {
     const [value, setValue] = useState('');
     const [filteredSearchList, setFilteredSearchList] = useState(null);
 
@@ -41,13 +41,14 @@ const SearchBar = ({ disabled, players, showInactiveDrawer }) => {
             onChange={handleChange}
             onSelect={handleSelect}
             onSearch={handleSearch}
+            open={open}
             optionLabelProp="name"
             placeholder="Search for player"
             size="small"
             style={autoCompleteStyle}
             value={value}
         >
-            <Input suffix={<Icon type="search" />} />
+            <Input suffix={<Icon type="search" />} autoFocus />
         </AutoComplete>
     );
 };
@@ -65,6 +66,7 @@ function filterOptions(players, value, showInactiveDrawer) {
     }
 
     const playerOptions = playersMap.get(value[0]) || players;
+    playerOptions.sort((a, b) => (a.gp < b.gp ? 1 : -1));
     return ['RECENT PLAYERS']
         .map((group) => {
             return (
@@ -102,6 +104,7 @@ function filterOptions(players, value, showInactiveDrawer) {
 }
 
 function renderOptions(players, showInactiveDrawer) {
+    players.sort((a, b) => (a.gp < b.gp ? 1 : -1));
     return ['RECENT PLAYERS']
         .map((group) => {
             return (
@@ -135,12 +138,14 @@ function renderOptions(players, showInactiveDrawer) {
 SearchBar.displayName = 'SearchBar';
 SearchBar.propTypes = {
     disabled: PropTypes.bool,
+    open: PropTypes.bool,
     players: PropTypes.arrayOf(PropTypes.shape),
     showInactiveDrawer: PropTypes.func,
 };
 
 SearchBar.defaultProps = {
     disabled: false,
+    open: false,
     players: [],
 };
 

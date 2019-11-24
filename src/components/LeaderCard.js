@@ -10,7 +10,7 @@ const LeaderCard = ({ leaders, stat }) => (
             <span>{stat.toUpperCase()}</span>
         </li>
         {leaders.map((player, i) => {
-            const playerStat = Number(formatCellValue(player[stat]));
+            const playerStat = formatCellValue(player[stat]);
             return (
                 <li key={player.id} className={componentStyles.leaderCardItem}>
                     {i === 0 ? (

@@ -8,6 +8,7 @@ import componentStyles from './components.module.css';
 
 const StatsTable = (props) => {
     const {
+        adminPage,
         defaultPageSize,
         defaultSorted,
         onSortedChange,
@@ -24,7 +25,7 @@ const StatsTable = (props) => {
         fontSize: 12,
         boxShadow: '0px 0px 20px -15px #243b55',
         width: '100%',
-        minWidth: 1170,
+        minWidth: adminPage ? null : 1170,
         maxWidth: 1250,
         ...style,
     };

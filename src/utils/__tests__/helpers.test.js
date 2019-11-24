@@ -1,13 +1,17 @@
-/* eslint-disable no-undef */
 import {
-    findPlayerById,
-    formatCellValue,
+    buildFilterMenu,
     convertStatsForTable,
     convertStringStatsToNumbers,
+    createGame,
+    createPlayer,
     createSlug,
+    findPlayerById,
+    formatCellValue,
     getDefaultSortedColumn,
+    getFieldName,
     getIdFromFilterParams,
     getMeridiem,
+    parsePhotosAndProfile,
     parseStats,
     serializeStats,
 } from '../helpers';
@@ -34,7 +38,7 @@ describe('convertStatsForTable', () => {
                 name: 'playerA',
                 hr: 1,
             },
-        ]
+        ];
         expect(convertStatsForTable(stats)).toEqual(stats);
     });
 
@@ -246,4 +250,100 @@ describe('getMeridiem', () => {
         const time = undefined;
         expect(getMeridiem(time)).toBe('');
     });
+});
+
+describe('parsePhotosAndProfile', () => {
+    expect(
+        parsePhotosAndProfile({
+            photos: JSON.stringify({ highRes: 'https://' }),
+            profile: JSON.stringify({ name: 'Scoops' }),
+        }),
+    ).toEqual({
+        photos: { highRes: 'https://' },
+        profile: { name: 'Scoops' },
+    });
+});
+
+describe('getFieldName', () => {
+    it('find exact match', () => {
+        expect(getFieldName({ field: 'Jackson' }, { Jackson: 'Jackson' })).toBe('Jackson');
+    });
+
+    it('find partial match', () => {
+        expect(getFieldName({ field: 'Jackson #2' }, { Jackson: 'Jackson' })).toBe('Jackson');
+    });
+
+    it('find match with different casing', () => {
+        expect(getFieldName({ field: 'jackson' }, { Jackson: 'Jackson' })).toBe('Jackson');
+    });
+});
+
+describe('buildFilterMenu', () => {
+    const metadata = {
+        perYear: JSON.stringify({
+            2019: { fields: { Jackson: 1, Rolph: 2 }, months: ['11', '12'] },
+        }),
+    };
+    expect(buildFilterMenu({ year: '2019' }, metadata)).toEqual({
+        fields: ['Jackson', 'Rolph'],
+        years: ['2019'],
+        months: ['11', '12'],
+    });
+});
+
+describe('createGame', () => {
+    const game = {
+        id: '123',
+        local_date: '19-12',
+        local_time: '09383828',
+        name: 'Game 456',
+        rsvp_limit: 22,
+        venue: { name: 'Jackson' },
+        waitlist_count: 5,
+    };
+    expect(createGame(game).id).toBe('123');
+    expect(createGame(game).field).toBe('Jackson');
+    expect(createGame(game).gameId).toBe('456');
+    expect(createGame(game).month).toBe('12');
+    expect(createGame(game).rsvps).toBe(22);
+    expect(createGame(game).time).toBe('09383828');
+    expect(createGame(game).waitListCount).toBe(5);
+    expect(createGame(game).year).toBe('19');
+});
+
+describe('createPlayer', () => {
+    let player;
+    beforeEach(() => {
+        player = {
+            data: {
+                name: 'Juice',
+                id: '456',
+                joined: '09090909',
+                status: 'active',
+            },
+        };
+    });
+
+    it('player data', () => {
+        expect(createPlayer(player).name).toBe('Juice');
+        expect(createPlayer(player).id).toBe('456');
+        expect(createPlayer(player).joined).toBe('09090909');
+        expect(createPlayer(player).status).toBe('active');
+    });
+
+    it('null stats', () => {
+        expect(createPlayer(player).singles).toBe(null);
+        expect(createPlayer(player).doubles).toBe(null);
+        expect(createPlayer(player).triples).toBe(null);
+        expect(createPlayer(player).singles).toBe(null);
+        expect(createPlayer(player).bb).toBe(null);
+        expect(createPlayer(player).cs).toBe(null);
+        expect(createPlayer(player).hr).toBe(null);
+        expect(createPlayer(player).k).toBe(null);
+        expect(createPlayer(player).o).toBe(null);
+        expect(createPlayer(player).r).toBe(null);
+        expect(createPlayer(player).rbi).toBe(null);
+        expect(createPlayer(player).sac).toBe(null);
+        expect(createPlayer(player).sb).toBe(null);
+    })
 });

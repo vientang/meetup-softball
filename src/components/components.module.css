@@ -43,7 +43,7 @@
     position: relative;
     align-items: center;
     justify-content: space-between;
-    padding: var(--pad-1) 3rem;
+    padding: var(--pad-1) var(--pad-3);
     max-width: 100%;
     overflow: hidden;
 }
@@ -64,7 +64,7 @@
 .logo-group {
     position: fixed;
     top: var(--pad-1);
-    left: 3rem;
+    left: var(--pad-3);
 }
 
 .site-title {
@@ -124,9 +124,10 @@
 .page-layout {
     position: relative;
     flex-direction: column;
+    align-items: center;
     min-height: 900px;
     min-width: 1225px;
-    padding: 3rem;
+    padding: var(--pad-6) var(--pad-3);
     background: linear-gradient(#f5f5f5, #e2ebf0);
     overflow: hidden;
 }
@@ -435,17 +436,31 @@
 }
 
 .leader-card-item-top-player-info {
-    position: absolute;    
-    padding: var(--pad-3);
+    position: absolute;
+    align-items: flex-end;
+    padding: var(--pad-1) var(--pad-3);
+    right: 0;
     bottom: 0;
-    font-size: calc(1.5rem + 0.5vmin);
+    left: 0;
+    font-size: calc(1.2rem + 0.5vmin);
     font-weight: bold;
     color: var(--white-1);
+    line-height: normal;
     filter: drop-shadow(0.1rem 0.1rem #808080);
+    background-image: linear-gradient(
+        to top, 
+        rgba(0, 47, 75, 0.4), 
+        rgba(0, 47, 75, 0.1), transparent
+    );
 }
 
 .leader-card-item-top-player-info span:first-child {
     letter-spacing: 1.2px;
+}
+
+.leader-card-item-top-player-info span:nth-child(2) {
+    font-size: calc(1.8rem + 0.5vmin);
+    font-weight: bolder;
 }
 
 .leader-card-item-player-info {
@@ -577,7 +592,7 @@
 .filter-row {
     justify-content: space-between;
     background: var(--white-1);
-    padding: var(--pad-1) 3rem;
+    padding: var(--pad-1) var(--pad-2);
     border-bottom: 1px solid var(--grey-1);
 }
 
@@ -660,6 +675,13 @@
 /**********************/
 
 /**** PLAYER PAGE ****/
+.player-page-section,
+.player-info-card {
+    width: 100%;
+    min-width: 1170px;
+    max-width: 1250px;
+}
+
 .player-page-section {
     margin: var(--margin-3) 0 0;
 }
@@ -674,9 +696,6 @@
 
 .player-info-card {
     justify-content: space-between;
-    width: 100%;
-    min-width: 1170px;
-    max-width: 1250px;
     height: 250px;
     padding: var(--pad-3);
     background: var(--white-1);

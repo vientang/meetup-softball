@@ -10,9 +10,17 @@ import {
     getRunsCreated,
 } from './statsCalc';
 
+export async function asyncForEach(array, callback) {
+    for (let index = 0; index < array.length; index += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        await callback(array[index], index, array);
+    }
+}
+
 /**
  * Schema matching GameStats
  * Adaptor to create game object from meetup data and admin stats
+ * tested
  * @param {Object} player
  */
 export function createGame(game) {
@@ -43,8 +51,7 @@ export function createGame(game) {
 }
 
 /**
- * Schema matching PlayerStats
- * Adaptor to create player object from meetup data and admin stats
+ * Create player object from game rsvps for admin page
  * @param {Object} player
  */
 export function createPlayer(player) {
@@ -72,6 +79,7 @@ export function createPlayer(player) {
     };
 }
 
+// tested
 export function buildFilterMenu(filters, metadata) {
     const { year } = filters;
     const options = JSON.parse(metadata.perYear);
@@ -84,6 +92,23 @@ export function buildFilterMenu(filters, metadata) {
     };
 }
 
+/**
+ * Creates an object with properties that match the specified key.
+ * @param {Array} values
+ * @param {String} key
+ */
+export function mapByKey(values, key) {
+    return values.reduce((acc, value) => {
+        if (acc[value[key]]) {
+            acc[value[key]].push(value);
+        } else {
+            acc[value[key]] = [];
+            acc[value[key]].push(value);
+        }
+        return acc;
+    }, {});
+}
+
 export function findCurrentGame(selectedGameId) {
     return (game) => game.id === selectedGameId;
 }
@@ -92,6 +117,16 @@ export function filterCurrentGame(selectedGameId) {
     return (game) => game.id !== selectedGameId;
 }
 
+// tested
+export function getFieldName(game = {}, allFields) {
+    const currentField = (game.field || '').toLowerCase();
+    const existingField = Object.values(allFields).find((field) =>
+        currentField.includes(field.toLowerCase()),
+    );
+    return existingField || currentField;
+}
+
+// tested
 export function createSlug(name) {
     let slug = name
         .split(' ')
@@ -115,6 +150,7 @@ export function parseCurrentMonth(date) {
 
 /**
  * Parse the profile and photos object from meetup
+ * tested
  * @param {Object} players
  * @return {Object}
  */
@@ -125,6 +161,7 @@ export function parsePhotosAndProfile(player) {
     };
 }
 
+// tested
 export function getMeridiem(time) {
     if (time) {
         return Number(time.substring(0, 2)) < 12 ? 'am' : 'pm';
@@ -132,6 +169,7 @@ export function getMeridiem(time) {
     return '';
 }
 
+// tested
 export function getDefaultSortedColumn(id, desc) {
     return [{ id, desc }];
 }
@@ -157,6 +195,7 @@ export function sortByYear(a, b) {
     return Number(a.year) < Number(b.year) ? 1 : -1;
 }
 
+// tested
 export function convertStatsForTable(stats) {
     if (!stats) {
         return null;
@@ -167,6 +206,7 @@ export function convertStatsForTable(stats) {
     return Object.values(stats);
 }
 
+// tested
 export function convertStringStatsToNumbers(stats) {
     const { ab, r, singles, doubles, triples, hr, rbi, bb, k, sac, sb } = stats;
     return {
@@ -186,17 +226,19 @@ export function convertStringStatsToNumbers(stats) {
 
 /**
  * Lookup player in an array or object
+ * tested
  */
 export function findPlayerById(id, players) {
     if (!id || !players) {
         return null;
     }
     if (Array.isArray(players)) {
-        return players.find((player) => player.id === id);
+        return players.find((player) => Number(player.id) === Number(id));
     }
     return players[id];
 }
 
+// tested
 export function serializeStats(stats) {
     if (!stats || typeof stats !== 'object') {
         return null;
@@ -204,6 +246,7 @@ export function serializeStats(stats) {
     return JSON.stringify(stats);
 }
 
+// tested
 export function parseStats(stats) {
     if (Array.isArray(stats)) {
         return stats;
@@ -221,9 +264,11 @@ export function parseStats(stats) {
 
     return JSON.parse(stats);
 }
+
 /**
  * Use properties of argument to construct an id
  * Order is important - year > month > field
+ * tested
  */
 export function getIdFromFilterParams({ year, month, field } = {}) {
     if (!year && !month && !field) {
@@ -247,6 +292,7 @@ export function getIdFromFilterParams({ year, month, field } = {}) {
 /**
  * Format cell value to 4 decimal points
  * 0.567 becomes .567 || 1.234567 becomes 1.234 || 0.8 becomes .800
+ * tested
  * @param {String} value
  */
 export function formatCellValue(value) {
@@ -255,7 +301,6 @@ export function formatCellValue(value) {
     }
 
     const formattedValue = value.toString() || '';
-
     if (formattedValue.includes('.')) {
         // remove leading zero
         if (formattedValue.substring(0, 2) === '0.') {

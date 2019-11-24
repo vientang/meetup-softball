@@ -1,6 +1,6 @@
 const rateStats = ['avg', 'obp', 'ops', 'woba'];
 
-// used in StatsLegend
+// stat definitions used in StatsLegend
 const definitions = {
     // write definitions for stats using key/value pairs. These will be seen on // stats table
     rc: {
@@ -248,6 +248,7 @@ const splitStatCategories = [
 const gameProperties = [
     'date',
     'field',
+    'id',
     'lat',
     'lon',
     'month',

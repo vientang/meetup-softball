@@ -9,6 +9,8 @@
     "rules": {
         "prettier/prettier": ["error"],
         "camelcase": ["off"],
+        "no-undef": 0,
+        "no-underscore-dangle": 0,
         "no-use-before-define": ["error", { "functions": false, "classes": true }],
         "react/jsx-filename-extension": [
             1,

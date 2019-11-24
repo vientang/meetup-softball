@@ -1,86 +1,4 @@
-import omit from 'lodash/omit';
 import pick from 'lodash/pick';
-import { gameProperties, playerProfileKeys } from './constants';
-
-/**
- * GAMESTATS Adaptor to combine data from meetup and current game stats
- * @param {Array} meetupData - data from meetup api
- * @param {Array} w - winners
- * @param {Array} l - losers
- * @return {Object} currentGameStats
- */
-export function mergeGameStats(meetupData, w, l) {
-    const currentGameStats = omit(meetupData, ['players']);
-    const isTie = getTeamRunsScored(w) === getTeamRunsScored(l);
-
-    const winningTeam = addDerivedStats(w, isTie, true);
-    const losingTeam = addDerivedStats(l, isTie, false);
-
-    const winners = {
-        name: 'Winners',
-        runsScored: getTeamRunsScored(winningTeam),
-        totalHits: getTeamTotalHits(winningTeam),
-        players: winningTeam,
-    };
-    const losers = {
-        name: 'Losers',
-        runsScored: getTeamRunsScored(losingTeam),
-        totalHits: getTeamTotalHits(losingTeam),
-        players: losingTeam,
-    };
-
-    currentGameStats.winners = JSON.stringify(winners);
-    currentGameStats.losers = JSON.stringify(losers);
-
-    return currentGameStats;
-}
-
-/**
- * PLAYERSTATS Adaptor to combine data from meetup and current game stats
- * @param {Array} meetupData - data from meetup api
- * @param {Array} w - winners
- * @param {Array} l - losers
- * @return {Array} list of players and their stats
- */
-export function mergePlayerStats(meetupData, w, l) {
-    const currentGameStats = pick(meetupData, gameProperties);
-    const isTie = getTeamRunsScored(w) === getTeamRunsScored(l);
-    const winners = createPlayerData(addDerivedStats(w, isTie, true), currentGameStats);
-    const losers = createPlayerData(addDerivedStats(l, isTie), currentGameStats);
-
-    return winners.concat(losers);
-}
-
-/**
- * Create player data
- * @param {*} players
- * @param {*} currentGameStats
- */
-function createPlayerData(players, currentGameStats) {
-    return players.map((player) => {
-        const gameStats = omit(player, [
-            'name',
-            'joined',
-            'meetupId',
-            'photos',
-            'profile',
-            'admin',
-        ]);
-        const playerStats = {};
-        playerStats.id = player.meetupId;
-        playerStats.name = player.name;
-        playerStats.joined = player.joined;
-        playerStats.admin = player.admin;
-        playerStats.profile = JSON.stringify(player.profile);
-        playerStats.photos = JSON.stringify(player.photos);
-        playerStats.status = player.status || 'active';
-        playerStats.gender = player.gender || 'n/a';
-        playerStats.games = [];
-        playerStats.games.push({ ...currentGameStats, ...gameStats });
-
-        return playerStats;
-    });
-}
 
 /**
  * Merge player profile properties with calculated stat totals
@@ -118,16 +36,73 @@ export function addDerivedStats(players, isTie, winner) {
 }
 
 /**
+ * Calculate total stats by specified key
+ * @param {Object} values
+ * @param {String} key
+ */
+export function calculateCareerStats(values, key) {
+    const careerStats = {};
+    Object.keys(values).forEach((val) => {
+        if (values[val].length > 1) {
+            values[val].forEach((game) => {
+                if (careerStats[val]) {
+                    careerStats[val] = calculateTotals(careerStats[val], game);
+                } else {
+                    careerStats[val] = game;
+                }
+            });
+        } else {
+            careerStats[val] = { ...values[val][0] };
+        }
+        careerStats[val].gp = values[val].length;
+    });
+    return Object.values(transformCareerStats(careerStats, key));
+}
+
+/**
+ * Maps stats by type
+ * @param {Object} careerStats
+ * @param {String} type
+ */
+export function transformCareerStats(careerStats, type) {
+    return Object.keys(careerStats).map((key) => {
+        const stats = careerStats[key];
+        stats[type] = key;
+        return stats;
+    });
+}
+
+/**
  * Calculate cumulative stats from the current game and the running total
  * @param {Object} existingStats
  * @param {Object} currentStats
  * @return {Object} updated stats for an individual player
  */
-export function calculateTotals(existingStats = {}, currentStats = {}) {
+export function calculateTotals(existingStats = {}, currentStats = {}, year) {
     if (!Object.keys(existingStats).length) {
+        // TODO: return rate stats with current stats
+        // ab, avg, h, obp, ops, rc, slg, tb, woba
+        // const totalAb = getAtBats(totalHits, totalOuts);
+        // const totalTb = getTotalBases(totalSingles, totalDoubles, totalTriples, totalHr);
+        // const cumulativeAvg = getAverage(totalHits, totalAb);
+        // const totalHits = getHits(totalSingles, totalDoubles, totalTriples, totalHr);
+        // const obp = getOnBasePercentage(totalHits, totalWalks, totalAb, totalSacs);
+        // const slg = getSlugging(totalTb, totalAb);
+        // const rc = getRunsCreated(totalHits, totalWalks, totalCs, totalTb, totalStls, totalAb);
+        // const ops = getOPS(obp, slg);
+        // const woba = getWOBA(
+        //     totalWalks,
+        //     totalSingles,
+        //     totalDoubles,
+        //     totalTriples,
+        //     totalHr,
+        //     totalAb,
+        //     totalSacs,
+        // );
+        // TODO: convert these stats to numbers
         return currentStats;
     }
-    const { bb, cs, singles, doubles, sb, triples, hr, o, sac } = currentStats;
+    const { bb, cs, gp, k, l, r, rbi, singles, doubles, sb, triples, hr, o, sac, w } = currentStats;
 
     // counting stats
     const totalSingles = addStat(singles, existingStats.singles);
@@ -158,6 +133,7 @@ export function calculateTotals(existingStats = {}, currentStats = {}) {
         totalAb,
         totalSacs,
     );
+    // console.log('career years', { year, gp })
 
     return {
         ab: totalAb,
@@ -165,20 +141,20 @@ export function calculateTotals(existingStats = {}, currentStats = {}) {
         bb: totalWalks,
         cs: totalCs,
         doubles: totalDoubles,
-        gp: addStat(currentStats.gp, existingStats.gp),
+        gp: addStat(gp, existingStats.gp),
         h: totalHits,
         hr: totalHr,
-        k: addStat(currentStats.k, existingStats.k),
-        l: addStat(currentStats.l, existingStats.l),
+        k: addStat(k, existingStats.k),
+        l: addStat(l, existingStats.l),
         o: totalOuts,
-        rbi: addStat(currentStats.rbi, existingStats.rbi),
-        r: addStat(currentStats.r, existingStats.r),
+        rbi: addStat(rbi, existingStats.rbi),
+        r: addStat(r, existingStats.r),
         sac: totalSacs,
         sb: totalStls,
         singles: totalSingles,
         tb: totalTb,
         triples: totalTriples,
-        w: addStat(currentStats.w, existingStats.w),
+        w: addStat(w, existingStats.w),
         obp,
         ops,
         rc,
@@ -187,11 +163,7 @@ export function calculateTotals(existingStats = {}, currentStats = {}) {
     };
 }
 
-function addStat(currentStat, existingStat) {
-    if (existingStat === null) {
-        return existingStat;
-    }
-
+export function addStat(currentStat = 0, existingStat = 0) {
     return Number(existingStat) + Number(currentStat);
 }
 

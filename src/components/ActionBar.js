@@ -38,6 +38,7 @@ const ActionBar = ({ className, disabled, filterBarOptions, inactivePlayers, pla
                     disabled={disabled}
                     players={players}
                     showInactiveDrawer={showInactiveDrawer}
+                    open={openActive}
                 />
                 <Drawer
                     title="Inactive players"
@@ -49,6 +50,7 @@ const ActionBar = ({ className, disabled, filterBarOptions, inactivePlayers, pla
                         disabled={disabled}
                         players={inactivePlayers}
                         showInactiveDrawer={showInactiveDrawer}
+                        open={openActive}
                     />
                 </Drawer>
             </Drawer>
@@ -61,11 +63,13 @@ ActionBar.propTypes = {
     className: PropTypes.string,
     disabled: PropTypes.bool,
     filterBarOptions: PropTypes.shape(),
+    inactivePlayers: PropTypes.arrayOf(PropTypes.shape),
     players: PropTypes.arrayOf(PropTypes.shape),
     uri: PropTypes.string,
 };
 ActionBar.defaultProps = {
     filterBarOptions: {},
+    inactivePlayers: [],
     players: [],
 };
 

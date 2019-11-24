@@ -1,5 +1,5 @@
-/* eslint-disable no-undef */
 import {
+    addStat,
     getAtBats,
     getAverage,
     getHits,
@@ -14,104 +14,24 @@ import {
     getWOBA,
     addDerivedStats,
     calculateTotals,
-    mergeGameStats,
-    mergePlayerStats,
 } from '../statsCalc';
-
 import mockAPIData from '../../../__mocks__/mockAPIData';
 
-const { meetupData, mergedPlayerStats, currentGame, currentPlayerStats } = mockAPIData;
+const { currentPlayerStats } = mockAPIData;
 
-describe('Player stats', () => {
-    const winners = [
-        {
-            name: 'Fresh Basta',
-            joined: 123,
-            meetupId: '123',
-            admin: false,
-            photos: {},
-            profile: {},
-            battingOrder: '1',
-            o: '1',
-            singles: '1',
-            doubles: '1',
-            triples: '1',
-            hr: '1',
-            rbi: '1',
-            r: '2',
-            sb: '1',
-            cs: '0',
-            k: '1',
-            bb: '1',
-            ab: '1',
-            h: '1',
-            sac: '1',
-        },
-    ];
-
-    const losers = [
-        {
-            name: 'Steven',
-            joined: 234,
-            meetupId: '456',
-            admin: true,
-            photos: {},
-            profile: {},
-            battingOrder: '1',
-            o: '1',
-            singles: '1',
-            doubles: '1',
-            triples: '1',
-            hr: '1',
-            rbi: '1',
-            r: '1',
-            sb: '1',
-            cs: '0',
-            k: '1',
-            bb: '1',
-            ab: '1',
-            h: '1',
-            sac: '1',
-        },
-    ];
-
-    it('merge player stats', () => {
-        expect(mergePlayerStats(currentGame, winners, losers)).toEqual(mergedPlayerStats);
+describe('Add stat', () => {
+    test('add 2 numbers', () => {
+        expect(addStat(1, 2)).toBe(3);
     });
-});
 
-describe('Game stats', () => {
-    it('appends current game stats to existing game stats', () => {
-        const isTie = false;
-        const winningTeam = addDerivedStats([currentPlayerStats[0]], isTie, true);
-        const losingTeam = addDerivedStats([currentPlayerStats[1]]);
+    test('add 2 string values as numbers', () => {
+        expect(addStat('1', '2')).toBe(3);
+    });
 
-        const gameStats = {
-            id: meetupData.id,
-            gameId: meetupData.gameId,
-            name: meetupData.name,
-            date: meetupData.date,
-            year: meetupData.year,
-            month: meetupData.month,
-            field: meetupData.field,
-            tournamentName: meetupData.tournamentName,
-            winners: JSON.stringify({
-                name: 'Winners',
-                runsScored: 2,
-                totalHits: 4,
-                players: [winningTeam[0]],
-            }),
-            losers: JSON.stringify({
-                name: 'Losers',
-                runsScored: 1,
-                totalHits: 4,
-                players: [losingTeam[0]],
-            }),
-        };
-
-        expect(
-            mergeGameStats(meetupData, [currentPlayerStats[0]], [currentPlayerStats[1]]),
-        ).toEqual(gameStats);
+    test('add undefined values', () => {
+        expect(addStat()).toBe(0);
+        expect(addStat(1)).toBe(1);
+        expect(addStat(undefined, 1)).toBe(1);
     });
 });
 

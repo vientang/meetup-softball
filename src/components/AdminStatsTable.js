@@ -160,7 +160,7 @@ class AdminStatsTable extends React.Component {
                     adminPage
                 />
                 <Button
-                    disabled={invalidStats}
+                    // disabled={invalidStats}
                     onClick={this.handleSubmitData}
                     tooltipMsg={tooltipMsg}
                 >
