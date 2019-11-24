@@ -208,7 +208,7 @@ export function convertStatsForTable(stats) {
 
 // tested
 export function convertStringStatsToNumbers(stats) {
-    const { ab, r, singles, doubles, triples, hr, rbi, bb, k, sac, sb } = stats;
+    const { ab, r, singles, doubles, triples, hr, rbi, bb, k, sac, sb, cs, gp, w, l, o } = stats;
     return {
         ab: Number(ab),
         r: Number(r),
@@ -221,6 +221,11 @@ export function convertStringStatsToNumbers(stats) {
         k: Number(k),
         sac: Number(sac),
         sb: Number(sb),
+        cs: Number(cs),
+        gp: Number(gp),
+        w: Number(w),
+        l: Number(l),
+        o: Number(o),
     };
 }
 

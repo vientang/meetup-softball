@@ -175,6 +175,11 @@ describe('convertStringStatsToNumbers', () => {
             k: '1',
             sac: '1',
             sb: '0',
+            cs: '0',
+            gp: '1',
+            w: '1',
+            l: '0',
+            o: '3',
         };
         expect(convertStringStatsToNumbers(stats)).toEqual({
             ab: 1,
@@ -188,6 +193,11 @@ describe('convertStringStatsToNumbers', () => {
             k: 1,
             sac: 1,
             sb: 0,
+            cs: 0,
+            gp: 1,
+            w: 1,
+            l: 0,
+            o: 3,
         });
     });
 });

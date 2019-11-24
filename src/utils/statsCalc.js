@@ -1,4 +1,5 @@
 import pick from 'lodash/pick';
+import { convertStringStatsToNumbers } from './helpers';
 
 /**
  * Merge player profile properties with calculated stat totals
@@ -78,31 +79,36 @@ export function transformCareerStats(careerStats, type) {
  * @param {Object} currentStats
  * @return {Object} updated stats for an individual player
  */
-export function calculateTotals(existingStats = {}, currentStats = {}, year) {
-    if (!Object.keys(existingStats).length) {
-        // TODO: return rate stats with current stats
-        // ab, avg, h, obp, ops, rc, slg, tb, woba
-        // const totalAb = getAtBats(totalHits, totalOuts);
-        // const totalTb = getTotalBases(totalSingles, totalDoubles, totalTriples, totalHr);
-        // const cumulativeAvg = getAverage(totalHits, totalAb);
-        // const totalHits = getHits(totalSingles, totalDoubles, totalTriples, totalHr);
-        // const obp = getOnBasePercentage(totalHits, totalWalks, totalAb, totalSacs);
-        // const slg = getSlugging(totalTb, totalAb);
-        // const rc = getRunsCreated(totalHits, totalWalks, totalCs, totalTb, totalStls, totalAb);
-        // const ops = getOPS(obp, slg);
-        // const woba = getWOBA(
-        //     totalWalks,
-        //     totalSingles,
-        //     totalDoubles,
-        //     totalTriples,
-        //     totalHr,
-        //     totalAb,
-        //     totalSacs,
-        // );
-        // TODO: convert these stats to numbers
-        return currentStats;
-    }
+export function calculateTotals(existingStats = {}, currentStats = {}) {
     const { bb, cs, gp, k, l, r, rbi, singles, doubles, sb, triples, hr, o, sac, w } = currentStats;
+    if (!existingStats || !Object.keys(existingStats).length) {
+        const { bb, cs, singles, doubles, sb, triples, hr, o, sac } = convertStringStatsToNumbers(
+            currentStats,
+        );
+
+        const hits = getHits(singles, doubles, triples, hr);
+        const atBats = getAtBats(hits, o);
+        const totalBases = getTotalBases(singles, doubles, triples, hr);
+        const average = getAverage(hits, atBats);
+        const onBasePercentage = getOnBasePercentage(hits, bb, atBats, sac);
+        const slugging = getSlugging(totalBases, atBats);
+        const runsCreated = getRunsCreated(hits, bb, cs, totalBases, sb, atBats);
+        const onBaseSlugging = getOPS(onBasePercentage, slugging);
+        const winsOba = getWOBA(bb, singles, doubles, triples, hr, atBats, sac);
+        // TODO: convert these stats to numbers
+        return {
+            ...convertStringStatsToNumbers(currentStats),
+            ab: atBats,
+            avg: average,
+            h: hits,
+            obp: onBasePercentage,
+            ops: onBaseSlugging,
+            rc: runsCreated,
+            slg: slugging,
+            tb: totalBases,
+            woba: winsOba,
+        };
+    }
 
     // counting stats
     const totalSingles = addStat(singles, existingStats.singles);
@@ -133,7 +139,6 @@ export function calculateTotals(existingStats = {}, currentStats = {}, year) {
         totalAb,
         totalSacs,
     );
-    // console.log('career years', { year, gp })
 
     return {
         ab: totalAb,
