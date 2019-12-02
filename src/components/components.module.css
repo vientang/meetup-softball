@@ -6,16 +6,10 @@
         format('woff2');
 }
 
-.admin-section,
+.action-bar,
 .box-score,
 .box-score-group,
 .box-score-heading,
-.filter-reset-container,
-.filter-row,
-.filter-row-section,
-.filter-types-group,
-.game-menu,
-.game-menu-time-section,
 .header,
 .icon-group,
 .leader-card-item-top-player-info,
@@ -27,13 +21,7 @@
 .player-info-card-group,
 .player-info-card-questions-group,
 .player-info-card-questions-list,
-.player-info-card-bio,
-.team-transfer-box-count,
-.team-transfer-list,
-.team-transfer-header,
-.team-transfer-operations,
-.team-transfer-sort-operations,
-.team-transfer-title {
+.player-info-card-bio {
     display: flex;
     box-sizing: border-box;
 }
@@ -130,6 +118,13 @@
     padding: var(--pad-6) var(--pad-3);
     background: linear-gradient(#f5f5f5, #e2ebf0);
     overflow: hidden;
+}
+
+.action-bar {
+    justify-content: space-between;
+    background: var(--white-1);
+    padding: var(--pad-1) var(--pad-2);
+    border-bottom: 1px solid var(--grey-1);
 }
 /**********************/
 
@@ -329,85 +324,6 @@
     font-style: italic;
 }
 
-/* ADMIN PAGE */
-.admin-section {
-    flex-direction: column;
-    height: fit-content;
-    width: 100%;
-    max-width: 100%;
-    min-width: 15%;
-    padding: var(--pad-3);
-    background: var(--white-1);
-    border-radius: 5px;
-    white-space: nowrap;
-}
-
-.admin-section-title {
-    color: var(--grey-2);
-    font-size: var(--font-medium);
-    font-weight: bold;
-    margin-bottom: var(--margin-3);
-    padding-bottom: var(--pad-1);
-    border-bottom: 1px solid var(--grey-0);
-}
-
-.game-details-section {
-    color: var(--grey-3);
-    font-size: var(--font-small);
-    white-space: pre-wrap;
-    overflow: hidden;
-}
-
-.game-details-section li:first-child {
-    font-weight: bold;
-}
-
-.game-menu {
-    flex-direction: column;
-    width: 100%;
-    max-width: 100%;
-}
-
-.game-menu-item {
-    background-color: transparent;
-    border-bottom: 1px solid var(--grey-0);
-}
-
-.game-menu-item + .game-menu-item {
-    margin-top: var(--margin-1);
-}
-
-.game-menu-title {
-    font-size: var(--font-small);  
-    font-weight: bold;
-}
-
-.game-menu-time-section {
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--pad-1) var(--pad-2);
-    color: var(--muBlue-2);
-    line-height: normal;
-    transition: background-color 150ms ease-in;
-}
-
-.game-menu-time-section:hover {
-    background-color: var(--muBlue-2);
-    color: var(--white-1);
-    cursor: pointer;
-}
-
-.game-menu-time {
-    font-size: var(--font-small);  
-}
-
-.game-menu-close-icon {
-    margin-left: var(--margin-0);
-    font-size: var(--font-xsmall);  
-    color: var(--grey-1);
-}
-/**********************/
-
 /* LEADER CARD */
 .leader-card,
 .leader-card-item {
@@ -438,6 +354,7 @@
 .leader-card-item-top-player-info {
     position: absolute;
     align-items: flex-end;
+    height: 75px;
     padding: var(--pad-1) var(--pad-3);
     right: 0;
     bottom: 0;
@@ -449,8 +366,8 @@
     filter: drop-shadow(0.1rem 0.1rem #808080);
     background-image: linear-gradient(
         to top, 
-        rgba(0, 47, 75, 0.4), 
-        rgba(0, 47, 75, 0.1), transparent
+        rgba(0, 0, 0, 0.4), 
+        rgba(0, 0, 0, 0.2), transparent
     );
 }
 
@@ -466,211 +383,6 @@
 .leader-card-item-player-info {
     padding: var(--pad-1) var(--pad-3);
     font-size: var(--font-xlarge);
-}
-
-/**********************/
-
-/*** SORT TEAMS - TEAM TRANSFER, TRANSFER BOX, TRANSFER LIST ITEM ***/
-.team-transfer-box-container {
-    position: relative;
-    display: grid;
-    grid-template-columns: 45% 1fr 45%;
-    width: 100%;
-    max-width: 100%;
-    margin-bottom: var(--margin-3);
-    box-sizing: border-box;
-}
-
-.team-transfer-list {
-    position: relative;
-    flex: 0 0 auto;
-    flex-direction: column;
-    min-width: 250px;
-    height: 26.25rem;
-    background-color: var(--white-1);
-    box-shadow: var(--shadow-1);
-    border: 1px solid var(--border-color);
-    border-radius: 2px;
-}
-
-.team-transfer-list-items {
-    position: relative;
-    flex: 1;
-    overflow: auto;
-    outline: none;
-}
-
-.team-transfer-list-item {
-    padding: var(--pad-1);
-    cursor: pointer;
-    transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
-    outline: none;
-}
-
-.team-transfer-list-item:not(.team-transfer-list-item-focused):hover {
-    background-color: var(--blue-0);
-}
-
-.team-transfer-list-item:nth-last-child(1) {
-    border-top: 1px solid var(--grey-1);
-}
-
-.team-transfer-list-item:nth-last-child(1):hover {
-    background-color: var(--white-1);
-}
-
-.team-transfer-list-item-focused {
-    background-color: var(--blue-3);
-    color: var(--white-2);
-}
-
-.team-transfer-list-item-name {
-    font-size: var(--font-large);
-}
-
-.team-transfer-add-player {
-    font-size: var(--font-large);
-    font-style: italic;
-    color: var(--grey-2);
-}
-
-.team-transfer-header {
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--pad-0) var(--pad-2);
-    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.09);
-    color: var(--white-1);
-    font-weight: bold;
-}
-
-.team-transfer-title {
-    align-items: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: var(--font-small);
-}
-
-.team-transfer-box-count {
-    font-size: var(--font-small);
-    font-style: italic;
-    font-weight: normal;
-}
-
-.team-transfer-operations {
-    flex-direction: column;
-    align-items: center;
-    margin: auto var(--margin-3);
-}
-
-.team-transfer-operations > *:not(:last-child),
-.team-transfer-sort-operations > *:not(:last-child) {
-    margin-bottom: var(--margin-3);
-}
-
-.team-transfer-sort-operations {
-    position: absolute;
-    flex-direction: column;
-    top: calc(21.5rem / 2);
-    right: 0;
-    margin: auto var(--margin-3);
-    opacity: 0;
-    transition: opacity 200ms ease-in-out;
-}
-
-.team-transfer-list:hover .team-transfer-sort-operations {
-    opacity: 1;
-}
-
-.add-player-input {
-    border: 0;
-    width: 100%;
-}
-/**********************/
-
-/**** FILTER BAR ****/
-.filter-row {
-    justify-content: space-between;
-    background: var(--white-1);
-    padding: var(--pad-1) var(--pad-2);
-    border-bottom: 1px solid var(--grey-1);
-}
-
-.filter-row-section,
-.filter-types-group,
-.filter-reset-container {
-    align-items: center;
-}
-
-.filter-row-section {
-    flex: 1 0 auto;
-}
-
-.filter-types-group,
-.filter-reset-container {
-    min-height: 21px;
-    border-right: 1px solid var(--grey-0);
-}
-
-.filter-disabled {
-    cursor: not-allowed;
-}
-
-.filter-reset,
-.filter-labels {
-    display: block;
-    font-size: var(--font-small);
-    color: var(--grey-2);
-    transition: color 200ms ease-in-out, transform 200ms;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-}
-
-.filter-type,
-.filter-reset {
-    margin: 0 var(--margin-5);
-}
-
-.filter-labels:hover,
-.filter-reset:hover {
-    color: var(--muNavy);
-    transform: scale(1.1);
-    cursor: pointer;
-}
-
-.filter-label {
-    margin-right: var(--margin-0);
-} 
-
-.filter-label-active {
-    font-size: var(--font-xlarge);
-    font-weight: bold;
-    color: var(--grey-3);
-}
-
-.filter-label-active:hover {
-    cursor: pointer;
-}
-
-.filter-label-disabled {
-    pointer-events: none;
-}
-
-.filter-menu-item:hover > .filter-menu-item-label {
-    color: var(--muNavy);
-}
-
-.filter-menu-all-label {
-    font-style: italic;
-    font-size: 0.6rem;
-    color: var(--grey-3);
-}
-
-.filter-menu-item-label {
-    font-size: var(--font-xlarge);
-    color: var(--grey-2);
-    transition: color 200ms ease-in-out;
 }
 /**********************/
 

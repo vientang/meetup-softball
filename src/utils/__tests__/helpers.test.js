@@ -276,15 +276,15 @@ describe('parsePhotosAndProfile', () => {
 
 describe('getFieldName', () => {
     it('find exact match', () => {
-        expect(getFieldName({ field: 'Jackson' }, { Jackson: 'Jackson' })).toBe('Jackson');
+        expect(getFieldName('Jackson', { Jackson: 'Jackson' })).toBe('Jackson');
     });
 
     it('find partial match', () => {
-        expect(getFieldName({ field: 'Jackson #2' }, { Jackson: 'Jackson' })).toBe('Jackson');
+        expect(getFieldName('Jackson #2', { Jackson: 'Jackson' })).toBe('Jackson');
     });
 
     it('find match with different casing', () => {
-        expect(getFieldName({ field: 'jackson' }, { Jackson: 'Jackson' })).toBe('Jackson');
+        expect(getFieldName('jackson', { Jackson: 'Jackson' })).toBe('Jackson');
     });
 });
 

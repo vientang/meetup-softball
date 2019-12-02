@@ -83,9 +83,16 @@
 .admin-page {
     grid-template-columns: 15% 65% 1fr;
     grid-gap: var(--pad-3);
+    align-items: flex-start;
     max-width: 100%;
     padding: var(--pad-3);
     background: linear-gradient(#f5f5f5, #e2ebf0);
+}
+
+.admin-page-column {
+    display: grid;
+    grid-column: 1;
+    row-gap: var(--pad-3);
 }
 
 .admin-page-success {

@@ -3,10 +3,11 @@ import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import { Button } from 'antd';
 import TransferBox from './TransferBox';
-import componentStyles from './components.module.css';
+import styles from './transfer.module.css';
 
 const WINNERS = 'WINNERS';
 const LOSERS = 'LOSERS';
+
 class TeamTransfer extends React.Component {
     constructor(props) {
         super(props);
@@ -185,11 +186,13 @@ class TeamTransfer extends React.Component {
 
     render() {
         const { targetList, focusedItem, sourceList } = this.state;
-        const allRsvpIds = [...sourceList, ...targetList].map((player) => player.id);
+        const allRsvpIds = [...sourceList, ...targetList]
+            .map((player) => player.id)
+            .filter(Boolean);
         const buttonProps = { size: 'small', shape: 'circle' };
 
         return (
-            <div className={componentStyles.teamTransferBoxContainer}>
+            <div className={styles.teamTransferBoxContainer}>
                 <TransferBox
                     allRsvpIds={allRsvpIds}
                     focusedItem={focusedItem}
@@ -200,7 +203,7 @@ class TeamTransfer extends React.Component {
                     onMoveUp={this.handleUp}
                     onMoveDown={this.handleDown}
                 />
-                <div className={componentStyles.teamTransferOperations}>
+                <div className={styles.teamTransferOperations}>
                     <Button onClick={this.handleMoveToTarget} icon="right" {...buttonProps} />
                     <Button onClick={this.handleMoveToSource} icon="left" {...buttonProps} />
                 </div>
@@ -220,7 +223,9 @@ class TeamTransfer extends React.Component {
 }
 
 function addBattingOrder(players) {
-    return players.map((player, i) => ({ ...player, battingOrder: i + 1 }));
+    return players
+        .map((player, i) => ({ ...player, battingOrder: i + 1 }))
+        .filter((player) => player.id);
 }
 
 function sortBattingOrder({ focusedItem, list, direction }) {
@@ -249,7 +254,6 @@ function sortBattingOrder({ focusedItem, list, direction }) {
 }
 
 TeamTransfer.propTypes = {
-    /* eslint-disable react/no-unused-prop-types */
     gameId: PropTypes.string,
     onChange: PropTypes.func,
     players: PropTypes.arrayOf(PropTypes.shape()),

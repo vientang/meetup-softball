@@ -104,3 +104,53 @@ export async function submitSummarizedStats(stats) {
     //     }
     // });
 }
+
+/**
+ * SummarizedStats might have multiple entries for the same player
+ * These functioms will combine multiple entries into one
+ * @param {Object} stats - pre-summarized stats that should be corrected
+ * @param {String} id - id of the summarized record i.e. _2019_01
+ */
+export function resolveMultiples(stats, id) {
+    let summarizedStats = stats;
+    if (typeof stats === 'string') {
+        summarizedStats = JSON.parse(stats);
+    }
+
+    const allPlayers = findDifference(summarizedStats);
+    const mergedPlayerStats = mergeDifferences(allPlayers);
+
+    updateSummarized({
+        input: {
+            id,
+            stats: JSON.stringify(mergedPlayerStats),
+        },
+    });
+}
+
+function mergeDifferences(players) {
+    return Object.keys(players).map((playerId) => {
+        const values = players[playerId];
+        return values.reduce((acc, currGame) => {
+            if (values.length === 1) {
+                return currGame;
+            }
+            return { ...calculateTotals(acc, currGame), id: playerId, name: currGame.name };
+        }, {});
+    });
+}
+
+function findDifference(stats) {
+    return stats.reduce((acc, curr) => {
+        if (!acc[curr.id]) {
+            acc[curr.id] = [curr];
+        } else {
+            acc[curr.id].push(curr);
+        }
+        return acc;
+    }, {});
+}
+
+async function updateSummarized(input) {
+    await updateExistingSummarizedStats(input);
+}

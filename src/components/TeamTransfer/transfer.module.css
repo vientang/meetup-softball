@@ -1,0 +1,126 @@
+.team-transfer-box-count,
+.team-transfer-list,
+.team-transfer-header,
+.team-transfer-operations,
+.team-transfer-sort-operations,
+.team-transfer-title {
+    display: flex;
+    box-sizing: border-box;
+}
+
+/*** SORT TEAMS - TEAM TRANSFER, TRANSFER BOX, TRANSFER LIST ITEM ***/
+.team-transfer-box-container {
+    position: relative;
+    display: grid;
+    grid-template-columns: 45% 1fr 45%;
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: var(--margin-3);
+    box-sizing: border-box;
+}
+
+.team-transfer-list {
+    position: relative;
+    flex: 0 0 auto;
+    flex-direction: column;
+    min-width: 250px;
+    height: 26.25rem;
+    background-color: var(--white-1);
+    box-shadow: var(--shadow-1);
+    border: 1px solid var(--border-color);
+    border-radius: 2px;
+}
+
+.team-transfer-list-items {
+    position: relative;
+    flex: 1;
+    overflow: auto;
+    outline: none;
+}
+
+.team-transfer-list-item {
+    padding: var(--pad-1);
+    cursor: pointer;
+    transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
+    outline: none;
+}
+
+.team-transfer-list-item:not(.team-transfer-list-item-focused):hover {
+    background-color: var(--blue-0);
+}
+
+.team-transfer-list-item:nth-last-child(1) {
+    border-top: 1px solid var(--grey-1);
+}
+
+.team-transfer-list-item:nth-last-child(1):hover {
+    background-color: var(--white-1);
+}
+
+.team-transfer-list-item-focused {
+    background-color: var(--blue-3);
+    color: var(--white-2);
+}
+
+.team-transfer-list-item-name {
+    font-size: var(--font-large);
+}
+
+.team-transfer-add-player {
+    font-size: var(--font-large);
+    font-style: italic;
+    color: var(--grey-2);
+}
+
+.team-transfer-header {
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--pad-0) var(--pad-2);
+    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.09);
+    color: var(--white-1);
+    font-weight: bold;
+}
+
+.team-transfer-title {
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: var(--font-small);
+}
+
+.team-transfer-box-count {
+    font-size: var(--font-small);
+    font-style: italic;
+    font-weight: normal;
+}
+
+.team-transfer-operations {
+    flex-direction: column;
+    align-items: center;
+    margin: auto var(--margin-3);
+}
+
+.team-transfer-operations > *:not(:last-child),
+.team-transfer-sort-operations > *:not(:last-child) {
+    margin-bottom: var(--margin-3);
+}
+
+.team-transfer-sort-operations {
+    position: absolute;
+    flex-direction: column;
+    top: calc(21.5rem / 2);
+    right: 0;
+    margin: auto var(--margin-3);
+    opacity: 0;
+    transition: opacity 200ms ease-in-out;
+}
+
+.team-transfer-list:hover .team-transfer-sort-operations {
+    opacity: 1;
+}
+
+.add-player-input {
+    border: 0;
+    width: 100%;
+}

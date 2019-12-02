@@ -23,6 +23,7 @@ class Player extends React.Component {
 
     async componentDidMount() {
         this.mounted = true;
+
         const { filters, location } = this.props;
 
         const playerId = location.href.split('=').pop();

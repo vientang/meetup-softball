@@ -1,20 +1,10 @@
-import {
-    getAtBats,
-    getAverage,
-    getHits,
-    getOnBasePercentage,
-    getOPS,
-    getSlugging,
-    getTotalBases,
-    getWOBA,
-    getRunsCreated,
-} from './statsCalc';
-
 export async function asyncForEach(array, callback) {
+    const results = [];
     for (let index = 0; index < array.length; index += 1) {
-        // eslint-disable-next-line no-await-in-loop
-        await callback(array[index], index, array);
+        // await callback(array[index], index, array);
+        results.push(callback(array[index], index, array));
     }
+    return Promise.all(results);
 }
 
 /**
@@ -118,10 +108,10 @@ export function filterCurrentGame(selectedGameId) {
 }
 
 // tested
-export function getFieldName(game = {}, allFields) {
-    const currentField = (game.field || '').toLowerCase();
-    const existingField = Object.values(allFields).find((field) =>
-        currentField.includes(field.toLowerCase()),
+export function getFieldName(field = '', allFields) {
+    const currentField = field.toLowerCase();
+    const existingField = Object.values(allFields).find((fieldName) =>
+        currentField.includes(fieldName.toLowerCase()),
     );
     return existingField || currentField;
 }
@@ -324,90 +314,6 @@ export function formatCellValue(value) {
     return formattedValue || '0';
 }
 
-export function getRateStatTotal(games, statToCount) {
-    // switch case for each rate stat and calculate for setTopLeaders
-    // think about how to involve getCountingStatTotal
-    // test in utils.test.js
-    const hits = getHits(
-        getCountingStatTotal(games, 'singles'),
-        getCountingStatTotal(games, 'doubles'),
-        getCountingStatTotal(games, 'triples'),
-        getCountingStatTotal(games, 'hr'),
-    );
-
-    // do you need to call getCountingStatTotal on all games.xxx instances?
-
-    const atBats = getAtBats(hits, getCountingStatTotal(games, 'o'));
-
-    switch (statToCount) {
-        case 'avg':
-            return getAverage(hits, atBats);
-        case 'obp':
-            return getOnBasePercentage(
-                hits,
-                getCountingStatTotal(games, 'bb'),
-                atBats,
-                getCountingStatTotal(games, 'sac'),
-            );
-        case 'ops':
-            return getOPS(
-                getOnBasePercentage(
-                    hits,
-                    getCountingStatTotal(games, 'bb'),
-                    atBats,
-                    getCountingStatTotal(games, 'sac'),
-                ),
-                getSlugging(
-                    getTotalBases(
-                        getCountingStatTotal(games, 'singles'),
-                        getCountingStatTotal(games, 'doubles'),
-                        getCountingStatTotal(games, 'triples'),
-                        getCountingStatTotal(games, 'hr'),
-                    ),
-                    atBats,
-                ),
-            );
-
-        case 'woba':
-            return getWOBA(
-                getCountingStatTotal(games, 'bb'),
-                getCountingStatTotal(games, 'singles'),
-                getCountingStatTotal(games, 'doubles'),
-                getCountingStatTotal(games, 'triples'),
-                getCountingStatTotal(games, 'hr'),
-                atBats,
-                getCountingStatTotal(games, 'sac'),
-            );
-        default:
-            return 0;
-    }
-}
-
-export function getRunsCreatedTotal(games) {
-    const hits = getHits(
-        getCountingStatTotal(games, 'singles'),
-        getCountingStatTotal(games, 'doubles'),
-        getCountingStatTotal(games, 'triples'),
-        getCountingStatTotal(games, 'hr'),
-    );
-
-    const atBats = getAtBats(hits, getCountingStatTotal(games, 'o'));
-    const totalBases = getTotalBases(
-        getCountingStatTotal(games, 'singles'),
-        getCountingStatTotal(games, 'doubles'),
-        getCountingStatTotal(games, 'triples'),
-        getCountingStatTotal(games, 'hr'),
-    );
-
-    return getRunsCreated(
-        hits,
-        getCountingStatTotal(games, 'bb'),
-        getCountingStatTotal(games, 'cs'),
-        totalBases,
-        getCountingStatTotal(games, 'sb'),
-        atBats,
-    );
-}
 /** ***************************** PRIVATE FUNCTIONS ***************************** */
 function formatValueLength(value, max) {
     if (!value.includes('.')) {
@@ -424,23 +330,6 @@ function formatValueLength(value, max) {
     }
 
     return formattedValue;
-}
-
-// Loop through all players
-// Calculate their counting stat totals
-// Check if it belongs in the top 5
-// If yes, save the player name and stat total
-// If no, don't save
-function getCountingStatTotal(games, statToCount) {
-    return games.reduce((acc, cur) => {
-        let total = acc;
-        if (typeof cur[statToCount] === 'number') {
-            total += cur[statToCount];
-        } else {
-            total += 0;
-        }
-        return total;
-    }, 0);
 }
 
 /** ***************************** END OF PRIVATE FUNCTIONS ***************************** */

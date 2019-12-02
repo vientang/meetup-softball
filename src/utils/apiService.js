@@ -149,8 +149,7 @@ export async function submitSerializeSummary(summarized) {
 
 /** META DATA */
 export async function fetchMetaData() {
-    // eslint-disable-next-line prettier/prettier
-    let metadata = await API.graphql(graphqlOperation(getMetaData, { id: "_metadata" }));
+    let metadata = await API.graphql(graphqlOperation(getMetaData, { id: '_metadata' }));
     metadata = get(metadata, 'data.getMetaData', null);
     return metadata;
 }

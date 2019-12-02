@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Icon, AutoComplete } from 'antd';
-import { fetchAllPlayers } from '../utils/apiService';
-import componentStyles from './components.module.css';
+import { fetchAllPlayers } from '../../utils/apiService';
+import styles from './transfer.module.css';
 
 const { Option } = AutoComplete;
 
@@ -12,17 +12,25 @@ const AddPlayer = ({ allRsvpIds, listCount, listType, onAddPlayer }) => {
     const [playerMenu, setPlayerMenu] = useState([]);
 
     useEffect(() => {
-        async function fetchData() {
-            let allPlayersList = await fetchAllPlayers();
-            allPlayersList = allPlayersList.filter((player) => {
-                const playerFound = allRsvpIds.find(
-                    (playerId) => playerId.toString() === player.id,
-                );
-                return !playerFound;
-            });
-            setAllPlayers(allPlayersList);
-        }
-        fetchData();
+        let isMounted = true;
+
+        // async function fetchData() {
+        //     if (isMounted) {
+        //         let allPlayersList = await fetchAllPlayers();
+        //         allPlayersList = allPlayersList.filter((player) => {
+        //             const playerFound = allRsvpIds.find(
+        //                 (playerId) => playerId.toString() === player.id,
+        //             );
+        //             return !playerFound;
+        //         });
+        //         setAllPlayers(allPlayersList);
+        //     }
+        // }
+
+        // fetchData();
+        return () => {
+            isMounted = false;
+        };
     }, [listCount]);
 
     const handleSearchMode = async () => {
@@ -55,8 +63,8 @@ const AddPlayer = ({ allRsvpIds, listCount, listType, onAddPlayer }) => {
     const iconStyle = { color: '#88c559', marginRight: '0.3rem' };
 
     return (
-        <div className={componentStyles.teamTransferListItem} onClick={handleSearchMode}>
-            <span className={componentStyles.teamTransferAddPlayer}>
+        <div className={styles.teamTransferListItem} onClick={handleSearchMode}>
+            <span className={styles.teamTransferAddPlayer}>
                 <Icon type="plus-circle" style={iconStyle} />
                 {!searchMode ? (
                     'add player'
@@ -71,7 +79,7 @@ const AddPlayer = ({ allRsvpIds, listCount, listType, onAddPlayer }) => {
                         size="small"
                         style={autoCompleteStyle}
                     >
-                        <input type="text" className={componentStyles.addPlayerInput} />
+                        <input type="text" className={styles.addPlayerInput} />
                     </AutoComplete>
                 )}
             </span>

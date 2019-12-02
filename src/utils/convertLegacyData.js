@@ -1,8 +1,14 @@
 /* eslint-disable no-restricted-syntax, no-await-in-loop */
-import { fetchPlayerStats, fetchSummarizedStats, getPlayerDataFromMeetup } from './apiService';
+import {
+    fetchMetaData,
+    fetchPlayerStats,
+    fetchSummarizedStats,
+    getPlayerDataFromMeetup,
+} from './apiService';
 import { calculateTotals, getHits, getOuts } from './statsCalc';
 import {
     convertStringStatsToNumbers,
+    getFieldName,
     getIdFromFilterParams,
     parseCurrentYear,
     parseCurrentMonth,
@@ -10,7 +16,7 @@ import {
 
 const legacyPlayerStats = new Map();
 const legacyPlayers = new Map();
-const legacyGameList = new Map();
+const legacyGames = new Map();
 const legacySummarizedStats = new Map();
 const gameIds = new Map();
 const currentGameData = new Map();
@@ -21,41 +27,44 @@ const CURRENT_GAME_SIZE = 513;
  * @param {Array}
  * @return {Array}
  */
-export async function convertLegacyPlayerData(data) {
+export async function convertLegacyPlayerData(data, allFields) {
     for (const datum of data) {
-        const legacyPlayerId = `${datum.id}`;
-        const legacyStats = await getLegacyPlayerStats(legacyPlayerId);
-
+        const playerId = `${datum.id}`;
+        // locate player in local map or in database
+        const existingPlayer = await findPlayer(playerId);
         // format game data and calculate stats
-        const gameData = buildGameData(datum);
-        const gameStats = buildGameStats(datum, legacyStats);
+        const gameData = buildGameData(datum, allFields);
+        const gameStats = buildGameStats(datum, existingPlayer);
 
-        if (legacyStats) {
-            legacyStats.games.push({ ...gameData, ...gameStats });
+        if (existingPlayer) {
+            existingPlayer.games.push({ ...gameData, ...gameStats });
+            legacyPlayerStats.set(playerId, existingPlayer);
         } else {
-            const playerDataFromMeetup = await getPlayerDataFromMeetup(datum.id);
+            const playerDataFromMeetup = await getPlayerDataFromMeetup(playerId);
 
             // exclude players not found
             if (!playerDataFromMeetup || playerDataFromMeetup.data.errors) {
                 continue;
             }
 
+            // PlayerStats
             const playerStats = {
-                id: `${datum.id}`,
+                id: playerId,
                 name: playerDataFromMeetup.data.name,
             };
 
+            // PlayerInfo
             const playerInfo = await adaptForPlayersAPI({
                 ...playerDataFromMeetup.data,
-                id: datum.id,
-                gender: Number(datum.gender),
+                id: playerId,
+                gender: getGender(Number(datum.gender)),
             });
 
             try {
                 playerStats.games = [];
                 playerStats.games.push({ ...gameData, ...gameStats });
-                legacyPlayerStats.set(legacyPlayerId, playerStats);
-                legacyPlayers.set(legacyPlayerId, playerInfo);
+                legacyPlayerStats.set(playerId, playerStats);
+                legacyPlayers.set(playerId, playerInfo);
             } catch (error) {
                 throw new Error(error);
             }
@@ -68,27 +77,32 @@ export async function convertLegacyPlayerData(data) {
     };
 }
 
-export function convertLegacyGameData(data) {
-    for (const datum of data) {
-        const legacyPlayerId = `${datum.id}`;
-        const playerDataFromMeetup = getPlayerDataForGameStats(legacyPlayerId);
+async function findPlayer(id) {
+    return legacyPlayerStats.get(id) || fetchPlayerStats(id);
+}
 
-        // member data no longer available on meetup
-        if (!playerDataFromMeetup) {
+export async function convertLegacyGameData(data, allFields) {
+    for (const datum of data) {
+        const playerId = `${datum.id}`;
+        const playerData = getPlayerDataForGameStats(playerId);
+
+        // playerData was determined in convertLegacyPlayerData
+        // does not exist if a players meetup account was closed
+        if (!playerData) {
             continue;
         }
 
         // get player stats && add derived stats
-        const playerStats = getPlayerStatsWithDerivedStats(datum);
+        const playerStats = buildGameStats(datum);
         const { singles, doubles, triples, hr, r } = playerStats;
         const hits = getHits(singles, doubles, triples, hr);
 
         // combine data and stats
-        const player = { ...playerDataFromMeetup, ...playerStats };
+        const player = { ...playerData, ...playerStats };
 
         // set up game data properties - date, field, time, gameId, etc.
-        const gameData = buildGameData(datum);
-        const legacyGame = legacyGameList.get(gameData.gameId);
+        const gameData = buildGameData(datum, allFields);
+        const legacyGame = legacyGames.get(gameData.gameId);
         const isWinner = isOnWinningTeam(datum);
 
         if (legacyGame) {
@@ -101,6 +115,8 @@ export function convertLegacyGameData(data) {
                 legacyGame.losers.totalHits += hits;
                 legacyGame.losers.players.push(player);
             }
+
+            legacyGames.set(gameData.gameId, legacyGame);
         } else {
             gameData.winners = buildTeamData('Winners');
             gameData.losers = buildTeamData('Losers');
@@ -115,39 +131,57 @@ export function convertLegacyGameData(data) {
                 gameData.losers.players.push(player);
             }
 
-            legacyGameList.set(gameData.gameId, gameData);
+            legacyGames.set(gameData.gameId, gameData);
         }
     }
 
-    return [...legacyGameList.values()];
+    return [...legacyGames.values()];
+}
+
+/**
+ * Get player data from legacyPlayerStats map
+ * Then remove games - not needed for GameStats
+ * @param {String} playerId
+ */
+function getPlayerDataForGameStats(playerId) {
+    const playerData = legacyPlayerStats.get(playerId);
+
+    if (!playerData) {
+        return null;
+    }
+
+    return {
+        id: playerData.id,
+        name: playerData.name,
+    };
 }
 
 export function buildSummarizedStats(games) {
     for (const game of games) {
         const { field, month, year } = game;
         const filterYear = getIdFromFilterParams({ year });
-        updateSummarizedStats(game, filterYear);
+        calculateSummarized(game, filterYear);
         const filterMonth = getIdFromFilterParams({ month });
-        updateSummarizedStats(game, filterMonth);
+        calculateSummarized(game, filterMonth);
         const filterYearMonth = getIdFromFilterParams({ year, month });
-        updateSummarizedStats(game, filterYearMonth);
+        calculateSummarized(game, filterYearMonth);
         const filterYearMonthField = getIdFromFilterParams({ year, month, field });
-        updateSummarizedStats(game, filterYearMonthField);
+        calculateSummarized(game, filterYearMonthField);
         const filterMonthField = getIdFromFilterParams({ month, field });
-        updateSummarizedStats(game, filterMonthField);
+        calculateSummarized(game, filterMonthField);
         const filterYearField = getIdFromFilterParams({ year, field });
-        updateSummarizedStats(game, filterYearField);
+        calculateSummarized(game, filterYearField);
         const filterField = getIdFromFilterParams({ field });
-        updateSummarizedStats(game, filterField);
+        calculateSummarized(game, filterField);
     }
     return legacySummarizedStats.entries();
 }
 
-function updateSummarizedStats(game, filter) {
-    const existingPlayers = getLegacySummarizedStats(filter);
-    if (existingPlayers) {
-        const currentPlayers = getWinnersAndLosers(game);
-        const summarizedStats = mergePlayerStatsForSummary(existingPlayers, currentPlayers);
+async function calculateSummarized(game, filter) {
+    const existingStats = await getLegacySummarizedStats(filter);
+    if (existingStats) {
+        const currentStats = getWinnersAndLosers(game);
+        const summarizedStats = mergeStatsForSummary(existingStats, currentStats);
         legacySummarizedStats.set(filter, summarizedStats);
     } else {
         const stats = getWinnersAndLosers(game);
@@ -155,11 +189,21 @@ function updateSummarizedStats(game, filter) {
     }
 }
 
+async function getLegacySummarizedStats(filterId) {
+    let legacyStats = await fetchSummarizedStats(filterId);
+    if (!legacyStats && legacySummarizedStats.has(filterId)) {
+        // if legacy stats do not exist on remote database
+        // let's get it from local
+        legacyStats = legacySummarizedStats.get(filterId);
+    }
+    return legacyStats;
+}
+
 function getWinnersAndLosers(game) {
     return game.winners.players.concat(game.losers.players);
 }
 
-function mergePlayerStatsForSummary(existingPlayers, currentPlayers) {
+function mergeStatsForSummary(existingPlayers, currentPlayers) {
     const summarizedStats = currentPlayers.map((currentPlayer) => {
         const existingPlayerIndex = existingPlayers.findIndex(
             (existing) => existing.id === currentPlayer.id,
@@ -177,12 +221,180 @@ function mergePlayerStatsForSummary(existingPlayers, currentPlayers) {
     return [...summarizedStats, ...existingPlayers];
 }
 
-function buildGameData({ date, field, time }) {
+export async function updateMetadata(games) {
+    const metadata = await fetchMetaData();
+    const allFields = JSON.parse(metadata.allFields);
+    const allYears = JSON.parse(metadata.allYears);
+    const activePlayers = JSON.parse(metadata.activePlayers);
+    const inactivePlayers = JSON.parse(metadata.inactivePlayers);
+    const perYear = JSON.parse(metadata.perYear);
+    const { totalGamesPlayed, totalPlayersCount } = metadata;
+
+    const playersToBeActive = getPlayersToBeActive(games, inactivePlayers);
+    const inactivePlayersUpdated = updateInactivePlayers(inactivePlayers, playersToBeActive);
+    const activePlayersUpdated = updateActivePlayers(games, activePlayers);
+    const potentialNewPlayers = getPotentialNewPlayers(games, activePlayers, playersToBeActive);
+    const { year, fields, months, gp } = updatePerYear(games);
+    const perYearUpdated = { ...perYear, [year]: { fields, months, gp } };
+    const newRecentGames = games.slice(-5);
+    newRecentGames.sort((a, b) => (a.timeStamp > b.timeStamp ? -1 : 1));
+    // return {
+    //     id: '_metadata',
+    //     activePlayers: JSON.stringify(
+    //         activePlayersUpdated.concat(playersToBeActive, potentialNewPlayers),
+    //     ),
+    //     inactivePlayers: JSON.stringify(inactivePlayersUpdated),
+    //     allFields: JSON.stringify(getNewFields(games, allFields)),
+    //     allYears: JSON.stringify(getNewYears(games, allYears)),
+    //     perYear: JSON.stringify(perYearUpdated),
+    //     recentGames: JSON.stringify(games.slice(-5)),
+    //     totalGamesPlayed: totalGamesPlayed + games.length,
+    //     totalPlayersCount: totalPlayersCount + potentialNewPlayers.length,
+    // };
+
+    return {
+        id: '_metadata',
+        activePlayers: activePlayersUpdated.concat(playersToBeActive, potentialNewPlayers),
+        inactivePlayers: inactivePlayersUpdated,
+        allFields: getNewFields(games, allFields),
+        allYears: getNewYears(games, allYears),
+        perYear: perYearUpdated,
+        recentGames: newRecentGames,
+        totalGamesPlayed: totalGamesPlayed + games.length,
+        totalPlayersCount: totalPlayersCount + potentialNewPlayers.length,
+    };
+}
+
+function getNewFields(games, allFields) {
+    const newFields = { ...allFields };
+    const fields = [];
+    for (const game of games) {
+        const currentField = getFieldName(game.field, allFields);
+        if (!allFields[currentField]) {
+            fields.push(currentField);
+        }
+    }
+    if (fields.length > 0) {
+        fields.forEach((field) => {
+            newFields[field] = field;
+        });
+    }
+    return newFields;
+}
+
+function getNewYears(games, allYears) {
+    const newYears = { ...allYears };
+    const years = [];
+    for (const game of games) {
+        if (!allYears[game.year]) {
+            years.push(currentField);
+        }
+    }
+    if (years.length > 0) {
+        years.forEach((year) => {
+            newYears[year] = year;
+        });
+    }
+    return newYears;
+}
+
+function getPlayersToBeActive(games, inactivePlayers) {
+    const playersToBeActive = {};
+    for (const game of games) {
+        const players = getWinnersAndLosers(game);
+        players.forEach((player) => {
+            // check if current player is inactive
+            const playerToBeActive = inactivePlayers.find(
+                (inactive) => inactive.id === player.id && !playersToBeActive[player.id],
+            );
+            if (playerToBeActive) {
+                playersToBeActive[player.id] = playerToBeActive;
+            }
+        });
+    }
+    return Object.values(playersToBeActive);
+}
+
+function updateActivePlayers(games, activePlayers) {
+    const activePlayersUpdated = {};
+    for (const game of games) {
+        const players = getWinnersAndLosers(game);
+        players.forEach((player) => {
+            // check if current player is active
+            const activePlayer = activePlayers.find(
+                (active) => active.id === player.id && !activePlayersUpdated[player.id],
+            );
+
+            if (activePlayer) {
+                // increment players games played
+                activePlayersUpdated[activePlayer.id] = {
+                    ...activePlayer,
+                    gp: activePlayer.gp + 1,
+                };
+            }
+        });
+    }
+    return Object.values(activePlayersUpdated);
+}
+
+function updateInactivePlayers(inactivePlayers, playersToBeActive) {
+    return inactivePlayers.filter((player) => player.id !== playersToBeActive.id);
+}
+
+function getPotentialNewPlayers(games, activePlayers, playersToBeActive) {
+    const potentialNewPlayers = [];
+    for (const game of games) {
+        const players = getWinnersAndLosers(game);
+        players.forEach((player) => {
+            const activePlayer = activePlayers.find((active) => active.id === player.id);
+            const toBeActivePlayer = playersToBeActive.find((toBe) => toBe.id === player.id);
+            if (!activePlayer && !toBeActivePlayer) {
+                // current player was not found to be active or inactive
+                potentialNewPlayers.push({
+                    id: player.id,
+                    name: player.name,
+                    photos: player.photos,
+                    gp: 1,
+                });
+            }
+        });
+    }
+    return potentialNewPlayers;
+}
+
+function updatePerYear(games) {
+    let currentYear;
+    const fields = {};
+    const months = [];
+    for (const game of games) {
+        const { field, month, year } = game;
+        if (!year) {
+            currentYear = year;
+        }
+        if (!fields[field]) {
+            fields[field] = 1;
+        } else {
+            fields[field] += 1;
+        }
+        if (!months.includes(month)) {
+            months.push(month);
+        }
+    }
+    return {
+        year: currentYear,
+        gp: games.length,
+        fields,
+        months,
+    };
+}
+
+function buildGameData({ date, field, time }, allFields) {
     const gameId = getGameId(date, time);
+    const fieldName = getFieldName(field, allFields);
     const gameData = {
         date: `${new Date(date)}`.slice(0, 15), // Wed Nov 13 2013
         timeStamp: `${Date.parse(`${date} ${time}`)}`,
-        field,
+        field: fieldName,
         time,
         gameId,
     };
@@ -198,7 +410,7 @@ function buildGameData({ date, field, time }) {
         // on a different game
         currentGameData.clear();
 
-        const name = `Game ${gameId} @ ${field}`;
+        const name = `Game ${gameId} @ ${fieldName}`;
         const year = parseCurrentYear(date);
         const month = parseCurrentMonth(date);
 
@@ -251,36 +463,6 @@ export function getGameId(date, time) {
 }
 
 /**
- * Get player data from legacyPlayerStats map
- * Then remove games - not needed for GameStats
- * @param {String} legacyPlayerId
- */
-function getPlayerDataForGameStats(legacyPlayerId) {
-    const playerData = legacyPlayerStats.get(legacyPlayerId);
-
-    if (!playerData) {
-        return null;
-    }
-
-    return {
-        id: playerData.id,
-        name: playerData.name,
-    };
-}
-
-function getPlayerStatsWithDerivedStats(datum) {
-    const playerStats = convertStringStatsToNumbers(datum);
-    const { ab, singles, doubles, triples, hr, sac } = playerStats;
-    const hits = getHits(singles, doubles, triples, hr);
-    playerStats.o = getOuts(ab, sac, hits);
-    playerStats.gp = 1;
-    playerStats.w = isOnWinningTeam(datum) ? 1 : 0;
-    playerStats.l = !isOnWinningTeam(datum) ? 1 : 0;
-
-    return withUntrackedStats(playerStats);
-}
-
-/**
  * Transform Meetup data properties for Players API
  * @param {Object} data
  */
@@ -319,22 +501,6 @@ function getGender(gender) {
     return gender === 1 ? 'm' : 'f';
 }
 
-async function getLegacyPlayerStats(playerId) {
-    let legacyStats = await fetchPlayerStats(playerId);
-    if (!legacyStats) {
-        legacyStats = legacyPlayerStats.get(playerId);
-    }
-    return legacyStats;
-}
-
-async function getLegacySummarizedStats(filterId) {
-    let legacyStats = await fetchSummarizedStats(filterId);
-    if (!legacyStats) {
-        legacyStats = legacySummarizedStats.get(filterId);
-    }
-    return legacyStats;
-}
-
 /**
  * Set time, timeStamp, tournamentName, lat and lon to null
  */
@@ -357,5 +523,5 @@ function withUntrackedStats(stats) {
         battingOrder: null,
         cs: null,
     };
-    return { ...untracked, ...stats };
+    return { ...stats, ...untracked };
 }

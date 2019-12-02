@@ -169,6 +169,7 @@ const adminStatCategories = [
     'rbi',
     'r',
     'sac',
+    'potg',
 ];
 
 const careerStatCatsByYear = [

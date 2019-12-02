@@ -1,25 +1,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from 'antd';
-import componentStyles from './components.module.css';
+import styles from './dashboard.module.css';
 
-const AdminSection = ({ children, iconColor, iconType, title }) => {
+const AdminSection = ({ children, iconColor, iconType, style, title, theme }) => {
     const iconStyle = {
         fontSize: 16,
         marginRight: '0.5rem',
     };
 
-    let theme = 'twoTone';
+    let iconTheme = theme;
 
     if (iconColor) {
         iconStyle.color = iconColor;
-        theme = null;
+        iconTheme = null;
     }
 
     return (
-        <div className={componentStyles.adminSection}>
-            <p className={componentStyles.adminSectionTitle}>
-                <Icon type={iconType} style={iconStyle} theme={theme} />
+        <div className={styles.adminSection} style={style}>
+            <p className={styles.adminSectionTitle}>
+                <Icon type={iconType} style={iconStyle} theme={iconTheme} />
                 {title}
             </p>
             {children}
@@ -32,7 +32,11 @@ AdminSection.propTypes = {
     children: PropTypes.node,
     iconColor: PropTypes.string,
     iconType: PropTypes.string,
+    style: PropTypes.shape(),
     title: PropTypes.string,
+    theme: PropTypes.string,
 };
-
+AdminSection.defaultProps = {
+    theme: 'twoTone',
+};
 export default AdminSection;

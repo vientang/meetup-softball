@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import StatsTable from './StatsTable';
 import AdminSection from './AdminSection';
-import Button from './Button';
-import { sortByNameLength } from '../utils/helpers';
-import { adminStatCategories } from '../utils/constants';
-import { getAtBats, getHits } from '../utils/statsCalc';
-import componentStyles from './components.module.css';
+import StatsTable from '../StatsTable';
+import Button from '../Button';
+import { sortByNameLength } from '../../utils/helpers';
+import { adminStatCategories } from '../../utils/constants';
+import { getAtBats, getHits } from '../../utils/statsCalc';
+import styles from './dashboard.module.css';
 import 'react-table/react-table.css';
 
 class AdminStatsTable extends React.Component {
@@ -141,7 +141,7 @@ class AdminStatsTable extends React.Component {
 
         return (
             <AdminSection title="ENTER STATS" iconType="table" iconColor="#1890ff">
-                <p className={componentStyles.adminSectionTitle}>WINNERS</p>
+                <p className={styles.adminSectionTitle}>WINNERS</p>
                 <StatsTable
                     stats={winners}
                     categories={adminStatCategories}
@@ -150,7 +150,7 @@ class AdminStatsTable extends React.Component {
                     sortMethod={sortByNameLength}
                     adminPage
                 />
-                <p className={componentStyles.adminSectionTitle}>LOSERS</p>
+                <p className={styles.adminSectionTitle}>LOSERS</p>
                 <StatsTable
                     stats={losers}
                     categories={adminStatCategories}

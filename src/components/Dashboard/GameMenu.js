@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from 'antd';
-import { getMeridiem } from '../utils/helpers';
-import componentStyles from './components.module.css';
+import { getMeridiem } from '../../utils/helpers';
+import styles from './dashboard.module.css';
 
 const iconStyle = {
     fontSize: 16,
@@ -10,12 +10,12 @@ const iconStyle = {
 };
 
 const GameMenu = (props) => (
-    <div className={componentStyles.adminSection}>
-        <p className={componentStyles.adminSectionTitle}>
+    <div className={styles.adminSection}>
+        <p className={styles.adminSectionTitle}>
             <Icon type="profile" theme="twoTone" style={iconStyle} />
             GAMES MENU
         </p>
-        <ul className={componentStyles.gameMenu}>
+        <ul className={styles.gameMenu}>
             <MenuItems {...props} />
         </ul>
     </div>
@@ -27,8 +27,8 @@ function MenuItems(props) {
 
     return datesPlayed.map((date) => {
         return (
-            <li key={date} className={componentStyles.gameMenuItem}>
-                <p className={componentStyles.gameMenuTitle}>{date.toUpperCase()}</p>
+            <li key={date} className={styles.gameMenuItem}>
+                <p className={styles.gameMenuTitle}>{date.toUpperCase()}</p>
                 {getGamesByDate(games, date, props).map((game) => game)}
             </li>
         );
@@ -56,24 +56,12 @@ function getGamesByDate(games, date, props) {
             const meridiem = getMeridiem(game.time);
 
             gamesByDate.push(
-                <div
-                    key={game.id}
-                    className={componentStyles.gameMenuTimeSection}
-                    style={menuItemStyle}
-                >
-                    <span
-                        id={game.id}
-                        className={componentStyles.gameMenuTime}
-                        onClick={onGameSelection}
-                    >
+                <div key={game.id} className={styles.gameMenuTimeSection} style={menuItemStyle}>
+                    <span id={game.id} className={styles.gameMenuTime} onClick={onGameSelection}>
                         {game.time}
                         {meridiem}
                     </span>
-                    <span
-                        id={game.id}
-                        className={componentStyles.gameMenuCloseIcon}
-                        onClick={onGameCancel}
-                    >
+                    <span id={game.id} className={styles.gameMenuCloseIcon} onClick={onGameCancel}>
                         x
                     </span>
                 </div>,

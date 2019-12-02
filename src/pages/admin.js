@@ -1,17 +1,18 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
+import PropTypes from 'prop-types';
 import { graphql } from 'gatsby';
 import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
 import { withAuthenticator, SignIn, Greetings } from 'aws-amplify-react';
+import { Layout } from '../components';
 import {
     AdminStatsTable,
     GameDetails,
     GameMenu,
-    Layout,
+    PlayerOfTheGame,
     SortTeams,
     SuccessImage,
-} from '../components';
+} from '../components/Dashboard';
 import { fetchGamesFromMeetup, fetchRsvpList } from '../utils/apiService';
 import SummarizeStats from '../utils/SummarizeStats';
 import GameStats from '../utils/GameStats';
@@ -44,7 +45,7 @@ class Admin extends React.Component {
         const lastGameTimeStamp = this.getLastGameRecorded();
         const games = await fetchGamesFromMeetup(lastGameTimeStamp);
         const currentGame = games[0];
-        currentGame.field = getFieldName(currentGame, allFields);
+        currentGame.field = getFieldName(currentGame.field, allFields);
         currentGame.players = await this.getCurrentGamePlayers(currentGame);
 
         if (this.mounted) {
@@ -100,7 +101,7 @@ class Admin extends React.Component {
         const allFields = JSON.parse(metadata.allFields) || {};
         const remainingGames = games.filter((game) => game.id !== selectedGameId);
         const nextGame = remainingGames[0];
-        nextGame.field = getFieldName(nextGame, allFields);
+        nextGame.field = getFieldName(nextGame.field, allFields);
         nextGame.players = await this.getCurrentGamePlayers(remainingGames[0]);
 
         this.setState(() => {
@@ -124,7 +125,7 @@ class Admin extends React.Component {
         currentGame.players = currentPlayers;
 
         const allFields = JSON.parse(get(this.props.data, 'softballstats.metadata.allFields', {}));
-        currentGame.field = getFieldName(currentGame, allFields);
+        currentGame.field = getFieldName(currentGame.field, allFields);
 
         this.setState(() => ({ currentGame, selectedGameId }));
     };
@@ -141,7 +142,7 @@ class Admin extends React.Component {
         nextGame.players = await this.getCurrentGamePlayers(games[0]);
 
         const allFields = JSON.parse(get(this.props.data, 'softballstats.metadata.allFields', {}));
-        nextGame.field = getFieldName(nextGame, allFields);
+        nextGame.field = getFieldName(nextGame.field, allFields);
 
         this.setState(() => ({
             currentGame: nextGame,
@@ -169,8 +170,10 @@ class Admin extends React.Component {
 
         return (
             <Layout className={styles.adminPage} loading={isEmpty(currentGame)} uri={adminPagePath}>
-                <GameDetails data={currentGame} />
-
+                <div className={styles.adminPageColumn}>
+                    <GameDetails data={currentGame} />
+                    <PlayerOfTheGame />
+                </div>
                 {areTeamsSorted ? (
                     <AdminStatsTable
                         winners={winners}
@@ -229,6 +232,13 @@ export const query = graphql`
     }
 `;
 
+Admin.displayName = 'Admin';
+Admin.propTypes = {
+    data: PropTypes.shape({
+        softballstats: PropTypes.shape(),
+    }),
+    pageResources: PropTypes.shape(),
+};
 /**
  * Admin | Display sign out button | Only include these Authenticator components | Federated configurations | Theme styling
  * @param { Element, Boolean, Array, Object, Object }

@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import AdminSection from './AdminSection';
-import TeamTransfer from './TeamTransfer';
-import Button from './Button';
+import TeamTransfer from '../TeamTransfer';
+import Button from '../Button';
 
 class SortTeams extends React.Component {
     constructor(props) {
@@ -49,11 +49,7 @@ class SortTeams extends React.Component {
         const buttonProps = {
             disabled: !teamsBalanced,
             onClick: this.submitSortedTeams,
-            tooltipMsg: `Teams are not balanced. You have ${
-                winners.length
-            } on the winning team and ${
-                losers.length
-            } on the losing team. Rebalance the teams and try again.`,
+            tooltipMsg: `Teams are not balanced. You have ${winners.length} on the winning team and ${losers.length} on the losing team. Rebalance the teams and try again.`,
         };
 
         return (

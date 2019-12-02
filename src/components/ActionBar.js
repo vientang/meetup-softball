@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Drawer, Icon } from 'antd';
-import FilterBar from './FilterBar';
+import FilterBar from './Filters';
 import SearchBar from './SearchBar';
 import componentStyles from './components.module.css';
 
@@ -28,7 +28,7 @@ const ActionBar = ({ className, disabled, filterBarOptions, inactivePlayers, pla
     };
 
     return (
-        <div className={`${componentStyles.filterRow} ${className}`}>
+        <div className={`${componentStyles.actionBar} ${className}`}>
             <FilterBar {...filterBarOptions} disabled={disabled} />
             <div className={componentStyles.searchIcon} onClick={showDrawer}>
                 <Icon type="search" />
