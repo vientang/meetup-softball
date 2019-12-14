@@ -72,12 +72,13 @@
 }
 
 .leader-board-page {
-    grid-template-columns: repeat(3, 30%);
+    grid-template-columns: repeat(4, 25%);
     grid-gap: 4rem;
     justify-content: center;
     width: 100%;
     min-width: 1170px;
     max-width: 1250px;
+    margin: var(--margin-7) 0;
 }
 
 .admin-page {

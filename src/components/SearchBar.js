@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link, navigate } from 'gatsby';
-import { Icon, Input, AutoComplete } from 'antd';
+import { AutoComplete } from 'antd';
 import PlayerAvatar from './PlayerAvatar';
 import componentStyles from './components.module.css';
 
@@ -27,13 +27,14 @@ const SearchBar = ({ disabled, open, players, showInactiveDrawer }) => {
         setValue(value);
     };
 
-    const dropdownStyle = { fontSize: 14, width: 420 };
+    const dropdownStyle = { fontSize: 14, width: 390 };
     const autoCompleteStyle = { width: '100%', fontSize: 12 };
 
     const searchList = filteredSearchList || renderOptions(players, showInactiveDrawer);
 
     return (
         <AutoComplete
+            autoFocus={open}
             dataSource={searchList}
             disabled={disabled}
             dropdownMatchSelectWidth={false}
@@ -47,9 +48,7 @@ const SearchBar = ({ disabled, open, players, showInactiveDrawer }) => {
             size="small"
             style={autoCompleteStyle}
             value={value}
-        >
-            <Input suffix={<Icon type="search" />} autoFocus />
-        </AutoComplete>
+        />
     );
 };
 

@@ -23,7 +23,6 @@ const StatsTable = (props) => {
 
     const statsTableStyle = {
         fontSize: 12,
-        boxShadow: '0px 0px 20px -15px #243b55',
         width: '100%',
         minWidth: adminPage ? null : 1170,
         maxWidth: 1250,

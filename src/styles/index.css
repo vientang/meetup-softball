@@ -38,6 +38,7 @@
     --blue-4: #137bc2;
     --skew-10: skew(-10deg);
     --skew-25: skew(-25deg);
+    --shadow-0: 0px 0px 15px -15px #243b55;
     --shadow-1: 0px 0px 20px -15px #243b55;
     --font-xsmall: calc(0.4rem + 0.3vmin);
     --font-small: calc(0.4rem + 0.4vmin);

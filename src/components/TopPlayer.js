@@ -27,6 +27,7 @@ const TopPlayer = ({ meetupId, stat }) => {
             <PlayerAvatar
                 image={photos.highres_link}
                 name={name}
+                shape="square"
                 style={{ width: '100%', height: 200 }}
             />
             <div className={componentStyles.leaderCardItemTopPlayerInfo}>

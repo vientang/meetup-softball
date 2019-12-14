@@ -159,6 +159,7 @@ class Stats extends React.Component {
 
         const statsTableStyle = {
             height: 800,
+            marginTop: '2rem',
         };
 
         const filterBarOptions = {

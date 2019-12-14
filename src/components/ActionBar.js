@@ -7,6 +7,7 @@ import componentStyles from './components.module.css';
 
 const ActionBar = ({ className, disabled, filterBarOptions, inactivePlayers, players, uri }) => {
     const [openActive, setOpenActive] = useState(false);
+    const [renderChildren, setRenderChildren] = useState(false);
     const [openInactive, setOpenInactive] = useState(false);
 
     if (uri === '/') {
@@ -18,6 +19,7 @@ const ActionBar = ({ className, disabled, filterBarOptions, inactivePlayers, pla
     };
     const closeDrawer = () => {
         setOpenActive(false);
+        setRenderChildren(false);
     };
 
     const showInactiveDrawer = () => {
@@ -27,32 +29,49 @@ const ActionBar = ({ className, disabled, filterBarOptions, inactivePlayers, pla
         setOpenInactive(false);
     };
 
+    const handleAfterVisibleChange = () => {
+        if (openActive) {
+            setRenderChildren(true);
+        }
+    };
+
     return (
         <div className={`${componentStyles.actionBar} ${className}`}>
             <FilterBar {...filterBarOptions} disabled={disabled} />
             <div className={componentStyles.searchIcon} onClick={showDrawer}>
                 <Icon type="search" />
             </div>
-            <Drawer title="ACTIVE PLAYERS" width={400} onClose={closeDrawer} visible={openActive}>
-                <SearchBar
-                    disabled={disabled}
-                    players={players}
-                    showInactiveDrawer={showInactiveDrawer}
-                    open={openActive}
-                />
-                <Drawer
-                    title="Inactive players"
-                    width={300}
-                    onClose={closeInactiveDrawer}
-                    visible={openInactive}
-                >
-                    <SearchBar
-                        disabled={disabled}
-                        players={inactivePlayers}
-                        showInactiveDrawer={showInactiveDrawer}
-                        open={openActive}
-                    />
-                </Drawer>
+            <Drawer
+                afterVisibleChange={handleAfterVisibleChange}
+                title="ACTIVE PLAYERS"
+                width={400}
+                onClose={closeDrawer}
+                visible={openActive}
+                destroyOnClose
+            >
+                {renderChildren && (
+                    <>
+                        <SearchBar
+                            disabled={disabled}
+                            players={players}
+                            showInactiveDrawer={showInactiveDrawer}
+                            open={openActive}
+                        />
+                        <Drawer
+                            title="Inactive players"
+                            width={300}
+                            onClose={closeInactiveDrawer}
+                            visible={openInactive}
+                        >
+                            <SearchBar
+                                disabled={disabled}
+                                players={inactivePlayers}
+                                showInactiveDrawer={showInactiveDrawer}
+                                open={openActive}
+                            />
+                        </Drawer>
+                    </>
+                )}
             </Drawer>
         </div>
     );

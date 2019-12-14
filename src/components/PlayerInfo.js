@@ -25,16 +25,10 @@ const PlayerInfo = ({ meetupId }) => {
     const { highres_link, photo_link, thumb_link } = photos;
     const playerImg = highres_link || photo_link || thumb_link;
 
-    const image = playerImg ? (
-        <img src={playerImg} className={componentStyles.playerInfoPhoto} alt={playerInfo.name} />
-    ) : (
-        <Avatar src={playerImg} size={212} shape="square" icon="user" />
-    );
-
     return (
         <div className={componentStyles.playerInfoCard}>
             <div className={componentStyles.playerInfoCardGroup}>
-                {image}
+                <Avatar src={playerImg} size={212} icon="user" shape="circle" />
                 <div className={componentStyles.playerInfoCardBio}>
                     <p className={componentStyles.playerInfoName}>{playerInfo.name}</p>
                     <p className={componentStyles.playerInfoTitle}>{title}</p>
