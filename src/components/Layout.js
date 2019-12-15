@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import cn from 'classnames';
 import Helmet from 'react-helmet';
 import { StaticQuery, graphql } from 'gatsby';
 import get from 'lodash/get';
@@ -7,8 +8,20 @@ import Header from './Header';
 import ActionBar from './ActionBar';
 import Footer from './Footer';
 import componentStyles from './components.module.css';
+import svg from '../images/softball.svg';
 
-const loadingText = 'Loading ...';
+const LoadingImage = () => {
+    return (
+        <>
+            <img src={svg} alt="loading softball" className={componentStyles.loadingImage} />
+            <span className={componentStyles.loadingText}>
+                Loading
+                <span className={componentStyles.loadingDots}>...</span>
+            </span>
+        </>
+    );
+};
+
 const metaData = [
     {
         name: 'description',
@@ -43,6 +56,11 @@ const Layout = ({
         render={(data) => {
             const title = get(data, 'site.siteMetadata.title', 'Meetup Softball');
             const disabled = filterBarOptions ? filterBarOptions.disabled : false;
+            const pageLayoutClass = cn({
+                [`${componentStyles.pageLayout}`]: true,
+                [className]: !loading,
+            });
+
             return (
                 <>
                     <Helmet title={title} meta={metaData}>
@@ -56,8 +74,8 @@ const Layout = ({
                         players={players}
                         uri={uri}
                     />
-                    <main className={`${componentStyles.pageLayout} ${className}`} style={style}>
-                        {loading ? loadingText : children}
+                    <main className={pageLayoutClass} style={style}>
+                        {loading ? <LoadingImage /> : children}
                     </main>
                     <Footer siteTitle={title} uri={uri} />
                 </>

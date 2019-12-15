@@ -69,8 +69,7 @@ class Player extends React.Component {
             },
         } = this.props;
         const { filters, games, player } = this.state;
-
-        const dataLoaded = player && games.length;
+        const dataLoaded = player.id && games.length;
         const filterBarOptions = {
             menu: buildFilterMenu(filters, metadata),
             disabled: true,
