@@ -156,8 +156,14 @@ class Admin extends React.Component {
     };
 
     render() {
+        const {
+            data: {
+                softballstats: { metadata },
+            },
+            pageResources,
+        } = this.props;
         const { areTeamsSorted, currentGame, games, losers, selectedGameId, winners } = this.state;
-        const adminPagePath = get(this.props.pageResources, 'page.path', null);
+        const adminPagePath = get(pageResources, 'page.path', null);
 
         if (!currentGame) {
             return (
@@ -182,7 +188,7 @@ class Admin extends React.Component {
                         selectedGame={selectedGameId}
                     />
                 ) : (
-                    <SortTeams data={currentGame} setTeams={this.handleSetTeams} />
+                    <SortTeams data={currentGame} setTeams={this.handleSetTeams} metadata={metadata} />
                 )}
                 <GameMenu
                     games={games}

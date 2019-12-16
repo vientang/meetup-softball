@@ -54,7 +54,12 @@ class SortTeams extends React.Component {
 
         return (
             <AdminSection title="SORT TEAMS" iconType="swap" iconColor="#1890ff">
-                <TeamTransfer gameId={gameId} onChange={this.handleChange} players={players} />
+                <TeamTransfer
+                    gameId={gameId}
+                    onChange={this.handleChange}
+                    players={players}
+                    metadata={this.props.metadata}
+                />
                 <Button {...buttonProps}>SET TEAMS</Button>
             </AdminSection>
         );
@@ -81,6 +86,7 @@ SortTeams.propTypes = {
         time: PropTypes.string,
         players: PropTypes.array,
     }),
+    metadata: PropTypes.shape(),
     setTeams: PropTypes.func,
 };
 

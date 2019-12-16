@@ -46,7 +46,12 @@
 }
 
 .team-transfer-list-item:not(.team-transfer-list-item-focused):hover {
-    background-color: var(--blue-0);
+    background: linear-gradient(
+        to left top, 
+        rgba(209, 209, 209, 0.5) 0%, 
+        var(--grey-0) 10%, 
+        var(--grey-0) 90%,
+        rgba(209, 209, 209, 0.5) 100%);
 }
 
 .team-transfer-list-item:nth-last-child(1) {
@@ -58,12 +63,19 @@
 }
 
 .team-transfer-list-item-focused {
-    background-color: var(--blue-3);
-    color: var(--white-2);
+    background: linear-gradient(
+        rgba(209, 209, 209, 0.3) 0%, 
+        var(--grey-0) 12%, 
+        var(--grey-0) 88%,
+        rgba(209, 209, 209, 0.3) 100%);
 }
 
 .team-transfer-list-item-name {
     font-size: var(--font-large);
+}
+
+.team-transfer-list-item-batting-order {
+    color: var(--grey-2);
 }
 
 .team-transfer-add-player {

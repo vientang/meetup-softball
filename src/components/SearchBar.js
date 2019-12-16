@@ -53,7 +53,7 @@ const SearchBar = ({ disabled, open, players, showInactiveDrawer }) => {
 };
 
 const playersMap = new Map();
-function filterOptions(players, value, showInactiveDrawer) {
+export function filterOptions(players, value, showInactiveDrawer) {
     const char = value && value.length === 1 ? value[0] : null;
     if (char && !playersMap.has(char)) {
         playersMap.set(

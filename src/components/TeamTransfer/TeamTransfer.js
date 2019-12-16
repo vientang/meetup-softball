@@ -185,16 +185,16 @@ class TeamTransfer extends React.Component {
     };
 
     render() {
+        const { metadata } = this.props;
         const { targetList, focusedItem, sourceList } = this.state;
-        const allRsvpIds = [...sourceList, ...targetList]
-            .map((player) => player.id)
-            .filter(Boolean);
+
         const buttonProps = { size: 'small', shape: 'circle' };
+        const allPlayers = getAllPlayers(metadata, sourceList, targetList);
 
         return (
             <div className={styles.teamTransferBoxContainer}>
                 <TransferBox
-                    allRsvpIds={allRsvpIds}
+                    allPlayers={allPlayers}
                     focusedItem={focusedItem}
                     listItems={sourceList}
                     listType={WINNERS}
@@ -208,7 +208,7 @@ class TeamTransfer extends React.Component {
                     <Button onClick={this.handleMoveToSource} icon="left" {...buttonProps} />
                 </div>
                 <TransferBox
-                    allRsvpIds={allRsvpIds}
+                    allPlayers={allPlayers}
                     focusedItem={focusedItem}
                     listItems={targetList}
                     listType={LOSERS}
@@ -220,6 +220,15 @@ class TeamTransfer extends React.Component {
             </div>
         );
     }
+}
+
+function getAllPlayers(metadata, sourceList, targetList) {
+    const rsvps = [...sourceList, ...targetList].map((player) => player.id).filter(Boolean);
+    const activePlayers = JSON.parse(metadata.activePlayers);
+    const inactivePlayers = JSON.parse(metadata.inactivePlayers);
+    return activePlayers
+        .concat(inactivePlayers)
+        .filter((player) => !rsvps.find((id) => id.toString() === player.id));
 }
 
 function addBattingOrder(players) {
@@ -255,6 +264,7 @@ function sortBattingOrder({ focusedItem, list, direction }) {
 
 TeamTransfer.propTypes = {
     gameId: PropTypes.string,
+    metadata: PropTypes.shape(),
     onChange: PropTypes.func,
     players: PropTypes.arrayOf(PropTypes.shape()),
 };

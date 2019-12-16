@@ -1,51 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Icon, AutoComplete } from 'antd';
-import { fetchAllPlayers } from '../../utils/apiService';
+import PlayerAvatar from '../PlayerAvatar';
 import styles from './transfer.module.css';
 
 const { Option } = AutoComplete;
 
-const AddPlayer = ({ allRsvpIds, listCount, listType, onAddPlayer }) => {
+const AddPlayer = ({ allPlayers, listCount, listType, onAddPlayer }) => {
     const [searchMode, setSearchMode] = useState(false);
-    const [allPlayers, setAllPlayers] = useState([]);
     const [playerMenu, setPlayerMenu] = useState([]);
+    const [value, setValue] = useState('');
 
-    useEffect(() => {
-        let isMounted = true;
-
-        // async function fetchData() {
-        //     if (isMounted) {
-        //         let allPlayersList = await fetchAllPlayers();
-        //         allPlayersList = allPlayersList.filter((player) => {
-        //             const playerFound = allRsvpIds.find(
-        //                 (playerId) => playerId.toString() === player.id,
-        //             );
-        //             return !playerFound;
-        //         });
-        //         setAllPlayers(allPlayersList);
-        //     }
-        // }
-
-        // fetchData();
-        return () => {
-            isMounted = false;
-        };
-    }, [listCount]);
+    const handleChange = (value) => {
+        setValue(value);
+    };
 
     const handleSearchMode = async () => {
         await setSearchMode(true);
     };
 
     const handleSearch = (value) => {
-        const playerNames = allPlayers
-            .filter((player) => player.name.toLowerCase().includes(value.toLowerCase()))
-            .map((player) => (
-                <Option key={player.id} value={player.name}>
-                    {player.name}
-                </Option>
-            ));
-        setPlayerMenu(playerNames);
+        if (value && value.length >= 2) {
+            setPlayerMenu(filterOptions(allPlayers, value));
+        } else {
+            setPlayerMenu([]);
+        }
     };
 
     const handleAddPlayer = (value, instance) => {
@@ -59,6 +38,7 @@ const AddPlayer = ({ allRsvpIds, listCount, listType, onAddPlayer }) => {
         setSearchMode(false);
     };
 
+    const dropdownStyle = { boxShadow: '0px 3px 10px -5px #243b55' };
     const autoCompleteStyle = { fontSize: 12, width: '90%' };
     const iconStyle = { color: '#88c559', marginRight: '0.3rem' };
 
@@ -73,9 +53,12 @@ const AddPlayer = ({ allRsvpIds, listCount, listType, onAddPlayer }) => {
                         autoFocus
                         dataSource={playerMenu}
                         dropdownMatchSelectWidth={false}
+                        dropdownStyle={dropdownStyle}
                         onBlur={handleCloseMenu}
+                        onChange={handleChange}
                         onSearch={handleSearch}
                         onSelect={handleAddPlayer}
+                        open={searchMode && !!value}
                         size="small"
                         style={autoCompleteStyle}
                     >
@@ -117,15 +100,58 @@ function createPlayer(player) {
     };
 }
 
+const playersMap = new Map();
+export function filterOptions(players, value) {
+    const char = value && value.length === 2 ? value[0] : null;
+    if (char && !playersMap.has(char)) {
+        playersMap.set(
+            char,
+            players.filter((player) =>
+                player.name ? player.name.toLowerCase()[0] === char : false,
+            ),
+        );
+    }
+    const playerOptions = playersMap.get(value[0]) || players;
+    playerOptions.sort((a, b) => (a.gp < b.gp ? 1 : -1));
+
+    return playerOptions
+        .filter((player) =>
+            player.name ? player.name.toLowerCase().includes(value.toLowerCase()) : false,
+        )
+        .map((player) => {
+            const { id, name, photos } = player;
+            return (
+                <Option key={id} value={`${name}-${id}`} name={name} id={id}>
+                    <PlayerAvatar
+                        image={photos.thumb_link}
+                        name={name}
+                        style={{
+                            marginRight: '0.5rem',
+                            border: '1px solid #f7b639',
+                        }}
+                    />
+                    {name}
+                </Option>
+            );
+        });
+}
+
 AddPlayer.propTypes = {
-    allRsvpIds: PropTypes.arrayOf(PropTypes.number),
+    allPlayers: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string,
+            name: PropTypes.string,
+            gp: PropTypes.number,
+            photos: PropTypes.shape,
+        }),
+    ),
     listType: PropTypes.string,
     onAddPlayer: PropTypes.func,
     listCount: PropTypes.number,
 };
 
 AddPlayer.defaultProps = {
-    allRsvpIds: [],
+    allPlayers: [],
 };
 
 export default AddPlayer;
