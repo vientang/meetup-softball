@@ -17,13 +17,14 @@ import {
 import { statPageCategories } from '../utils/constants';
 import pageStyles from './pages.module.css';
 import { fetchSummarizedStats } from '../utils/apiService';
-import converted from '../../__mocks__/result_2018_stats';
-import {
-    convertLegacyPlayerData,
-    convertLegacyGameData,
-    buildSummarizedStats,
-    updateMetadata,
-} from '../utils/convertLegacyData';
+// import converted from '../../__mocks__/result_2019';
+// import {
+//     convertLegacyPlayerData,
+//     convertLegacyGameData,
+//     buildSummarizedStats,
+//     updateMetadata,
+// } from '../utils/convertLegacyData';
+// import SummarizedStats from '../utils/SummarizeStats';
 
 const defaultFilters = {
     year: '2018',
@@ -51,19 +52,18 @@ class Stats extends React.Component {
         };
     }
 
-    // async componentDidMount() {
-    //     const {
-    //         data: {
-    //             softballstats: { metadata },
-    //         },
-    //     } = this.props;
-    //     const allFields = JSON.parse(metadata.allFields);
-    //     const playerStats = await convertLegacyPlayerData(converted, allFields);
-    //     const gameStats = await convertLegacyGameData(converted, allFields);
-    //     const meta = await updateMetadata(gameStats);
-    //     const summarized = buildSummarizedStats(gameStats);
-    //     console.log('gameStats', { summarized, meta, gameStats, playerStats });
-    // }
+    async componentDidMount() {
+        // const {
+        //     data: {
+        //         softballstats: { metadata },
+        //     },
+        // } = this.props;
+        // const allFields = JSON.parse(metadata.allFields);
+        // const playerStats = await convertLegacyPlayerData(converted, allFields);
+        // const gameStats = await convertLegacyGameData(converted, allFields);
+        // const meta = await updateMetadata(gameStats);
+        // const summarized = await buildSummarizedStats(gameStats);
+    }
 
     handleColumnSort = (newSorted, column) => {
         this.setState(() => ({ sortedColumn: column.id }));

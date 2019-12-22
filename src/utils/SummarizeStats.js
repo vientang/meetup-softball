@@ -5,14 +5,21 @@ import {
 } from './apiService';
 import { asyncForEach, findPlayerById, getIdFromFilterParams } from './helpers';
 import { calculateTotals } from './statsCalc';
+import createLeaderBoard from './leadersCalc';
 
 export default {
     save: async ({ year, month, field }, stats) => {
         const ids = getSummarizedIds({ year, month, field });
         const summarized = await getSummarizedStats(ids);
+        const leaders = await createLeaderBoard(summarized._2019);
         const finalStats = mergeSummarizedStats(stats, summarized, ids);
-        console.log('Summarized', { stats, ids, summarized, finalStats });
-        // await submitSummarizedStats(finalStats);
+        finalStats[`${_leaderboard_}${year}`] = leaders;
+        await submitSummarizedStats(finalStats);
+    },
+    saveLegacy: async (summarized) => {
+        const leaders2019 = await createLeaderBoard(summarized._2019);
+        summarized._leaderboard_2019 = leaders2019;
+        await submitSummarizedStats(summarized);
     },
 };
 
@@ -83,26 +90,28 @@ export function mergeSummarizedStats(stats, summarized) {
 }
 
 export async function submitSummarizedStats(stats) {
-    console.log('submitSummarizedStats', { stats });
-    // stats.forEach(async (entry) => {
-    //     try {
-    //         if (entry) {
-    //             await updateExistingSummarizedStats({
-    //                 input: { id: entry.id },
-    //                 stats: JSON.stringify(entry.stats),
-    //             });
-    //         } else {
-    //             // summarized record does not yet exist in database
-    //             const newRecord = {
-    //                 id: entry.id,
-    //                 stats: JSON.stringify(entry.stats),
-    //             };
-    //             await createNewSummarizedStats({ input: newRecord });
-    //         }
-    //     } catch (e) {
-    //         throw new Error(`Error saving summarized stats for ${entry.id}: ${e}`);
-    //     }
-    // });
+    Object.keys(stats).forEach(async (id) => {
+        const summarizedStats = JSON.stringify(stats[id]);
+        const exists = await fetchSummarizedStats(id);
+        try {
+            if (exists) {
+                await updateExistingSummarizedStats({
+                    input: { id },
+                    stats: summarizedStats,
+                });
+            } else {
+                // summarized record does not yet exist in database
+                await createNewSummarizedStats({
+                    input: {
+                        id,
+                        stats: summarizedStats,
+                    },
+                });
+            }
+        } catch (e) {
+            throw new Error(`Error saving stats for ${id}: `, e);
+        }
+    });
 }
 
 /**

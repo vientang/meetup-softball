@@ -17,13 +17,13 @@ import {
 const legacyPlayerStats = new Map();
 const legacyPlayers = new Map();
 const legacyGames = new Map();
-const legacySummarizedStats = new Map();
 const gameIds = new Map();
 const currentGameData = new Map();
+const legacySummarized = {}; // this could probably be a map too
 const CURRENT_GAME_SIZE = 513;
 
 /**
- * Convert legacy data structure to adapt to PlayerStats schema
+ * Convert legacy data structure for PlayerStats schema
  * @param {Array}
  * @return {Array}
  */
@@ -32,6 +32,7 @@ export async function convertLegacyPlayerData(data, allFields) {
         const playerId = `${datum.id}`;
         // locate player in local map or in database
         const existingPlayer = await findPlayer(playerId);
+
         // format game data and calculate stats
         const gameData = buildGameData(datum, allFields);
         const gameStats = buildGameStats(datum, existingPlayer);
@@ -53,17 +54,41 @@ export async function convertLegacyPlayerData(data, allFields) {
                 name: playerDataFromMeetup.data.name,
             };
 
-            // PlayerInfo
+            try {
+                playerStats.games = [];
+                playerStats.games.push({ ...gameData, ...gameStats });
+                legacyPlayerStats.set(playerId, playerStats);
+            } catch (error) {
+                throw new Error(error);
+            }
+        }
+    }
+
+    return [...legacyPlayerStats.values()];
+}
+
+/**
+ * Updates a players basic information based from Meetups API
+ * @param {Array}
+ * @return {Array}
+ */
+export async function updateLegacyPlayerInfo(data) {
+    for (const datum of data) {
+        const playerId = `${datum.id}`;
+        // locate player in legacyPlayers map
+        const existingPlayer = await findPlayerInfo(playerId);
+        if (!existingPlayer) {
+            const playerDataFromMeetup = await getPlayerDataFromMeetup(playerId);
+            // exclude players not found
+            if (!playerDataFromMeetup || playerDataFromMeetup.data.errors) {
+                continue;
+            }
             const playerInfo = await adaptForPlayersAPI({
                 ...playerDataFromMeetup.data,
                 id: playerId,
                 gender: getGender(Number(datum.gender)),
             });
-
             try {
-                playerStats.games = [];
-                playerStats.games.push({ ...gameData, ...gameStats });
-                legacyPlayerStats.set(playerId, playerStats);
                 legacyPlayers.set(playerId, playerInfo);
             } catch (error) {
                 throw new Error(error);
@@ -71,14 +96,15 @@ export async function convertLegacyPlayerData(data, allFields) {
         }
     }
 
-    return {
-        playerStats: [...legacyPlayerStats.values()],
-        playerInfo: [...legacyPlayers.values()],
-    };
+    return [...legacyPlayers.values()];
 }
 
 async function findPlayer(id) {
     return legacyPlayerStats.get(id) || fetchPlayerStats(id);
+}
+
+async function findPlayerInfo(id) {
+    return legacyPlayers.get(id);
 }
 
 export async function convertLegacyGameData(data, allFields) {
@@ -156,25 +182,26 @@ function getPlayerDataForGameStats(playerId) {
     };
 }
 
-export function buildSummarizedStats(games) {
+export async function buildSummarizedStats(games) {
     for (const game of games) {
         const { field, month, year } = game;
         const filterYear = getIdFromFilterParams({ year });
-        calculateSummarized(game, filterYear);
+        await calculateSummarized(game, filterYear);
         const filterMonth = getIdFromFilterParams({ month });
-        calculateSummarized(game, filterMonth);
+        await calculateSummarized(game, filterMonth);
         const filterYearMonth = getIdFromFilterParams({ year, month });
-        calculateSummarized(game, filterYearMonth);
+        await calculateSummarized(game, filterYearMonth);
         const filterYearMonthField = getIdFromFilterParams({ year, month, field });
-        calculateSummarized(game, filterYearMonthField);
+        await calculateSummarized(game, filterYearMonthField);
         const filterMonthField = getIdFromFilterParams({ month, field });
-        calculateSummarized(game, filterMonthField);
+        await calculateSummarized(game, filterMonthField);
         const filterYearField = getIdFromFilterParams({ year, field });
-        calculateSummarized(game, filterYearField);
+        await calculateSummarized(game, filterYearField);
         const filterField = getIdFromFilterParams({ field });
-        calculateSummarized(game, filterField);
+        await calculateSummarized(game, filterField);
     }
-    return legacySummarizedStats.entries();
+
+    return legacySummarized;
 }
 
 async function calculateSummarized(game, filter) {
@@ -182,19 +209,19 @@ async function calculateSummarized(game, filter) {
     if (existingStats) {
         const currentStats = getWinnersAndLosers(game);
         const summarizedStats = mergeStatsForSummary(existingStats, currentStats);
-        legacySummarizedStats.set(filter, summarizedStats);
+        legacySummarized[filter] = summarizedStats;
     } else {
         const stats = getWinnersAndLosers(game);
-        legacySummarizedStats.set(filter, stats);
+        legacySummarized[filter] = stats;
     }
 }
 
 async function getLegacySummarizedStats(filterId) {
     let legacyStats = await fetchSummarizedStats(filterId);
-    if (!legacyStats && legacySummarizedStats.has(filterId)) {
+    if (!legacyStats && legacySummarized[filterId]) {
         // if legacy stats do not exist on remote database
         // let's get it from local
-        legacyStats = legacySummarizedStats.get(filterId);
+        legacyStats = legacySummarized[filterId];
     }
     return legacyStats;
 }
@@ -233,36 +260,44 @@ export async function updateMetadata(games) {
     const playersToBeActive = getPlayersToBeActive(games, inactivePlayers);
     const inactivePlayersUpdated = updateInactivePlayers(inactivePlayers, playersToBeActive);
     const activePlayersUpdated = updateActivePlayers(games, activePlayers);
-    const potentialNewPlayers = getPotentialNewPlayers(games, activePlayers, playersToBeActive);
+    const newPlayers = getNewPlayers(games, activePlayers, playersToBeActive);
+    const totalActives = getTotalActivePlayers(activePlayers, activePlayersUpdated);
+    const allActivePlayers2019 = totalActives.concat(playersToBeActive, newPlayers);
     const { year, fields, months, gp } = updatePerYear(games);
     const perYearUpdated = { ...perYear, [year]: { fields, months, gp } };
     const newRecentGames = games.slice(-5);
     newRecentGames.sort((a, b) => (a.timeStamp > b.timeStamp ? -1 : 1));
-    // return {
-    //     id: '_metadata',
-    //     activePlayers: JSON.stringify(
-    //         activePlayersUpdated.concat(playersToBeActive, potentialNewPlayers),
-    //     ),
-    //     inactivePlayers: JSON.stringify(inactivePlayersUpdated),
-    //     allFields: JSON.stringify(getNewFields(games, allFields)),
-    //     allYears: JSON.stringify(getNewYears(games, allYears)),
-    //     perYear: JSON.stringify(perYearUpdated),
-    //     recentGames: JSON.stringify(games.slice(-5)),
-    //     totalGamesPlayed: totalGamesPlayed + games.length,
-    //     totalPlayersCount: totalPlayersCount + potentialNewPlayers.length,
-    // };
 
+    // console.log('playersToBeActive should be 14', playersToBeActive);
+    // console.log('inactivePlayersUpdated should be 265', inactivePlayersUpdated);
+    // console.log('activePlayersUpdated should be 72', activePlayersUpdated);
+    // console.log('newPlayers should be 42', newPlayers);
+    // console.log('total active players should be same as before', totalActives);
+    // console.log('all active players should be be 191', allActivePlayers2019);
+    // console.log('perYearUpdated should combine 2019 data', perYearUpdated);
+    // console.log('totalPlayersCount should be 454', totalPlayersCount + newPlayers.length);
     return {
         id: '_metadata',
-        activePlayers: activePlayersUpdated.concat(playersToBeActive, potentialNewPlayers),
-        inactivePlayers: inactivePlayersUpdated,
-        allFields: getNewFields(games, allFields),
-        allYears: getNewYears(games, allYears),
-        perYear: perYearUpdated,
-        recentGames: newRecentGames,
+        activePlayers: JSON.stringify(allActivePlayers2019),
+        inactivePlayers: JSON.stringify(inactivePlayersUpdated),
+        allFields: JSON.stringify(getNewFields(games, allFields)),
+        allYears: JSON.stringify(getNewYears(games, allYears)),
+        perYear: JSON.stringify(perYearUpdated),
+        recentGames: JSON.stringify(newRecentGames),
         totalGamesPlayed: totalGamesPlayed + games.length,
-        totalPlayersCount: totalPlayersCount + potentialNewPlayers.length,
+        totalPlayersCount: totalPlayersCount + newPlayers.length,
     };
+    // return {
+    //     id: '_metadata',
+    //     activePlayers: allActivePlayers2019,
+    //     inactivePlayers: inactivePlayersUpdated,
+    //     allFields: getNewFields(games, allFields),
+    //     allYears: getNewYears(games, allYears),
+    //     perYear: perYearUpdated,
+    //     recentGames: newRecentGames,
+    //     totalGamesPlayed: totalGamesPlayed + games.length,
+    //     totalPlayersCount: totalPlayersCount + newPlayers.length,
+    // };
 }
 
 function getNewFields(games, allFields) {
@@ -287,7 +322,7 @@ function getNewYears(games, allYears) {
     const years = [];
     for (const game of games) {
         if (!allYears[game.year]) {
-            years.push(currentField);
+            years.push(game.year);
         }
     }
     if (years.length > 0) {
@@ -301,8 +336,7 @@ function getNewYears(games, allYears) {
 function getPlayersToBeActive(games, inactivePlayers) {
     const playersToBeActive = {};
     for (const game of games) {
-        const players = getWinnersAndLosers(game);
-        players.forEach((player) => {
+        getWinnersAndLosers(game).forEach((player) => {
             // check if current player is inactive
             const playerToBeActive = inactivePlayers.find(
                 (inactive) => inactive.id === player.id && !playersToBeActive[player.id],
@@ -318,48 +352,74 @@ function getPlayersToBeActive(games, inactivePlayers) {
 function updateActivePlayers(games, activePlayers) {
     const activePlayersUpdated = {};
     for (const game of games) {
-        const players = getWinnersAndLosers(game);
-        players.forEach((player) => {
+        getWinnersAndLosers(game).forEach((player) => {
             // check if current player is active
-            const activePlayer = activePlayers.find(
-                (active) => active.id === player.id && !activePlayersUpdated[player.id],
-            );
+            if (!activePlayersUpdated[player.id]) {
+                const activePlayer = activePlayers.find((active) => active.id === player.id);
 
-            if (activePlayer) {
-                // increment players games played
-                activePlayersUpdated[activePlayer.id] = {
-                    ...activePlayer,
-                    gp: activePlayer.gp + 1,
-                };
+                if (activePlayer) {
+                    // increment players games played
+                    activePlayersUpdated[activePlayer.id] = {
+                        ...activePlayer,
+                        gp: activePlayer.gp + 1,
+                    };
+                }
+            } else {
+                activePlayersUpdated[player.id].gp += 1;
             }
         });
     }
     return Object.values(activePlayersUpdated);
 }
 
+/**
+ * Pull out any inactive player who will be activated
+ * @param {Array} inactivePlayers
+ * @param {Array} playersToBeActive
+ */
 function updateInactivePlayers(inactivePlayers, playersToBeActive) {
-    return inactivePlayers.filter((player) => player.id !== playersToBeActive.id);
+    return inactivePlayers.filter(
+        (player) => !playersToBeActive.find((activePlayer) => activePlayer.id === player.id),
+    );
 }
 
-function getPotentialNewPlayers(games, activePlayers, playersToBeActive) {
-    const potentialNewPlayers = [];
+/**
+ * Get players who were not found to be active or inactive
+ * @param {Array} games
+ * @param {Array} activePlayers
+ * @param {Array} playersToBeActive includes inactive players who will be activated
+ */
+function getNewPlayers(games, activePlayers, playersToBeActive) {
+    const newPlayers = {};
     for (const game of games) {
-        const players = getWinnersAndLosers(game);
-        players.forEach((player) => {
-            const activePlayer = activePlayers.find((active) => active.id === player.id);
-            const toBeActivePlayer = playersToBeActive.find((toBe) => toBe.id === player.id);
-            if (!activePlayer && !toBeActivePlayer) {
-                // current player was not found to be active or inactive
-                potentialNewPlayers.push({
-                    id: player.id,
-                    name: player.name,
-                    photos: player.photos,
-                    gp: 1,
-                });
+        getWinnersAndLosers(game).forEach((player) => {
+            if (!newPlayers[player.id]) {
+                const activePlayer = activePlayers.find((active) => active.id === player.id);
+                const toBeActivePlayer = playersToBeActive.find(
+                    (toBeActive) => toBeActive.id === player.id,
+                );
+                if (!activePlayer && !toBeActivePlayer) {
+                    // current player was not found to be active or inactive
+                    newPlayers[player.id] = {
+                        id: player.id,
+                        name: player.name,
+                        photos: player.photos,
+                        gp: 1,
+                    };
+                }
+            } else {
+                newPlayers[player.id].gp += 1;
             }
         });
     }
-    return potentialNewPlayers;
+    return Object.values(newPlayers);
+}
+
+function getTotalActivePlayers(prevActives, actives) {
+    return prevActives.map((prevPlayer) => {
+        const updatedPlayer = actives.find((active) => active.id === prevPlayer.id);
+        return updatedPlayer || prevPlayer;
+    });
 }
 
 function updatePerYear(games) {
@@ -368,7 +428,7 @@ function updatePerYear(games) {
     const months = [];
     for (const game of games) {
         const { field, month, year } = game;
-        if (!year) {
+        if (!currentYear && year) {
             currentYear = year;
         }
         if (!fields[field]) {

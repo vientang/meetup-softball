@@ -6,7 +6,7 @@ import { gameProperties } from './constants';
 
 export default {
     save: async (players) => {
-        // await submitPlayerStats(players);
+        await submitPlayerStats(players);
     },
 };
 
@@ -50,12 +50,22 @@ export async function submitPlayerStats(players = []) {
         try {
             if (existingPlayer) {
                 const { id, games } = existingPlayer;
-                const updatedGames = [player.games[0], ...games];
+                // const updatedGames = [player.games[0], ...games];
+                // await updateExistingPlayer({
+                //     input: { id },
+                //     games: JSON.stringify(updatedGames),
+                // });
                 await updateExistingPlayer({
                     input: { id },
-                    games: JSON.stringify(updatedGames),
+                    games: JSON.stringify(player.games),
                 });
             } else {
+                // await createNewPlayerStats({
+                //     input: {
+                //         ...player,
+                //         games: JSON.stringify(player.games),
+                //     },
+                // });
                 await createNewPlayerStats({
                     input: {
                         ...player,

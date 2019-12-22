@@ -1,11 +1,22 @@
 import omit from 'lodash/omit';
-import { submitNewGameStats } from './apiService';
+import { createGameStats } from '../graphql/mutations';
 import { addDerivedStats, getTeamTotalHits, getTeamRunsScored } from './statsCalc';
 
 export default {
     save: async (currentGame, winners, losers) => {
         const gameStats = mergeGameStats(currentGame, winners, losers);
-        // await submitNewGameStats({ input: gameStats });
+        gameStats.forEach(async (value) => {
+            const game = { ...value };
+            game.winners = JSON.stringify(value.winners);
+            game.losers = JSON.stringify(value.losers);
+            try {
+                // second param should be an object with one property - input
+                // input should be an object of fields of a game
+                await API.graphql(graphqlOperation(createGameStats, { input: game }));
+            } catch (e) {
+                throw new Error(`Error saving game: ${e}`);
+            }
+        });
     },
 };
 

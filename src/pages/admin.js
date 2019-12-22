@@ -169,7 +169,7 @@ class Admin extends React.Component {
             return (
                 <Layout className={styles.adminPageSuccess}>
                     <SuccessImage />
-                    <h3>You're done! Enjoy the day!</h3>
+                    <h3>All done! Enjoy the day!</h3>
                 </Layout>
             );
         }
@@ -188,7 +188,11 @@ class Admin extends React.Component {
                         selectedGame={selectedGameId}
                     />
                 ) : (
-                    <SortTeams data={currentGame} setTeams={this.handleSetTeams} metadata={metadata} />
+                    <SortTeams
+                        data={currentGame}
+                        setTeams={this.handleSetTeams}
+                        metadata={metadata}
+                    />
                 )}
                 <GameMenu
                     games={games}

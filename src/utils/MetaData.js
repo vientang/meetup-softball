@@ -7,20 +7,37 @@ export default {
         const inactivePlayers = updateInactivePlayers(metadata, players);
         const recentGames = updateRecentGames(metadata, currentGame);
 
-        const data = {
-            id: '_metadata',
-            activePlayers: JSON.stringify(activePlayers),
-            inactivePlayers: JSON.stringify(inactivePlayers),
-            allFields: JSON.stringify(updateAllFields(metadata, currentGame)),
-            allYears: JSON.stringify(updateAllYears(metadata, currentGame)),
-            perYear: JSON.stringify(updateFieldsMonthsPerYear(metadata, currentGame)),
-            recentGames: JSON.stringify(recentGames),
-            recentGamesLength: recentGames.length,
-            totalGamesPlayed: metadata.totalGamesPlayed + 1,
-            totalPlayersCount: activePlayers.length + inactivePlayers.length,
-        };
+        // const data = {
+        //     id: '_metadata',
+        //     activePlayers: JSON.stringify(activePlayers),
+        //     inactivePlayers: JSON.stringify(inactivePlayers),
+        //     allFields: JSON.stringify(updateAllFields(metadata, currentGame)),
+        //     allYears: JSON.stringify(updateAllYears(metadata, currentGame)),
+        //     perYear: JSON.stringify(updateFieldsMonthsPerYear(metadata, currentGame)),
+        //     recentGames: JSON.stringify(recentGames),
+        //     recentGamesLength: recentGames.length,
+        //     totalGamesPlayed: metadata.totalGamesPlayed + 1,
+        //     totalPlayersCount: activePlayers.length + inactivePlayers.length,
+        // };
 
-        // await submitMetaData(data);
+        try {
+            await updateMetaDataEntry({
+                input: {
+                    id,
+                    activePlayers: JSON.stringify(activePlayers),
+                    inactivePlayers: JSON.stringify(inactivePlayers),
+                    allFields: JSON.stringify(updateAllFields(metadata, currentGame)),
+                    allYears: JSON.stringify(updateAllYears(metadata, currentGame)),
+                    perYear: JSON.stringify(updateFieldsMonthsPerYear(metadata, currentGame)),
+                    recentGames: JSON.stringify(recentGames),
+                    recentGamesLength: recentGames.length,
+                    totalGamesPlayed: metadata.totalGamesPlayed + 1,
+                    totalPlayersCount: activePlayers.length + inactivePlayers.length,
+                },
+            });
+        } catch (e) {
+            throw new Error(`Error saving meta data: ${e}`);
+        }
     },
 };
 
@@ -70,15 +87,4 @@ export function updateRecentGames(metadata, currentGame) {
     const { recentGames, recentGamesLength } = metadata;
     const recent = recentGames.slice(0, recentGamesLength - 1);
     return [currentGame, ...recent];
-}
-
-export async function submitMetaData(data) {
-    console.log('submitMetaData', { data });
-    try {
-        await updateMetaDataEntry({
-            input: { ...data },
-        });
-    } catch (e) {
-        throw new Error(`Error saving meta data: ${e}`);
-    }
 }

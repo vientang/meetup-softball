@@ -159,7 +159,11 @@ export async function createMetaDataEntry(input) {
 }
 
 export async function updateMetaDataEntry(input) {
-    await API.graphql(graphqlOperation(updateMetaData, input));
+    try {
+        await API.graphql(graphqlOperation(updateMetaData, input));
+    } catch (e) {
+        throw new Error(`Error saving game: ${e}`);
+    }
 }
 
 export async function submitNewGameStats(input) {
@@ -172,7 +176,11 @@ export async function submitGameStats(gameStats) {
         const game = { ...value };
         game.winners = JSON.stringify(value.winners);
         game.losers = JSON.stringify(value.losers);
-        await API.graphql(graphqlOperation(createGameStats, { input: game }));
+        try {
+            await API.graphql(graphqlOperation(createGameStats, { input: game }));
+        } catch (e) {
+            throw new Error(`Error saving game: ${e}`);
+        }
     });
 }
 
