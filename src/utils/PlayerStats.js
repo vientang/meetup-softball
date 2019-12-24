@@ -6,7 +6,7 @@ import { gameProperties } from './constants';
 
 export default {
     save: async (players) => {
-        await submitPlayerStats(players);
+        // await submitPlayerStats(players);
     },
 };
 
@@ -15,15 +15,22 @@ export default {
  * @param {Array} meetupData - data from meetup api
  * @param {Array} w - winners
  * @param {Array} l - losers
+ * @param {Object} playerOfTheGame
  * @return {Array} [{ id, name, games }]
  */
-export function mergePlayerStats(meetupData, w, l) {
+export function mergePlayerStats(meetupData, w, l, playerOfTheGame) {
     const gameProps = pick(meetupData, gameProperties);
     const isTie = getTeamRunsScored(w) === getTeamRunsScored(l);
     const winners = createPlayerData(addDerivedStats(w, isTie, true), gameProps);
     const losers = createPlayerData(addDerivedStats(l, isTie), gameProps);
-
-    return winners.concat(losers);
+    return winners.concat(losers).map((player) => {
+        if (player.id === playerOfTheGame.id.toString()) {
+            const starPlayer = { ...player };
+            starPlayer.games[0].playerOfTheGame = true;
+            return starPlayer;
+        }
+        return player;
+    });
 }
 
 /**

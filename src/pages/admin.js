@@ -66,6 +66,7 @@ class Admin extends React.Component {
         const recentGames = JSON.parse(
             get(this.props.data, 'softballstats.metadata.recentGames', [{}]),
         );
+
         return Number(recentGames[0].timeStamp);
     };
 
@@ -89,15 +90,15 @@ class Admin extends React.Component {
                 softballstats: { metadata },
             },
         } = this.props;
-        const { currentGame, games } = this.state;
+        const { currentGame, games, playerOfTheGame } = this.state;
 
-        const stats = mergePlayerStats(currentGame, winners, losers);
+        const stats = mergePlayerStats(currentGame, winners, losers, playerOfTheGame);
 
-        await PlayerStats.save(stats);
-        await SummarizeStats.save(currentGame, stats);
-        await GameStats.save(currentGame, winners, losers);
-        await PlayerInfo.save(winners, losers);
-        await MetaData.save(metadata, currentGame, winners, losers);
+        // await PlayerStats.save(stats);
+        // await SummarizeStats.save(currentGame, stats);
+        await GameStats.save(currentGame, winners, losers, playerOfTheGame);
+        // await PlayerInfo.save(winners, losers);
+        // await MetaData.save(metadata, currentGame, winners, losers);
 
         const allFields = JSON.parse(metadata.allFields) || {};
         const remainingGames = games.filter((game) => game.id !== selectedGameId);
