@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Checkbox } from 'antd';
 import AdminSection from './AdminSection';
 import StatsTable from '../StatsTable';
 import Button from '../Button';
@@ -22,7 +23,10 @@ class AdminStatsTable extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        return nextState.dataSubmitted;
+        return (
+            nextProps.playerOfTheGame.id !== this.props.playerOfTheGame.id ||
+            nextState.dataSubmitted
+        );
     }
 
     handleSubmitData = (e) => {
@@ -103,8 +107,18 @@ class AdminStatsTable extends React.Component {
     };
 
     renderWinnerEditableCell = (cellInfo) => {
+        const { playerOfTheGame, onSetPlayerOfTheGame } = this.props;
         const makeContentEditable = this.makeContentEditable(cellInfo);
-
+        if (cellInfo.column.id === 'potg') {
+            const { id } = cellInfo.original;
+            return (
+                <Checkbox
+                    value={id}
+                    onChange={onSetPlayerOfTheGame}
+                    checked={playerOfTheGame.id === id}
+                />
+            );
+        }
         return (
             <div
                 contentEditable={makeContentEditable}
@@ -118,8 +132,19 @@ class AdminStatsTable extends React.Component {
     };
 
     renderLoserEditableCell = (cellInfo) => {
+        const { playerOfTheGame, onSetPlayerOfTheGame } = this.props;
         const makeContentEditable = this.makeContentEditable(cellInfo);
 
+        if (cellInfo.column.id === 'potg') {
+            const { id } = cellInfo.original;
+            return (
+                <Checkbox
+                    value={id}
+                    onChange={onSetPlayerOfTheGame}
+                    checked={playerOfTheGame.id === id}
+                />
+            );
+        }
         return (
             <div
                 contentEditable={makeContentEditable}
@@ -171,15 +196,6 @@ class AdminStatsTable extends React.Component {
     }
 }
 
-function getDerivedStateFromProps(props, state) {
-    const { invalidStats, tooltipMsg } = checkForInvalidStats(state);
-
-    if (invalidStats) {
-        return { invalidStats, tooltipMsg };
-    }
-    return { invalidStats, tooltipMsg };
-}
-
 function checkForInvalidStats({ winners, losers }) {
     let msg = 'Stats have not been completely entered.';
     const allPlayers = winners.concat(losers);
@@ -218,6 +234,16 @@ function checkForInvalidStats({ winners, losers }) {
     return { invalidStats, tooltipMsg: invalidStats ? msg : '' };
 }
 
+function getDerivedStateFromProps(props, state) {
+    const { invalidStats, tooltipMsg } = checkForInvalidStats(state);
+
+    if (invalidStats) {
+        return { invalidStats, tooltipMsg };
+    }
+    return { invalidStats, tooltipMsg };
+}
+
+
 function checkAllStatsEntered(allPlayers) {
     return allPlayers.every((player) => {
         const { bb, doubles, hr, o, sac, singles, triples } = player;
@@ -243,13 +269,16 @@ function checkAllStatsEntered(allPlayers) {
 AdminStatsTable.propTypes = {
     winners: PropTypes.arrayOf(PropTypes.object),
     losers: PropTypes.arrayOf(PropTypes.object),
+    onSetPlayerOfTheGame: PropTypes.func,
     onSubmit: PropTypes.func,
+    playerOfTheGame: PropTypes.shape(),
     selectedGame: PropTypes.string,
 };
 
 AdminStatsTable.defaultProps = {
     winners: [],
     losers: [],
+    playerOfTheGame: {},
 };
 
 export default AdminStatsTable;

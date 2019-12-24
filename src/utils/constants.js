@@ -155,6 +155,7 @@ const gameLogCategories = [
 ];
 
 const adminStatCategories = [
+    'potg',
     'battingOrder',
     'player',
     'o',
@@ -169,7 +170,6 @@ const adminStatCategories = [
     'rbi',
     'r',
     'sac',
-    'potg',
 ];
 
 const careerStatCatsByYear = [

@@ -30,6 +30,7 @@ class Admin extends React.Component {
             currentGame: {},
             games: [],
             losers: [],
+            playerOfTheGame: {},
             selectedGameId: '',
             winners: [],
         };
@@ -42,7 +43,7 @@ class Admin extends React.Component {
         this.mounted = true;
         const allFields = JSON.parse(get(this.props.data, 'softballstats.metadata.allFields', {}));
 
-        const lastGameTimeStamp = this.getLastGameRecorded();
+        const lastGameTimeStamp = await this.getLastGameRecorded();
         const games = await fetchGamesFromMeetup(lastGameTimeStamp);
         const currentGame = games[0];
         currentGame.field = getFieldName(currentGame.field, allFields);
@@ -155,6 +156,16 @@ class Admin extends React.Component {
         this.setState(() => ({ areTeamsSorted: true, winners, losers }));
     };
 
+    handlePlayerOfTheGame = (e) => {
+        const id = e.target.value;
+        const { losers, playerOfTheGame, winners } = this.state;
+        const currentPotg =
+            playerOfTheGame.id === id
+                ? {}
+                : winners.concat(losers).find((player) => player.id === id);
+        this.setState(() => ({ playerOfTheGame: currentPotg }));
+    };
+
     render() {
         const {
             data: {
@@ -162,7 +173,15 @@ class Admin extends React.Component {
             },
             pageResources,
         } = this.props;
-        const { areTeamsSorted, currentGame, games, losers, selectedGameId, winners } = this.state;
+        const {
+            areTeamsSorted,
+            currentGame,
+            games,
+            losers,
+            playerOfTheGame,
+            selectedGameId,
+            winners,
+        } = this.state;
         const adminPagePath = get(pageResources, 'page.path', null);
 
         if (!currentGame) {
@@ -174,17 +193,28 @@ class Admin extends React.Component {
             );
         }
 
+        const filterBarOptions = {
+            disabled: true,
+        };
+
         return (
-            <Layout className={styles.adminPage} loading={isEmpty(currentGame)} uri={adminPagePath}>
+            <Layout
+                className={styles.adminPage}
+                loading={isEmpty(currentGame)}
+                filterBarOptions={filterBarOptions}
+                uri={adminPagePath}
+            >
                 <div className={styles.adminPageColumn}>
                     <GameDetails data={currentGame} />
-                    <PlayerOfTheGame />
+                    <PlayerOfTheGame player={playerOfTheGame} />
                 </div>
                 {areTeamsSorted ? (
                     <AdminStatsTable
                         winners={winners}
                         losers={losers}
+                        onSetPlayerOfTheGame={this.handlePlayerOfTheGame}
                         onSubmit={this.handleSubmitData}
+                        playerOfTheGame={playerOfTheGame}
                         selectedGame={selectedGameId}
                     />
                 ) : (

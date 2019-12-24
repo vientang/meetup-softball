@@ -175,12 +175,7 @@ class Stats extends React.Component {
         };
 
         return (
-            <Layout
-                filterBarOptions={filterBarOptions}
-                loading={playerStats.length === 0}
-                players={JSON.parse(metadata.activePlayers)}
-                inactivePlayers={JSON.parse(metadata.inactivePlayers)}
-            >
+            <Layout filterBarOptions={filterBarOptions} loading={playerStats.length === 0}>
                 <StatsTable
                     categories={statPageCategories}
                     cellRenderer={this.renderCell}
@@ -202,7 +197,7 @@ function getPlayerMetaData(playerStats, cellInfo) {
         id: playerStats[cellInfo.index].id,
         name: playerStats[cellInfo.index].name,
         image: get(playerStats[cellInfo.index], 'photos.thumb_link', ''),
-    }
+    };
 }
 
 // graphql aliases https://graphql.org/learn/queries/#aliases

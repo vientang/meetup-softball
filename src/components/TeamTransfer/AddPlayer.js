@@ -3,13 +3,17 @@ import PropTypes from 'prop-types';
 import { Icon, AutoComplete } from 'antd';
 import { PlayerAvatar } from '../Player';
 import styles from './transfer.module.css';
+import { useMetaData } from '../../utils/hooks';
 
 const { Option } = AutoComplete;
 
-const AddPlayer = ({ allPlayers, listCount, listType, onAddPlayer }) => {
+const AddPlayer = ({ listCount, listType, onAddPlayer }) => {
     const [searchMode, setSearchMode] = useState(false);
     const [playerMenu, setPlayerMenu] = useState([]);
     const [value, setValue] = useState('');
+
+    const { activePlayers, inactivePlayers } = useMetaData();
+    const allPlayers = activePlayers.concat(inactivePlayers);
 
     const handleChange = (value) => {
         setValue(value);
@@ -102,7 +106,7 @@ function createPlayer(player) {
 
 const playersMap = new Map();
 export function filterOptions(players, value) {
-    const char = value && value.length === 2 ? value[0] : null;
+    const char = value && value.length === 2 ? value[0].toLowerCase() : null;
     if (char && !playersMap.has(char)) {
         playersMap.set(
             char,
@@ -137,21 +141,9 @@ export function filterOptions(players, value) {
 }
 
 AddPlayer.propTypes = {
-    allPlayers: PropTypes.arrayOf(
-        PropTypes.shape({
-            id: PropTypes.string,
-            name: PropTypes.string,
-            gp: PropTypes.number,
-            photos: PropTypes.shape,
-        }),
-    ),
     listType: PropTypes.string,
     onAddPlayer: PropTypes.func,
     listCount: PropTypes.number,
-};
-
-AddPlayer.defaultProps = {
-    allPlayers: [],
 };
 
 export default AddPlayer;

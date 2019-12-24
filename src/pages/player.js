@@ -5,14 +5,7 @@ import { Layout } from '../components';
 import { CareerStats, GameLog, PlayerInfo } from '../components/Player';
 import { usePlayerStats } from '../utils/hooks';
 
-const Player = (props) => {
-    const {
-        data: {
-            softballstats: { metadata },
-        },
-        location,
-    } = props;
-
+const Player = ({ location }) => {
     const id = location.href.split('=').pop();
     const player = usePlayerStats(id);
 
@@ -29,12 +22,7 @@ const Player = (props) => {
     const dataLoaded = player.id && games.length;
 
     return (
-        <Layout
-            filterBarOptions={filterBarOptions}
-            loading={!dataLoaded}
-            players={JSON.parse(metadata.activePlayers)}
-            inactivePlayers={JSON.parse(metadata.inactivePlayers)}
-        >
+        <Layout filterBarOptions={filterBarOptions} loading={!dataLoaded}>
             <PlayerInfo id={player.id} />
             <CareerStats stats={player.games} />
             <GameLog stats={games} />
@@ -78,12 +66,7 @@ export const query = graphql`
 `;
 
 Player.propTypes = {
-    data: PropTypes.shape(),
     location: PropTypes.shape(),
-};
-
-Player.defaultProps = {
-    data: {},
 };
 
 export default Player;

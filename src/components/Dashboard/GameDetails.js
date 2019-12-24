@@ -14,6 +14,7 @@ const GameDetails = ({ data }) => {
     return (
         <AdminSection title="GAME DETAILS" iconType="schedule">
             <ul className={styles.gameDetailsSection}>
+                <li>{data.date}</li>
                 <li>{data.field}</li>
                 <li>{`@${data.time}${meridiem}`}</li>
                 <li>{`Attended: ${data.players.length}`}</li>
@@ -25,6 +26,7 @@ const GameDetails = ({ data }) => {
 
 GameDetails.propTypes = {
     data: PropTypes.shape({
+        date: PropTypes.string,
         field: PropTypes.string,
         time: PropTypes.string,
         players: PropTypes.array,

@@ -1,6 +1,8 @@
+// eslint-disable react/no-unused-prop-types
 import React from 'react';
 import PropTypes from 'prop-types';
 import ReactTable from 'react-table';
+import { Icon } from 'antd';
 import ErrorBoundary from './ErrorBoundary';
 import StatsLegend from './StatsLegend';
 import { defaultStatCategories } from '../utils/constants';
@@ -69,7 +71,8 @@ function renderColumns(props) {
         const width = formatColumnWidth({ category, lastColumn });
         const headerStyle = formatHeaderStyle({ category, lastColumn });
         const cellStyle = formatCellStyle({ ...props, category, lastColumn });
-
+        const nonSortableColumns = ['potg', 'battingOrder', 'player'];
+        const isSortable = !nonSortableColumns.includes(category);
         return {
             Header: header,
             Cell: cellRenderer,
@@ -79,7 +82,7 @@ function renderColumns(props) {
             className: componentStyles.statCell,
             style: cellStyle,
             headerStyle,
-            sortMethod,
+            sortMethod: isSortable ? sortMethod : null,
             width,
         };
     });
@@ -102,6 +105,10 @@ function formatHeaderLabel(category) {
             return 'WIN %';
         case 'battingOrder':
             return '';
+        case 'potg':
+            return (
+                <Icon type="star" theme="filled" style={{ color: 'gold', fontSize: '0.8rem' }} />
+            );
         case '':
             return '';
         default:
@@ -124,7 +131,7 @@ function formatColumnWidth(props) {
         case 'game':
             return 250;
         case 'battingOrder':
-            return 35;
+            return 30;
         case 'year':
             return 65;
         case 'field':
@@ -133,6 +140,8 @@ function formatColumnWidth(props) {
             return 65;
         case 'gp':
             return 45;
+        case 'potg':
+            return 35;
         case '':
             return 150;
         default:

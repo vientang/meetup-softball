@@ -45,6 +45,7 @@
     --font-medium: calc(0.45rem + 0.4vmin);
     --font-large: calc(0.5rem + 0.4vmin);
     --font-xlarge: calc(0.5rem + 0.5vmin);
+    --font-heading-small: calc(1rem + 0.5vmin)
 }
 
 html {

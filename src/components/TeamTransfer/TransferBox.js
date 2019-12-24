@@ -7,7 +7,6 @@ import styles from './transfer.module.css';
 
 const TransferBox = (props) => {
     const {
-        allPlayers,
         listItems,
         listType,
         focusedItem,
@@ -23,7 +22,6 @@ const TransferBox = (props) => {
         <div className={styles.teamTransferList}>
             <TransferHeader listType={listType} playerCount={listItems.length} />
             <TransferListItems
-                allPlayers={allPlayers}
                 listItems={listItems}
                 listType={listType}
                 onAddPlayer={onAddPlayer}
@@ -40,7 +38,6 @@ const TransferBox = (props) => {
 };
 
 TransferBox.propTypes = {
-    allPlayers: PropTypes.arrayOf(PropTypes.object),
     focusedItem: PropTypes.shape(),
     listItems: PropTypes.arrayOf(PropTypes.object),
     listType: PropTypes.string,
@@ -51,7 +48,6 @@ TransferBox.propTypes = {
 };
 
 TransferBox.defaultProps = {
-    allPlayers: [],
     focusedItem: {},
     listItems: [],
 };

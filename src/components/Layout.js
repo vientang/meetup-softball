@@ -21,16 +21,7 @@ const metaData = [
     },
 ];
 
-const Layout = ({
-    className,
-    children,
-    filterBarOptions,
-    inactivePlayers,
-    loading,
-    players,
-    style,
-    uri,
-}) => (
+const Layout = ({ className, children, filterBarOptions, loading, style, uri }) => (
     <StaticQuery
         query={graphql`
             query SiteTitleQuery {
@@ -43,7 +34,6 @@ const Layout = ({
         `}
         render={(data) => {
             const title = get(data, 'site.siteMetadata.title', 'Meetup Softball');
-            const disabled = filterBarOptions ? filterBarOptions.disabled : false;
             const pageLayoutClass = cn({
                 [`${componentStyles.pageLayout}`]: true,
                 [className]: !loading,
@@ -56,10 +46,8 @@ const Layout = ({
                     </Helmet>
                     <Header siteTitle={title} uri={uri} />
                     <ActionBar
-                        disabled={disabled}
+                        disabled={filterBarOptions.disabled}
                         filterBarOptions={filterBarOptions}
-                        inactivePlayers={inactivePlayers}
-                        players={players}
                         uri={uri}
                     />
                     <main className={pageLayoutClass} style={style}>
@@ -76,17 +64,20 @@ Layout.displayName = 'Layout';
 Layout.propTypes = {
     className: PropTypes.string,
     children: PropTypes.node.isRequired,
-    filterBarOptions: PropTypes.shape(),
+    filterBarOptions: PropTypes.shape({
+        disabled: PropTypes.bool,
+        filters: PropTypes.shape(),
+        menu: PropTypes.shape(),
+        onFilterChange: PropTypes.func,
+        onMouseEnter: PropTypes.func,
+        onResetFilters: PropTypes.func,
+    }),
     loading: PropTypes.bool,
-    inactivePlayers: PropTypes.arrayOf(PropTypes.shape),
-    players: PropTypes.arrayOf(PropTypes.shape),
     style: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
     uri: PropTypes.string,
 };
 Layout.defaultProps = {
     filterBarOptions: {},
-    inactivePlayers: [],
-    players: [],
 };
 
 export default Layout;

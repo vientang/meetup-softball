@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useStaticQuery, graphql } from 'gatsby';
 import {
     fetchPlayerInfo,
     fetchPlayerStats,
@@ -8,6 +9,48 @@ import {
 } from './apiService';
 import createLeaderBoard from './leadersCalc';
 import { getIdFromFilterParams } from './helpers';
+
+export const useMetaData = () => {
+    const data = useStaticQuery(graphql`
+        query {
+            softballstats {
+                metadata: getMetaData(id: "_metadata") {
+                    id
+                    activePlayers
+                    allFields
+                    allYears
+                    inactivePlayers
+                    perYear
+                    recentGames
+                    totalGamesPlayed
+                    totalPlayersCount
+                }
+            }
+        }
+    `);
+    const {
+        id,
+        activePlayers,
+        allFields,
+        allYears,
+        inactivePlayers,
+        perYear,
+        recentGames,
+        totalGamesPlayed,
+        totalPlayersCount,
+    } = data.softballstats.metadata;
+    return {
+        id,
+        activePlayers: JSON.parse(activePlayers),
+        allFields: JSON.parse(allFields),
+        allYears: JSON.parse(allYears),
+        inactivePlayers: JSON.parse(inactivePlayers),
+        perYear: JSON.parse(perYear),
+        recentGames: JSON.parse(recentGames),
+        totalGamesPlayed,
+        totalPlayersCount,
+    };
+};
 
 export const usePlayerStats = (id) => {
     const [playerStats, setplayerStats] = useState({});

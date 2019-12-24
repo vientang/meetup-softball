@@ -1,6 +1,8 @@
 .admin-section,
 .game-menu,
-.game-menu-time-section {
+.game-menu-time-section,
+.potg-container,
+.potg-col {
     display: flex;
     box-sizing: border-box;
 }
@@ -22,7 +24,7 @@
     color: var(--grey-2);
     font-size: var(--font-medium);
     font-weight: bold;
-    margin-bottom: var(--margin-3);
+    margin-bottom: var(--margin-2);
     padding-bottom: var(--pad-1);
     border-bottom: 1px solid var(--grey-0);
 }
@@ -81,4 +83,40 @@
     margin-left: var(--margin-0);
     font-size: var(--font-xsmall);  
     color: var(--grey-1);
+}
+
+.potg-container {
+    position: relative;
+    flex-direction: column;
+    align-items: center;
+}
+
+.potg-name {
+    font-weight: bold;
+    font-size: var(--font-heading-small);
+}
+
+.potg-stats {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    height: 150px;
+    width: 100%;
+}
+
+.potg-col {
+    flex-direction: column;
+    align-items: center;
+}
+
+.potg-stat-name {
+    color: var(--grey-2);
+    font-size: var(--font-xsmall);
+    font-weight: bold;
+}
+
+.potg-stat {
+    font-size: 1rem;
+    font-weight: bold;
 }
