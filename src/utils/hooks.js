@@ -1,42 +1,25 @@
 import { useState, useEffect } from 'react';
 import {
-    fetchAllPlayers,
+    fetchPlayerInfo,
     fetchNextGamesFromMeetup,
     fetchSummarizedStats,
-    clearAllPlayers,
     createNewSummarizedStats,
 } from './apiService';
 import createLeaderBoard from './leadersCalc';
 import { getIdFromFilterParams } from './helpers';
 
-export const usePlayerInfo = (disabled) => {
-    const [players, setPlayers] = useState([]);
-
+export const usePlayerInfo = (id) => {
+    const [playerInfo, setPlayerInfo] = useState(null);
     useEffect(() => {
-        let mounted = true;
-        if (!disabled && players.length === 0) {
-            const getAllPlayers = async () => {
-                const allPlayers = await fetchAllPlayers({ limit: 500 });
-
-                if (allPlayers && allPlayers.length > 0 && mounted) {
-                    setPlayers(allPlayers);
-                    clearAllPlayers();
-                }
-            };
-            getAllPlayers();
-        }
-
-        return () => {
-            if (mounted) {
-                mounted = false;
+        async function fetchPlayer() {
+            if (id) {
+                const playerInfo = await fetchPlayerInfo(id);
+                setPlayerInfo(playerInfo);
             }
-        };
-    }, [disabled, players]);
-
-    return {
-        players: typeof players === 'string' ? JSON.parse(players) : players,
-        setPlayers,
-    };
+        }
+        fetchPlayer();
+    }, [id]);
+    return playerInfo;
 };
 
 export const useSummarizedStats = (id) => {

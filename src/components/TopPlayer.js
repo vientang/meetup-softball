@@ -1,20 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { fetchPlayerInfo } from '../utils/apiService';
 import PlayerAvatar from './PlayerAvatar';
+import { usePlayerInfo } from '../utils/hooks'
 import componentStyles from './components.module.css';
 
 const TopPlayer = ({ meetupId, stat }) => {
-    const [playerInfo, setPlayerInfo] = useState(null);
-    useEffect(() => {
-        async function fetchPlayer() {
-            if (meetupId) {
-                const playerInfo = await fetchPlayerInfo(meetupId);
-                setPlayerInfo(playerInfo);
-            }
-        }
-        fetchPlayer();
-    }, [meetupId]);
+    const playerInfo = usePlayerInfo(meetupId);
 
     if (!playerInfo) {
         return null;

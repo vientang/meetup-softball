@@ -77,7 +77,7 @@ export function filterOptions(players, value, showInactiveDrawer) {
                                 : false,
                         )
                         .map((player) => {
-                            const { id, name, photos } = player;
+                            const { id, name, photos = {} } = player;
                             return (
                                 <Option key={id} value={`${name}-${id}`} name={name} id={id}>
                                     <PlayerAvatar
@@ -109,7 +109,7 @@ function renderOptions(players, showInactiveDrawer) {
             return (
                 <OptGroup key={group} label={group}>
                     {players.map((player) => {
-                        const { id, name, photos } = player;
+                        const { id, name, photos = {} } = player;
                         return (
                             <Option key={id} value={`${name}-${id}`} name={name} id={id}>
                                 <PlayerAvatar

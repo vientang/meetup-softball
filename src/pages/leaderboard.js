@@ -9,7 +9,7 @@ import { buildFilterMenu, getIdFromFilterParams } from '../utils/helpers';
 import pageStyles from './pages.module.css';
 
 const defaultFilters = {
-    year: '2018',
+    year: '2019',
 };
 
 const reducer = (state, action) => {

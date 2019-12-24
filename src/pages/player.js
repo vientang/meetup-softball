@@ -6,7 +6,7 @@ import { fetchPlayerStats } from '../utils/apiService';
 import { buildFilterMenu } from '../utils/helpers';
 
 const defaultFilters = {
-    year: '2018',
+    year: '2019',
     month: '',
     field: '',
 };

@@ -1,44 +1,30 @@
-import pick from 'lodash/pick';
-import { createNewPlayerInfo, fetchPlayerInfo } from './apiService';
+import { createNewPlayerInfo, fetchPlayerInfo, updateExistingPlayerInfo } from './apiService';
 
 export default {
     save: async (players, winners, losers) => {
         // const players = winners.concat(losers);
-        await submitPlayerStats(players);
+        await submitPlayerInfo(players);
     },
 };
 
-export async function submitPlayerStats(players = []) {
+export async function submitPlayerInfo(players = []) {
     players.forEach(async (player) => {
-        // check if player exists in database
-        // const existingPlayer = await fetchPlayerInfo(player.id);
+        const existingPlayer = await fetchPlayerInfo(player.id);
 
         try {
-            await createNewPlayerInfo({
-                input: {
-                    ...player,
-                },
-            });
-            // if (existingPlayer) {
-            //     const playerInfo = pick(player, [
-            //         'id',
-            //         'name',
-            //         'joined',
-            //         'photos',
-            //         'profile',
-            //         'admin',
-            //         'status',
-            //         'gender',
-            //     ]);
-
-            //     await createNewPlayerInfo({
-            //         input: {
-            //             ...playerInfo,
-            //         },
-            //     });
-            // }
+            if (existingPlayer) {
+                await updateExistingPlayerInfo({
+                    input: {
+                        id: player.id,
+                        photos: player.photos,
+                        profile: player.profile,
+                    },
+                });
+            } else {
+                await createNewPlayerInfo({ input: player });
+            }
         } catch (e) {
-            throw new Error(`Error saving player ${existingPlayer.name}: ${e}`);
+            throw new Error(`Error saving player ${player.name}: ${e[0].message}`);
         }
     });
 }

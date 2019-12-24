@@ -17,17 +17,18 @@ import {
 import { statPageCategories } from '../utils/constants';
 import pageStyles from './pages.module.css';
 import { fetchSummarizedStats } from '../utils/apiService';
-// import converted from '../../__mocks__/result_2019';
-// import {
-//     convertLegacyPlayerData,
-//     convertLegacyGameData,
-//     buildSummarizedStats,
-//     updateMetadata,
-// } from '../utils/convertLegacyData';
-// import SummarizedStats from '../utils/SummarizeStats';
+import converted from '../../__mocks__/result_2019';
+import {
+    convertLegacyPlayerData,
+    convertLegacyGameData,
+    buildSummarizedStats,
+    updateMetadata,
+    updateLegacyPlayerInfo,
+} from '../utils/convertLegacyData';
+import PlayerInfo from '../utils/PlayerInfo';
 
 const defaultFilters = {
-    year: '2018',
+    year: '2019',
     month: '',
     field: '',
 };
@@ -53,16 +54,18 @@ class Stats extends React.Component {
     }
 
     async componentDidMount() {
-        // const {
-        //     data: {
-        //         softballstats: { metadata },
-        //     },
-        // } = this.props;
+        const {
+            data: {
+                softballstats: { metadata },
+            },
+        } = this.props;
         // const allFields = JSON.parse(metadata.allFields);
         // const playerStats = await convertLegacyPlayerData(converted, allFields);
         // const gameStats = await convertLegacyGameData(converted, allFields);
         // const meta = await updateMetadata(gameStats);
         // const summarized = await buildSummarizedStats(gameStats);
+        // const playersInfo = await updateLegacyPlayerInfo(converted);
+        // PlayerInfo.save(playersInfo);
     }
 
     handleColumnSort = (newSorted, column) => {
@@ -70,15 +73,15 @@ class Stats extends React.Component {
     };
 
     renderPlayerCell = (playerStats, cellInfo) => {
-        const { playerId, playerName, playerImg } = getPlayerMetaData(playerStats, cellInfo);
+        const { id, name, image } = getPlayerMetaData(playerStats, cellInfo);
         return (
-            <Link to={`/player?id=${playerId}`} className={pageStyles.playerName}>
+            <Link to={`/player?id=${id}`} className={pageStyles.playerName}>
                 <PlayerAvatar
-                    image={playerImg}
-                    name={playerName}
+                    image={image}
+                    name={name}
                     style={{ marginRight: '0.5rem', border: '1px solid #f7b639' }}
                 />
-                {playerName}
+                {name}
             </Link>
         );
     };
@@ -195,10 +198,11 @@ class Stats extends React.Component {
 }
 
 function getPlayerMetaData(playerStats, cellInfo) {
-    const playerId = playerStats[cellInfo.index].id;
-    const playerName = playerStats[cellInfo.index].name;
-    const playerImg = get(playerStats[cellInfo.index], 'photos.thumb_link', '');
-    return { playerId, playerName, playerImg };
+    return {
+        id: playerStats[cellInfo.index].id,
+        name: playerStats[cellInfo.index].name,
+        image: get(playerStats[cellInfo.index], 'photos.thumb_link', ''),
+    }
 }
 
 // graphql aliases https://graphql.org/learn/queries/#aliases
@@ -212,7 +216,7 @@ export const query = graphql`
                     photos
                 }
             }
-            summarized: getSummarizedStats(id: "_2018") {
+            summarized: getSummarizedStats(id: "_2019") {
                 id
                 stats
             }

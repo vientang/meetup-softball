@@ -12,6 +12,7 @@ Amplify.configure(configuration);
 
 const IndexPage = ({ data, uri }) => {
     const recentGames = JSON.parse(get(data, 'softballstats.metadata.recentGames', []));
+
     const fluidImage = get(data, 'imageOne.childImageSharp.fluid');
     const imageStyle = { position: 'absolute' };
     return (

@@ -9,7 +9,6 @@ const BoxScoreGroup = ({ recentGames }) => {
         return null;
     }
     const recentGameData = createBoxScoreData(recentGames.slice(0, 2));
-
     return (
         <div className={componentStyles.boxScoreGroup}>
             <JoinUs />
@@ -31,8 +30,8 @@ function createBoxScoreData(games) {
             field: game.field,
             gameId: game.gameId,
             time: game.time,
-            winners: JSON.parse(game.winners).runsScored,
-            losers: JSON.parse(game.losers).runsScored,
+            winners: game.winners.runsScored,
+            losers: game.losers.runsScored,
         };
         return recentGameData;
     });

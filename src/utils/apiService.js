@@ -17,6 +17,7 @@ import {
     createPlayers,
     createSummarizedStats,
     updateMetaData,
+    updatePlayers,
     updatePlayerStats,
     updateSummarizedStats,
 } from '../graphql/mutations';
@@ -98,6 +99,10 @@ export async function submitPlayerInfo(playerInfo = []) {
             }),
         );
     });
+}
+
+export async function updateExistingPlayerInfo(input) {
+    await API.graphql(graphqlOperation(updatePlayers, input));
 }
 
 /** SUMMARIZED STATS */

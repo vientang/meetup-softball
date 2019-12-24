@@ -23,7 +23,7 @@ const legacySummarized = {}; // this could probably be a map too
 const CURRENT_GAME_SIZE = 513;
 
 /**
- * Convert legacy data structure for PlayerStats schema
+ * Convert a players previous game data for PlayerStats schema
  * @param {Array}
  * @return {Array}
  */
@@ -83,6 +83,7 @@ export async function updateLegacyPlayerInfo(data) {
             if (!playerDataFromMeetup || playerDataFromMeetup.data.errors) {
                 continue;
             }
+
             const playerInfo = await adaptForPlayersAPI({
                 ...playerDataFromMeetup.data,
                 id: playerId,

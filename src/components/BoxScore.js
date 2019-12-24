@@ -39,7 +39,7 @@ BoxScore.propTypes = {
         field: PropTypes.string,
         date: PropTypes.string,
         time: PropTypes.string,
-        gameId: PropTypes.string,
+        gameId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
         winners: PropTypes.number,
         losers: PropTypes.number,
     }),

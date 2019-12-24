@@ -46,26 +46,15 @@ export async function submitPlayerStats(players = []) {
     players.forEach(async (player) => {
         // check if player already exists in database
         const existingPlayer = await fetchPlayerStats(player.id);
-
         try {
             if (existingPlayer) {
-                const { id, games } = existingPlayer;
-                // const updatedGames = [player.games[0], ...games];
-                // await updateExistingPlayer({
-                //     input: { id },
-                //     games: JSON.stringify(updatedGames),
-                // });
                 await updateExistingPlayer({
-                    input: { id },
-                    games: JSON.stringify(player.games),
+                    input: {
+                        id: player.id,
+                        games: JSON.stringify(player.games),
+                    },
                 });
             } else {
-                // await createNewPlayerStats({
-                //     input: {
-                //         ...player,
-                //         games: JSON.stringify(player.games),
-                //     },
-                // });
                 await createNewPlayerStats({
                     input: {
                         ...player,
@@ -74,7 +63,7 @@ export async function submitPlayerStats(players = []) {
                 });
             }
         } catch (e) {
-            throw new Error(`Error saving player ${existingPlayer.name}: ${e}`);
+            throw new Error(`Error saving player ${existingPlayer.name}: `, e);
         }
     });
 }
