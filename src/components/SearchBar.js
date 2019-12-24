@@ -2,12 +2,45 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link, navigate } from 'gatsby';
 import { AutoComplete } from 'antd';
-import PlayerAvatar from './PlayerAvatar';
+import memoize from 'lodash/memoize';
+import PlayerAvatar from './Player/PlayerAvatar';
 import componentStyles from './components.module.css';
 
 const { Option, OptGroup } = AutoComplete;
 
-const SearchBar = ({ disabled, open, players, showInactiveDrawer }) => {
+const renderOptions = memoize((players, showInactiveDrawer) => {
+    players.sort((a, b) => (a.gp < b.gp ? 1 : -1));
+    return ['RECENT PLAYERS']
+        .map((group) => {
+            return (
+                <OptGroup key={group} label={group}>
+                    {players.map((player) => {
+                        const { id, name, photos = {} } = player;
+                        return (
+                            <Option key={id} value={`${name}-${id}`} name={name} id={id}>
+                                <PlayerAvatar
+                                    image={photos.thumb_link}
+                                    name={name}
+                                    style={{
+                                        marginRight: '0.5rem',
+                                        border: '1px solid #f7b639',
+                                    }}
+                                />
+                                <Link to={`/player?id=${id}`}>{name}</Link>
+                            </Option>
+                        );
+                    })}
+                </OptGroup>
+            );
+        })
+        .concat([
+            <Option key="inactive" className={componentStyles.optionInactive}>
+                <span onClick={showInactiveDrawer}>Show inactive players</span>
+            </Option>,
+        ]);
+});
+
+const SearchBar = ({ open, players, showInactiveDrawer }) => {
     const [value, setValue] = useState('');
     const [filteredSearchList, setFilteredSearchList] = useState(null);
 
@@ -36,7 +69,6 @@ const SearchBar = ({ disabled, open, players, showInactiveDrawer }) => {
         <AutoComplete
             autoFocus={open}
             dataSource={searchList}
-            disabled={disabled}
             dropdownMatchSelectWidth={false}
             dropdownStyle={dropdownStyle}
             onChange={handleChange}
@@ -102,48 +134,14 @@ export function filterOptions(players, value, showInactiveDrawer) {
         ]);
 }
 
-function renderOptions(players, showInactiveDrawer) {
-    players.sort((a, b) => (a.gp < b.gp ? 1 : -1));
-    return ['RECENT PLAYERS']
-        .map((group) => {
-            return (
-                <OptGroup key={group} label={group}>
-                    {players.map((player) => {
-                        const { id, name, photos = {} } = player;
-                        return (
-                            <Option key={id} value={`${name}-${id}`} name={name} id={id}>
-                                <PlayerAvatar
-                                    image={photos.thumb_link}
-                                    name={name}
-                                    style={{
-                                        marginRight: '0.5rem',
-                                        border: '1px solid #f7b639',
-                                    }}
-                                />
-                                <Link to={`/player?id=${id}`}>{name}</Link>
-                            </Option>
-                        );
-                    })}
-                </OptGroup>
-            );
-        })
-        .concat([
-            <Option key="inactive" className={componentStyles.optionInactive}>
-                <span onClick={showInactiveDrawer}>Show inactive players</span>
-            </Option>,
-        ]);
-}
-
 SearchBar.displayName = 'SearchBar';
 SearchBar.propTypes = {
-    disabled: PropTypes.bool,
     open: PropTypes.bool,
     players: PropTypes.arrayOf(PropTypes.shape),
     showInactiveDrawer: PropTypes.func,
 };
 
 SearchBar.defaultProps = {
-    disabled: false,
     open: false,
     players: [],
 };

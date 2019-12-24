@@ -52,7 +52,6 @@ const ActionBar = ({ className, disabled, filterBarOptions, inactivePlayers, pla
                 {renderChildren && (
                     <>
                         <SearchBar
-                            disabled={disabled}
                             players={players}
                             showInactiveDrawer={showInactiveDrawer}
                             open={openActive}
@@ -64,7 +63,6 @@ const ActionBar = ({ className, disabled, filterBarOptions, inactivePlayers, pla
                             visible={openInactive}
                         >
                             <SearchBar
-                                disabled={disabled}
                                 players={inactivePlayers}
                                 showInactiveDrawer={showInactiveDrawer}
                                 open={openActive}

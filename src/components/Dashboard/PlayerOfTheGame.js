@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from 'antd';
 import AdminSection from './AdminSection';
-import PlayerAvatar from '../PlayerAvatar';
+import { PlayerAvatar } from '../Player';
 
 const PlayerOfTheGame = ({ image, name }) => {
     const style = {

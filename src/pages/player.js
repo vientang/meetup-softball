@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'gatsby';
-import { CareerStats, GameLog, Layout, PlayerInfo } from '../components';
+import { Layout } from '../components';
+import { CareerStats, GameLog, PlayerInfo } from '../components/Player';
 import { usePlayerStats } from '../utils/hooks';
 
 const Player = (props) => {
@@ -34,7 +35,7 @@ const Player = (props) => {
             players={JSON.parse(metadata.activePlayers)}
             inactivePlayers={JSON.parse(metadata.inactivePlayers)}
         >
-            <PlayerInfo meetupId={player.id} />
+            <PlayerInfo id={player.id} />
             <CareerStats stats={player.games} />
             <GameLog stats={games} />
         </Layout>

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import AddPlayer from './AddPlayer';
-import PlayerAvatar from '../PlayerAvatar';
+import { PlayerAvatar } from '../Player';
 import styles from './transfer.module.css';
 
 const listItemPhotoStyle = { height: 40, width: 40, margin: '0 0.5rem' };

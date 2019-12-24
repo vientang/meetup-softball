@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Icon, AutoComplete } from 'antd';
-import PlayerAvatar from '../PlayerAvatar';
+import { PlayerAvatar } from '../Player';
 import styles from './transfer.module.css';
 
 const { Option } = AutoComplete;

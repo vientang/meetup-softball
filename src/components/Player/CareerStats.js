@@ -1,24 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import StatsTable from './StatsTable';
+import StatsTable from '../StatsTable';
 import {
     formatCellValue,
     getDefaultSortedColumn,
     mapByKey,
     sortHighToLow,
     sortByYear,
-} from '../utils/helpers';
-import { careerStatCatsByYear, careerStatCatsByField } from '../utils/constants';
-import { calculateCareerStats } from '../utils/statsCalc';
-import componentStyles from './components.module.css';
+} from '../../utils/helpers';
+import { careerStatCatsByYear, careerStatCatsByField } from '../../utils/constants';
+import { calculateCareerStats } from '../../utils/statsCalc';
+import playerStats from './player.module.css';
 
 const CareerStats = ({ stats }) => {
     const statsByYear = calculateCareerStats(mapByKey(stats, 'year'), 'year');
     const statsByField = calculateCareerStats(mapByKey(stats, 'field'), 'field');
 
     return (
-        <div className={componentStyles.playerPageSection}>
-            <p className={componentStyles.playerPageSectionTitle}>Career stats</p>
+        <div className={playerStats.playerPageSection}>
+            <p className={playerStats.playerPageSectionTitle}>Career stats</p>
             <StatsTable
                 categories={careerStatCatsByYear}
                 cellRenderer={renderCell}

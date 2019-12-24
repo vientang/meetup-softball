@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import PlayerAvatar from './PlayerAvatar';
-import { usePlayerInfo } from '../utils/hooks'
+import { PlayerAvatar } from './Player';
+import { usePlayerInfo } from '../utils/hooks';
 import componentStyles from './components.module.css';
 
 const TopPlayer = ({ meetupId, stat }) => {
