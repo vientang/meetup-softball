@@ -1,21 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import cn from 'classnames';
 import { Icon } from 'antd';
 import styles from './filters.module.css';
 
 const ResetFilters = ({ disabled, onClick }) => {
-    const resetContainerClass = cn({
-        [styles.filterResetContainer]: true,
-        [styles.filterDisabled]: disabled,
-    });
-    const resetLabelClass = cn({
-        [styles.filterReset]: true,
-        [styles.filterLabelDisabled]: disabled,
-    });
+    if (disabled) {
+        return null;
+    }
+
     return (
-        <div className={resetContainerClass}>
-            <span className={resetLabelClass} onClick={onClick}>
+        <div className={styles.filterResetContainer}>
+            <span className={styles.filterReset} onClick={onClick}>
                 <Icon type="filter" />
                 reset filters
             </span>

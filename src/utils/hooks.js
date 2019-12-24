@@ -1,12 +1,27 @@
 import { useState, useEffect } from 'react';
 import {
     fetchPlayerInfo,
+    fetchPlayerStats,
     fetchNextGamesFromMeetup,
     fetchSummarizedStats,
     createNewSummarizedStats,
 } from './apiService';
 import createLeaderBoard from './leadersCalc';
 import { getIdFromFilterParams } from './helpers';
+
+export const usePlayerStats = (id) => {
+    const [playerStats, setplayerStats] = useState({});
+    useEffect(() => {
+        async function fetchPlayer() {
+            if (id) {
+                const playerStats = await fetchPlayerStats(id);
+                setplayerStats(playerStats);
+            }
+        }
+        fetchPlayer();
+    }, [id]);
+    return playerStats;
+};
 
 export const usePlayerInfo = (id) => {
     const [playerInfo, setPlayerInfo] = useState(null);

@@ -7,20 +7,8 @@ import get from 'lodash/get';
 import Header from './Header';
 import ActionBar from './ActionBar';
 import Footer from './Footer';
+import LoadingImage from './Loading/LoadingImage';
 import componentStyles from './components.module.css';
-import svg from '../images/softball.svg';
-
-const LoadingImage = () => {
-    return (
-        <>
-            <img src={svg} alt="loading softball" className={componentStyles.loadingImage} />
-            <span className={componentStyles.loadingText}>
-                Loading
-                <span className={componentStyles.loadingDots}>...</span>
-            </span>
-        </>
-    );
-};
 
 const metaData = [
     {
