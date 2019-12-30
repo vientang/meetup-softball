@@ -2,6 +2,7 @@ import { API, graphqlOperation } from 'aws-amplify';
 import fetchJsonp from 'fetch-jsonp';
 import get from 'lodash/get';
 import {
+    getGameStats,
     getMetaData,
     getPlayers,
     getPlayerStats,
@@ -167,7 +168,7 @@ export async function updateMetaDataEntry(input) {
     try {
         await API.graphql(graphqlOperation(updateMetaData, input));
     } catch (e) {
-        throw new Error(`Error saving game: ${e}`);
+        throw new Error(`Error saving game: ${e[0].message}`);
     }
 }
 
@@ -176,6 +177,16 @@ export async function submitNewGameStats(input) {
 }
 
 /** GAME STATS */
+export async function fetchGameStats(id) {
+    let gameStats = await API.graphql(graphqlOperation(getGameStats, { id }));
+    gameStats = get(gameStats, 'data.getGameStats', null);
+    if (gameStats) {
+        gameStats.winners = JSON.parse(gameStats.winners);
+        gameStats.losers = JSON.parse(gameStats.losers);
+    }
+    return gameStats;
+}
+
 export async function submitGameStats(gameStats) {
     gameStats.forEach(async (value) => {
         const game = { ...value };
@@ -187,6 +198,10 @@ export async function submitGameStats(gameStats) {
             throw new Error(`Error saving game: ${e}`);
         }
     });
+}
+
+export async function submitGameStat(gameStats) {
+    await API.graphql(graphqlOperation(createGameStats, { input: gameStats }));
 }
 
 const games = [];
@@ -240,7 +255,7 @@ export async function fetchNextGamesFromMeetup() {
 }
 
 /**
- * Fetch past 5 games from meetup api
+ * Fetch past games that were played after the last recorded game
  */
 export async function fetchGamesFromMeetup(lastGameTimeStamp) {
     const games = [];

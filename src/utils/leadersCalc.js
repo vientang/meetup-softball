@@ -76,7 +76,6 @@ function sortLeaders({ gamesPlayed, leaders, player, stat }) {
 
 function getLeadersWithTies(leaders, stat) {
     const topFivePlayers = leaders.slice(0, 5);
-    // const lastIndex = topFivePlayers.length - 1;
     const remainingPlayers = leaders.slice(5);
     const ties = [];
     const hasTies = remainingPlayers.some((player) => {

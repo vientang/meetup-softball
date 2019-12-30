@@ -127,7 +127,7 @@ export function filterOptions(players, value) {
             return (
                 <Option key={id} value={`${name}-${id}`} name={name} id={id}>
                     <PlayerAvatar
-                        image={photos.thumb_link}
+                        src={photos.thumb_link}
                         name={name}
                         style={{
                             marginRight: '0.5rem',

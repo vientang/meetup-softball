@@ -36,6 +36,10 @@ export function addDerivedStats(players, isTie, winner) {
     });
 }
 
+export function updateGamesPlayed(gp) {
+    return Number(gp) + 1;
+}
+
 /**
  * Calculate total stats by specified key
  * @param {Object} values
@@ -95,7 +99,7 @@ export function calculateTotals(existingStats = {}, currentStats = {}) {
         const runsCreated = getRunsCreated(hits, bb, cs, totalBases, sb, atBats);
         const onBaseSlugging = getOPS(onBasePercentage, slugging);
         const winsOba = getWOBA(bb, singles, doubles, triples, hr, atBats, sac);
-        // TODO: convert these stats to numbers
+
         return {
             ...convertStringStatsToNumbers(currentStats),
             ab: atBats,

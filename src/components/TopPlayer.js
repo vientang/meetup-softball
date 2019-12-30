@@ -16,7 +16,7 @@ const TopPlayer = ({ meetupId, stat }) => {
     return (
         <>
             <PlayerAvatar
-                image={photos.highres_link}
+                src={photos.highres_link}
                 name={name}
                 shape="square"
                 style={{ width: '100%', height: 200 }}

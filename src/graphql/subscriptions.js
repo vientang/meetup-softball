@@ -20,6 +20,7 @@ export const onCreateGameStats = `subscription OnCreateGameStats {
     waitListCount
     winners
     losers
+    playerOfTheGame
   }
 }
 `;
@@ -42,6 +43,7 @@ export const onUpdateGameStats = `subscription OnUpdateGameStats {
     waitListCount
     winners
     losers
+    playerOfTheGame
   }
 }
 `;
@@ -64,6 +66,7 @@ export const onDeleteGameStats = `subscription OnDeleteGameStats {
     waitListCount
     winners
     losers
+    playerOfTheGame
   }
 }
 `;

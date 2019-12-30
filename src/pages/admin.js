@@ -81,6 +81,13 @@ class Admin extends React.Component {
         return results.map((player) => createPlayer(player));
     };
 
+    handleOnChange = (player) => {
+        const { playerOfTheGame } = this.state;
+        if (Object.keys(playerOfTheGame).length > 0) {
+            this.setState(() => ({ playerOfTheGame: player }));
+        }
+    };
+
     /**
      * Submit updated stats to PlayerStats & GameStats
      */
@@ -92,13 +99,12 @@ class Admin extends React.Component {
         } = this.props;
         const { currentGame, games, playerOfTheGame } = this.state;
 
-        const stats = mergePlayerStats(currentGame, winners, losers, playerOfTheGame);
-
+        // const stats = mergePlayerStats(currentGame, winners, losers, playerOfTheGame);
         // await PlayerStats.save(stats);
         // await SummarizeStats.save(currentGame, stats);
         await GameStats.save(currentGame, winners, losers, playerOfTheGame);
-        // await PlayerInfo.save(winners, losers);
-        // await MetaData.save(metadata, currentGame, winners, losers);
+        await PlayerInfo.save(winners, losers);
+        await MetaData.save(metadata, currentGame, winners, losers);
 
         const allFields = JSON.parse(metadata.allFields) || {};
         const remainingGames = games.filter((game) => game.id !== selectedGameId);
@@ -213,6 +219,7 @@ class Admin extends React.Component {
                     <AdminStatsTable
                         winners={winners}
                         losers={losers}
+                        onChange={this.handleOnChange}
                         onSetPlayerOfTheGame={this.handlePlayerOfTheGame}
                         onSubmit={this.handleSubmitData}
                         playerOfTheGame={playerOfTheGame}

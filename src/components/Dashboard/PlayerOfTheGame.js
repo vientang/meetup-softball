@@ -55,7 +55,9 @@ const PlayerOfTheGame = ({ player }) => {
                                     <span className={dashboardStyles.potgStatName}>
                                         {stat.toUpperCase()}
                                     </span>
-                                    <span className={dashboardStyles.potgStat}>10</span>
+                                    <span className={dashboardStyles.potgStat}>
+                                        {stats[stat] || 0}
+                                    </span>
                                 </div>
                             );
                         })}

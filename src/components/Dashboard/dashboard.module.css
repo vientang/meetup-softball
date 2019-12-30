@@ -36,8 +36,17 @@
     overflow: hidden;
 }
 
-.game-details-section li:first-child {
+.game-details-date {
     font-weight: bold;
+}
+
+.game-details-info {    
+    font-weight: bold;
+}
+
+.game-details-attended,
+.game-details-rsvps {
+    color: var(--grey-2);
 }
 
 .game-menu {
@@ -56,7 +65,7 @@
 }
 
 .game-menu-title {
-    font-size: var(--font-small);  
+    font-size: var(--font-small);
     font-weight: bold;
 }
 
@@ -76,12 +85,12 @@
 }
 
 .game-menu-time {
-    font-size: var(--font-small);  
+    font-size: var(--font-small);
 }
 
 .game-menu-close-icon {
     margin-left: var(--margin-0);
-    font-size: var(--font-xsmall);  
+    font-size: var(--font-xsmall);
     color: var(--grey-1);
 }
 

@@ -19,7 +19,7 @@ const renderOptions = memoize((players, showInactiveDrawer) => {
                         return (
                             <Option key={id} value={`${name}-${id}`} name={name} id={id}>
                                 <PlayerAvatar
-                                    image={photos.thumb_link}
+                                    src={photos.thumb_link}
                                     name={name}
                                     style={{
                                         marginRight: '0.5rem',
@@ -113,7 +113,7 @@ export function filterOptions(players, value, showInactiveDrawer) {
                             return (
                                 <Option key={id} value={`${name}-${id}`} name={name} id={id}>
                                     <PlayerAvatar
-                                        image={photos.thumb_link}
+                                        src={photos.thumb_link}
                                         name={name}
                                         style={{
                                             marginRight: '0.5rem',

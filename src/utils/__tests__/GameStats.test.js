@@ -19,6 +19,7 @@ describe('Game stats', () => {
             month: meetupData.month,
             field: meetupData.field,
             tournamentName: meetupData.tournamentName,
+            playerOfTheGame: JSON.stringify({}),
             winners: JSON.stringify({
                 name: 'Winners',
                 runsScored: 2,

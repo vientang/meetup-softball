@@ -57,13 +57,16 @@
     background-color: var(--white-1);
 }
 
-.team-transfer-list-item-focused {
+.team-transfer-list-item-selected {
     background-color: var(--blue-0);
-    font-weight: bold;
 }
 
 .team-transfer-list-item-name {
     font-size: var(--font-large);
+}
+
+.team-transfer-list-item-name-selected {
+    font-weight: bold;
 }
 
 .team-transfer-list-item-batting-order {

@@ -20,6 +20,7 @@ export const createGameStats = `mutation CreateGameStats($input: CreateGameStats
     waitListCount
     winners
     losers
+    playerOfTheGame
   }
 }
 `;
@@ -42,6 +43,7 @@ export const updateGameStats = `mutation UpdateGameStats($input: UpdateGameStats
     waitListCount
     winners
     losers
+    playerOfTheGame
   }
 }
 `;
@@ -64,6 +66,7 @@ export const deleteGameStats = `mutation DeleteGameStats($input: DeleteGameStats
     waitListCount
     winners
     losers
+    playerOfTheGame
   }
 }
 `;

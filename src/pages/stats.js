@@ -17,15 +17,6 @@ import {
 import { statPageCategories } from '../utils/constants';
 import pageStyles from './pages.module.css';
 import { fetchSummarizedStats } from '../utils/apiService';
-import converted from '../../__mocks__/result_2019';
-import {
-    convertLegacyPlayerData,
-    convertLegacyGameData,
-    buildSummarizedStats,
-    updateMetadata,
-    updateLegacyPlayerInfo,
-} from '../utils/convertLegacyData';
-import PlayerInfo from '../utils/PlayerInfo';
 
 const defaultFilters = {
     year: '2019',
@@ -53,21 +44,6 @@ class Stats extends React.Component {
         };
     }
 
-    async componentDidMount() {
-        const {
-            data: {
-                softballstats: { metadata },
-            },
-        } = this.props;
-        // const allFields = JSON.parse(metadata.allFields);
-        // const playerStats = await convertLegacyPlayerData(converted, allFields);
-        // const gameStats = await convertLegacyGameData(converted, allFields);
-        // const meta = await updateMetadata(gameStats);
-        // const summarized = await buildSummarizedStats(gameStats);
-        // const playersInfo = await updateLegacyPlayerInfo(converted);
-        // PlayerInfo.save(playersInfo);
-    }
-
     handleColumnSort = (newSorted, column) => {
         this.setState(() => ({ sortedColumn: column.id }));
     };
@@ -77,7 +53,7 @@ class Stats extends React.Component {
         return (
             <Link to={`/player?id=${id}`} className={pageStyles.playerName}>
                 <PlayerAvatar
-                    image={image}
+                    src={image}
                     name={name}
                     style={{ marginRight: '0.5rem', border: '1px solid #f7b639' }}
                 />
@@ -228,6 +204,7 @@ export const query = graphql`
                 allYears
                 inactivePlayers
                 perYear
+                recentGames
             }
         }
     }

@@ -23,7 +23,7 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     color: var(--grey-3);
-    margin: var(--margin-3) 0;
+    margin: var(--margin-3) 0 var(--margin-0);
 }
 
 .player-info-card {

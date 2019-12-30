@@ -16,6 +16,7 @@ type GameStats @model {
   waitListCount: Int
   winners: AWSJSON
   losers: AWSJSON
+  playerOfTheGame: AWSJSON
 }
 
 type PlayerStats @model {

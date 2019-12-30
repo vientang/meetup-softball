@@ -221,6 +221,9 @@ export function convertStringStatsToNumbers(stats) {
 
 /**
  * Lookup player in an array or object
+ * Normalizes the id before comparing
+ * @param {Number || String} id
+ * @param {Array || Object} players
  * tested
  */
 export function findPlayerById(id, players) {

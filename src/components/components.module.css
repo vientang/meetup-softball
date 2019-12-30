@@ -250,7 +250,7 @@
 
 /* STATS TABLE */
 .stats-table {
-    margin-bottom: var(--margin-7);
+    margin-bottom: var(--margin-3);
 }
 
 .stat-header-cell {

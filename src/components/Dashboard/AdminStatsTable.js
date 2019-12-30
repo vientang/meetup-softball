@@ -71,6 +71,11 @@ class AdminStatsTable extends React.Component {
      * @param cellInfo - meta data for each cell
      */
     handleWinnerEntry = (cellInfo) => (e) => {
+        const {
+            column: { id },
+            index,
+            original,
+        } = cellInfo;
         const value = Number(e.key);
 
         // do not save any values that are not numbers
@@ -79,10 +84,10 @@ class AdminStatsTable extends React.Component {
         }
 
         const winners = [...this.state.winners];
-        winners[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;
+        winners[index][id] = e.target.innerHTML;
 
         this.setState(() => ({ winners }));
-
+        this.props.onChange(original);
         return null;
     };
 
@@ -91,6 +96,11 @@ class AdminStatsTable extends React.Component {
      * @param cellInfo - meta data for each cell
      */
     handleLoserEntry = (cellInfo) => (e) => {
+        const {
+            column: { id },
+            index,
+            original,
+        } = cellInfo;
         const value = Number(e.key);
 
         // do not save any values that are not numbers
@@ -99,10 +109,10 @@ class AdminStatsTable extends React.Component {
         }
 
         const losers = [...this.state.losers];
-        losers[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;
+        losers[index][id] = e.target.innerHTML;
 
         this.setState(() => ({ losers }));
-
+        this.props.onChange(original);
         return null;
     };
 
@@ -243,7 +253,6 @@ function getDerivedStateFromProps(props, state) {
     return { invalidStats, tooltipMsg };
 }
 
-
 function checkAllStatsEntered(allPlayers) {
     return allPlayers.every((player) => {
         const { bb, doubles, hr, o, sac, singles, triples } = player;
@@ -269,6 +278,7 @@ function checkAllStatsEntered(allPlayers) {
 AdminStatsTable.propTypes = {
     winners: PropTypes.arrayOf(PropTypes.object),
     losers: PropTypes.arrayOf(PropTypes.object),
+    onChange: PropTypes.func,
     onSetPlayerOfTheGame: PropTypes.func,
     onSubmit: PropTypes.func,
     playerOfTheGame: PropTypes.shape(),

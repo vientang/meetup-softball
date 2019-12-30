@@ -65,7 +65,7 @@ describe('SummarizedStats', () => {
                 ],
             },
         ];
-        
-        expect(mergeSummarizedStats(stats, summarized)._2019[0].hr).toBe(10);
+
+        expect(mergeSummarizedStats(stats, summarized)._2019[0].hr).toBe('10');
     });
 });

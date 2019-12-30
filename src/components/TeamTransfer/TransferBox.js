@@ -9,14 +9,12 @@ const TransferBox = (props) => {
     const {
         listItems,
         listType,
-        focusedItem,
         onAddPlayer,
-        onPlayerFocus,
+        onPlayerSelection,
         onMoveDown,
         onMoveUp,
+        selected,
     } = props;
-
-    const focusedItemId = focusedItem && focusedItem.id;
 
     return (
         <div className={styles.teamTransferList}>
@@ -25,8 +23,8 @@ const TransferBox = (props) => {
                 listItems={listItems}
                 listType={listType}
                 onAddPlayer={onAddPlayer}
-                onPlayerFocus={onPlayerFocus}
-                focusedItemId={focusedItemId}
+                onPlayerSelection={onPlayerSelection}
+                selected={selected}
             />
             <TransferSortOperations
                 listType={listType}
@@ -38,17 +36,17 @@ const TransferBox = (props) => {
 };
 
 TransferBox.propTypes = {
-    focusedItem: PropTypes.shape(),
+    selected: PropTypes.arrayOf(PropTypes.object),
     listItems: PropTypes.arrayOf(PropTypes.object),
     listType: PropTypes.string,
     onAddPlayer: PropTypes.func,
-    onPlayerFocus: PropTypes.func,
+    onPlayerSelection: PropTypes.func,
     onMoveDown: PropTypes.func,
     onMoveUp: PropTypes.func,
 };
 
 TransferBox.defaultProps = {
-    focusedItem: {},
+    selected: [],
     listItems: [],
 };
 

@@ -20,6 +20,7 @@ export const getGameStats = `query GetGameStats($id: ID!) {
     waitListCount
     winners
     losers
+    playerOfTheGame
   }
 }
 `;
@@ -47,6 +48,7 @@ export const listGameStatss = `query ListGameStatss(
       waitListCount
       winners
       losers
+      playerOfTheGame
     }
     nextToken
   }

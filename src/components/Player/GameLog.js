@@ -18,6 +18,7 @@ const GameLog = ({ stats }) => (
             PaginationComponent={Pagination}
             sortMethod={sortHighToLow}
             stats={stats}
+            style={{ width: 1183 }}
             showPaginationTop
         />
     </div>

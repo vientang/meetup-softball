@@ -16,6 +16,7 @@ type GameStats {
   waitListCount: Int
   winners: AWSJSON
   losers: AWSJSON
+  playerOfTheGame: AWSJSON
 }
 
 type PlayerStats {
@@ -136,6 +137,7 @@ input ModelGameStatsFilterInput {
   waitListCount: ModelIntFilterInput
   winners: ModelStringFilterInput
   losers: ModelStringFilterInput
+  playerOfTheGame: ModelStringFilterInput
   and: [ModelGameStatsFilterInput]
   or: [ModelGameStatsFilterInput]
   not: ModelGameStatsFilterInput
@@ -172,6 +174,7 @@ input CreateGameStatsInput {
   waitListCount: Int
   winners: AWSJSON
   losers: AWSJSON
+  playerOfTheGame: AWSJSON
 }
 
 input UpdateGameStatsInput {
@@ -192,6 +195,7 @@ input UpdateGameStatsInput {
   waitListCount: Int
   winners: AWSJSON
   losers: AWSJSON
+  playerOfTheGame: AWSJSON
 }
 
 input DeleteGameStatsInput {

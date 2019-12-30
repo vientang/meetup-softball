@@ -14,14 +14,21 @@ const defaultFilters = {
 
 const reducer = (state, action) => {
     switch (action.type) {
-        case 'CURRENT_FILTER':
+        case 'CURRENT_FILTER': {
             return { ...state, currentFilter: action.payload };
-        case 'FILTERS':
+        }
+        case 'FILTERS': {
             return { ...state, filters: action.payload };
-        case 'LEADERS':
-            return { ...state, leaders: action.payload };
-        default:
+        }
+        case 'LEADERS': {
+            const leadersPayload = Array.isArray(action.payload)
+                ? action.payload[0]
+                : action.payload;
+            return { ...state, leaders: leadersPayload };
+        }
+        default: {
             return state;
+        }
     }
 };
 
@@ -91,10 +98,9 @@ const LeaderBoard = (props) => {
             inactivePlayers={JSON.parse(metadata.inactivePlayers)}
         >
             <div className={pageStyles.leaderBoardPage}>
-                {leaders[0] &&
-                    Object.keys(leaders[0]).map((stat) => (
-                        <LeaderCard key={stat} leaders={leaders[0][stat]} stat={stat} />
-                    ))}
+                {Object.keys(leaders).map((stat) => (
+                    <LeaderCard key={stat} leaders={leaders[stat]} stat={stat} />
+                ))}
             </div>
         </Layout>
     );
@@ -104,7 +110,7 @@ const LeaderBoard = (props) => {
 export const query = graphql`
     query {
         softballstats {
-            summarized: getSummarizedStats(id: "_leaderboard_2018") {
+            summarized: getSummarizedStats(id: "_leaderboard_2019") {
                 id
                 stats
             }
