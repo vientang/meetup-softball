@@ -6,7 +6,7 @@ import { CareerStats, GameLog, PlayerInfo } from '../components/Player';
 import { usePlayerStats } from '../utils/hooks';
 
 const Player = ({ location }) => {
-    const id = location.href.split('=').pop();
+    const id = (location.href || '').split('=').pop();
     const player = usePlayerStats(id);
 
     const games = useMemo(() => {
@@ -69,4 +69,7 @@ Player.propTypes = {
     location: PropTypes.shape(),
 };
 
+Player.defaultProps = {
+    location: {},
+};
 export default Player;
