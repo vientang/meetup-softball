@@ -17,6 +17,7 @@ import {
 import { statPageCategories } from '../utils/constants';
 import pageStyles from './pages.module.css';
 import { fetchSummarizedStats } from '../utils/apiService';
+import { updateGamesCount } from '../utils/MetaData';
 
 const defaultFilters = {
     year: '2019',

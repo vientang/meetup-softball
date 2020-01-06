@@ -12,7 +12,7 @@ export default {
             // input should be an object of fields of a game
             await submitGameStat(gameStats);
         } catch (e) {
-            throw new Error(`Error saving game: ${e}`);
+            throw new Error(`Error saving game on ${gameStats.date}: `, e);
         }
     },
 };

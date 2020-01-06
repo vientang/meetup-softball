@@ -19,7 +19,13 @@ const PlayerInfo = ({ id }) => {
     return (
         <div className={playerStyles.playerInfoCard}>
             <div className={playerStyles.playerInfoCardGroup}>
-                <Avatar src={playerImg} size={212} icon="user" shape="circle" />
+                <Avatar
+                    src={playerImg}
+                    size={212}
+                    icon="user"
+                    shape="circle"
+                    style={{ border: '1px solid #f7b639' }}
+                />
                 <div className={playerStyles.playerInfoCardBio}>
                     <p className={playerStyles.playerInfoName}>{playerInfo.name}</p>
                     <p className={playerStyles.playerInfoTitle}>{title}</p>

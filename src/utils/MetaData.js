@@ -1,5 +1,10 @@
-import { updateMetaDataEntry } from './apiService';
-import { findPlayerById } from './helpers';
+import {
+    updateMetaDataEntry,
+    fetchAllPlayerStats,
+    fetchPlayerInfo,
+    fetchAllGames,
+} from './apiService';
+import { findPlayerById, asyncForEach } from './helpers';
 import { updateGamesPlayed } from './statsCalc';
 
 export default {
@@ -31,6 +36,70 @@ export default {
         }
     },
 };
+
+export async function updateGamesCount() {
+    const allGames = await fetchAllGames({ limit: 1000 });
+    try {
+        await updateMetaDataEntry({
+            input: {
+                id: '_metadata',
+                totalGamesPlayed: allGames.length,
+            },
+        });
+    } catch (e) {
+        throw new Error(`Error updating players count`);
+    }
+}
+
+export async function updatePlayersCount(metadata) {
+    const actives = JSON.parse(metadata.activePlayers);
+    const inactives = JSON.parse(metadata.inactivePlayers);
+    try {
+        await updateMetaDataEntry({
+            input: {
+                id: '_metadata',
+                totalPlayersCount: actives.length + inactives.length,
+            },
+        });
+    } catch (e) {
+        throw new Error(`Error updating players count`);
+    }
+}
+
+export async function updateAllActivePlayers() {
+    const allPlayers = await fetchAllPlayerStats({ limit: 600 });
+    const activePlayers = allPlayers.filter((player) => {
+        const games = JSON.parse(player.games);
+        const recentYear = games[games.length - 1].year;
+        return Number(recentYear) > 2017;
+    });
+    const updatedActives = await updatePlayerPhotos(activePlayers);
+    try {
+        await updateMetaDataEntry({
+            input: {
+                id: '_metadata',
+                activePlayers: JSON.stringify(updatedActives),
+            },
+        });
+    } catch (e) {
+        throw new Error(`Error updating active players`);
+    }
+}
+
+async function updatePlayerPhotos(players) {
+    const updatedPlayers = asyncForEach(players, async (player) => {
+        const games = JSON.parse(player.games);
+        const updatedPlayer = {
+            id: player.id,
+            name: player.name,
+            gp: games.length,
+        };
+        const info = await fetchPlayerInfo(player.id);
+        updatedPlayer.photos = info.photos;
+        return updatedPlayer;
+    });
+    return updatedPlayers;
+}
 
 export function updateActivePlayers(metadata, players) {
     const activePlayers = JSON.parse(metadata.activePlayers);

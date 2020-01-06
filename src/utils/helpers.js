@@ -1,7 +1,6 @@
 export async function asyncForEach(array, callback) {
     const results = [];
     for (let index = 0; index < array.length; index += 1) {
-        // await callback(array[index], index, array);
         results.push(callback(array[index], index, array));
     }
     return Promise.all(results);

@@ -83,11 +83,12 @@ class AdminStatsTable extends React.Component {
             return false;
         }
 
+        // note, this does not affect how stats are displayed in the cell
         const winners = [...this.state.winners];
         winners[index][id] = e.target.innerHTML;
-
         this.setState(() => ({ winners }));
         this.props.onChange(original);
+
         return null;
     };
 
@@ -108,6 +109,7 @@ class AdminStatsTable extends React.Component {
             return false;
         }
 
+        // note, this does not affect how stats are displayed in the cell
         const losers = [...this.state.losers];
         losers[index][id] = e.target.innerHTML;
 
@@ -119,6 +121,7 @@ class AdminStatsTable extends React.Component {
     renderWinnerEditableCell = (cellInfo) => {
         const { playerOfTheGame, onSetPlayerOfTheGame } = this.props;
         const makeContentEditable = this.makeContentEditable(cellInfo);
+
         if (cellInfo.column.id === 'potg') {
             const { id } = cellInfo.original;
             return (
@@ -168,7 +171,7 @@ class AdminStatsTable extends React.Component {
     };
 
     render() {
-        const { winners, losers, invalidStats, tooltipMsg } = this.state;
+        const { winners, losers, tooltipMsg } = this.state;
 
         if (!winners || winners.length < 1) {
             return null;

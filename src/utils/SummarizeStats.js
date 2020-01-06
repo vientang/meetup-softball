@@ -254,10 +254,15 @@ function mergeDuplicatesWithSummarized(summarized, duplicates) {
         duplicatePlayerIds = Object.keys(duplicates[dupeKey]);
     });
 
-    stats = stats.filter((stat) => !duplicatePlayerIds.includes(stat.id));
-    Object.keys(duplicatePlayers).forEach((dupeKey) => {
-        stats.push(duplicatePlayers[dupeKey]);
-    });
+    if (stats && Array.isArray(stats)) {
+        stats = stats.filter((stat) => !duplicatePlayerIds.includes(stat.id));
+    }
+
+    if (duplicatePlayers) {
+        Object.keys(duplicatePlayers).forEach((dupeKey) => {
+            stats.push(duplicatePlayers[dupeKey]);
+        });
+    }
 
     return { ...summarized, [duplicateKeys[0]]: stats };
 }

@@ -1,29 +1,31 @@
 /* animation shorthand syntax does not work with css modules */
 .loading-image {
-    margin: 100px var(--margin-7);
+    margin: var(--margin-3);
     will-change: transform, opacity;
-    animation-duration: 2.5s;
+    transform: rotate(0deg);
+    animation-duration: 2s;
     animation-iteration-count: infinite;
     animation-name: pulsateAndRotate;
-    animation-timing-function: ease-in-out;
+    animation-timing-function: linear;
 }
 
 @keyframes pulsateAndRotate {
-    0%   { 
+    0% {
         opacity: 1;
-        transform: rotate(0deg) scale(2) translate(0px, 0px);
+        transform: rotate(0deg);
     }
-    50% { 
+    50% {
         opacity: 0.2;
-        transform: rotate(360deg) scale(1) translate(5px, 5px);
+        transform: rotate(180deg);
     }
-    100% { 
+    100% {
         opacity: 1;
-        transform: rotate(720deg) scale(2) translate(0px, 0px);
+        transform: rotate(360deg);
     }
 }
 
 .loading-text {
+    margin-top: var(--margin-3);
     color: var(--grey-2);
     font-family: 'Shrikhand';
     font-size: calc(0.8rem + 2vmin);

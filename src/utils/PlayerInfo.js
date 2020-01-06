@@ -9,10 +9,11 @@ export default {
 
 export async function submitPlayerInfo(players = []) {
     players.forEach(async (player) => {
-        const { admin, id, status } = player;
+        const { admin, gender, id, joined, name, status } = player;
         const existingPlayer = await fetchPlayerInfo(player.id);
         const photos = JSON.stringify(player.photos);
         const profile = JSON.stringify(player.profile);
+
         try {
             if (existingPlayer) {
                 await updateExistingPlayerInfo({
@@ -25,16 +26,19 @@ export async function submitPlayerInfo(players = []) {
             } else {
                 await createNewPlayerInfo({
                     input: {
-                        admin,
                         id,
-                        photos,
+                        name,
+                        joined,
                         profile,
+                        admin,
+                        photos,
                         status,
+                        gender: gender || 'n/a',
                     },
                 });
             }
         } catch (e) {
-            throw new Error(`Error saving player ${player.name}: ${e[0].message}`);
+            throw new Error(`Error saving player ${player.name}`, e);
         }
     });
 }

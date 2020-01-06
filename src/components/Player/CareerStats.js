@@ -43,6 +43,9 @@ function renderCell(cellInfo) {
     if (cellInfo.column.Header === 'SEASON') {
         return '';
     }
+    if (cellInfo.column.Header === 'WIN %') {
+        return formatCellValue(cellInfo.value / cellInfo.original.gp);
+    }
     return formatCellValue(cellInfo.value) || '0';
 }
 

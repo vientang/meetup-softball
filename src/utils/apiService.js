@@ -9,6 +9,7 @@ import {
     listGameStatss,
     listSummarizedStatss,
     listPlayerss,
+    listPlayerStatss,
     getSummarizedStats,
 } from '../graphql/queries';
 import {
@@ -25,6 +26,23 @@ import {
 import { createGame, parsePhotosAndProfile } from './helpers';
 
 /** PLAYER STATS */
+let playerStats = [];
+export function clearAllPlayerStats() {
+    playerStats = [];
+}
+export async function fetchAllPlayerStats(queryParams) {
+    const allPlayers = await API.graphql(graphqlOperation(listPlayerStatss, queryParams));
+    const { items, nextToken } = allPlayers.data.listPlayerStatss;
+    playerStats.push(...items);
+    if (nextToken) {
+        const queries = { ...queryParams };
+        queries.nextToken = nextToken;
+        await fetchAllPlayerStats(queries);
+    }
+
+    return playerStats;
+}
+
 export async function fetchPlayerStats(id) {
     let existingPlayer = await API.graphql(graphqlOperation(getPlayerStats, { id }));
     existingPlayer = get(existingPlayer, 'data.getPlayerStats', null);

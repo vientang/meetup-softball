@@ -86,7 +86,7 @@ const SearchBar = ({ open, players, showInactiveDrawer }) => {
 
 const playersMap = new Map();
 export function filterOptions(players, value, showInactiveDrawer) {
-    const char = value && value.length === 1 ? value[0] : null;
+    const char = value && value.length === 1 ? value[0].toLowerCase() : null;
     if (char && !playersMap.has(char)) {
         playersMap.set(
             char,
@@ -95,7 +95,6 @@ export function filterOptions(players, value, showInactiveDrawer) {
             ),
         );
     }
-
     const playerOptions = playersMap.get(value[0]) || players;
     playerOptions.sort((a, b) => (a.gp < b.gp ? 1 : -1));
     return ['RECENT PLAYERS']

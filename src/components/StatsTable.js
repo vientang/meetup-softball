@@ -104,7 +104,7 @@ function formatHeaderLabel(category) {
         case 'w':
             return 'WIN %';
         case 'battingOrder':
-            return '';
+            return 'BATTING';
         case 'potg':
             return (
                 <Icon type="star" theme="filled" style={{ color: 'gold', fontSize: '0.8rem' }} />
@@ -131,7 +131,7 @@ function formatColumnWidth(props) {
         case 'game':
             return 250;
         case 'battingOrder':
-            return 30;
+            return 80;
         case 'year':
             return 65;
         case 'field':

@@ -4,7 +4,7 @@ import { PlayerAvatar } from './Player';
 import { usePlayerInfo } from '../utils/hooks';
 import componentStyles from './components.module.css';
 
-const TopPlayer = ({ id, stat }) => {
+const LeaderCardPlayer = ({ id, stat }) => {
     const playerInfo = usePlayerInfo(id);
 
     if (!playerInfo) {
@@ -12,25 +12,25 @@ const TopPlayer = ({ id, stat }) => {
     }
 
     const { name, photos } = playerInfo;
-
+    const avatarStyle = {
+        width: 30,
+        height: 30,
+        margin: '1rem 1rem 0.5rem',
+    };
     return (
-        <>
-            <PlayerAvatar
-                src={photos.photo_link}
-                name={name}
-                style={{ width: 75, height: 75, margin: '1rem' }}
-            />
-            <div className={componentStyles.leaderCardItemTopPlayerInfo}>
+        <div>
+            <PlayerAvatar src={photos.thumb_link} name={name} style={avatarStyle} />
+            <div className={componentStyles.leaderCardItemPlayerInfo}>
                 <span>{name}</span>
                 <span className={componentStyles.leaderCardStat}>{stat}</span>
             </div>
-        </>
+        </div>
     );
 };
 
-TopPlayer.propTypes = {
+LeaderCardPlayer.propTypes = {
     id: PropTypes.string,
     stat: PropTypes.string,
 };
 
-export default TopPlayer;
+export default LeaderCardPlayer;
