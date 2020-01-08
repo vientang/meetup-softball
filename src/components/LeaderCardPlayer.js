@@ -18,7 +18,7 @@ const LeaderCardPlayer = ({ id, stat }) => {
         margin: '1rem 1rem 0.5rem',
     };
     return (
-        <div>
+        <div className={componentStyles.leaderCardPlayer}>
             <PlayerAvatar src={photos.thumb_link} name={name} style={avatarStyle} />
             <div className={componentStyles.leaderCardItemPlayerInfo}>
                 <span>{name}</span>
