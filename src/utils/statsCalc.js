@@ -77,6 +77,63 @@ export function transformCareerStats(careerStats, type) {
     });
 }
 
+export function calculateCurrentStats(stats) {
+    const {
+        bb,
+        cs,
+        doubles,
+        gp,
+        k,
+        l,
+        hr,
+        o,
+        rbi,
+        r,
+        sac,
+        sb,
+        singles,
+        triples,
+        w,
+    } = convertStringStatsToNumbers(stats);
+
+    const hits = getHits(singles, doubles, triples, hr);
+    const atBats = getAtBats(hits, o);
+    const totalBases = getTotalBases(singles, doubles, triples, hr);
+    const average = getAverage(hits, atBats);
+    const onBasePercentage = getOnBasePercentage(hits, bb, atBats, sac);
+    const slugging = getSlugging(totalBases, atBats);
+    const runsCreated = getRunsCreated(hits, bb, cs, totalBases, sb, atBats);
+    const onBaseSlugging = getOPS(onBasePercentage, slugging);
+    const winsOba = getWOBA(bb, singles, doubles, triples, hr, atBats, sac);
+
+    return {
+        ab: atBats,
+        avg: average,
+        bb,
+        cs,
+        doubles,
+        gp,
+        h: hits,
+        hr,
+        k,
+        l,
+        o,
+        obp: onBasePercentage,
+        ops: onBaseSlugging,
+        rbi,
+        r,
+        rc: runsCreated,
+        sac,
+        sb,
+        singles,
+        slg: slugging,
+        tb: totalBases,
+        triples,
+        woba: winsOba,
+        w,
+    };
+}
+
 /**
  * Calculate cumulative stats from the current game and the running total
  * @param {Object} existingStats
@@ -86,32 +143,7 @@ export function transformCareerStats(careerStats, type) {
 export function calculateTotals(existingStats = {}, currentStats = {}) {
     const { bb, cs, gp, k, l, r, rbi, singles, doubles, sb, triples, hr, o, sac, w } = currentStats;
     if (!existingStats || !Object.keys(existingStats).length) {
-        const { bb, cs, singles, doubles, sb, triples, hr, o, sac } = convertStringStatsToNumbers(
-            currentStats,
-        );
-
-        const hits = getHits(singles, doubles, triples, hr);
-        const atBats = getAtBats(hits, o);
-        const totalBases = getTotalBases(singles, doubles, triples, hr);
-        const average = getAverage(hits, atBats);
-        const onBasePercentage = getOnBasePercentage(hits, bb, atBats, sac);
-        const slugging = getSlugging(totalBases, atBats);
-        const runsCreated = getRunsCreated(hits, bb, cs, totalBases, sb, atBats);
-        const onBaseSlugging = getOPS(onBasePercentage, slugging);
-        const winsOba = getWOBA(bb, singles, doubles, triples, hr, atBats, sac);
-
-        return {
-            ...convertStringStatsToNumbers(currentStats),
-            ab: atBats,
-            avg: average,
-            h: hits,
-            obp: onBasePercentage,
-            ops: onBaseSlugging,
-            rc: runsCreated,
-            slg: slugging,
-            tb: totalBases,
-            woba: winsOba,
-        };
+        return calculateCurrentStats(currentStats);
     }
 
     // counting stats

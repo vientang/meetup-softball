@@ -7,13 +7,7 @@ export default {
         const gameStats = mergeGameStats(currentGame, winners, losers, playerOfTheGame);
         gameStats.winners = JSON.stringify(gameStats.winners);
         gameStats.losers = JSON.stringify(gameStats.losers);
-        try {
-            // second param should be an object with one property - input
-            // input should be an object of fields of a game
-            await submitGameStat(gameStats);
-        } catch (e) {
-            throw new Error(`Error saving game on ${gameStats.date}: `, e);
-        }
+        await submitGameStat({ input: gameStats });
     },
 };
 

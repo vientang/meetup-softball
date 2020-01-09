@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useStaticQuery, graphql } from 'gatsby';
 import {
     fetchPlayerInfo,
@@ -9,6 +9,15 @@ import {
 } from './apiService';
 import createLeaderBoard from './leadersCalc';
 import { getIdFromFilterParams } from './helpers';
+
+export const useIsMounted = () => {
+    const isMounted = useRef(false);
+    useEffect(() => {
+        isMounted.current = true;
+        return () => (isMounted.current = false);
+    }, []);
+    return isMounted;
+};
 
 export const useMetaData = () => {
     const data = useStaticQuery(graphql`
@@ -54,9 +63,10 @@ export const useMetaData = () => {
 
 export const usePlayerStats = (id) => {
     const [playerStats, setplayerStats] = useState({});
+    const isMounted = useIsMounted();
     useEffect(() => {
         async function fetchPlayer() {
-            if (id) {
+            if (id && isMounted) {
                 const playerStats = await fetchPlayerStats(id);
                 setplayerStats(playerStats);
             }
@@ -68,9 +78,10 @@ export const usePlayerStats = (id) => {
 
 export const usePlayerInfo = (id) => {
     const [playerInfo, setPlayerInfo] = useState(null);
+    const isMounted = useIsMounted();
     useEffect(() => {
         async function fetchPlayer() {
-            if (id) {
+            if (id && isMounted) {
                 const playerInfo = await fetchPlayerInfo(id);
                 setPlayerInfo(playerInfo);
             }

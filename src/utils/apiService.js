@@ -218,8 +218,14 @@ export async function submitGameStats(gameStats) {
     });
 }
 
-export async function submitGameStat(gameStats) {
-    await API.graphql(graphqlOperation(createGameStats, { input: gameStats }));
+export async function submitGameStat(input) {
+    try {
+        // second param should be an object with one property - input
+        // input should be an object of fields of a game
+        await API.graphql(graphqlOperation(createGameStats, input));
+    } catch (e) {
+        throw new Error(`Error saving game on ${input.gameStats.date}: `, e);
+    }
 }
 
 const games = [];

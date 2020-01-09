@@ -10,12 +10,13 @@ export default {
 export async function submitPlayerInfo(players = []) {
     players.forEach(async (player) => {
         const { admin, gender, id, joined, name, status } = player;
-        const existingPlayer = await fetchPlayerInfo(player.id);
         const photos = JSON.stringify(player.photos);
         const profile = JSON.stringify(player.profile);
 
+        const existingPlayer = await fetchPlayerInfo(player.id);
         try {
             if (existingPlayer) {
+                // keep photos and profile up to date with meetup
                 await updateExistingPlayerInfo({
                     input: {
                         id,

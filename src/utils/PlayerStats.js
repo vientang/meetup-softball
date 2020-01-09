@@ -27,7 +27,8 @@ export async function submitPlayerStats(players = []) {
             } else {
                 await createNewPlayerStats({
                     input: {
-                        ...player,
+                        id: player.id,
+                        name: player.name,
                         games: JSON.stringify([player.games[0]]),
                     },
                 });

@@ -29,41 +29,29 @@ export default {
             totalPlayersCount: activePlayers.length + inactivePlayers.length,
         };
 
-        try {
-            await updateMetaDataEntry({ input: data });
-        } catch (e) {
-            throw new Error(`Error saving meta data: ${e}`);
-        }
+        await updateMetaDataEntry({ input: data });
     },
 };
 
 export async function updateGamesCount() {
     const allGames = await fetchAllGames({ limit: 1000 });
-    try {
-        await updateMetaDataEntry({
-            input: {
-                id: '_metadata',
-                totalGamesPlayed: allGames.length,
-            },
-        });
-    } catch (e) {
-        throw new Error(`Error updating players count`);
-    }
+    await updateMetaDataEntry({
+        input: {
+            id: '_metadata',
+            totalGamesPlayed: allGames.length,
+        },
+    });
 }
 
 export async function updatePlayersCount(metadata) {
     const actives = JSON.parse(metadata.activePlayers);
     const inactives = JSON.parse(metadata.inactivePlayers);
-    try {
-        await updateMetaDataEntry({
-            input: {
-                id: '_metadata',
-                totalPlayersCount: actives.length + inactives.length,
-            },
-        });
-    } catch (e) {
-        throw new Error(`Error updating players count`);
-    }
+    await updateMetaDataEntry({
+        input: {
+            id: '_metadata',
+            totalPlayersCount: actives.length + inactives.length,
+        },
+    });
 }
 
 export async function updateAllActivePlayers() {
@@ -74,16 +62,12 @@ export async function updateAllActivePlayers() {
         return Number(recentYear) > 2017;
     });
     const updatedActives = await updatePlayerPhotos(activePlayers);
-    try {
-        await updateMetaDataEntry({
-            input: {
-                id: '_metadata',
-                activePlayers: JSON.stringify(updatedActives),
-            },
-        });
-    } catch (e) {
-        throw new Error(`Error updating active players`);
-    }
+    await updateMetaDataEntry({
+        input: {
+            id: '_metadata',
+            activePlayers: JSON.stringify(updatedActives),
+        },
+    });
 }
 
 async function updatePlayerPhotos(players) {
