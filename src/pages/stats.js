@@ -17,7 +17,6 @@ import {
 import { statPageCategories } from '../utils/constants';
 import pageStyles from './pages.module.css';
 import { fetchSummarizedStats } from '../utils/apiService';
-import { updateGamesCount } from '../utils/MetaData';
 
 const defaultFilters = {
     year: '2019',
@@ -43,6 +42,12 @@ class Stats extends React.Component {
             playerStats: this.mapPlayerPhotos(JSON.parse(stats), items),
             sortedColumn: '',
         };
+    }
+
+    async componentDidUpdate() {
+        // subscribe for updates to summarized stats and player info
+        // update playersInfoMap
+        // rebuild playerStats with updated playersInfoMap
     }
 
     handleColumnSort = (newSorted, column) => {
@@ -186,6 +191,7 @@ export const query = graphql`
                     id
                     name
                     photos
+                    status
                 }
             }
             summarized: getSummarizedStats(id: "_2019") {
