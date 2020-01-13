@@ -1,9 +1,10 @@
-import { rateStats } from './constants';
+import get from 'lodash/get';
 
-export default function createLeaderBoard(summarizedStats = []) {
+export default function createLeaderBoard(summarizedStats = [], metadata, year) {
+    const qualifier = getQualifier(metadata, year);
     return {
         hr: getLeaders(summarizedStats, 'hr'),
-        avg: getLeaders(summarizedStats, 'avg'),
+        avg: getLeaders(summarizedStats, 'avg', qualifier),
         rbi: getLeaders(summarizedStats, 'rbi'),
         r: getLeaders(summarizedStats, 'r'),
         doubles: getLeaders(summarizedStats, 'doubles'),
@@ -13,91 +14,73 @@ export default function createLeaderBoard(summarizedStats = []) {
     };
 }
 
-function getLeaders(summarizedStats = [], stat) {
-    let leaders = [];
-
-    summarizedStats.forEach((player) => {
-        if (player[stat] === undefined) {
-            return;
-        }
-
-        const playerToInsert = {
-            name: player.name,
-            id: player.id,
-            gp: player.gp,
-            [stat]: player[stat],
-        };
-
-        // build leaders with first 5 players
-        if (leaders.length < 5) {
-            leaders.push(playerToInsert);
+export function getLeaders(summarizedStats, stat, qualifier) {
+    const leaders = getInitial(summarizedStats, stat).filter(filterPredicate(qualifier, stat));
+    const remaining = getRemaining(summarizedStats, stat).filter(filterPredicate(qualifier, stat));
+    // sort leaders in place by comparing stats and qualifying against games played
+    remaining.forEach((player) => {
+        const playerStat = Number(player[stat]);
+        const topLeaderStat = Number(leaders[0][stat]);
+        // top dawg
+        if (playerStat >= topLeaderStat) {
+            leaders.unshift(player);
         } else {
-            leaders = sortLeaders({
-                gamesPlayed: summarizedStats.length,
-                player: playerToInsert,
-                leaders,
-                stat,
-            });
+            const insertIndex = leaders.findIndex((leader) => playerStat >= leader[stat]);
+            if (insertIndex > 0) {
+                leaders.splice(insertIndex, 0, player);
+            }
         }
     });
-    return leaders;
-}
 
-function sortLeaders({ gamesPlayed, leaders, player, stat }) {
-    const statValue = player[stat];
-    const lastIndex = leaders.length - 1;
-    let sortedLeaders = leaders.sort((a, b) => (a[stat] < b[stat] ? 1 : -1));
-    const rankIndex = sortedLeaders.findIndex((leader) => statValue >= leader[stat]);
+    const topLeaders = leaders.slice(0, 5);
+    leaders.slice(5).some((player) => {
+        const last = topLeaders[topLeaders.length - 1];
 
-    const qualifed = isPlayerQualified({
-        gamesPlayed,
-        lastIndex,
-        leaders,
-        player,
-        stat,
-        statValue,
+        if (Number(player[stat]) === Number(last[stat])) {
+            topLeaders.push(player);
+            return false;
+        }
+        return true;
     });
 
-    if (qualifed) {
-        if (rankIndex === 0) {
-            // player is top dawg
-            sortedLeaders = [player, ...sortedLeaders];
-        } else if (rankIndex > 0) {
-            sortedLeaders = [
-                ...sortedLeaders.slice(0, rankIndex),
-                player,
-                ...sortedLeaders.slice(rankIndex),
-            ];
-        }
-    }
-
-    return getLeadersWithTies(sortedLeaders, stat);
+    return topLeaders;
 }
 
-function getLeadersWithTies(leaders, stat) {
-    const topFivePlayers = leaders.slice(0, 5);
-    const remainingPlayers = leaders.slice(5);
-    const ties = [];
-    const hasTies = remainingPlayers.some((player) => {
-        if (player[stat] === topFivePlayers[4][stat]) {
-            ties.push(player);
-            return true;
-        }
-        return false;
-    });
-    return hasTies ? [...topFivePlayers, ...ties] : topFivePlayers;
+export function getInitial(players, stat) {
+    const initial = players.slice(0, 5).map((player) => ({
+        name: player.name,
+        id: player.id,
+        gp: player.gp,
+        [stat]: player[stat],
+    }));
+    initial.sort((a, b) => (Number(a[stat]) > Number(b[stat]) ? -1 : 1));
+    return initial;
 }
 
-function isPlayerQualified({ gamesPlayed, lastIndex, leaders, player, stat, statValue }) {
-    // minimum qualifier is the last item in sorted array
-    const minStatQualifier = leaders[lastIndex][stat];
+export function getRemaining(players, stat) {
+    const initial = players.slice(5).map((player) => ({
+        name: player.name,
+        id: player.id,
+        gp: player.gp,
+        [stat]: player[stat],
+    }));
+    initial.sort((a, b) => (Number(a[stat]) > Number(b[stat]) ? -1 : 1));
+    return initial;
+}
 
-    // inlude minimum number of games played for rate stats
-    const isRateState = rateStats.includes(stat);
-    if (isRateState) {
-        const minGamesQualified = player.gp / gamesPlayed > 0.2;
-        return minGamesQualified ? statValue > minStatQualifier : false;
-    }
+export function getQualifier(metadata, year) {
+    const { perYear } = JSON.parse(metadata);
+    return get(perYear, `${year}.gp`, 1);
+}
 
-    return statValue > minStatQualifier;
+/**
+ * Keep players who:
+ *  1. meet the qualifying number of games played
+ *  2. have a valid stat entry
+ * @param {Number} qualifier
+ * @param {String} stat
+ */
+export function filterPredicate(qualifier, stat) {
+    return (player) =>
+        Number(player[stat]) && (!qualifier || Number(player.gp) >= Number(qualifier));
 }

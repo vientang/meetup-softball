@@ -16,20 +16,28 @@ export default {
         const allFields = updateAllFields(metadata, currentGame);
         const allYears = updateAllYears(metadata, currentGame);
         const perYear = updateFieldsMonthsPerYear(metadata, currentGame);
-        const data = {
-            id: '_metadata',
-            activePlayers: JSON.stringify(activePlayers),
-            inactivePlayers: JSON.stringify(inactivePlayers),
-            allFields: JSON.stringify(allFields),
-            allYears: JSON.stringify(allYears),
-            perYear: JSON.stringify(perYear),
-            recentGames: JSON.stringify(recentGames),
-            recentGamesLength: recentGames.length,
-            totalGamesPlayed: metadata.totalGamesPlayed + 1,
-            totalPlayersCount: activePlayers.length + inactivePlayers.length,
-        };
-
-        await updateMetaDataEntry({ input: data });
+        // const data = {
+        //     id: '_metadata',
+        //     activePlayers: JSON.stringify(activePlayers),
+        //     inactivePlayers: JSON.stringify(inactivePlayers),
+        //     allFields: JSON.stringify(allFields),
+        //     allYears: JSON.stringify(allYears),
+        //     perYear: JSON.stringify(perYear),
+        //     recentGames: JSON.stringify(recentGames),
+        //     recentGamesLength: recentGames.length,
+        //     totalGamesPlayed: metadata.totalGamesPlayed + 1,
+        //     totalPlayersCount: activePlayers.length + inactivePlayers.length,
+        // };
+        console.log('Metadata', {
+            // data,
+            activePlayers,
+            inactivePlayers,
+            allYears,
+            allFields,
+            perYear,
+            recentGames,
+        });
+        // await updateMetaDataEntry({ input: data });
     },
 };
 
@@ -148,8 +156,9 @@ export function updateFieldsMonthsPerYear(metadata, currentGame) {
 }
 
 export function updateRecentGames(metadata, currentGame, winners, losers) {
-    const { recentGames, recentGamesLength } = metadata;
-    const recent = JSON.parse(recentGames).slice(0, recentGamesLength - 1);
+    const { recentGames } = metadata;
+    let recent = JSON.parse(recentGames);
+    recent = recent.slice(0, recent.length - 1);
     const game = { ...currentGame };
     game.winners = winners;
     game.losers = losers;

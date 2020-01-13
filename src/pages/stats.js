@@ -15,8 +15,8 @@ import {
     sortHighToLow,
 } from '../utils/helpers';
 import { statPageCategories } from '../utils/constants';
-import pageStyles from './pages.module.css';
 import { fetchSummarizedStats } from '../utils/apiService';
+import pageStyles from './pages.module.css';
 
 const defaultFilters = {
     year: '2019',
@@ -42,12 +42,6 @@ class Stats extends React.Component {
             playerStats: this.mapPlayerPhotos(JSON.parse(stats), items),
             sortedColumn: '',
         };
-    }
-
-    async componentDidUpdate() {
-        // subscribe for updates to summarized stats and player info
-        // update playersInfoMap
-        // rebuild playerStats with updated playersInfoMap
     }
 
     handleColumnSort = (newSorted, column) => {

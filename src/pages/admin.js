@@ -100,7 +100,7 @@ class Admin extends React.Component {
 
         const stats = mergePlayerStats(currentGame, winners, losers, playerOfTheGame);
         await PlayerStats.save(stats);
-        await SummarizeStats.save(currentGame, stats);
+        await SummarizeStats.save(currentGame, stats, metadata);
         await GameStats.save(currentGame, winners, losers, playerOfTheGame);
         await PlayerInfo.save(winners, losers);
         await MetaData.save(metadata, currentGame, winners, losers);

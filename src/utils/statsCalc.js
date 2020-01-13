@@ -41,6 +41,17 @@ export function updateGamesPlayed(gp) {
 }
 
 /**
+ * Calculate rate stats from counting stats
+ * Used to summarize stats for new players
+ * @param {Array} player
+ */
+export function calculateNewPlayerStats(player) {
+    const { id, name } = player;
+    const calculatedStats = calculateCurrentStats(player);
+    return { id, name, ...calculatedStats };
+}
+
+/**
  * Calculate total stats by specified key
  * @param {Object} values
  * @param {String} key
@@ -83,12 +94,12 @@ export function calculateCurrentStats(stats) {
         cs,
         doubles,
         gp,
+        hr,
         k,
         l,
-        hr,
         o,
-        rbi,
         r,
+        rbi,
         sac,
         sb,
         singles,
@@ -241,10 +252,10 @@ export function getAverage(hits, atBats) {
     return Number(`${Math.round(`${avg}e+3`)}e-3`);
 }
 
-export function getOnBasePercentage(hits, walks, atBats, sacrifices) {
-    if (atBats + walks + sacrifices > 0) {
+export function getOnBasePercentage(hits, walks, atBats, sacs) {
+    if (atBats + walks + sacs > 0) {
         const result = Number(`
-      ${(hits + walks) / (atBats + walks + sacrifices)}e+3
+      ${(hits + walks) / (atBats + walks + sacs)}e+3
     `);
         return Number(`${Math.round(result)}e-3`);
     }
