@@ -1,4 +1,4 @@
-import { mergePlayerStats } from '../PlayerStats';
+import { mergePlayerStats, isPlayerOfTheGame } from '../PlayerStats';
 import mockAPIData from '../../../__mocks__/mockAPIData';
 
 const { mergedPlayerStats, currentGame } = mockAPIData;
@@ -54,7 +54,15 @@ describe('PlayerStats', () => {
         },
     ];
 
-    it('merge player stats', () => {
-        expect(mergePlayerStats(currentGame, winners, losers)).toEqual(mergedPlayerStats);
+    const playerOfTheGame = winners[0];
+
+    test('merge player stats', () => {
+        expect(mergePlayerStats(currentGame, winners, losers, playerOfTheGame)).toEqual(
+            mergedPlayerStats,
+        );
+    });
+
+    test('isPlayerOfTheGame', () => {
+        expect(isPlayerOfTheGame(losers[0], playerOfTheGame)).toBe(false);
     });
 });

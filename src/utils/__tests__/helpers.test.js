@@ -162,43 +162,52 @@ describe('getDefaultSortedColumn', () => {
 });
 
 describe('convertStringStatsToNumbers', () => {
-    it('return numbers', () => {
-        const stats = {
-            ab: '1',
-            r: '1',
-            singles: '1',
-            doubles: '1',
-            triples: '1',
-            hr: '1',
-            rbi: '1',
+    let stats;
+    beforeEach(() => {
+        stats = {
             bb: '1',
-            k: '1',
-            sac: '1',
-            sb: '0',
             cs: '0',
+            doubles: '1',
             gp: '1',
-            w: '1',
+            hr: '1',
+            k: '1',
             l: '0',
             o: '3',
+            r: '1',
+            rbi: '1',
+            sac: '1',
+            sb: '0',
+            singles: '1',
+            triples: '1',
+            w: '1',
         };
+    });
+
+    it('return numbers', () => {
         expect(convertStringStatsToNumbers(stats)).toEqual({
-            ab: 1,
-            r: 1,
-            singles: 1,
-            doubles: 1,
-            triples: 1,
-            hr: 1,
-            rbi: 1,
             bb: 1,
-            k: 1,
-            sac: 1,
-            sb: 0,
             cs: 0,
+            doubles: 1,
             gp: 1,
-            w: 1,
+            hr: 1,
+            k: 1,
             l: 0,
             o: 3,
+            r: 1,
+            rbi: 1,
+            sac: 1,
+            sb: 0,
+            singles: 1,
+            triples: 1,
+            w: 1,
         });
+    });
+
+    it('normalize null and undefined to zero', () => {
+        stats.r = null;
+        stats.rbi = undefined;
+        expect(convertStringStatsToNumbers(stats).r).toBe(0);
+        expect(convertStringStatsToNumbers(stats).rbi).toBe(0);
     });
 });
 
@@ -327,8 +336,8 @@ describe('createPlayer', () => {
         player = {
             data: {
                 name: 'Juice',
-                id: '456',
-                joined: '09090909',
+                id: 456,
+                joined: 99,
                 status: 'active',
             },
         };
@@ -337,7 +346,7 @@ describe('createPlayer', () => {
     it('player data', () => {
         expect(createPlayer(player).name).toBe('Juice');
         expect(createPlayer(player).id).toBe('456');
-        expect(createPlayer(player).joined).toBe('09090909');
+        expect(createPlayer(player).joined).toBe('99');
         expect(createPlayer(player).status).toBe('active');
     });
 
@@ -355,5 +364,5 @@ describe('createPlayer', () => {
         expect(createPlayer(player).rbi).toBe(null);
         expect(createPlayer(player).sac).toBe(null);
         expect(createPlayer(player).sb).toBe(null);
-    })
+    });
 });

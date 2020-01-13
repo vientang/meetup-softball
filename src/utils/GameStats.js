@@ -7,7 +7,8 @@ export default {
         const gameStats = mergeGameStats(currentGame, winners, losers, playerOfTheGame);
         gameStats.winners = JSON.stringify(gameStats.winners);
         gameStats.losers = JSON.stringify(gameStats.losers);
-        await submitGameStat({ input: gameStats });
+        // await submitGameStat({ input: gameStats });
+        console.log('GameStats', gameStats);
     },
 };
 

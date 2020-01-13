@@ -7,37 +7,35 @@ import { gameProperties } from './constants';
 
 export default {
     save: async (players) => {
-        await submitPlayerStats(players);
+        players.forEach(async (player) => {
+            // check if player already exists in database
+            const existingPlayer = await fetchPlayerStats(player.id);
+            console.log('PlayerStats player', { existingPlayer, player });
+            // try {
+            //     if (existingPlayer) {
+            //         const { games } = existingPlayer;
+            //         await updateExistingPlayer({
+            //             input: {
+            //                 id: player.id,
+            //                 games: JSON.stringify([...games, player.games[0]]),
+            //             },
+            //         });
+            //     } else {
+            //         await createNewPlayerStats({
+            //             input: {
+            //                 id: player.id,
+            //                 name: player.name,
+            //                 games: JSON.stringify([player.games[0]]),
+            //             },
+            //         });
+            //     }
+            // } catch (e) {
+            //     console.log((`Error saving player ${existingPlayer.name}: `, e));
+            //     throw new Error(`Error saving player ${existingPlayer.name}: `, e);
+            // }
+        });
     },
 };
-
-export async function submitPlayerStats(players = []) {
-    players.forEach(async (player) => {
-        // check if player already exists in database
-        const existingPlayer = await fetchPlayerStats(player.id);
-        try {
-            if (existingPlayer) {
-                const { games } = existingPlayer;
-                await updateExistingPlayer({
-                    input: {
-                        id: player.id,
-                        games: JSON.stringify([...games, player.games[0]]),
-                    },
-                });
-            } else {
-                await createNewPlayerStats({
-                    input: {
-                        id: player.id,
-                        name: player.name,
-                        games: JSON.stringify([player.games[0]]),
-                    },
-                });
-            }
-        } catch (e) {
-            throw new Error(`Error saving player ${existingPlayer.name}: `, e);
-        }
-    });
-}
 
 /**
  * PLAYERSTATS Adaptor to combine data from meetup and current game stats
@@ -53,14 +51,18 @@ export function mergePlayerStats(meetupData, w, l, playerOfTheGame) {
     const winners = createPlayerData(addDerivedStats(w, isTie, true), gameProps);
     const losers = createPlayerData(addDerivedStats(l, isTie), gameProps);
     return winners.concat(losers).map((player) => {
-        const potgId = get(playerOfTheGame, 'id', '');
-        if (playerOfTheGame && player.id === potgId.toString()) {
-            const starPlayer = { ...player };
-            starPlayer.games[0].playerOfTheGame = true;
-            return starPlayer;
-        }
-        return player;
+        const currPlayer = { ...player };
+        currPlayer.games[0].playerOfTheGame = isPlayerOfTheGame(player, playerOfTheGame);
+        return currPlayer;
     });
+}
+
+export function isPlayerOfTheGame(player, playerOfTheGame) {
+    if (!playerOfTheGame) {
+        return null;
+    }
+    const potgId = get(playerOfTheGame, 'id', '');
+    return player.id === potgId.toString();
 }
 
 /**

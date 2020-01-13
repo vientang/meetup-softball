@@ -46,9 +46,9 @@ export function createGame(game) {
 export function createPlayer(player) {
     const { name, id, joined, group_profile, is_pro_admin, photo, status } = player.data;
     return {
-        id,
+        id: id.toString(),
         name,
-        joined,
+        joined: joined.toString(),
         status,
         profile: group_profile,
         admin: is_pro_admin,
@@ -197,25 +197,31 @@ export function convertStatsForTable(stats) {
 
 // tested
 export function convertStringStatsToNumbers(stats) {
-    const { ab, r, singles, doubles, triples, hr, rbi, bb, k, sac, sb, cs, gp, w, l, o } = stats;
+    const { r, singles, doubles, triples, hr, rbi, bb, k, sac, sb, cs, gp, w, l, o } = stats;
     return {
-        ab: Number(ab),
-        r: Number(r),
-        singles: Number(singles),
-        doubles: Number(doubles),
-        triples: Number(triples),
-        hr: Number(hr),
-        rbi: Number(rbi),
-        bb: Number(bb),
-        k: Number(k),
-        sac: Number(sac),
-        sb: Number(sb),
-        cs: Number(cs),
-        gp: Number(gp),
-        w: Number(w),
-        l: Number(l),
-        o: Number(o),
+        bb: normalize(bb),
+        cs: normalize(cs),
+        doubles: normalize(doubles),
+        gp: normalize(gp),
+        hr: normalize(hr),
+        k: normalize(k),
+        l: normalize(l),
+        o: normalize(o),
+        r: normalize(r),
+        rbi: normalize(rbi),
+        sac: normalize(sac),
+        sb: normalize(sb),
+        singles: normalize(singles),
+        triples: normalize(triples),
+        w: normalize(w),
     };
+}
+
+function normalize(stat) {
+    if (stat === null || stat === undefined) {
+        return 0;
+    }
+    return Number(stat);
 }
 
 /**
