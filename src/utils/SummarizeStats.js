@@ -1,3 +1,4 @@
+import pick from 'lodash/pick';
 import {
     createNewSummarizedStats,
     fetchSummarizedStats,
@@ -11,9 +12,9 @@ export default {
     save: async ({ year, month, field } = {}, stats, metadata) => {
         const preSummarized = await getSummarizedStats({ year, month, field });
         const players = flatStats(stats);
-
+        console.log('save summarized', { preSummarized, players });
         // merge current stats with summarized stats
-        const postSummarized = mergeSummarizedStats(players, preSummarized);
+        const postSummarized = mergeSummarizedStats(preSummarized, players);
 
         // calculate leaderboards
         postSummarized[`_leaderboard_${year}`] = createLeaderBoard(
@@ -66,11 +67,39 @@ export function getSummarizedIds({ year, month, field } = {}) {
 }
 
 /**
- * @param {Array} stats [{ id, name, games: [{}] }, ...]
+ * @param {Array} players [{ id, name, games: [{}] }, ...]
  * @return {Array} [{ id, name, singles, hr, ... }]
  */
-export function flatStats(stats) {
-    return stats.map((stat) => ({ id: stat.id, name: stat.name, ...stat.games[0] }));
+export function flatStats(players) {
+    return players.map((player) => {
+        const stats = pick(player.games[0], [
+            'ab',
+            'avg',
+            'bb',
+            'cs',
+            'doubles',
+            'gp',
+            'h',
+            'hr',
+            'k',
+            'l',
+            'o',
+            'obp',
+            'ops',
+            'r',
+            'rbi',
+            'rc',
+            'sac',
+            'sb',
+            'singles',
+            'slg',
+            'tb',
+            'triples',
+            'w',
+            'woba',
+        ]);
+        return { id: player.id, name: player.name, ...stats };
+    });
 }
 
 /**
