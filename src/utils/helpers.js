@@ -81,6 +81,18 @@ export function buildFilterMenu(filters, metadata) {
     };
 }
 
+// tested
+/**
+ * Used to update player of the game when entering stats
+ * Check that current player is player of the game before making changes
+ * @param {Object} player
+ * @param {Object} playerOfTheGame
+ */
+export function isPlayerOfTheGame(player, playerOfTheGame) {
+    const isPOTG = player.id === playerOfTheGame.id;
+    return Object.keys(playerOfTheGame).length > 0 && isPOTG;
+}
+
 /**
  * Creates an object with properties that match the specified key.
  * @param {Array} values

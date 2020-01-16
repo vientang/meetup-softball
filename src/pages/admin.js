@@ -19,7 +19,13 @@ import GameStats from '../utils/GameStats';
 import PlayerStats, { mergePlayerStats } from '../utils/PlayerStats';
 import PlayerInfo from '../utils/PlayerInfo';
 import MetaData from '../utils/MetaData';
-import { createPlayer, getFieldName, findCurrentGame, filterCurrentGame } from '../utils/helpers';
+import {
+    createPlayer,
+    getFieldName,
+    findCurrentGame,
+    filterCurrentGame,
+    isPlayerOfTheGame,
+} from '../utils/helpers';
 import styles from './pages.module.css';
 
 class Admin extends React.Component {
@@ -81,8 +87,7 @@ class Admin extends React.Component {
     };
 
     handleOnChange = (player) => {
-        const { playerOfTheGame } = this.state;
-        if (Object.keys(playerOfTheGame).length > 0) {
+        if (isPlayerOfTheGame(player, this.state.playerOfTheGame)) {
             this.setState(() => ({ playerOfTheGame: player }));
         }
     };

@@ -11,6 +11,7 @@ import {
     getFieldName,
     getIdFromFilterParams,
     getMeridiem,
+    isPlayerOfTheGame,
     parsePhotosAndProfile,
     parseStats,
     serializeStats,
@@ -159,6 +160,24 @@ describe('getDefaultSortedColumn', () => {
     const id = '111';
     const desc = 'desc';
     expect(getDefaultSortedColumn(id, desc)).toEqual([{ id, desc }]);
+});
+
+describe('isPlayerOfTheGame', () => {
+    let player;
+    let playerOfTheGame;
+    beforeEach(() => {
+        playerOfTheGame = {};
+        player = {};
+    });
+    test('player of the game selected', () => {
+        playerOfTheGame.id = '123';
+        player.id = '123';
+        expect(isPlayerOfTheGame(player, playerOfTheGame)).toBe(true);
+    });
+
+    test('player of the game not selected', () => {
+        expect(isPlayerOfTheGame(player, playerOfTheGame)).toBe(false);
+    });
 });
 
 describe('convertStringStatsToNumbers', () => {
