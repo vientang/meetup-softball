@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'gatsby';
 import { PlayerAvatar } from './Player';
 import { usePlayerInfo } from '../utils/hooks';
 import componentStyles from './components.module.css';
@@ -21,7 +22,7 @@ const LeaderCardPlayer = ({ id, stat }) => {
         <div className={componentStyles.leaderCardPlayer}>
             <PlayerAvatar src={photos.thumb_link} name={name} style={avatarStyle} />
             <div className={componentStyles.leaderCardItemPlayerInfo}>
-                <span>{name}</span>
+                <Link to={`/player?id=${id}`}>{name}</Link>
                 <span className={componentStyles.leaderCardStat}>{stat}</span>
             </div>
         </div>

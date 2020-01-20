@@ -1,9 +1,89 @@
+import omit from 'lodash/omit';
+import isEqual from 'lodash/isEqual';
+
 export async function asyncForEach(array, callback) {
     const results = [];
     for (let index = 0; index < array.length; index += 1) {
         results.push(callback(array[index], index, array));
     }
     return Promise.all(results);
+}
+
+export function removeDuplicateGames(games) {
+    let parsedGames = games;
+    if (typeof games === 'string') {
+        parsedGames = JSON.parse(games);
+    }
+    const uniqGames = {};
+    const dupeGames = {};
+    const omittedProps = ['gameId', 'gp', 'lat', 'lon', 'rsvps', 'tournamentName', 'waitListCount'];
+    parsedGames.forEach((game) => {
+        const { id, gameId } = game;
+        let realId = id || gameId;
+        if (typeof realId !== 'string') {
+            realId = `${realId}`;
+        }
+
+        const gameProps = omit(game, omittedProps);
+        // found a duplicate game by id
+        if (uniqGames[realId]) {
+            // its really a duplicate
+            if (isEqual(uniqGames[realId], gameProps)) {
+                dupeGames[realId] = gameProps;
+                dupeGames[realId].id = realId;
+            } else {
+                // not a duplicate but dirty id was recorded
+                uniqGames[`${realId}-b`] = gameProps;
+                uniqGames[`${realId}-b`].id = realId;
+            }
+        } else {
+            uniqGames[realId] = gameProps;
+            uniqGames[realId].id = realId;
+        }
+    });
+
+    return [uniqGames, dupeGames];
+}
+
+const statCategories = [
+    'battingOrder',
+    'bb',
+    'singles',
+    'doubles',
+    'triples',
+    'r',
+    'rbi',
+    'hr',
+    'sb',
+    'cs',
+    'sac',
+    'k',
+    'l',
+    'w',
+    'o',
+];
+
+export function replaceEmptyStrings(games) {
+    // const parsedGames = JSON.parse(games);
+    return games.map((game) => {
+        const cleanGame = { ...game };
+        Object.keys(game).forEach((key) => {
+            const value = game[key];
+            // stat category is null, convert to '0'
+            if (statCategories.includes(key) && value === null) {
+                cleanGame[key] = '0';
+            }
+            // empty string, convert to null
+            if (typeof value === 'string' && !value.length) {
+                cleanGame[key] = null;
+            }
+            // number, convert to string
+            if (typeof value === 'number') {
+                cleanGame[key] = `${value}`;
+            }
+        });
+        return cleanGame;
+    });
 }
 
 /**

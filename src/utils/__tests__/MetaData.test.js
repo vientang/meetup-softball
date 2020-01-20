@@ -15,7 +15,36 @@ describe('MetaData', () => {
         metadata = {};
     });
 
-    test('updateFieldsMonthsPerYear', () => {});
+    test('updateFieldsMonthsPerYear', () => {
+        const perYear = {
+            '2020': {
+                gp: 1,
+                months: ['Jan', 'Feb', 'March'],
+                fields: {
+                    westlake: 1,
+                    parkside: 1,
+                },
+            },
+        };
+        const metadata = { perYear: JSON.stringify(perYear) };
+
+        const currentGame = {
+            year: '2020',
+            month: 'Jan',
+            field: 'Jackson',
+        };
+        expect(updateFieldsMonthsPerYear(metadata, currentGame)).toEqual({
+            '2020': {
+                gp: 2,
+                months: ['Jan', 'Feb', 'March'],
+                fields: {
+                    westlake: 1,
+                    parkside: 1,
+                    Jackson: 1,
+                },
+            },
+        });
+    });
 
     test('updateRecentGames', () => {});
 

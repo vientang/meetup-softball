@@ -121,7 +121,11 @@ export async function submitPlayerInfo(playerInfo = []) {
 }
 
 export async function updateExistingPlayerInfo(input) {
-    await API.graphql(graphqlOperation(updatePlayers, input));
+    try {
+        await API.graphql(graphqlOperation(updatePlayers, input));
+    } catch (e) {
+        throw new Error(`Error updating ${player.name} info`, e);
+    }
 }
 
 /** SUMMARIZED STATS */
@@ -186,7 +190,8 @@ export async function updateMetaDataEntry(input) {
     try {
         await API.graphql(graphqlOperation(updateMetaData, input));
     } catch (e) {
-        throw new Error(`Error saving game: ${e[0].message}`);
+        console.log('Error updating metadata', e);
+        throw new Error(`Error saving game: ${e}`);
     }
 }
 

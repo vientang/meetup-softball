@@ -44,6 +44,9 @@ class SortTeams extends React.Component {
     };
 
     render() {
+        const {
+            data: { name },
+        } = this.props;
         const { losers, gameId, players, teamsBalanced, winners } = this.state;
 
         const buttonProps = {
@@ -53,7 +56,7 @@ class SortTeams extends React.Component {
         };
 
         return (
-            <AdminSection title="SORT TEAMS" iconType="swap" iconColor="#1890ff">
+            <AdminSection title={name} titleStyle={{ fontSize: 20 }}>
                 <TeamTransfer
                     gameId={gameId}
                     onChange={this.handleChange}
@@ -81,10 +84,11 @@ function areTeamsBalanced(winners, losers) {
 SortTeams.propTypes = {
     data: PropTypes.shape({
         id: PropTypes.string,
-        field: PropTypes.string,
         date: PropTypes.string,
-        time: PropTypes.string,
+        field: PropTypes.string,
+        name: PropTypes.string,
         players: PropTypes.array,
+        time: PropTypes.string,
     }),
     metadata: PropTypes.shape(),
     setTeams: PropTypes.func,

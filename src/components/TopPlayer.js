@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'gatsby';
 import { PlayerAvatar } from './Player';
 import { usePlayerInfo } from '../utils/hooks';
 import componentStyles from './components.module.css';
@@ -21,7 +22,7 @@ const TopPlayer = ({ id, stat }) => {
                 style={{ width: 75, height: 75, margin: '1rem' }}
             />
             <div className={componentStyles.leaderCardItemTopPlayerInfo}>
-                <span>{name}</span>
+                <Link to={`/player?id=${id}`}>{name}</Link>
                 <span className={componentStyles.leaderCardStat}>{stat}</span>
             </div>
         </>

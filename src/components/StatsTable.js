@@ -155,7 +155,7 @@ function formatHeaderStyle(props) {
     const { category, lastColumn } = props;
 
     const headerStyle = {
-        padding: '0.5rem',
+        padding: '0.4rem 0.5rem',
     };
 
     if (lastColumn || nonStatHeaders.includes(category)) {

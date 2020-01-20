@@ -16,28 +16,20 @@ export default {
         const allFields = updateAllFields(metadata, currentGame);
         const allYears = updateAllYears(metadata, currentGame);
         const perYear = updateFieldsMonthsPerYear(metadata, currentGame);
-        // const data = {
-        //     id: '_metadata',
-        //     activePlayers: JSON.stringify(activePlayers),
-        //     inactivePlayers: JSON.stringify(inactivePlayers),
-        //     allFields: JSON.stringify(allFields),
-        //     allYears: JSON.stringify(allYears),
-        //     perYear: JSON.stringify(perYear),
-        //     recentGames: JSON.stringify(recentGames),
-        //     recentGamesLength: recentGames.length,
-        //     totalGamesPlayed: metadata.totalGamesPlayed + 1,
-        //     totalPlayersCount: activePlayers.length + inactivePlayers.length,
-        // };
-        console.log('Metadata', {
-            // data,
-            activePlayers,
-            inactivePlayers,
-            allYears,
-            allFields,
-            perYear,
-            recentGames,
-        });
-        // await updateMetaDataEntry({ input: data });
+        const data = {
+            id: '_metadata',
+            activePlayers: JSON.stringify(activePlayers),
+            inactivePlayers: JSON.stringify(inactivePlayers),
+            allFields: JSON.stringify(allFields),
+            allYears: JSON.stringify(allYears),
+            perYear: JSON.stringify(perYear),
+            recentGames: JSON.stringify(recentGames),
+            recentGamesLength: recentGames.length,
+            totalGamesPlayed: metadata.totalGamesPlayed + 1,
+            totalPlayersCount: activePlayers.length + inactivePlayers.length,
+        };
+
+        await updateMetaDataEntry({ input: data });
     },
 };
 
@@ -143,15 +135,25 @@ export function updateInactivePlayers(metadata, players) {
 export function updateFieldsMonthsPerYear(metadata, currentGame) {
     const { year, month, field } = currentGame;
     const perYear = JSON.parse(metadata.perYear);
-    const currentYear = { ...perYear[year] };
-    currentYear.gp += 1;
-    currentYear.months =
-        currentYear.months[currentYear.months.length - 1] === month
+    let currentYear;
+    if (perYear[year]) {
+        currentYear = { ...perYear[year] };
+        currentYear.gp += 1;
+        currentYear.months = currentYear.months.includes(month)
             ? [...currentYear.months]
             : [...currentYear.months, month];
-    currentYear.fields = currentYear.fields[field]
-        ? { ...currentYear.fields, [field]: currentYear.fields[field] + 1 }
-        : { ...currentYear.fields, [field]: 1 };
+        currentYear.fields = currentYear.fields[field]
+            ? { ...currentYear.fields, [field]: currentYear.fields[field] + 1 }
+            : { ...currentYear.fields, [field]: 1 };
+    } else {
+        currentYear = {
+            gp: 1,
+            months: [month],
+            fields: {
+                [field]: 1,
+            },
+        };
+    }
     return { ...perYear, [year]: currentYear };
 }
 

@@ -28,6 +28,7 @@ class TeamTransfer extends React.Component {
         return {
             gameId: nextProps.gameId,
             sourceList: playersWithBattingOrder,
+            targetList: [],
         };
     }
 

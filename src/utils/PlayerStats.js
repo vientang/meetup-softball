@@ -1,6 +1,7 @@
 import pick from 'lodash/pick';
 import omit from 'lodash/omit';
 import get from 'lodash/get';
+import { removeDuplicateGames, replaceEmptyStrings } from './helpers';
 import { createNewPlayerStats, fetchPlayerStats, updateExistingPlayer } from './apiService';
 import { addDerivedStats, getTeamRunsScored } from './statsCalc';
 import { gameProperties } from './constants';
@@ -8,31 +9,34 @@ import { gameProperties } from './constants';
 export default {
     save: async (players) => {
         players.forEach(async (player) => {
+            const { id, games, name } = player;
+            const currentGame = games[0];
             // check if player already exists in database
             const existingPlayer = await fetchPlayerStats(player.id);
-            console.log('PlayerStats player', { existingPlayer, player });
-            // try {
-            //     if (existingPlayer) {
-            //         const { games } = existingPlayer;
-            //         await updateExistingPlayer({
-            //             input: {
-            //                 id: player.id,
-            //                 games: JSON.stringify([...games, player.games[0]]),
-            //             },
-            //         });
-            //     } else {
-            //         await createNewPlayerStats({
-            //             input: {
-            //                 id: player.id,
-            //                 name: player.name,
-            //                 games: JSON.stringify([player.games[0]]),
-            //             },
-            //         });
-            //     }
-            // } catch (e) {
-            //     console.log((`Error saving player ${existingPlayer.name}: `, e));
-            //     throw new Error(`Error saving player ${existingPlayer.name}: `, e);
-            // }
+            try {
+                if (existingPlayer) {
+                    const { games } = existingPlayer;
+                    if (!isDuplicateGame(games, currentGame.id)) {
+                        await updateExistingPlayer({
+                            input: {
+                                id,
+                                games: JSON.stringify([...games, currentGame]),
+                            },
+                        });
+                    }
+                } else {
+                    await createNewPlayerStats({
+                        input: {
+                            id,
+                            name,
+                            games: JSON.stringify([currentGame]),
+                        },
+                    });
+                }
+            } catch (e) {
+                console.log(`Error saving player ${existingPlayer.name}: `, e);
+                throw new Error(`Error saving player ${existingPlayer.name}: `, e);
+            }
         });
     },
 };
@@ -65,6 +69,14 @@ export function isPlayerOfTheGame(player, playerOfTheGame) {
     return player.id === potgId.toString();
 }
 
+export function isDuplicateGame(games, id) {
+    let parsedGames = games;
+    if (typeof games === 'string') {
+        parsedGames = JSON.parse(games);
+    }
+    return parsedGames.some((game) => game.id === id);
+}
+
 /**
  * Create player data
  * @param {*} players
@@ -78,5 +90,44 @@ export function createPlayerData(players, gameProps) {
             games: [{ ...gameProps, ...gameStats }],
             name: player.name,
         };
+    });
+}
+
+/**
+ * Use this flow to remove duplicate games and normalize stat values
+ * const playerStats = await fetchAllPlayerStats({ limit: 500 });
+ * const stats = normalizeGames(playerStats);
+ * updatePlayerGames(stats);
+ * @param {Array} players
+ */
+export function normalizeGames(players) {
+    const stats = {};
+    const duplicates = {};
+    players.forEach((player) => {
+        if (!stats[player.id]) {
+            const [uniq, dupes] = removeDuplicateGames(player.games);
+            const games = replaceEmptyStrings(Object.values(uniq));
+            stats[player.id] = games;
+            if (Object.keys(dupes).length && !duplicates[player.id]) {
+                duplicates[player.id] = dupes;
+            }
+        }
+    });
+    return stats;
+}
+
+export async function updatePlayerGames(stats) {
+    Object.keys(stats).forEach(async (playerId) => {
+        const games = stats[playerId];
+        try {
+            await updateExistingPlayer({
+                input: {
+                    id: playerId,
+                    games: JSON.stringify(games),
+                },
+            });
+        } catch (e) {
+            throw new Error(`Error saving player ${playerId}: `, e);
+        }
     });
 }

@@ -31,29 +31,25 @@ describe('createLeaderBoard', () => {
 
     test('getQualifier', () => {
         const year = 2020;
-        const rawMetadata = {
-            perYear: {
-                2020: {
-                    gp: 20,
-                },
+        const perYear = {
+            2020: {
+                gp: 20,
             },
         };
-        // stringify metadata to match server type
-        const metadata = JSON.stringify(rawMetadata);
+        const metadata = { perYear: JSON.stringify(perYear) };
+        // stringify perYear to match server type
         expect(getQualifier(metadata, year)).toBe(20);
     });
 
     test('getQualifier for first game of the year', () => {
         const year = 2020;
-        const rawMetadata = {
-            perYear: {
-                2019: {
-                    gp: 20,
-                },
+        const perYear = {
+            2019: {
+                gp: 20,
             },
         };
+        const metadata = { perYear: JSON.stringify(perYear) };
         // stringify metadata to match server type
-        const metadata = JSON.stringify(rawMetadata);
         expect(getQualifier(metadata, year)).toBe(1);
     });
 

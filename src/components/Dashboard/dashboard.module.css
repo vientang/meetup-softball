@@ -1,6 +1,6 @@
 .admin-section,
 .game-menu,
-.game-menu-time-section,
+.game-menu-section,
 .potg-container,
 .potg-col {
     display: flex;
@@ -21,17 +21,19 @@
 }
 
 .admin-section-title {
-    color: var(--grey-2);
-    font-size: var(--font-medium);
+    color: var(--grey-3);
+    font-size: var(--font-large);
     font-weight: bold;
+    text-transform: uppercase;
     margin-bottom: var(--margin-2);
     padding-bottom: var(--pad-1);
     border-bottom: 1px solid var(--grey-0);
 }
 
 .game-details-section {
+    position: relative;
     color: var(--grey-3);
-    font-size: var(--font-small);
+    font-size: var(--font-large);
     white-space: pre-wrap;
     overflow: hidden;
 }
@@ -40,13 +42,14 @@
     font-weight: bold;
 }
 
-.game-details-info {    
+.game-details-info {
     font-weight: bold;
 }
 
-.game-details-attended,
-.game-details-rsvps {
-    color: var(--grey-2);
+.game-details-attended {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--grey-0);
 }
 
 .game-menu {
@@ -69,29 +72,42 @@
     font-weight: bold;
 }
 
-.game-menu-time-section {
+.game-menu-section {
+    position: relative;
     justify-content: space-between;
     align-items: center;
-    padding: var(--pad-1) var(--pad-2);
-    color: var(--muBlue-2);
+    padding: var(--pad-1) 0px;
     line-height: normal;
-    transition: background-color 150ms ease-in;
+    transition: font 150ms ease-in, background-color 150ms ease-in;
 }
 
-.game-menu-time-section:hover {
-    background-color: var(--muBlue-2);
-    color: var(--white-1);
+.game-menu-section:hover {
+    font-weight: bold;
     cursor: pointer;
 }
 
-.game-menu-time {
-    font-size: var(--font-small);
+.game-menu-section:first-child {
+    padding-top: var(--pad-2);
+    border-top: 1px solid var(--grey-0);
+}
+
+.game-menu-name {
+    max-width: 225px;
+    max-height: 25px;
+    height: 25px;
+    font-size: var(--font-medium);
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .game-menu-close-icon {
     margin-left: var(--margin-0);
     font-size: var(--font-xsmall);
     color: var(--grey-1);
+}
+
+.more-games .and-collapse-header {
+    color: var(--muBlue-2);
 }
 
 .potg-container {

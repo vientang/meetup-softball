@@ -255,6 +255,7 @@
 }
 
 .stat-header-cell {
+    font-size: var(--font-xsmall);
     color: var(--white-1);
     text-align: center;
     letter-spacing: 1px;
@@ -272,7 +273,7 @@
 
 .stats-legend-list {
     list-style: none;
-    margin: 3rem 0;
+    margin: var(--margin-3) 0;
     padding: var(--pad-3);
     background: var(--white-1);
     box-shadow: var(--shadow-1);
@@ -282,9 +283,10 @@
 
 .stats-legend-list-item {
     display: grid;
-    grid-template-columns: 70% 30%;
+    grid-template-columns: 50% 30%;
+    grid-gap: 3rem;
     color: var(--grey-3);
-    font-size: var(--font-xsmall);
+    font-size: var(--font-small);
 }
 
 .stats-legend-list-item:not(:last-child) {
@@ -295,18 +297,20 @@
 
 .stats-legend-basic {
     margin: 0 0 var(--margin-1);
-    font-size: calc(5px + 0.4vmin);
+    font-size: calc(7px + 0.4vmin);
+    font-weight: bold;
     text-transform: uppercase;
 }
 
 .stats-legend-detail,
 .stats-legend-formula {
-    display: block;
-    margin: var(--margin-1);
-    color: var(--grey-2);
+    display: flex;
+    color: var(--grey-3);
+    line-height: 1.5;
 }
 
 .stats-legend-formula {
+    align-items: flex-end;
     font-style: italic;
 }
 
@@ -319,6 +323,7 @@
 }
 
 .leader-card {
+    background-color: var(--white-1);
     border: 1px solid var(--grey-2);
     border-radius: 3px;
     list-style: none;
@@ -338,7 +343,6 @@
 .leader-card-item-top-player-info,
 .leader-card-item-player-info {
     justify-content: space-between;
-    /* width: 100%; */
 }
 
 .leader-card-item-top-player-info {
@@ -367,6 +371,16 @@
     padding: var(--pad-1) var(--pad-3) var(--pad-1) 0;
     font-size: var(--font-medium);
 }
+
+.leader-card-item-top-player-info > a,
+.leader-card-item-player-info > a {
+    color: var(--grey-3);
+}
+
+.leader-card-item-player-info > a:hover {
+    font-weight: bold;
+}
+
 /**********************/
 
 /************ FOOTER ************/

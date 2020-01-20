@@ -1,9 +1,15 @@
 .filter-reset-container,
+.filter-menu,
 .filter-row,
 .filter-row-section,
 .filter-types-group {
     display: flex;
     box-sizing: border-box;
+}
+
+.filter-menu {
+    flex-direction: column;
+    width: 100px;
 }
 
 .filter-row {
@@ -75,7 +81,7 @@
 }
 
 .filter-menu-item:hover > .filter-menu-item-label {
-    color: var(--muNavy);
+    font-weight: bold;
 }
 
 .filter-menu-all-label {
@@ -86,6 +92,6 @@
 
 .filter-menu-item-label {
     font-size: var(--font-xlarge);
-    color: var(--grey-2);
+    color: var(--grey-3);
     transition: color 200ms ease-in-out;
 }

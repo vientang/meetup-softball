@@ -7,37 +7,36 @@ export default {
             const { admin, gender, id, joined, name } = player;
             const photos = JSON.stringify(player.photos);
             const profile = JSON.stringify(player.profile);
-            const active = 'active';
+            const status = 'active';
             const existingPlayer = await fetchPlayerInfo(player.id);
-            console.log('PlayerInfo player', { player, existingPlayer });
-            // try {
-            //     if (existingPlayer) {
-            //         // keep photos and profile up to date with meetup
-            //         await updateExistingPlayerInfo({
-            //             input: {
-            //                 id,
-            //                 photos,
-            //                 profile,
-            //                 status: active,
-            //             },
-            //         });
-            //     } else {
-            //         await createNewPlayerInfo({
-            //             input: {
-            //                 id,
-            //                 name,
-            //                 joined,
-            //                 profile,
-            //                 admin,
-            //                 photos,
-            //                 status: active,
-            //                 gender: gender || 'n/a',
-            //             },
-            //         });
-            //     }
-            // } catch (e) {
-            //     throw new Error(`Error saving player ${player.name}`, e);
-            // }
+            try {
+                if (existingPlayer) {
+                    // keep photos and profile up to date with meetup
+                    await updateExistingPlayerInfo({
+                        input: {
+                            id,
+                            photos,
+                            profile,
+                            status,
+                        },
+                    });
+                } else {
+                    await createNewPlayerInfo({
+                        input: {
+                            id,
+                            name,
+                            joined,
+                            profile,
+                            admin,
+                            photos,
+                            status,
+                            gender: gender || 'n/a',
+                        },
+                    });
+                }
+            } catch (e) {
+                throw new Error(`Error saving player ${player.name}`, e);
+            }
         });
     },
 };

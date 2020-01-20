@@ -12,18 +12,12 @@ export default {
     save: async ({ year, month, field } = {}, stats, metadata) => {
         const preSummarized = await getSummarizedStats({ year, month, field });
         const players = flatStats(stats);
-        console.log('save summarized', { preSummarized, players });
         // merge current stats with summarized stats
         const postSummarized = mergeSummarizedStats(preSummarized, players);
-
+        const leaderboard = createLeaderBoard(postSummarized[`_${year}`], metadata, year);
         // calculate leaderboards
-        postSummarized[`_leaderboard_${year}`] = createLeaderBoard(
-            postSummarized[`_${year}`],
-            metadata,
-            year,
-        );
-
-        // await submitSummarizedStats(postSummarized);
+        postSummarized[`_leaderboard_${year}`] = leaderboard;
+        await submitSummarizedStats(postSummarized);
     },
     saveLegacy: async (summarized) => {
         const legacySummarized = { ...summarized };

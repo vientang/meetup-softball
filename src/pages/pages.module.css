@@ -82,7 +82,7 @@
 }
 
 .admin-page {
-    grid-template-columns: 15% 65% 1fr;
+    grid-template-columns: 18% 1fr;
     grid-gap: var(--pad-3);
     align-items: flex-start;
     max-width: 100%;

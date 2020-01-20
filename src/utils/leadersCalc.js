@@ -15,28 +15,34 @@ export default function createLeaderBoard(summarizedStats = [], metadata, year) 
 }
 
 export function getLeaders(summarizedStats, stat, qualifier) {
-    const leaders = getInitial(summarizedStats, stat).filter(filterPredicate(qualifier, stat));
+    let leaders = getInitial(summarizedStats, stat).filter(filterPredicate(qualifier, stat));
     const remaining = getRemaining(summarizedStats, stat).filter(filterPredicate(qualifier, stat));
+
     // sort leaders in place by comparing stats and qualifying against games played
-    remaining.forEach((player) => {
-        const playerStat = Number(player[stat]);
-        const topLeaderStat = Number(leaders[0][stat]);
-        // top dawg
-        if (playerStat >= topLeaderStat) {
-            leaders.unshift(player);
-        } else {
-            const insertIndex = leaders.findIndex((leader) => playerStat >= leader[stat]);
-            if (insertIndex > 0) {
-                leaders.splice(insertIndex, 0, player);
+    if (leaders.length) {
+        remaining.forEach((player) => {
+            const playerStat = Number(player[stat]);
+            const topLeaderStat = Number(leaders[0][stat]);
+            // top dawg
+            if (playerStat >= topLeaderStat) {
+                leaders.unshift(player);
+            } else {
+                const insertIndex = leaders.findIndex((leader) => playerStat >= leader[stat]);
+                if (insertIndex > 0) {
+                    leaders.splice(insertIndex, 0, player);
+                }
             }
-        }
-    });
+        });
+    } else {
+        leaders = remaining;
+    }
 
     const topLeaders = leaders.slice(0, 5);
     leaders.slice(5).some((player) => {
-        const last = topLeaders[topLeaders.length - 1];
+        const current = Number(player[stat]);
+        const previous = Number(topLeaders[topLeaders.length - 1][stat]);
 
-        if (Number(player[stat]) === Number(last[stat])) {
+        if (current > 0 && current === previous) {
             topLeaders.push(player);
             return false;
         }
@@ -58,18 +64,18 @@ export function getInitial(players, stat) {
 }
 
 export function getRemaining(players, stat) {
-    const initial = players.slice(5).map((player) => ({
+    const remaining = players.slice(5).map((player) => ({
         name: player.name,
         id: player.id,
         gp: player.gp,
         [stat]: player[stat],
     }));
-    initial.sort((a, b) => (Number(a[stat]) > Number(b[stat]) ? -1 : 1));
-    return initial;
+    remaining.sort((a, b) => (Number(a[stat]) > Number(b[stat]) ? -1 : 1));
+    return remaining;
 }
 
 export function getQualifier(metadata, year) {
-    const { perYear } = JSON.parse(metadata);
+    const perYear = JSON.parse(metadata.perYear);
     return get(perYear, `${year}.gp`, 1);
 }
 
@@ -81,6 +87,13 @@ export function getQualifier(metadata, year) {
  * @param {String} stat
  */
 export function filterPredicate(qualifier, stat) {
-    return (player) =>
-        Number(player[stat]) && (!qualifier || Number(player.gp) >= Number(qualifier));
+    return (player) => {
+        const statValue = player[stat];
+        if (statValue === null || Number(statValue) === 0) {
+            return false;
+        }
+        // to qualify, player must play at least 20 percent of total games played
+        const qualified = Number(player.gp) / Number(qualifier) >= 0.2;
+        return !qualifier || qualified;
+    };
 }

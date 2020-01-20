@@ -12,7 +12,7 @@ const menuItemStyle = {
 const FilterMenu = ({ menus, onFilterChange, filter }) => {
     const allStats = filter === 'year' ? '' : 'all'; // TODO: add all summarized stats
     return (
-        <Menu onClick={onFilterChange}>
+        <Menu onClick={onFilterChange} className={styles.filterMenu}>
             <Menu.Item style={menuItemStyle} key={allStats}>
                 <span className={styles.filterMenuAllLabel}>{allStats}</span>
             </Menu.Item>

@@ -9,6 +9,7 @@ import {
     AdminStatsTable,
     GameDetails,
     GameMenu,
+    MoreGames,
     PlayerOfTheGame,
     SortTeams,
     SuccessImage,
@@ -105,10 +106,10 @@ class Admin extends React.Component {
 
         const stats = mergePlayerStats(currentGame, winners, losers, playerOfTheGame);
         await PlayerStats.save(stats);
-        await SummarizeStats.save(currentGame, stats, metadata);
-        await GameStats.save(currentGame, winners, losers, playerOfTheGame);
-        await PlayerInfo.save(winners, losers);
-        await MetaData.save(metadata, currentGame, winners, losers);
+        // await SummarizeStats.save(currentGame, stats, metadata);
+        // await GameStats.save(currentGame, winners, losers, playerOfTheGame);
+        // await PlayerInfo.save(winners, losers);
+        // await MetaData.save(metadata, currentGame, winners, losers);
 
         const allFields = JSON.parse(metadata.allFields) || {};
         const remainingGames = games.filter((game) => game.id !== selectedGameId);
@@ -146,9 +147,9 @@ class Admin extends React.Component {
      * Removes a game from games menu
      * Useful when events other than games are created
      */
-    handleCancelGame = async (e) => {
+    handleCancelGame = async (e, id) => {
         e.stopPropagation();
-        const selectedGameId = e.target.id;
+        const selectedGameId = e.target.id || id;
         const games = this.state.games.filter(filterCurrentGame(selectedGameId));
         const nextGame = games[0];
         nextGame.players = await this.getCurrentGamePlayers(games[0]);
@@ -216,7 +217,13 @@ class Admin extends React.Component {
                 uri={adminPagePath}
             >
                 <div className={styles.adminPageColumn}>
-                    <GameDetails data={currentGame} />
+                    <GameDetails data={currentGame} onGameCancel={this.handleCancelGame} />
+                    <MoreGames
+                        games={games}
+                        onGameCancel={this.handleCancelGame}
+                        onGameSelection={this.handleSelectGame}
+                        selectedGame={selectedGameId}
+                    />
                     <PlayerOfTheGame player={playerOfTheGame} />
                 </div>
                 {areTeamsSorted ? (
@@ -236,12 +243,6 @@ class Admin extends React.Component {
                         metadata={metadata}
                     />
                 )}
-                <GameMenu
-                    games={games}
-                    selectedGame={selectedGameId}
-                    onGameSelection={this.handleSelectGame}
-                    onGameCancel={this.handleCancelGame}
-                />
             </Layout>
         );
     }
