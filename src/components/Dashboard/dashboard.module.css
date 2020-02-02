@@ -92,9 +92,7 @@
 }
 
 .game-menu-name {
-    max-width: 225px;
-    max-height: 25px;
-    height: 25px;
+    max-width: 80%;
     font-size: var(--font-medium);
     overflow: hidden;
     text-overflow: ellipsis;

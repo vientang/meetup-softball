@@ -1,4 +1,4 @@
-import { mergePlayerStats, isPlayerOfTheGame } from '../PlayerStats';
+import { preparePlayerStats, isPlayerOfTheGame } from '../PlayerStats';
 import mockAPIData from '../../../__mocks__/mockAPIData';
 
 const { mergedPlayerStats, currentGame } = mockAPIData;
@@ -8,9 +8,6 @@ describe('PlayerStats', () => {
         {
             name: 'Fresh Basta',
             id: '123',
-            admin: false,
-            photos: {},
-            profile: {},
             battingOrder: '1',
             o: '1',
             singles: '1',
@@ -23,8 +20,6 @@ describe('PlayerStats', () => {
             cs: '0',
             k: '1',
             bb: '1',
-            ab: '1',
-            h: '1',
             sac: '1',
         },
     ];
@@ -33,9 +28,6 @@ describe('PlayerStats', () => {
         {
             name: 'Steven',
             id: '234',
-            admin: true,
-            photos: {},
-            profile: {},
             battingOrder: '1',
             o: '1',
             singles: '1',
@@ -48,8 +40,6 @@ describe('PlayerStats', () => {
             cs: '0',
             k: '1',
             bb: '1',
-            ab: '1',
-            h: '1',
             sac: '1',
         },
     ];
@@ -57,7 +47,7 @@ describe('PlayerStats', () => {
     const playerOfTheGame = winners[0];
 
     test('merge player stats', () => {
-        expect(mergePlayerStats(currentGame, winners, losers, playerOfTheGame)).toEqual(
+        expect(preparePlayerStats(currentGame, winners, losers, playerOfTheGame)).toEqual(
             mergedPlayerStats,
         );
     });

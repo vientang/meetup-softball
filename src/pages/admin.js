@@ -2,30 +2,31 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'gatsby';
 import get from 'lodash/get';
+import pick from 'lodash/pick';
 import isEmpty from 'lodash/isEmpty';
 import { withAuthenticator, SignIn, Greetings } from 'aws-amplify-react';
 import { Layout } from '../components';
 import {
     AdminStatsTable,
     GameDetails,
-    GameMenu,
     MoreGames,
     PlayerOfTheGame,
     SortTeams,
     SuccessImage,
 } from '../components/Dashboard';
 import { fetchGamesFromMeetup, fetchRsvpList } from '../utils/apiService';
-import SummarizeStats from '../utils/SummarizeStats';
+// import SummarizeStats from '../utils/SummarizeStats';
 import GameStats from '../utils/GameStats';
-import PlayerStats, { mergePlayerStats } from '../utils/PlayerStats';
-import PlayerInfo from '../utils/PlayerInfo';
-import MetaData from '../utils/MetaData';
+// import PlayerStats, { mergePlayerStats } from '../utils/PlayerStats';
+// import PlayerInfo from '../utils/PlayerInfo';
+// import MetaData from '../utils/MetaData';
 import {
     createPlayer,
     getFieldName,
     findCurrentGame,
     filterCurrentGame,
     isPlayerOfTheGame,
+    findPlayerById,
 } from '../utils/helpers';
 import styles from './pages.module.css';
 
@@ -104,12 +105,13 @@ class Admin extends React.Component {
         } = this.props;
         const { currentGame, games, playerOfTheGame } = this.state;
 
-        const stats = mergePlayerStats(currentGame, winners, losers, playerOfTheGame);
-        await PlayerStats.save(stats);
+        // console.log('Submit data', { winners, losers })
+        // const stats = mergePlayerStats(currentGame, winners, losers, playerOfTheGame);
+        // await PlayerStats.save(stats);
         // await SummarizeStats.save(currentGame, stats, metadata);
-        // await GameStats.save(currentGame, winners, losers, playerOfTheGame);
-        // await PlayerInfo.save(winners, losers);
+        await GameStats.save(currentGame, winners, losers, playerOfTheGame);
         // await MetaData.save(metadata, currentGame, winners, losers);
+        // await PlayerInfo.save(winners, losers);
 
         const allFields = JSON.parse(metadata.allFields) || {};
         const remainingGames = games.filter((game) => game.id !== selectedGameId);
@@ -122,6 +124,7 @@ class Admin extends React.Component {
                 areTeamsSorted: false,
                 currentGame: nextGame,
                 games: remainingGames,
+                playerOfTheGame: {},
                 selectedGameId: get(nextGame, 'id', ''),
             };
         });
@@ -171,10 +174,19 @@ class Admin extends React.Component {
     handlePlayerOfTheGame = (e) => {
         const id = e.target.value;
         const { losers, playerOfTheGame, winners } = this.state;
-        const currentPotg =
-            playerOfTheGame.id === id
-                ? {}
-                : winners.concat(losers).find((player) => player.id === id);
+        let currentPotg = {};
+        if (playerOfTheGame.id !== id) {
+            const winner = findPlayerById(id, winners);
+            const loser = findPlayerById(id, losers);
+            currentPotg = winner
+                ? { ...pick(winner, ['id', 'name']), winner: true }
+                : { ...pick(loser, ['id', 'name']), winner: false };
+        }
+        console.log('potg', currentPotg);
+        // const currentPotg =
+        //     playerOfTheGame.id === id
+        //         ? {}
+        //         : winners.concat(losers).find((player) => player.id === id);
         this.setState(() => ({ playerOfTheGame: currentPotg }));
     };
 

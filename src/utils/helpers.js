@@ -63,6 +63,21 @@ const statCategories = [
     'o',
 ];
 
+export const StringCheck = {
+    null(value) {
+        return value === null;
+    },
+    empty(value) {
+        return typeof value === 'string' && !value.length;
+    },
+    number(value) {
+        return typeof value === 'number' && !Number.isNaN(value);
+    },
+    invalid(value) {
+        return typeof value === 'string' && Number.isNaN(value);
+    },
+};
+
 export function replaceEmptyStrings(games) {
     // const parsedGames = JSON.parse(games);
     return games.map((game) => {

@@ -1,12 +1,18 @@
 const meetupData = {
     id: 'mu-123',
-    gameId: '235',
-    name: 'Game 235 @???? @ 1030am',
     date: '2019-01-01',
-    year: '2019',
-    month: 'January',
     field: 'Westlake Park',
+    gameId: '235',
+    lat: '111',
+    lon: '111',
+    month: 'January',
+    name: 'Game 235 @???? @ 1030am',
+    rsvps: '1',
+    time: 'local time',
+    timeStamp: 'time now',
     tournamentName: 'Halloween',
+    waitListCount: '0',
+    year: '2019',
 };
 
 const currentGame = {
@@ -339,6 +345,7 @@ const players = [
 
 const currentPlayerStats = [
     {
+        // player data
         id: '123',
         name: 'Fresh Basta',
         joined: 123,
@@ -346,7 +353,11 @@ const currentPlayerStats = [
         status: 'active',
         gender: '',
         photos: 'http://photo',
+
+        // derived
         battingOrder: '1',
+
+        // stats
         o: '1',
         singles: '1',
         doubles: '1',
@@ -366,6 +377,7 @@ const currentPlayerStats = [
         sac: '1',
     },
     {
+        // player data
         id: '456',
         name: 'Steven',
         joined: 234,
@@ -373,7 +385,11 @@ const currentPlayerStats = [
         status: 'active',
         gender: '',
         photos: 'http://photo',
+
+        // derived
         battingOrder: '1',
+
+        // stats
         o: '1',
         singles: '1',
         doubles: '1',
@@ -400,25 +416,29 @@ const mergedPlayerStats = [
         name: 'Fresh Basta',
         games: [
             {
-                id: 'zzz',
-                ab: '1',
-                battingOrder: '1',
+                // stats
                 o: '1',
                 singles: '1',
                 doubles: '1',
                 triples: '1',
-                h: '1',
                 hr: '1',
-                rbi: '1',
-                r: '2',
+                bb: '1',
+                k: '1',
                 sb: '1',
                 cs: '0',
-                k: '1',
-                bb: '1',
                 sac: '1',
+                rbi: '1',
+                r: '2',
+
+                // derived
+                ab: '5',
+                battingOrder: '1',
                 w: '1',
                 l: '0',
                 gp: '1',
+
+                // game data
+                id: 'zzz',
                 date: 'today',
                 field: 'Westlake',
                 lat: '111',
@@ -438,14 +458,11 @@ const mergedPlayerStats = [
         name: 'Steven',
         games: [
             {
-                id: 'zzz',
-                ab: '1',
-                battingOrder: '1',
+                // stats
                 o: '1',
                 singles: '1',
                 doubles: '1',
                 triples: '1',
-                h: '1',
                 hr: '1',
                 rbi: '1',
                 r: '1',
@@ -454,9 +471,16 @@ const mergedPlayerStats = [
                 k: '1',
                 bb: '1',
                 sac: '1',
+
+                // derived
+                ab: '5',
+                battingOrder: '1',
                 w: '0',
                 l: '1',
                 gp: '1',
+
+                // game data
+                id: 'zzz',
                 date: 'today',
                 field: 'Westlake',
                 lat: '111',

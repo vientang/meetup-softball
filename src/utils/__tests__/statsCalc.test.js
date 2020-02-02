@@ -40,14 +40,14 @@ describe('Add derived stats', () => {
     it('winners', () => {
         const winner = true;
         expect(addDerivedStats([currentPlayerStats[0]], isTie, winner)).toEqual([
-            { ...currentPlayerStats[0], w: '1', l: '0', gp: '1' },
+            { ...currentPlayerStats[0], ab: '5', w: '1', l: '0', gp: '1' },
         ]);
     });
 
     it('losers', () => {
         const winner = false;
         expect(addDerivedStats([currentPlayerStats[1]], isTie, winner)).toEqual([
-            { ...currentPlayerStats[1], w: '0', l: '1', gp: '1' },
+            { ...currentPlayerStats[1], ab: '5', w: '0', l: '1', gp: '1' },
         ]);
     });
 
@@ -55,7 +55,7 @@ describe('Add derived stats', () => {
         isTie = true;
         const winner = false;
         expect(addDerivedStats([currentPlayerStats[1]], isTie, winner)).toEqual([
-            { ...currentPlayerStats[1], w: '0', l: '0', gp: '1' },
+            { ...currentPlayerStats[1], ab: '5', w: '0', l: '0', gp: '1' },
         ]);
     });
 });

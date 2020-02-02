@@ -182,6 +182,7 @@ export async function submitSummarizedStats(stats) {
     Object.keys(stats).forEach(async (id) => {
         const summarizedStats = JSON.stringify(stats[id]);
         const exists = await fetchSummarizedStats(id);
+
         try {
             if (exists) {
                 await updateExistingSummarizedStats({

@@ -2,44 +2,90 @@ import pick from 'lodash/pick';
 import omit from 'lodash/omit';
 import get from 'lodash/get';
 import { removeDuplicateGames, replaceEmptyStrings } from './helpers';
-import { createNewPlayerStats, fetchPlayerStats, updateExistingPlayer } from './apiService';
 import { addDerivedStats, getTeamRunsScored } from './statsCalc';
 import { gameProperties } from './constants';
 
 export default {
-    save: async (players) => {
-        players.forEach(async (player) => {
-            const { id, games, name } = player;
-            const currentGame = games[0];
-            // check if player already exists in database
-            const existingPlayer = await fetchPlayerStats(player.id);
-            try {
-                if (existingPlayer) {
-                    const { games } = existingPlayer;
-                    if (!isDuplicateGame(games, currentGame.id)) {
-                        await updateExistingPlayer({
-                            input: {
-                                id,
-                                games: JSON.stringify([...games, currentGame]),
-                            },
-                        });
-                    }
-                } else {
-                    await createNewPlayerStats({
+    save: async (currentGame, winners, losers, playerOfTheGame) => {
+        const players = preparePlayerStats(currentGame, winners, losers, playerOfTheGame);
+        await submitPlayerStats(players);
+    },
+};
+
+/**
+ * Find an existing player in database
+ * @param {String} id
+ */
+export async function fetchPlayerStats(id) {
+    let existingPlayer = await API.graphql(graphqlOperation(getPlayerStats, { id }));
+    existingPlayer = get(existingPlayer, 'data.getPlayerStats', null);
+    if (existingPlayer) {
+        existingPlayer.games = JSON.parse(existingPlayer.games);
+    }
+    return existingPlayer;
+}
+
+/**
+ * Submit all player stats to database
+ * @param {Object} players - [{ id, name, games: [{ id, name, ...stats }, //more games] }]
+ */
+async function submitPlayerStats(players = []) {
+    players.forEach(async (player) => {
+        const { id, games, name } = player;
+        const currentGame = games[0];
+        // check if player already exists in database
+        const existingPlayer = await fetchPlayerStats(player.id);
+        console.log('PlayerStats', { id, games, name });
+        try {
+            if (existingPlayer) {
+                const { games } = existingPlayer;
+                if (!isDuplicateGame(games, currentGame.id)) {
+                    await updatePlayerStat({
                         input: {
                             id,
-                            name,
-                            games: JSON.stringify([currentGame]),
+                            games: JSON.stringify([...games, currentGame]),
                         },
                     });
                 }
-            } catch (e) {
-                console.log(`Error saving player ${existingPlayer.name}: `, e);
-                throw new Error(`Error saving player ${existingPlayer.name}: `, e);
+            } else {
+                await submitPlayerStat({
+                    input: {
+                        id,
+                        name,
+                        games: JSON.stringify([currentGame]),
+                    },
+                });
             }
-        });
-    },
-};
+        } catch (e) {
+            console.log(`Error saving player ${existingPlayer.name}: `, e);
+            throw new Error(`Error saving player ${existingPlayer.name}: `, e);
+        }
+    });
+}
+
+/**
+ * Submit one player stat to database
+ * @param {Object} input - { id, name, games: [{ id, name, ...stats }, //more games] }
+ */
+async function submitPlayerStat(input) {
+    try {
+        await API.graphql(graphqlOperation(createPlayerStats, input));
+    } catch (e) {
+        throw new Error(`Error submitting new player stat`, e);
+    }
+}
+
+/**
+ * Update one player stat in database
+ * @param {Object} input - { id, name, games: [{ id, name, ...stats }, //more games] }
+ */
+async function updatePlayerStat(input) {
+    try {
+        await API.graphql(graphqlOperation(updatePlayerStats, input));
+    } catch (e) {
+        throw new Error(`Error updating player stat`, e);
+    }
+}
 
 /**
  * PLAYERSTATS Adaptor to combine data from meetup and current game stats
@@ -49,7 +95,7 @@ export default {
  * @param {Object} playerOfTheGame
  * @return {Array} [{ id, name, games }]
  */
-export function mergePlayerStats(meetupData, w, l, playerOfTheGame) {
+export function preparePlayerStats(meetupData, w, l, playerOfTheGame) {
     const gameProps = pick(meetupData, gameProperties);
     const isTie = getTeamRunsScored(w) === getTeamRunsScored(l);
     const winners = createPlayerData(addDerivedStats(w, isTie, true), gameProps);
@@ -114,20 +160,4 @@ export function normalizeGames(players) {
         }
     });
     return stats;
-}
-
-export async function updatePlayerGames(stats) {
-    Object.keys(stats).forEach(async (playerId) => {
-        const games = stats[playerId];
-        try {
-            await updateExistingPlayer({
-                input: {
-                    id: playerId,
-                    games: JSON.stringify(games),
-                },
-            });
-        } catch (e) {
-            throw new Error(`Error saving player ${playerId}: `, e);
-        }
-    });
 }

@@ -19,6 +19,7 @@ import {
     createPlayers,
     createSummarizedStats,
     updateMetaData,
+    updateGameStats,
     updatePlayers,
     updatePlayerStats,
     updateSummarizedStats,
@@ -53,12 +54,20 @@ export async function fetchPlayerStats(id) {
 }
 
 export async function createNewPlayerStats(input) {
-    await API.graphql(graphqlOperation(createPlayerStats, input));
+    try {
+        await API.graphql(graphqlOperation(createPlayerStats, input));
+    } catch (e) {
+        throw new Error(`Error creating new player stats`, e);
+    }
 }
 
-export async function updateExistingPlayer(input) {
-    await API.graphql(graphqlOperation(updatePlayerStats, input));
-}
+// export async function updateExistingPlayer(input) {
+//     try {
+//         await API.graphql(graphqlOperation(updatePlayerStats, input));
+//     } catch (e) {
+//         throw new Error(`Error updating player stats`, e);
+//     }
+// }
 
 /**
  * Update a players game log or create a new player
@@ -124,7 +133,7 @@ export async function updateExistingPlayerInfo(input) {
     try {
         await API.graphql(graphqlOperation(updatePlayers, input));
     } catch (e) {
-        throw new Error(`Error updating ${player.name} info`, e);
+        throw new Error(`Error updating player info`, e);
     }
 }
 
@@ -183,20 +192,19 @@ export async function fetchMetaData() {
 }
 
 export async function createMetaDataEntry(input) {
-    await API.graphql(graphqlOperation(createMetaData, input));
+    try {
+        await API.graphql(graphqlOperation(createMetaData, input));
+    } catch (e) {
+        throw new Error(`Error creating metadata: ${e}`);
+    }
 }
 
 export async function updateMetaDataEntry(input) {
     try {
         await API.graphql(graphqlOperation(updateMetaData, input));
     } catch (e) {
-        console.log('Error updating metadata', e);
-        throw new Error(`Error saving game: ${e}`);
+        throw new Error(`Error updating metadata: ${e}`);
     }
-}
-
-export async function submitNewGameStats(input) {
-    await API.graphql(graphqlOperation(createGameStats, input));
 }
 
 /** GAME STATS */
@@ -218,7 +226,7 @@ export async function submitGameStats(gameStats) {
         try {
             await API.graphql(graphqlOperation(createGameStats, { input: game }));
         } catch (e) {
-            throw new Error(`Error saving game: ${e}`);
+            throw new Error(`Error saving game: `, e);
         }
     });
 }
@@ -229,7 +237,7 @@ export async function submitGameStat(input) {
         // input should be an object of fields of a game
         await API.graphql(graphqlOperation(createGameStats, input));
     } catch (e) {
-        throw new Error(`Error saving game on ${input.gameStats.date}: `, e);
+        throw new Error(`Error saving game: `, e);
     }
 }
 
@@ -247,6 +255,14 @@ export async function fetchAllGames(queryParams = {}) {
     return games;
 }
 
+export async function updateGame(input) {
+    console.log('apiService: updating game', input);
+    try {
+        await API.graphql(graphqlOperation(updateGameStats, input));
+    } catch (e) {
+        throw new Error(`Error updating game`, e);
+    }
+}
 /** MEETUP API */
 export async function getPlayerDataFromMeetup(id) {
     const meetupId = id;

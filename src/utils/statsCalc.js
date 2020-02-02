@@ -25,6 +25,11 @@ export function mergeExistingPlayerStats(existingStats = {}, currentStats = {}) 
 export function addDerivedStats(players, isTie, winner) {
     return players.map((player) => {
         const derivedStats = { ...player };
+        const { singles, doubles, triples, hr, o } = convertStringStatsToNumbers(derivedStats);
+        const hits = getHits(singles, doubles, triples, hr);
+        const atBats = getAtBats(hits, o);
+
+        derivedStats.ab = `${atBats}`;
         derivedStats.w = winner ? '1' : '0';
         derivedStats.l = winner ? '0' : '1';
         derivedStats.gp = '1';

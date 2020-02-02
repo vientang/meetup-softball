@@ -9,6 +9,7 @@ export default {
             const profile = JSON.stringify(player.profile);
             const status = 'active';
             const existingPlayer = await fetchPlayerInfo(player.id);
+            console.log('PlayerInfo', existingPlayer)
             try {
                 if (existingPlayer) {
                     // keep photos and profile up to date with meetup

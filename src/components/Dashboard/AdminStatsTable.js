@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Checkbox } from 'antd';
+import pick from 'lodash/pick';
 import AdminSection from './AdminSection';
 import StatsTable from '../StatsTable';
 import Button from '../Button';
-import { sortByNameLength } from '../../utils/helpers';
+import { StringCheck, sortByNameLength } from '../../utils/helpers';
 import { adminStatCategories } from '../../utils/constants';
-import { getAtBats, getHits } from '../../utils/statsCalc';
 import styles from './dashboard.module.css';
 import 'react-table/react-table.css';
 
@@ -15,7 +15,6 @@ class AdminStatsTable extends React.Component {
         super(props);
         this.state = {
             dataSubmitted: false,
-            invalidStats: true,
             losers: props.losers,
             tooltipMsg: '',
             winners: props.winners,
@@ -30,10 +29,11 @@ class AdminStatsTable extends React.Component {
     }
 
     handleSubmitData = (e) => {
-        const { winners, losers } = this.state;
         e.preventDefault();
-
-        this.props.onSubmit(winners, losers, this.props.selectedGame);
+        const { onSubmit, selectedGame } = this.props;
+        const { winners, losers } = this.state;
+        const { w, l } = preprocessWinnersAndLosers(winners, losers);
+        onSubmit(w, l, selectedGame);
         this.setState(() => ({ dataSubmitted: true }));
     };
 
@@ -197,11 +197,7 @@ class AdminStatsTable extends React.Component {
                     sortMethod={sortByNameLength}
                     adminPage
                 />
-                <Button
-                    // disabled={invalidStats}
-                    onClick={this.handleSubmitData}
-                    tooltipMsg={tooltipMsg}
-                >
+                <Button onClick={this.handleSubmitData} tooltipMsg={tooltipMsg}>
                     SUBMIT
                 </Button>
             </AdminSection>
@@ -209,73 +205,57 @@ class AdminStatsTable extends React.Component {
     }
 }
 
-function checkForInvalidStats({ winners, losers }) {
-    let msg = 'Stats have not been completely entered.';
-    const allPlayers = winners.concat(losers);
-    // const validHitsAndOuts = checkAllStatsEntered(allPlayers);
-    // if (!validHitsAndOuts) {
-    //     return { invalidStats: true, tooltipMsg: msg };
-    // }
-    const invalidStats = allPlayers.some((player) => {
-        const { doubles, hr, k, o, r, sac, singles, triples } = player;
-        const sing = Number(singles) || 0;
-        const doub = Number(doubles) || 0;
-        const trip = Number(triples) || 0;
-        const homeRuns = Number(hr) || 0;
-        const stko = Number(k) || 0;
-        const outs = Number(o) || 0;
-        const runs = Number(r) || 0;
-        const sacFly = Number(sac) || 0;
-
-        const hits = getHits(sing, doub, trip, homeRuns);
-        const ab = getAtBats(hits, outs);
-
-        if (stko > outs) {
-            msg = `${player.name} has more strikeouts than outs.`;
-            return true;
-        }
-        if (sacFly > ab - hits) {
-            msg = `${player.name} has too many sacrifice fly balls.`;
-            return true;
-        }
-        if (runs > ab) {
-            msg = `${player.name} has more runs than at bats.`;
-            return true;
-        }
-        return false;
-    });
-    return { invalidStats, tooltipMsg: invalidStats ? msg : '' };
+function preprocessWinnersAndLosers(winners, losers) {
+    return {
+        w: prepareGamePlayers(winners.players),
+        l: prepareGamePlayers(losers.players),
+    };
 }
 
-function getDerivedStateFromProps(props, state) {
-    const { invalidStats, tooltipMsg } = checkForInvalidStats(state);
-
-    if (invalidStats) {
-        return { invalidStats, tooltipMsg };
-    }
-    return { invalidStats, tooltipMsg };
+function prepareGamePlayers(players = []) {
+    return players.map((player) => {
+        const currentPlayer = pick(player, ['id', 'name']);
+        const normalizeStats = prepareStats(player);
+        return { ...currentPlayer, ...normalizeStats };
+    });
 }
 
-function checkAllStatsEntered(allPlayers) {
-    return allPlayers.every((player) => {
-        const { bb, doubles, hr, o, sac, singles, triples } = player;
-        const sing = Number(singles) || 0;
-        const doub = Number(doubles) || 0;
-        const trip = Number(triples) || 0;
-        const homeRuns = Number(hr) || 0;
-        const walks = Number(bb) || 0;
-        const sacFly = Number(sac) || 0;
-        const outs = Number(o) || 0;
-        const hits = getHits(sing, doub, trip, homeRuns);
+function prepareStats(stats) {
+    // pick out just the stat categories -> { bb, cs, r, rbi, ... }
+    const playerStats = pick(stats, [
+        'battingOrder',
+        'bb',
+        'singles',
+        'doubles',
+        'triples',
+        'r',
+        'rbi',
+        'hr',
+        'sb',
+        'cs',
+        'sac',
+        'k',
+        'l',
+        'w',
+        'o',
+    ]);
+    Object.keys(playerStats).forEach((stat) => {
+        const value = playerStats[stat];
+        const isNull = StringCheck.null(value);
+        const isEmptyString = StringCheck.empty(value);
+        const isNumber = StringCheck.number(value);
+        const isInvalid = StringCheck.invalid(value);
+        // stat is null, empty string or NaN, convert to '0'
+        if (isNull || isEmptyString || isInvalid) {
+            playerStats[stat] = '0';
+        }
 
-        if (hits || outs) {
-            return true;
+        // number, convert to string
+        if (isNumber) {
+            playerStats[stat] = `${value}`;
         }
-        if (sacFly || walks) {
-            return true;
-        }
-        return false;
     });
+    return playerStats;
 }
 
 AdminStatsTable.propTypes = {
