@@ -1,11 +1,12 @@
 import { API, graphqlOperation } from 'aws-amplify';
 import omit from 'lodash/omit';
-import { updateGameStats } from '../graphql/mutations';
+import { createGameStats, updateGameStats } from '../graphql/mutations';
 import { addDerivedStats, getTeamTotalHits, getTeamRunsScored } from './statsCalc';
 
 export default {
     save: async (currentGame, winners, losers, playerOfTheGame) => {
         const game = prepareGameStats(currentGame, winners, losers, playerOfTheGame);
+        console.log('GameStats', game);
         // localStorage.setItem('gameStats', JSON.stringify(game));
         // localStorage.removeItem('gameStats');
         // const tempGameStats = localStorage.getItem('gameStats');

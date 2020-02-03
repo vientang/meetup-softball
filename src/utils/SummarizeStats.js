@@ -9,15 +9,16 @@ import { calculateTotals, calculateNewPlayerStats } from './statsCalc';
 import createLeaderBoard from './leadersCalc';
 
 export default {
-    save: async ({ year, month, field } = {}, stats, metadata) => {
+    save: async ({ year, month, field } = {}, winners, losers, metadata) => {
         const preSummarized = await getSummarizedStats({ year, month, field });
-        const players = flatStats(stats);
+        const players = flatStats(winners.concat(losers));
         // merge current stats with summarized stats
         const postSummarized = mergeSummarizedStats(preSummarized, players);
-        const leaderboard = createLeaderBoard(postSummarized[`_${year}`], metadata, year);
+        const leaderboard = createLeaderBoard(postSummarized[`_${year}`], metadata.perYear, year);
         // calculate leaderboards
         postSummarized[`_leaderboard_${year}`] = leaderboard;
-        await submitSummarizedStats(postSummarized);
+        console.log('SummarizedStats', postSummarized);
+        // await submitSummarizedStats(postSummarized);
     },
     saveLegacy: async (summarized) => {
         const legacySummarized = { ...summarized };

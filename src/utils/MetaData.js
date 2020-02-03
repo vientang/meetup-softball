@@ -1,41 +1,77 @@
-import {
-    updateMetaDataEntry,
-    fetchAllPlayerStats,
-    fetchPlayerInfo,
-    fetchAllGames,
-} from './apiService';
-import { findPlayerById, asyncForEach } from './helpers';
+import { API, graphqlOperation } from 'aws-amplify';
+import pick from 'lodash/pick';
+import { fetchAllPlayerStats, fetchPlayerInfo, fetchAllGames } from './apiService';
+import { updateMetaData } from '../graphql/mutations';
+import { findPlayers, findPlayerById, asyncForEach } from './helpers';
 import { updateGamesPlayed } from './statsCalc';
 
 export default {
-    save: async (metadata, currentGame, winners, losers) => {
+    save: async (currentGame, winners, losers, metadata) => {
+        const {
+            id,
+            activePlayers,
+            allFields,
+            allYears,
+            inactivePlayers,
+            perYear,
+            recentGames,
+            totalGamesPlayed,
+        } = metadata;
         const players = winners.concat(losers);
-        const activePlayers = updateActivePlayers(metadata, players);
-        const inactivePlayers = updateInactivePlayers(metadata, players);
-        const recentGames = updateRecentGames(metadata, currentGame, winners, losers);
-        const allFields = updateAllFields(metadata, currentGame);
-        const allYears = updateAllYears(metadata, currentGame);
-        const perYear = updateFieldsMonthsPerYear(metadata, currentGame);
+        const actives = updateActivePlayers(activePlayers, inactivePlayers, players);
+        const inactives = updateInactivePlayers(inactivePlayers, players);
+        const recent = updateRecentGames(recentGames, currentGame);
+        const fields = updateAllFields(allFields, currentGame);
+        const years = updateAllYears(allYears, currentGame);
+        const fieldsMonthsPerYear = updateFieldsMonthsPerYear(perYear, currentGame);
         const data = {
-            id: '_metadata',
-            activePlayers: JSON.stringify(activePlayers),
-            inactivePlayers: JSON.stringify(inactivePlayers),
-            allFields: JSON.stringify(allFields),
-            allYears: JSON.stringify(allYears),
-            perYear: JSON.stringify(perYear),
-            recentGames: JSON.stringify(recentGames),
-            recentGamesLength: recentGames.length,
-            totalGamesPlayed: metadata.totalGamesPlayed + 1,
-            totalPlayersCount: activePlayers.length + inactivePlayers.length,
+            id,
+            activePlayers: JSON.stringify(actives),
+            inactivePlayers: JSON.stringify(inactives),
+            allFields: JSON.stringify(fields),
+            allYears: JSON.stringify(years),
+            perYear: JSON.stringify(fieldsMonthsPerYear),
+            recentGames: JSON.stringify(recent),
+            recentGamesLength: recent.length,
+            totalGamesPlayed: totalGamesPlayed + 1,
+            totalPlayersCount: actives.length + inactives.length,
         };
 
-        await updateMetaDataEntry({ input: data });
+        console.log('Metadata', {
+            id,
+            activePlayers: JSON.stringify(actives),
+            inactivePlayers: JSON.stringify(inactives),
+            allFields: JSON.stringify(fields),
+            allYears: JSON.stringify(years),
+            perYear: JSON.stringify(fieldsMonthsPerYear),
+            recentGames: JSON.stringify(recent),
+            recentGamesLength: recent.length,
+            totalGamesPlayed: totalGamesPlayed + 1,
+            totalPlayersCount: actives.length + inactives.length,
+        });
+        // await updateMeta({ input: data });
     },
 };
 
+/**
+ * Update metadata in database
+ * @param {Object} input - { input: { id, activePlayers, inactivePlayers, perYear ... } }
+ */
+export async function updateMeta(input) {
+    try {
+        await API.graphql(graphqlOperation(updateMetaData, input));
+    } catch (e) {
+        throw new Error(`Error updating metadata: ${e}`);
+    }
+}
+
+/**
+ * Sync up games count if it gets out of sync
+ * Very expensive call to fetch all games
+ */
 export async function updateGamesCount() {
     const allGames = await fetchAllGames({ limit: 1000 });
-    await updateMetaDataEntry({
+    await updateMeta({
         input: {
             id: '_metadata',
             totalGamesPlayed: allGames.length,
@@ -43,10 +79,13 @@ export async function updateGamesCount() {
     });
 }
 
+/**
+ * Sync up total players count if it gets out of sync
+ */
 export async function updatePlayersCount(metadata) {
     const actives = JSON.parse(metadata.activePlayers);
     const inactives = JSON.parse(metadata.inactivePlayers);
-    await updateMetaDataEntry({
+    await updateMeta({
         input: {
             id: '_metadata',
             totalPlayersCount: actives.length + inactives.length,
@@ -54,6 +93,10 @@ export async function updatePlayersCount(metadata) {
     });
 }
 
+/**
+ * Sync up active players if it gets out of sync
+ * Very expensive call to fetch all players
+ */
 export async function updateAllActivePlayers() {
     const allPlayers = await fetchAllPlayerStats({ limit: 600 });
     const activePlayers = allPlayers.filter((player) => {
@@ -62,7 +105,7 @@ export async function updateAllActivePlayers() {
         return Number(recentYear) > 2017;
     });
     const updatedActives = await updatePlayerPhotos(activePlayers);
-    await updateMetaDataEntry({
+    await updateMeta({
         input: {
             id: '_metadata',
             activePlayers: JSON.stringify(updatedActives),
@@ -70,6 +113,9 @@ export async function updateAllActivePlayers() {
     });
 }
 
+/**
+ * Sync up active or inactive players if it gets out of sync
+ */
 async function updatePlayerPhotos(players) {
     const updatedPlayers = asyncForEach(players, async (player) => {
         const games = JSON.parse(player.games);
@@ -85,56 +131,58 @@ async function updatePlayerPhotos(players) {
     return updatedPlayers;
 }
 
-export function updateActivePlayers(metadata, players) {
-    const activePlayers = JSON.parse(metadata.activePlayers);
-    const inactivePlayers = JSON.parse(metadata.inactivePlayers);
-    return activePlayers.reduce((acc, player) => {
-        const { id, name, gp, photos } = player;
-
-        // check if active player is listed in the current game
-        const activePlayer = findPlayerById(id, players);
-        // find player in the current game that is listed in the inactivePlayers list
-        const inactivePlayer = players.find((p) => !!findPlayerById(p.id, inactivePlayers));
-
-        if (activePlayer || inactivePlayer) {
-            acc.push({
-                gp: updateGamesPlayed(gp),
-                id,
-                name,
-                photos,
-            });
-            return acc;
+/**
+ * Update games played for each active player who played in todays game
+ * Also updates any inactive players who played in todays game
+ * @param {*} actives
+ * @param {*} inactives
+ * @param {*} players
+ */
+export function updateActivePlayers(actives, inactives, players) {
+    // find player in the current game that is listed in the inactivePlayers list
+    const inactivePlayers = findPlayers(inactives, players);
+    const updated = actives.map((active) => {
+        if (findPlayerById(active.id, players)) {
+            return {
+                ...active,
+                gp: updateGamesPlayed(active.gp),
+            };
         }
-        acc.push(player);
-        return acc;
-    }, []);
+        return active;
+    });
+    if (inactivePlayers.length) {
+        inactivePlayers.forEach((inactive) => {
+            updated.push({
+                ...inactive,
+                gp: updateGamesPlayed(inactive.gp),
+            });
+        });
+    }
+    return updated;
 }
 
-export function updateAllFields(metadata, currentGame) {
+export function updateAllFields(allFields, currentGame) {
     // TODO: use regex to find field in metadata
     // Gellert Park should be recorded as Gellert
     // make sure currentGame.field first letter is capitalized
-    return { ...JSON.parse(metadata.allFields), [currentGame.field]: currentGame.field };
+    return { ...allFields, [currentGame.field]: currentGame.field };
 }
 
-export function updateAllYears(metadata, currentGame) {
-    return { ...JSON.parse(metadata.allYears), [currentGame.year]: currentGame.year };
+export function updateAllYears(allYears, currentGame) {
+    return { ...allYears, [currentGame.year]: currentGame.year };
 }
 
 /**
  * Find and remove current game players from inactive list
- * @param {*} metadata
+ * @param {*} inactives
  * @param {*} players - current game players
  */
-export function updateInactivePlayers(metadata, players) {
-    return JSON.parse(metadata.inactivePlayers).filter(
-        (player) => !findPlayerById(player.id, players),
-    );
+export function updateInactivePlayers(inactives, players) {
+    return inactives.filter((player) => !findPlayerById(player.id, players));
 }
 
-export function updateFieldsMonthsPerYear(metadata, currentGame) {
+export function updateFieldsMonthsPerYear(perYear, currentGame) {
     const { year, month, field } = currentGame;
-    const perYear = JSON.parse(metadata.perYear);
     let currentYear;
     if (perYear[year]) {
         currentYear = { ...perYear[year] };
@@ -157,13 +205,10 @@ export function updateFieldsMonthsPerYear(metadata, currentGame) {
     return { ...perYear, [year]: currentYear };
 }
 
-export function updateRecentGames(metadata, currentGame, winners, losers) {
-    const { recentGames } = metadata;
-    let recent = JSON.parse(recentGames);
-    recent = recent.slice(0, recent.length - 1);
-    const game = { ...currentGame };
-    game.winners = winners;
-    game.losers = losers;
-
-    return [game, ...recent];
+export function updateRecentGames(recentGames, currentGame) {
+    return [currentGame, ...recentGames]
+        .map((game) =>
+            pick(game, ['id', 'name', 'date', 'field', 'month', 'time', 'timeStamp', 'year']),
+        )
+        .slice(0, 5);
 }

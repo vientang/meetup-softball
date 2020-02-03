@@ -12,6 +12,7 @@ import {
     getIdFromFilterParams,
     getMeridiem,
     isPlayerOfTheGame,
+    parseMetaData,
     parsePhotosAndProfile,
     parseStats,
     serializeStats,
@@ -99,6 +100,37 @@ describe('parseStats', () => {
         expect(parseStats(undefined)).toEqual(null);
         expect(parseStats('')).toEqual(null);
         expect(parseStats('undefined')).toEqual(null);
+    });
+});
+
+describe('parseMetaData', () => {
+    const metadata = {
+        id: '123',
+        totalGamesPlayed: 10,
+        totalPlayersCount: 10,
+        recentGamesLength: 5,
+        allFields: JSON.stringify({}),
+        allYears: JSON.stringify({}),
+        recentGames: JSON.stringify([{}]),
+        perYear: JSON.stringify({}),
+        activePlayers: JSON.stringify([{}]),
+        inactivePlayers: JSON.stringify([{}]),
+    };
+
+    it('parsable data', () => {
+        expect(parseMetaData(metadata).allFields).toEqual({});
+        expect(parseMetaData(metadata).allYears).toEqual({});
+        expect(parseMetaData(metadata).recentGames).toEqual([{}]);
+        expect(parseMetaData(metadata).perYear).toEqual({});
+        expect(parseMetaData(metadata).activePlayers).toEqual([{}]);
+        expect(parseMetaData(metadata).inactivePlayers).toEqual([{}]);
+    });
+
+    it('nonparsable data', () => {
+        expect(parseMetaData(metadata).id).toBe('123');
+        expect(parseMetaData(metadata).totalGamesPlayed).toBe(10);
+        expect(parseMetaData(metadata).totalPlayersCount).toBe(10);
+        expect(parseMetaData(metadata).recentGamesLength).toBe(5);
     });
 });
 

@@ -1,4 +1,5 @@
 import omit from 'lodash/omit';
+import pick from 'lodash/pick';
 import isEqual from 'lodash/isEqual';
 
 export async function asyncForEach(array, callback) {
@@ -76,6 +77,30 @@ export const StringCheck = {
     invalid(value) {
         return typeof value === 'string' && Number.isNaN(value);
     },
+};
+
+export const parseMetaData = (metadata) => {
+    if (!metadata) {
+        return undefined;
+    }
+    const nonParsableData = pick(metadata, [
+        'id',
+        'totalGamesPlayed',
+        'totalPlayersCount',
+        'recentGamesLength',
+    ]);
+    const parsableData = pick(metadata, [
+        'allFields',
+        'allYears',
+        'recentGames',
+        'perYear',
+        'activePlayers',
+        'inactivePlayers',
+    ]);
+    Object.keys(parsableData).forEach((key) => {
+        parsableData[key] = JSON.parse(parsableData[key]);
+    });
+    return { ...nonParsableData, ...parsableData };
 };
 
 export function replaceEmptyStrings(games) {
@@ -329,6 +354,23 @@ function normalize(stat) {
         return 0;
     }
     return Number(stat);
+}
+
+/**
+ * Get players that exist in both arrays
+ * @param {Array} existingPlayers
+ * @param {Array} players
+ * @return {Array} player in the first param
+ */
+export function findPlayers(existingPlayers, players) {
+    const matched = [];
+    players.forEach((player) => {
+        const inactive = findPlayerById(player.id, existingPlayers);
+        if (inactive) {
+            matched.push(inactive);
+        }
+    });
+    return matched;
 }
 
 /**

@@ -15,11 +15,11 @@ import {
     SuccessImage,
 } from '../components/Dashboard';
 import { fetchGamesFromMeetup, fetchRsvpList } from '../utils/apiService';
-// import SummarizeStats from '../utils/SummarizeStats';
+import SummarizeStats from '../utils/SummarizeStats';
 import GameStats from '../utils/GameStats';
-// import PlayerStats, { mergePlayerStats } from '../utils/PlayerStats';
-// import PlayerInfo from '../utils/PlayerInfo';
-// import MetaData from '../utils/MetaData';
+import PlayerStats from '../utils/PlayerStats';
+import PlayerInfo from '../utils/PlayerInfo';
+import MetaData from '../utils/MetaData';
 import {
     createPlayer,
     getFieldName,
@@ -27,6 +27,7 @@ import {
     filterCurrentGame,
     isPlayerOfTheGame,
     findPlayerById,
+    parseMetaData,
 } from '../utils/helpers';
 import styles from './pages.module.css';
 
@@ -104,13 +105,12 @@ class Admin extends React.Component {
             },
         } = this.props;
         const { currentGame, games, playerOfTheGame } = this.state;
+        const meta = parseMetaData(metadata);
 
-        // console.log('Submit data', { winners, losers })
-        // const stats = mergePlayerStats(currentGame, winners, losers, playerOfTheGame);
-        // await PlayerStats.save(stats);
-        // await SummarizeStats.save(currentGame, stats, metadata);
+        await PlayerStats.save(currentGame, winners, losers, playerOfTheGame);
+        await SummarizeStats.save(currentGame, winners, losers, meta);
         await GameStats.save(currentGame, winners, losers, playerOfTheGame);
-        // await MetaData.save(metadata, currentGame, winners, losers);
+        await MetaData.save(currentGame, winners, losers, meta);
         // await PlayerInfo.save(winners, losers);
 
         const allFields = JSON.parse(metadata.allFields) || {};
@@ -173,14 +173,14 @@ class Admin extends React.Component {
 
     handlePlayerOfTheGame = (e) => {
         const id = e.target.value;
-        const { losers, playerOfTheGame, winners } = this.state;
+        const { currentGame, losers, playerOfTheGame, winners } = this.state;
         let currentPotg = {};
         if (playerOfTheGame.id !== id) {
             const winner = findPlayerById(id, winners);
             const loser = findPlayerById(id, losers);
             currentPotg = winner
-                ? { ...pick(winner, ['id', 'name']), winner: true }
-                : { ...pick(loser, ['id', 'name']), winner: false };
+                ? { ...pick(winner, ['id', 'name']), winner: true, gameId: currentGame.id }
+                : { ...pick(loser, ['id', 'name']), winner: false, gameId: currentGame.id };
         }
         console.log('potg', currentPotg);
         // const currentPotg =

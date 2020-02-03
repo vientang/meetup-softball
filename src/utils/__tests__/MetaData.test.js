@@ -15,6 +15,17 @@ describe('MetaData', () => {
         metadata = {};
     });
 
+    const currentGame = {
+        id: 'xxx',
+        name: 'Game xxx',
+        date: 'today',
+        time: 'now',
+        timeStamp: '9877654323',
+        year: '2020',
+        month: 'Jan',
+        field: 'Jackson',
+    };
+
     test('updateFieldsMonthsPerYear', () => {
         const perYear = {
             '2020': {
@@ -26,14 +37,8 @@ describe('MetaData', () => {
                 },
             },
         };
-        const metadata = { perYear: JSON.stringify(perYear) };
 
-        const currentGame = {
-            year: '2020',
-            month: 'Jan',
-            field: 'Jackson',
-        };
-        expect(updateFieldsMonthsPerYear(metadata, currentGame)).toEqual({
+        expect(updateFieldsMonthsPerYear(perYear, currentGame)).toEqual({
             '2020': {
                 gp: 2,
                 months: ['Jan', 'Feb', 'March'],
@@ -46,23 +51,76 @@ describe('MetaData', () => {
         });
     });
 
-    test('updateRecentGames', () => {});
-
-    test('updateInactivePlayers', () => {});
+    test('updateRecentGames', () => {
+        const recentGames = [
+            {
+                id: 'zzz',
+                name: 'Game zzz',
+                date: 'last month',
+                field: 'Jackson',
+                month: 'Dec',
+                time: 'sometime before',
+                timeStamp: '1234456566',
+                year: '2019',
+            },
+        ];
+        expect(updateRecentGames(recentGames, currentGame)).toEqual([currentGame, recentGames[0]]);
+        expect(updateRecentGames(recentGames, currentGame).length).toBe(2);
+        expect(updateRecentGames(recentGames, currentGame)[0]).toEqual({
+            id: 'xxx',
+            name: 'Game xxx',
+            date: 'today',
+            time: 'now',
+            timeStamp: '9877654323',
+            year: '2020',
+            month: 'Jan',
+            field: 'Jackson',
+        });
+    });
 
     test('updateAllYears', () => {});
 
     test('updateAllFields', () => {});
+});
+
+describe('Active and Inactive players', () => {
+    const activePlayers = [
+        { id: '123', name: 'Fresh Basta', gp: 10, photos: {} },
+        { id: '234', name: 'Steven', gp: 10, photos: {} },
+        { id: '345', name: 'Cara', gp: 10, photos: {} },
+        { id: '456', name: 'Nate', gp: 10, photos: {} },
+        { id: '567', name: 'Carlos', gp: 10, photos: {} },
+    ];
+    const inactivePlayers = [{ id: '678', name: 'Vien', gp: 1, photos: {} }];
+    const players = [...activePlayers];
+    const playersWithInactive = [...players, inactivePlayers[0]];
 
     test('updateActivePlayers', () => {
-        const activePlayers = [
-            { id: '123', name: 'Fresh Basta', gp: 10, photos: {} },
-            { id: '123', name: 'Fresh Basta', gp: 10, photos: {} },
-            { id: '123', name: 'Fresh Basta', gp: 10, photos: {} },
-            { id: '123', name: 'Fresh Basta', gp: 10, photos: {} },
-            { id: '123', name: 'Fresh Basta', gp: 10, photos: {} },
-        ];
+        expect(updateActivePlayers(activePlayers, [], players)).toEqual([
+            { id: '123', name: 'Fresh Basta', gp: 11, photos: {} },
+            { id: '234', name: 'Steven', gp: 11, photos: {} },
+            { id: '345', name: 'Cara', gp: 11, photos: {} },
+            { id: '456', name: 'Nate', gp: 11, photos: {} },
+            { id: '567', name: 'Carlos', gp: 11, photos: {} },
+        ]);
+    });
 
-        metadata.activePlayers = JSON.stringify([{}]);
+    test('updateActivePlayers - includes inactive player', () => {
+        expect(updateActivePlayers(activePlayers, inactivePlayers, playersWithInactive)).toEqual([
+            { id: '123', name: 'Fresh Basta', gp: 11, photos: {} },
+            { id: '234', name: 'Steven', gp: 11, photos: {} },
+            { id: '345', name: 'Cara', gp: 11, photos: {} },
+            { id: '456', name: 'Nate', gp: 11, photos: {} },
+            { id: '567', name: 'Carlos', gp: 11, photos: {} },
+            { id: '678', name: 'Vien', gp: 2, photos: {} },
+        ]);
+    });
+
+    test('updateInactivePlayers', () => {
+        expect(updateInactivePlayers(inactivePlayers, players)).toEqual(inactivePlayers);
+    });
+
+    test('updateInactivePlayers - no longer inactive', () => {
+        expect(updateInactivePlayers(inactivePlayers, playersWithInactive)).toEqual([]);
     });
 });

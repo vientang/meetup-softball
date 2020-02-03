@@ -1,6 +1,9 @@
+import { API, graphqlOperation } from 'aws-amplify';
 import pick from 'lodash/pick';
 import omit from 'lodash/omit';
 import get from 'lodash/get';
+import { createPlayerStats, updatePlayerStats } from '../graphql/mutations';
+import { getPlayerStats } from '../graphql/queries';
 import { removeDuplicateGames, replaceEmptyStrings } from './helpers';
 import { addDerivedStats, getTeamRunsScored } from './statsCalc';
 import { gameProperties } from './constants';
@@ -8,7 +11,8 @@ import { gameProperties } from './constants';
 export default {
     save: async (currentGame, winners, losers, playerOfTheGame) => {
         const players = preparePlayerStats(currentGame, winners, losers, playerOfTheGame);
-        await submitPlayerStats(players);
+        console.log('PlayerStats', players);
+        // await submitPlayerStats(players);
     },
 };
 

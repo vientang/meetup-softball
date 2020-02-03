@@ -1,7 +1,7 @@
 import get from 'lodash/get';
 
-export default function createLeaderBoard(summarizedStats = [], metadata, year) {
-    const qualifier = getQualifier(metadata, year);
+export default function createLeaderBoard(summarizedStats = [], perYear, year) {
+    const qualifier = getQualifier(perYear, year);
     return {
         hr: getLeaders(summarizedStats, 'hr'),
         avg: getLeaders(summarizedStats, 'avg', qualifier),
@@ -74,8 +74,7 @@ export function getRemaining(players, stat) {
     return remaining;
 }
 
-export function getQualifier(metadata, year) {
-    const perYear = JSON.parse(metadata.perYear);
+export function getQualifier(perYear, year) {
     return get(perYear, `${year}.gp`, 1);
 }
 

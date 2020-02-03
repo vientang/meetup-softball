@@ -36,9 +36,7 @@ describe('createLeaderBoard', () => {
                 gp: 20,
             },
         };
-        const metadata = { perYear: JSON.stringify(perYear) };
-        // stringify perYear to match server type
-        expect(getQualifier(metadata, year)).toBe(20);
+        expect(getQualifier(perYear, year)).toBe(20);
     });
 
     test('getQualifier for first game of the year', () => {
@@ -48,9 +46,7 @@ describe('createLeaderBoard', () => {
                 gp: 20,
             },
         };
-        const metadata = { perYear: JSON.stringify(perYear) };
-        // stringify metadata to match server type
-        expect(getQualifier(metadata, year)).toBe(1);
+        expect(getQualifier(perYear, year)).toBe(1);
     });
 
     test('getLeaders', () => {
