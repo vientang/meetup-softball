@@ -3,17 +3,20 @@ import PropTypes from 'prop-types';
 import BoxScore from './BoxScore';
 import JoinUs from './JoinUs';
 import componentStyles from './components.module.css';
+import { useRecentGames } from '../utils/hooks';
 
 const BoxScoreGroup = ({ recentGames }) => {
     if (!recentGames.length) {
         return null;
     }
-    const recentGameData = createBoxScoreData(recentGames.slice(0, 2));
+    const games = useRecentGames(recentGames);
+
+    const recentGameData = createBoxScoreData(games);
     return (
         <div className={componentStyles.boxScoreGroup}>
             <JoinUs />
             {recentGameData.map((gameData) => (
-                <BoxScore key={gameData.gameId} gameData={gameData} />
+                <BoxScore key={gameData.id} gameData={gameData} />
             ))}
         </div>
     );
@@ -23,18 +26,15 @@ function createBoxScoreData(games) {
     if (!games || !games.length) {
         return [];
     }
-    return games.map((game) => {
-        const recentGameData = {
-            name: game.name,
-            date: game.date,
-            field: game.field,
-            gameId: game.gameId,
-            time: game.time,
-            winners: game.winners.runsScored,
-            losers: game.losers.runsScored,
-        };
-        return recentGameData;
-    });
+    return games.map((game) => ({
+        id: game.id,
+        name: game.name,
+        date: game.date,
+        field: game.field,
+        time: game.time,
+        winners: game.winners.runsScored,
+        losers: game.losers.runsScored,
+    }));
 }
 
 BoxScoreGroup.displayName = 'BoxScoreGroup';

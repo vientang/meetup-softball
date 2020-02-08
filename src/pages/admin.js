@@ -107,9 +107,9 @@ class Admin extends React.Component {
         const { currentGame, games, playerOfTheGame } = this.state;
         const meta = parseMetaData(metadata);
 
+        await GameStats.save(currentGame, winners, losers, playerOfTheGame);
         await PlayerStats.save(currentGame, winners, losers, playerOfTheGame);
         await SummarizeStats.save(currentGame, winners, losers, meta);
-        await GameStats.save(currentGame, winners, losers, playerOfTheGame);
         await MetaData.save(currentGame, winners, losers, meta);
         // await PlayerInfo.save(winners, losers);
 

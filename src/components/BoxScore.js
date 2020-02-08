@@ -6,8 +6,8 @@ import { getMeridiem } from '../utils/helpers';
 import componentStyles from './components.module.css';
 
 const BoxScore = ({ gameData }) => {
-    const { date, time, field, gameId, winners, losers } = gameData;
-    const gameDesc = gameId && field ? `Game ${gameId} @ ${field}` : null;
+    const { date, time, field, name, winners, losers } = gameData;
+    const gameDesc = name && field ? `${name} @ ${field}` : null;
     const gameTime = time && date ? `${date}, ${time}${getMeridiem(time)}` : null;
 
     return (

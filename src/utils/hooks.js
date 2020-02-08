@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useStaticQuery, graphql } from 'gatsby';
 import {
+    fetchGameStats,
     fetchPlayerInfo,
     fetchPlayerStats,
     fetchNextGamesFromMeetup,
@@ -61,6 +62,23 @@ export const useMetaData = () => {
     };
 };
 
+export const useGameStats = (id) => {
+    const [gameStats, setGameStats] = useState({});
+    const [loading, setLoading] = useState(true);
+    const isMounted = useIsMounted();
+    useEffect(() => {
+        async function fetchGame() {
+            if (id && isMounted) {
+                const stats = await fetchGameStats(id);
+                setGameStats(stats);
+                setLoading(false);
+            }
+        }
+        fetchGame();
+    }, [id]);
+    return [gameStats, loading];
+};
+
 export const usePlayerStats = (id) => {
     const [playerStats, setplayerStats] = useState({});
     const isMounted = useIsMounted();
@@ -111,6 +129,20 @@ export const useSummarizedStats = (id) => {
     }, []);
 
     return [summarizedStats, setSummarizedStats];
+};
+
+export const useRecentGames = (recent) => {
+    const [game1, game1Loading] = useGameStats(recent[0].id);
+    const [game2, game2Loading] = useGameStats(recent[1].id);
+
+    const games = useMemo(() => {
+        if (game1Loading || game2Loading) {
+            return [];
+        }
+        return [game1, game2];
+    }, [game1, game2, game1Loading, game2Loading]);
+
+    return games;
 };
 
 /**
