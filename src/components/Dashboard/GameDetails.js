@@ -31,6 +31,7 @@ const GameDetails = ({ data, onGameCancel }) => {
                     style={closeIconStyle}
                     onClick={handleCancelGame}
                 />
+                <li className={styles.gameDetailsDate}>{data.name}</li>
                 <li className={styles.gameDetailsDate}>{data.date}</li>
                 <li className={styles.gameDetailsInfo}>
                     {`${fieldName} @${data.time}${meridiem}`}
