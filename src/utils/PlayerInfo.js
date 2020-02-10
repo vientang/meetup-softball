@@ -1,39 +1,28 @@
 import { createNewPlayerInfo, fetchPlayerInfo, updateExistingPlayerInfo } from './apiService';
 
 export default {
-    save: async (winners, losers) => {
-        const players = winners.concat(losers);
+    save: async (players) => {
+        // combine players from rsvp list with players added by admin
         players.forEach(async (player) => {
             const { admin, gender, id, joined, name } = player;
             const photos = JSON.stringify(player.photos);
             const profile = JSON.stringify(player.profile);
             const status = 'active';
             const existingPlayer = await fetchPlayerInfo(player.id);
-            console.log('PlayerInfo', existingPlayer)
+            const input = {
+                id,
+                name,
+                photos,
+                profile,
+                status,
+            };
             try {
                 if (existingPlayer) {
                     // keep photos and profile up to date with meetup
-                    await updateExistingPlayerInfo({
-                        input: {
-                            id,
-                            photos,
-                            profile,
-                            status,
-                        },
-                    });
+                    await updateExistingPlayerInfo({ input });
                 } else {
-                    await createNewPlayerInfo({
-                        input: {
-                            id,
-                            name,
-                            joined,
-                            profile,
-                            admin,
-                            photos,
-                            status,
-                            gender: gender || 'n/a',
-                        },
-                    });
+                    const newPlayerInput = { ...input, joined, admin, gender: gender || 'n/a' };
+                    await createNewPlayerInfo({ input: newPlayerInput });
                 }
             } catch (e) {
                 throw new Error(`Error saving player ${player.name}`, e);
@@ -68,41 +57,3 @@ export async function updateStatus(players, metadata) {
         throw new Error(`Error saving player ${player.name}`, e);
     }
 }
-
-// export async function submitPlayerInfo(players = []) {
-//     players.forEach(async (player) => {
-//         const { admin, gender, id, joined, name } = player;
-//         const photos = JSON.stringify(player.photos);
-//         const profile = JSON.stringify(player.profile);
-//         const active = 'active';
-//         const existingPlayer = await fetchPlayerInfo(player.id);
-//         try {
-//             if (existingPlayer) {
-//                 // keep photos and profile up to date with meetup
-//                 await updateExistingPlayerInfo({
-//                     input: {
-//                         id,
-//                         photos,
-//                         profile,
-//                         status: active,
-//                     },
-//                 });
-//             } else {
-//                 await createNewPlayerInfo({
-//                     input: {
-//                         id,
-//                         name,
-//                         joined,
-//                         profile,
-//                         admin,
-//                         photos,
-//                         status: active,
-//                         gender: gender || 'n/a',
-//                     },
-//                 });
-//             }
-//         } catch (e) {
-//             throw new Error(`Error saving player ${player.name}`, e);
-//         }
-//     });
-// }

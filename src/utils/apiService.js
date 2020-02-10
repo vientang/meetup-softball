@@ -241,6 +241,8 @@ export async function submitGameStat(input) {
     }
 }
 
+// query params accepts two properties - filter and limit
+// i.e. { filter: { year: { eq: '2020' } }, limit: 800 }
 const games = [];
 export async function fetchAllGames(queryParams = {}) {
     const fetchedGames = await API.graphql(graphqlOperation(listGameStatss, queryParams));
@@ -323,7 +325,7 @@ export async function fetchGamesFromMeetup(lastGameTimeStamp) {
 
     // sort games by time for GamesMenu
     games.sort((a, b) => new Date(a.timeStamp) - new Date(b.timeStamp));
-
+    
     return games;
 }
 

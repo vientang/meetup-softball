@@ -19,7 +19,7 @@ import SummarizeStats from '../utils/SummarizeStats';
 import GameStats from '../utils/GameStats';
 import PlayerStats from '../utils/PlayerStats';
 import PlayerInfo from '../utils/PlayerInfo';
-import MetaData from '../utils/MetaData';
+import MetaData, { fetchMetaData } from '../utils/MetaData';
 import {
     createPlayer,
     getFieldName,
@@ -27,7 +27,6 @@ import {
     filterCurrentGame,
     isPlayerOfTheGame,
     findPlayerById,
-    parseMetaData,
 } from '../utils/helpers';
 import styles from './pages.module.css';
 
@@ -50,10 +49,9 @@ class Admin extends React.Component {
      */
     async componentDidMount() {
         this.mounted = true;
-        const allFields = JSON.parse(get(this.props.data, 'softballstats.metadata.allFields', {}));
+        const { allFields, recentGames } = await fetchMetaData();
 
-        const lastGameTimeStamp = await this.getLastGameRecorded();
-        const games = await fetchGamesFromMeetup(lastGameTimeStamp);
+        const games = await fetchGamesFromMeetup(Number(recentGames[0].timeStamp));
         const currentGame = games[0];
         currentGame.field = getFieldName(currentGame.field, allFields);
         currentGame.players = await this.getCurrentGamePlayers(currentGame);
@@ -70,13 +68,6 @@ class Admin extends React.Component {
     componentWillUnmount() {
         this.mounted = false;
     }
-
-    getLastGameRecorded = async () => {
-        const recentGames = JSON.parse(
-            get(this.props.data, 'softballstats.metadata.recentGames', [{}]),
-        );
-        return Number(recentGames[0].timeStamp);
-    };
 
     getCurrentGamePlayers = async (currentGame = {}) => {
         if (currentGame.players) {
@@ -99,21 +90,22 @@ class Admin extends React.Component {
      * Submit updated stats to PlayerStats & GameStats
      */
     handleSubmitData = async (winners, losers, selectedGameId) => {
-        const {
-            data: {
-                softballstats: { metadata },
-            },
-        } = this.props;
+        const meta = await fetchMetaData();
         const { currentGame, games, playerOfTheGame } = this.state;
-        const meta = parseMetaData(metadata);
+
+        localStorage.setItem('winners', JSON.stringify(winners));
+        localStorage.setItem('losers', JSON.stringify(losers));
+
+        // const tempWinners = JSON.parse(localStorage.getItem('winners'));
+        // const tempLosers = JSON.parse(localStorage.getItem('losers'));
 
         await GameStats.save(currentGame, winners, losers, playerOfTheGame);
         await PlayerStats.save(currentGame, winners, losers, playerOfTheGame);
-        await SummarizeStats.save(currentGame, winners, losers, meta);
         await MetaData.save(currentGame, winners, losers, meta);
-        // await PlayerInfo.save(winners, losers);
+        await PlayerInfo.save(currentGame.players);
+        await SummarizeStats.save(currentGame, winners, losers, meta);
 
-        const allFields = JSON.parse(metadata.allFields) || {};
+        const { allFields } = meta;
         const remainingGames = games.filter((game) => game.id !== selectedGameId);
         const nextGame = remainingGames[0];
         nextGame.field = getFieldName(nextGame.field, allFields);
@@ -140,7 +132,7 @@ class Admin extends React.Component {
         const currentPlayers = await this.getCurrentGamePlayers(currentGame);
         currentGame.players = currentPlayers;
 
-        const allFields = JSON.parse(get(this.props.data, 'softballstats.metadata.allFields', {}));
+        const { allFields } = await fetchMetaData();
         currentGame.field = getFieldName(currentGame.field, allFields);
 
         this.setState(() => ({ currentGame, selectedGameId }));
@@ -157,7 +149,7 @@ class Admin extends React.Component {
         const nextGame = games[0];
         nextGame.players = await this.getCurrentGamePlayers(games[0]);
 
-        const allFields = JSON.parse(get(this.props.data, 'softballstats.metadata.allFields', {}));
+        const { allFields } = await fetchMetaData();
         nextGame.field = getFieldName(nextGame.field, allFields);
 
         this.setState(() => ({
@@ -182,11 +174,6 @@ class Admin extends React.Component {
                 ? { ...pick(winner, ['id', 'name']), winner: true, gameId: currentGame.id }
                 : { ...pick(loser, ['id', 'name']), winner: false, gameId: currentGame.id };
         }
-        console.log('potg', currentPotg);
-        // const currentPotg =
-        //     playerOfTheGame.id === id
-        //         ? {}
-        //         : winners.concat(losers).find((player) => player.id === id);
         this.setState(() => ({ playerOfTheGame: currentPotg }));
     };
 
@@ -240,6 +227,7 @@ class Admin extends React.Component {
                 </div>
                 {areTeamsSorted ? (
                     <AdminStatsTable
+                        data={currentGame}
                         winners={winners}
                         losers={losers}
                         onChange={this.handleOnChange}

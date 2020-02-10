@@ -171,6 +171,7 @@ class AdminStatsTable extends React.Component {
     };
 
     render() {
+        const { data } = this.props;
         const { winners, losers, tooltipMsg } = this.state;
 
         if (!winners || winners.length < 1) {
@@ -178,7 +179,7 @@ class AdminStatsTable extends React.Component {
         }
 
         return (
-            <AdminSection title="ENTER STATS" iconType="table" iconColor="#1890ff">
+            <AdminSection title={data.name} iconType="table" iconColor="#1890ff">
                 <p className={styles.adminSectionTitle}>WINNERS</p>
                 <StatsTable
                     stats={winners}
@@ -207,8 +208,8 @@ class AdminStatsTable extends React.Component {
 
 function preprocessWinnersAndLosers(winners, losers) {
     return {
-        w: prepareGamePlayers(winners.players),
-        l: prepareGamePlayers(losers.players),
+        w: prepareGamePlayers(winners),
+        l: prepareGamePlayers(losers),
     };
 }
 
@@ -259,6 +260,14 @@ function prepareStats(stats) {
 }
 
 AdminStatsTable.propTypes = {
+    data: PropTypes.shape({
+        id: PropTypes.string,
+        date: PropTypes.string,
+        field: PropTypes.string,
+        name: PropTypes.string,
+        players: PropTypes.array,
+        time: PropTypes.string,
+    }),
     winners: PropTypes.arrayOf(PropTypes.object),
     losers: PropTypes.arrayOf(PropTypes.object),
     onChange: PropTypes.func,
@@ -269,6 +278,7 @@ AdminStatsTable.propTypes = {
 };
 
 AdminStatsTable.defaultProps = {
+    data: {},
     winners: [],
     losers: [],
     playerOfTheGame: {},

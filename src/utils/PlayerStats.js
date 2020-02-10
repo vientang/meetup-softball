@@ -11,8 +11,7 @@ import { gameProperties } from './constants';
 export default {
     save: async (currentGame, winners, losers, playerOfTheGame) => {
         const players = preparePlayerStats(currentGame, winners, losers, playerOfTheGame);
-        console.log('PlayerStats', players);
-        // await submitPlayerStats(players);
+        await submitPlayerStats(players);
     },
 };
 
@@ -39,18 +38,23 @@ async function submitPlayerStats(players = []) {
         const currentGame = games[0];
         // check if player already exists in database
         const existingPlayer = await fetchPlayerStats(player.id);
-        console.log('PlayerStats', { id, games, name });
         try {
             if (existingPlayer) {
-                const { games } = existingPlayer;
-                if (!isDuplicateGame(games, currentGame.id)) {
-                    await updatePlayerStat({
-                        input: {
-                            id,
-                            games: JSON.stringify([...games, currentGame]),
-                        },
+                let updatedGames = [...existingPlayer.games, currentGame];
+                if (isDuplicateGame(existingPlayer.games, currentGame.id)) {
+                    updatedGames = existingPlayer.games.map((game) => {
+                        if (game.id === currentGame.id) {
+                            return currentGame;
+                        }
+                        return game;
                     });
                 }
+                await updatePlayerStat({
+                    input: {
+                        id,
+                        games: JSON.stringify(updatedGames),
+                    },
+                });
             } else {
                 await submitPlayerStat({
                     input: {

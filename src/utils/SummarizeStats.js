@@ -1,6 +1,6 @@
-import pick from 'lodash/pick';
 import {
     createNewSummarizedStats,
+    fetchAllGames,
     fetchSummarizedStats,
     updateExistingSummarizedStats,
 } from './apiService';
@@ -11,14 +11,13 @@ import createLeaderBoard from './leadersCalc';
 export default {
     save: async ({ year, month, field } = {}, winners, losers, metadata) => {
         const preSummarized = await getSummarizedStats({ year, month, field });
-        const players = flatStats(winners.concat(losers));
+        const players = winners.concat(losers);
         // merge current stats with summarized stats
         const postSummarized = mergeSummarizedStats(preSummarized, players);
         const leaderboard = createLeaderBoard(postSummarized[`_${year}`], metadata.perYear, year);
         // calculate leaderboards
         postSummarized[`_leaderboard_${year}`] = leaderboard;
-        console.log('SummarizedStats', postSummarized);
-        // await submitSummarizedStats(postSummarized);
+        await submitSummarizedStats(postSummarized);
     },
     saveLegacy: async (summarized) => {
         const legacySummarized = { ...summarized };
@@ -59,42 +58,6 @@ export function getSummarizedIds({ year, month, field } = {}) {
         fieldId,
         leaderboardId,
     ];
-}
-
-/**
- * @param {Array} players [{ id, name, games: [{}] }, ...]
- * @return {Array} [{ id, name, singles, hr, ... }]
- */
-export function flatStats(players) {
-    return players.map((player) => {
-        const stats = pick(player.games[0], [
-            'ab',
-            'avg',
-            'bb',
-            'cs',
-            'doubles',
-            'gp',
-            'h',
-            'hr',
-            'k',
-            'l',
-            'o',
-            'obp',
-            'ops',
-            'r',
-            'rbi',
-            'rc',
-            'sac',
-            'sb',
-            'singles',
-            'slg',
-            'tb',
-            'triples',
-            'w',
-            'woba',
-        ]);
-        return { id: player.id, name: player.name, ...stats };
-    });
 }
 
 /**
@@ -205,4 +168,52 @@ export async function submitSummarizedStats(stats) {
             throw new Error(`Error saving stats for ${id}: `, e);
         }
     });
+}
+
+export async function summaryStatUpdater() {
+    const games = await fetchAllGames({ filter: { year: { eq: '2020' } }, limit: 800 });
+    const summarized = {};
+    games.forEach((game) => {
+        const { field, losers, month, winners, year } = game;
+        // const leaderboardId = `_leaderboard${yearId}`;
+        // const monthId = getIdFromFilterParams({ month });
+        // const monthFieldId = getIdFromFilterParams({ month, field });
+        // const fieldId = getIdFromFilterParams({ field });
+        const yearId = getIdFromFilterParams({ year });
+        const yearMonthId = getIdFromFilterParams({ year, month });
+        const yearMonthFieldId = getIdFromFilterParams({ year, month, field });
+        const yearFieldId = getIdFromFilterParams({ year, field });
+
+        const players = JSON.parse(winners).players.concat(JSON.parse(losers).players);
+        [yearId, yearMonthId, yearMonthFieldId, yearFieldId].forEach((summarizedId) => {
+            if (summarized[summarizedId]) {
+                const stats = [];
+                const existing = [...summarized[summarizedId]];
+                // add or update current game players
+                players.forEach((player) => {
+                    const { id, name } = player;
+                    const existingPlayer = existing.find((e) => e.id === id);
+                    if (existingPlayer) {
+                        stats.push({ id, name, ...calculateTotals(existingPlayer, player) });
+                    } else {
+                        stats.push({ id, name, ...calculateTotals(null, player) });
+                    }
+                });
+                // add back in existing players who didn't play today
+                existing.forEach((existingP) => {
+                    const playedToday = stats.find((pStat) => pStat.id === existingP.id);
+                    if (!playedToday) {
+                        stats.push(existingP);
+                    }
+                });
+                summarized[summarizedId] = stats;
+            } else {
+                summarized[summarizedId] = players.map((player) => {
+                    const { id, name } = player;
+                    return { id, name, ...calculateTotals(null, player) };
+                });
+            }
+        });
+    });
+    return summarized;
 }

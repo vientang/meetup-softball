@@ -39,9 +39,11 @@ class Stats extends React.Component {
         this.state = {
             filters: defaultFilters,
             currentFilter: 'year',
-            playerStats: this.mapPlayerPhotos(JSON.parse(stats), items),
+            playerStats: this.mapPlayerPhotos(JSON.parse(stats)),
             sortedColumn: '',
         };
+        this.summarized = {};
+        this.fields = {};
     }
 
     handleColumnSort = (newSorted, column) => {
@@ -97,7 +99,7 @@ class Stats extends React.Component {
             const { field, month, year } = updatedFilters;
             const id = getIdFromFilterParams({ field, month, year });
             const stats = await fetchSummarizedStats(id);
-
+            console.log('filter change', { stats, playerMap: this.playersInfoMap })
             if (!stats) {
                 message.error(`Try again. No games were played at ${field} in ${month}/${year}`);
             } else {

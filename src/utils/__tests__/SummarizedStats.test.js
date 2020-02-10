@@ -4,32 +4,12 @@ import {
     findCurrentPlayers,
     findExistingPlayers,
     findNewPlayers,
-    flatStats,
     mergeSummarizedStats,
     updateCurrentPlayerStats,
     updateExistingStats,
 } from '../SummarizeStats';
 
 describe('SummarizedStats', () => {
-    test('flatStats', () => {
-        const stats = [
-            {
-                id: '123',
-                name: 'John',
-                games: [{ w: '1', l: '0', hr: '1', name: 'FIRST GAME', id: 'game-123' }],
-            },
-            {
-                id: '234',
-                name: 'Doe',
-                games: [{ w: '0', l: '1', hr: '0', name: 'FIRST GAME', id: 'game-123' }],
-            },
-        ];
-        expect(flatStats(stats)).toEqual([
-            { id: '123', name: 'John', w: '1', l: '0', hr: '1' },
-            { id: '234', name: 'Doe', w: '0', l: '1', hr: '0' },
-        ]);
-    });
-
     test('getSummarizedIds', () => {
         expect(
             getSummarizedIds({

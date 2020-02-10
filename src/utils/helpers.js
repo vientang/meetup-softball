@@ -275,7 +275,7 @@ export function parseCurrentMonth(date) {
  * @param {Object} players
  * @return {Object}
  */
-export function parsePhotosAndProfile(player) {
+export function parsePhotosAndProfile(player = {}) {
     return {
         photos: player.photos ? JSON.parse(player.photos) : {},
         profile: player.profile ? JSON.parse(player.profile) : {},

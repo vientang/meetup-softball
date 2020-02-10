@@ -1,8 +1,10 @@
 import { API, graphqlOperation } from 'aws-amplify';
+import get from 'lodash/get';
 import pick from 'lodash/pick';
 import { fetchAllPlayerStats, fetchPlayerInfo, fetchAllGames } from './apiService';
+import { getMetaData } from '../graphql/queries';
 import { updateMetaData } from '../graphql/mutations';
-import { findPlayers, findPlayerById, asyncForEach } from './helpers';
+import { findPlayers, findPlayerById, asyncForEach, parseMetaData } from './helpers';
 import { updateGamesPlayed } from './statsCalc';
 
 export default {
@@ -37,21 +39,18 @@ export default {
             totalPlayersCount: actives.length + inactives.length,
         };
 
-        console.log('Metadata', {
-            id,
-            activePlayers: JSON.stringify(actives),
-            inactivePlayers: JSON.stringify(inactives),
-            allFields: JSON.stringify(fields),
-            allYears: JSON.stringify(years),
-            perYear: JSON.stringify(fieldsMonthsPerYear),
-            recentGames: JSON.stringify(recent),
-            recentGamesLength: recent.length,
-            totalGamesPlayed: totalGamesPlayed + 1,
-            totalPlayersCount: actives.length + inactives.length,
-        });
-        // await updateMeta({ input: data });
+        await updateMeta({ input: data });
     },
 };
+
+export async function fetchMetaData() {
+    let metadata = await API.graphql(graphqlOperation(getMetaData, { id: '_metadata' }));
+    metadata = get(metadata, 'data.getMetaData', null);
+    if (metadata) {
+        return parseMetaData(metadata);
+    }
+    return metadata;
+}
 
 /**
  * Update metadata in database
