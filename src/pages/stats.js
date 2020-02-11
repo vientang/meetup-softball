@@ -17,6 +17,7 @@ import {
 import { statPageCategories } from '../utils/constants';
 import { fetchSummarizedStats } from '../utils/apiService';
 import pageStyles from './pages.module.css';
+import { summaryStatsUpdater, submitSummarizedStats } from '../utils/SummarizeStats';
 
 const defaultFilters = {
     year: '2019',
@@ -44,6 +45,12 @@ class Stats extends React.Component {
         };
         this.summarized = {};
         this.fields = {};
+    }
+
+    async componentDidMount() {
+        // const summz = await summaryStatsUpdater();
+        // console.log('summz', summz);
+        // await submitSummarizedStats(summz);
     }
 
     handleColumnSort = (newSorted, column) => {
@@ -99,7 +106,7 @@ class Stats extends React.Component {
             const { field, month, year } = updatedFilters;
             const id = getIdFromFilterParams({ field, month, year });
             const stats = await fetchSummarizedStats(id);
-            console.log('filter change', { stats, playerMap: this.playersInfoMap })
+            console.log('filter change', { stats, playerMap: this.playersInfoMap });
             if (!stats) {
                 message.error(`Try again. No games were played at ${field} in ${month}/${year}`);
             } else {

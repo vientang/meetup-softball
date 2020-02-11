@@ -170,7 +170,7 @@ export async function submitSummarizedStats(stats) {
     });
 }
 
-export async function summaryStatUpdater() {
+export async function summaryStatsUpdater() {
     const games = await fetchAllGames({ filter: { year: { eq: '2020' } }, limit: 800 });
     const summarized = {};
     games.forEach((game) => {
@@ -183,7 +183,6 @@ export async function summaryStatUpdater() {
         const yearMonthId = getIdFromFilterParams({ year, month });
         const yearMonthFieldId = getIdFromFilterParams({ year, month, field });
         const yearFieldId = getIdFromFilterParams({ year, field });
-
         const players = JSON.parse(winners).players.concat(JSON.parse(losers).players);
         [yearId, yearMonthId, yearMonthFieldId, yearFieldId].forEach((summarizedId) => {
             if (summarized[summarizedId]) {
@@ -192,6 +191,9 @@ export async function summaryStatUpdater() {
                 // add or update current game players
                 players.forEach((player) => {
                     const { id, name } = player;
+                    if (player.gp === undefined) {
+                        player.gp = '1';
+                    }
                     const existingPlayer = existing.find((e) => e.id === id);
                     if (existingPlayer) {
                         stats.push({ id, name, ...calculateTotals(existingPlayer, player) });
@@ -210,6 +212,9 @@ export async function summaryStatUpdater() {
             } else {
                 summarized[summarizedId] = players.map((player) => {
                     const { id, name } = player;
+                    if (player.gp === undefined) {
+                        player.gp = '1';
+                    }
                     return { id, name, ...calculateTotals(null, player) };
                 });
             }
