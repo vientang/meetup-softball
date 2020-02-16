@@ -13,6 +13,7 @@ const TransferListItems = ({
     listItems,
     listType,
     onAddPlayer,
+    onRemovePlayer,
     onPlayerSelection,
     selected,
 }) => (
@@ -68,6 +69,7 @@ TransferListItems.propTypes = {
     listItems: PropTypes.arrayOf(PropTypes.shape),
     listType: PropTypes.string,
     onAddPlayer: PropTypes.func,
+    onRemovePlayer: PropTypes.func,
     onPlayerSelection: PropTypes.func,
     selected: PropTypes.arrayOf(PropTypes.shape),
 };

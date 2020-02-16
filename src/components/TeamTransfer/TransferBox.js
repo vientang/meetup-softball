@@ -10,6 +10,7 @@ const TransferBox = (props) => {
         listItems,
         listType,
         onAddPlayer,
+        onRemovePlayer,
         onPlayerSelection,
         onMoveDown,
         onMoveUp,
@@ -23,6 +24,7 @@ const TransferBox = (props) => {
                 listItems={listItems}
                 listType={listType}
                 onAddPlayer={onAddPlayer}
+                onRemovePlayer={onRemovePlayer}
                 onPlayerSelection={onPlayerSelection}
                 selected={selected}
             />
@@ -40,6 +42,7 @@ TransferBox.propTypes = {
     listItems: PropTypes.arrayOf(PropTypes.object),
     listType: PropTypes.string,
     onAddPlayer: PropTypes.func,
+    onRemovePlayer: PropTypes.func,
     onPlayerSelection: PropTypes.func,
     onMoveDown: PropTypes.func,
     onMoveUp: PropTypes.func,

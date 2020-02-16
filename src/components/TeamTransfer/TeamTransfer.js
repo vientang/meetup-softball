@@ -89,6 +89,21 @@ class TeamTransfer extends React.Component {
         }
     };
 
+    handleRemovePlayer = (player, listType) => {
+        if (player && listType) {
+            this.setState(({ sourceList, targetList }) => {
+                if (listType === WINNERS) {
+                    return {
+                        sourceList: sourceList.filter((p) => p.id !== player.id),
+                    };
+                }
+                return {
+                    targetList: targetList.filter((p) => p.id !== player.id),
+                };
+            }, this.handleChange);
+        }
+    };
+
     /**
      * Update winners and losers in SortTeams
      * Called when list values change
@@ -208,6 +223,7 @@ class TeamTransfer extends React.Component {
                     listItems={sourceList}
                     listType={WINNERS}
                     onAddPlayer={this.handleAddPlayer}
+                    onRemovePlayer={this.handleRemovePlayer}
                     onPlayerSelection={this.handlePlayerSelection}
                     onMoveUp={this.handleUp}
                     onMoveDown={this.handleDown}
@@ -221,6 +237,7 @@ class TeamTransfer extends React.Component {
                     listItems={targetList}
                     listType={LOSERS}
                     onAddPlayer={this.handleAddPlayer}
+                    onRemovePlayer={this.handleRemovePlayer}
                     onPlayerSelection={this.handlePlayerSelection}
                     onMoveUp={this.handleUp}
                     onMoveDown={this.handleDown}

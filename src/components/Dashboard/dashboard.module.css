@@ -38,6 +38,10 @@
     overflow: hidden;
 }
 
+.game-details-section > li {
+    margin-right: var(--margin-3);
+}
+
 .game-details-date {
     font-weight: bold;
 }

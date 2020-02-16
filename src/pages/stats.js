@@ -106,7 +106,6 @@ class Stats extends React.Component {
             const { field, month, year } = updatedFilters;
             const id = getIdFromFilterParams({ field, month, year });
             const stats = await fetchSummarizedStats(id);
-            console.log('filter change', { stats, playerMap: this.playersInfoMap });
             if (!stats) {
                 message.error(`Try again. No games were played at ${field} in ${month}/${year}`);
             } else {
