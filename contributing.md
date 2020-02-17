@@ -9,49 +9,66 @@
 
 # Contributing
 
-**Working on your first Pull Request?** You can learn how from this *free* series
-[How to Contribute to an Open Source Project on GitHub](https://egghead.io/series/how-to-contribute-to-an-open-source-project-on-github)
+Changes to the site should:
 
-You **always** want to look at this file *before* contributing. In here you should find
-instructions for coding standards and contributing guidelines.
-
-## Acceptable Contributions
-**Please discuss any changes in the issues section** before working on a PR to make sure
-that I'll accept it before you spend time working on it. I only accept pull requests that:
-
-- fix bugs for existing functions or features
-- enhance the API or implementation of an existing function or feature
-- adds a function or feature that is tested (see the `test` directory; we use [`jest`](https://www.npmjs.com/package/jest))
-- have been linted
+-   fix bugs for existing functions or features
+-   enhance the API or implementation of an existing function or feature
+-   be tested (we use [`jest`](https://www.npmjs.com/package/jest))
 
 ## Set up instructions
-First of all, you're going to need to have the following installed to contribute to this project.
 
-- [Node.js](https://nodejs.org/)
-- [Git](https://www.gatsbyjs.org/tutorial/part-zero/#install-git)
-- [Gatsby CLI](https://www.gatsbyjs.org/tutorial/part-zero/#install-the-gatsby-cli): `npm install -g gatsby-cli`
-- [AWS Amplify CLI](https://aws-amplify.github.io/docs/): `npm install -g @aws-amplify/cli`
+First of all, you'll need the following installed on your machine.
 
-
-1. Fork the repo
-2. Clone your fork
-3. Create a branch
+-   [Node.js](https://nodejs.org/)
+-   [Git](https://www.gatsbyjs.org/tutorial/part-zero/#install-git)
+-   [Gatsby CLI](https://www.gatsbyjs.org/tutorial/part-zero/#install-the-gatsby-cli): `npm install -g gatsby-cli`
+-   [AWS Amplify CLI](https://aws-amplify.github.io/docs/): `npm install -g @aws-amplify/cli`
 
 **Set up AWS Amplify backend configurations (just once).**
-You'll need some configuration for Amplify to work in your project. This file is ignored in the the checkin process so I'll connect with you about it. Hit me up.
 
-### Amplify setup
-AWS Amplify has a different setup for [multi-environment](https://aws-amplify.github.io/docs/cli/multienv?sdk=js) development. Contact me if you'd like to work on the backend part of this project.
+You'll need some configurations for AWS in order for Amplify to work in your project. You'll also need a `env.development` file which holds keys to the AWS AppSync API and the Meetup.com API. These files are ignored in the check-in process so connect with me about it.
 
-### Project setup
+1. [Clone the repo](https://github.com/vientang/meetup-softball.git)
+2. Add the AWS Amplify configurations to the root of `src`.
+3. Add the `env.development` file to the root of the project.
+4. Run `npm install`
+5. Run `npm run setup`. This builds the project and runs all of the unit tests.
+6. Run `npm run start`
 
-1. Run `npm install`
-2. Run `npm run setup`. If everything works, then you're ready to make changes.
-3. Run `npm run test:watch` (optional)
-4. Run `npm run start`
-5. Make your changes and review them at `localhost:8000`
-6. If you get things working, add your changed files with `git add .` and then commit your changes with `git commit`. You'll get an interactive prompt for creating a commit message. Alternatively, you can write your commit message with the `-m ` flag, like so `git commit -m "...some commit message"`
-7. Push your changes to your fork with `git push`
-8. Create a pull request from your repo
-9. Look over the code review and iterate on the solution, if needed
-10. Your code is merged! 🎉 🎊
+## Submit your changes
+
+These steps are for checking in client side code. When you're ready to submit your changes, create a custom branch and follow the normal git workflow.
+
+1. `git add .`
+2. `git commit` or `git commit -m "...your commit message"`
+3. Push your changes to your custom branch with `git push origin <YOUR_BRANCH_NAME>`
+4. Create a pull request on GitHub
+
+If you'd like to make changes to any of the back end AWS Amplify services, follow this [guide](https://docs.aws.amazon.com/amplify/latest/userguide/multi-environments.html)
+
+## References
+
+These resources can help in learning more about the infrastructure tools, services, resources and libraries used in this project.
+
+-   [React](https://reactjs.org/)
+-   [Gatsby](https://www.gatsbyjs.org/)
+-   [AWS Amplify](https://aws-amplify.github.io/docs/js/start?platform=purejs)
+-   [Ant Design](https://ant.design/)
+-   [Jest](https://jestjs.io/)
+
+## Issues with getting started
+
+`Error: RootQueryType.allSitePage field type must be Output Type but got: SitePageConnection.`
+
+If you get this error message after cloning the repo, installing dependencies and starting the
+project, there are likely multiple versions of `graphql` in the dependency tree.
+
+[Issue #42](https://github.com/gatsbyjs/gatsby-starter-blog/issues/42)
+
+The following steps might resolve the issue. Starting at the root level:
+
+1. Run `rm -rf public` and `rm -rf node_modules`
+2. Run `rm -r .cache`
+3. Run `rm yarn.lock` and `rm package-lock.json`
+4. Run `yarn install` or `npm install` to reinstall dependencies and generate new lock files.
+5. Run `yarn start` or `npm start`

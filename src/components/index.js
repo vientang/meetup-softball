@@ -4,7 +4,6 @@ import CareerStats from './Player/CareerStats';
 import JoinUs from './JoinUs';
 import Layout from './Layout';
 import LeaderCard from './LeaderCard';
-import NotFoundImage from './NotFoundImage';
 import GameLog from './Player/GameLog';
 import PlayerAvatar from './Player/PlayerAvatar';
 import PlayerInfo from './Player/PlayerInfo';
@@ -20,7 +19,6 @@ export {
     JoinUs,
     Layout,
     LeaderCard,
-    NotFoundImage,
     PlayerAvatar,
     PlayerInfo,
     SearchBar,
