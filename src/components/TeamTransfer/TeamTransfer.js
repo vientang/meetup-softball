@@ -38,9 +38,8 @@ class TeamTransfer extends React.Component {
      */
     handlePlayerSelection = (e) => {
         e.preventDefault();
-
         const selectedId = this.getSelectedPlayerId(e);
-
+        // console.log('selection', selectedId);
         const selectedPlayers = this.findSelectedPlayers(selectedId);
         this.setState(() => ({ selected: selectedPlayers }));
     };
@@ -91,14 +90,15 @@ class TeamTransfer extends React.Component {
 
     handleRemovePlayer = (player, listType) => {
         if (player && listType) {
+            // console.log('remove player', { player, listType });
             this.setState(({ sourceList, targetList }) => {
                 if (listType === WINNERS) {
                     return {
-                        sourceList: sourceList.filter((p) => p.id !== player.id),
+                        sourceList: addBattingOrder(sourceList.filter((p) => p.id !== player.id)),
                     };
                 }
                 return {
-                    targetList: targetList.filter((p) => p.id !== player.id),
+                    targetList: addBattingOrder(targetList.filter((p) => p.id !== player.id)),
                 };
             }, this.handleChange);
         }

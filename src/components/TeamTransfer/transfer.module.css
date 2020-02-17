@@ -1,9 +1,11 @@
 .team-transfer-box-count,
 .team-transfer-list,
+.team-transfer-list-item,
 .team-transfer-header,
 .team-transfer-operations,
 .team-transfer-sort-operations,
-.team-transfer-title {
+.team-transfer-title,
+.team-transfer-add-player {
     display: flex;
     box-sizing: border-box;
 }
@@ -24,7 +26,7 @@
     flex: 0 0 auto;
     flex-direction: column;
     min-width: 250px;
-    height: 34rem;
+    height: 42rem;
     background-color: var(--white-1);
     box-shadow: var(--shadow-1);
     border: 1px solid var(--border-color);
@@ -39,7 +41,8 @@
 }
 
 .team-transfer-list-item {
-    padding: var(--pad-1);
+    align-items: center;
+    padding: var(--pad-2);
     cursor: pointer;
     transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
     outline: none;
@@ -50,11 +53,16 @@
 }
 
 .team-transfer-list-item:nth-last-child(1) {
+    height: 50px;
     border-top: 1px solid var(--grey-1);
 }
 
 .team-transfer-list-item:nth-last-child(1):hover {
-    background-color: var(--white-1);
+    background-color: var(--white-1);    
+}
+
+.team-transfer-list-item-player {
+    width: 100%;
 }
 
 .team-transfer-list-item-selected {
@@ -74,9 +82,24 @@
 }
 
 .team-transfer-add-player {
-    font-size: var(--font-large);
+    align-items: center;
+    width: 100%;
+    font-size: 1rem;
     font-style: italic;
     color: var(--grey-2);
+}
+
+.team-transfer-add-player-placeholder {
+    width: 100%;
+    font-size: var(--font-xlarge);
+}
+
+.team-transfer-add-player-placeholder:hover {
+    cursor: text;
+}
+
+.team-transfer-list-item-remove-player {
+    margin-right: var(--margin-2);
 }
 
 .team-transfer-header {
