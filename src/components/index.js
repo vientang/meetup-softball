@@ -1,7 +1,7 @@
 import BoxScoreGroup from './BoxScoreGroup';
 import BoxScore from './BoxScore';
 import CareerStats from './Player/CareerStats';
-import Header from './Header';
+import SiteHeader from './SiteHeader';
 import JoinUs from './JoinUs';
 import Layout from './Layout';
 import LeaderCard from './LeaderCard';
@@ -17,7 +17,7 @@ export {
     BoxScore,
     CareerStats,
     GameLog,
-    Header,
+    SiteHeader,
     JoinUs,
     Layout,
     LeaderCard,

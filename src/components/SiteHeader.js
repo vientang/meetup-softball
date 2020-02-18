@@ -6,7 +6,7 @@ import Logo from './Logo';
 import NavLinks from './NavLinks';
 import componentStyles from './components.module.css';
 
-const Header = ({ siteTitle, uri }) => {
+const SiteHeader = ({ siteTitle, uri }) => {
     const headerStyle = {
         backgroundColor: uri === '/' ? 'transparent' : '#ffffff',
         borderBottom: uri === '/' ? 'none' : '1px solid #d1d1d1',
@@ -41,10 +41,10 @@ const Header = ({ siteTitle, uri }) => {
     );
 };
 
-Header.displayName = 'Header';
-Header.propTypes = {
+SiteHeader.displayName = 'SiteHeader';
+SiteHeader.propTypes = {
     siteTitle: PropTypes.string,
     uri: PropTypes.string,
 };
 
-export default Header;
+export default SiteHeader;
