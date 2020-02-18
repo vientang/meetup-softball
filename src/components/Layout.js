@@ -4,6 +4,7 @@ import cn from 'classnames';
 import Helmet from 'react-helmet';
 import { StaticQuery, graphql } from 'gatsby';
 import get from 'lodash/get';
+import Header from './Header';
 import ActionBar from './ActionBar';
 import Footer from './Footer';
 import LoadingImage from './Loading/LoadingImage';
