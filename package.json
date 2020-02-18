@@ -26,7 +26,7 @@
         "gatsby-plugin-sharp": "^2.0.34",
         "gatsby-plugin-typography": "^2.2.13",
         "gatsby-source-filesystem": "^2.0.27",
-        "gatsby-source-graphql": "^2.1.17",
+        "gatsby-source-graphql": "2.1.25",
         "gatsby-transformer-sharp": "^2.1.4",
         "graphql": "14.6.0",
         "jest": "^24.5.0",
