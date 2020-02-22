@@ -258,7 +258,6 @@ export async function fetchAllGames(queryParams = {}) {
 }
 
 export async function updateGame(input) {
-    console.log('apiService: updating game', input);
     try {
         await API.graphql(graphqlOperation(updateGameStats, input));
     } catch (e) {
@@ -325,7 +324,7 @@ export async function fetchGamesFromMeetup(lastGameTimeStamp) {
 
     // sort games by time for GamesMenu
     games.sort((a, b) => new Date(a.timeStamp) - new Date(b.timeStamp));
-    
+
     return games;
 }
 

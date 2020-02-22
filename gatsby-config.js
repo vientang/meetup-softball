@@ -21,8 +21,8 @@ module.exports = {
         {
             resolve: `gatsby-plugin-manifest`,
             options: {
-                name: 'gatsby-starter-default',
-                short_name: 'starter',
+                name: 'Meetup Softball',
+                short_name: 'Meetup Softball',
                 start_url: '/',
                 theme_color: '#663399',
                 display: 'minimal-ui',

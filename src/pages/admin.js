@@ -93,12 +93,6 @@ class Admin extends React.Component {
         const meta = await fetchMetaData();
         const { currentGame, games, playerOfTheGame } = this.state;
 
-        localStorage.setItem('winners', JSON.stringify(winners));
-        localStorage.setItem('losers', JSON.stringify(losers));
-
-        // const tempWinners = JSON.parse(localStorage.getItem('winners'));
-        // const tempLosers = JSON.parse(localStorage.getItem('losers'));
-
         await GameStats.save(currentGame, winners, losers, playerOfTheGame);
         await PlayerStats.save(currentGame, winners, losers, playerOfTheGame);
         await MetaData.save(currentGame, winners, losers, meta);

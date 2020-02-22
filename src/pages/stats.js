@@ -17,7 +17,6 @@ import {
 import { statPageCategories } from '../utils/constants';
 import { fetchSummarizedStats } from '../utils/apiService';
 import pageStyles from './pages.module.css';
-import { summaryStatsUpdater, submitSummarizedStats } from '../utils/SummarizeStats';
 
 const defaultFilters = {
     year: '2019',
@@ -45,12 +44,6 @@ class Stats extends React.Component {
         };
         this.summarized = {};
         this.fields = {};
-    }
-
-    async componentDidMount() {
-        // const summz = await summaryStatsUpdater();
-        // console.log('summz', summz);
-        // await submitSummarizedStats(summz);
     }
 
     handleColumnSort = (newSorted, column) => {
