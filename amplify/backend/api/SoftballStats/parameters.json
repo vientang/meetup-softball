@@ -2,5 +2,5 @@
     "AppSyncApiName": "SoftballStats",
     "DynamoDBBillingMode": "PAY_PER_REQUEST",
     "DynamoDBEnableServerSideEncryption": "false",
-    "APIKeyExpirationEpoch": "-1"
+    "APIKeyExpirationEpoch": "1609488000"
 }

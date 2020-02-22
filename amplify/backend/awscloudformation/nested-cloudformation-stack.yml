@@ -122,8 +122,9 @@
 					"AppSyncApiName": "SoftballStats",
 					"DynamoDBBillingMode": "PAY_PER_REQUEST",
 					"DynamoDBEnableServerSideEncryption": "false",
+					"APIKeyExpirationEpoch": "1609488000",
 					"S3DeploymentBucket": "meetup-softball-master-20190902084613-deployment",
-					"S3DeploymentRootKey": "amplify-appsync-files/a21df0a8c462c1a10ed0150cb7dfeab3d167fe64",
+					"S3DeploymentRootKey": "amplify-appsync-files/5df166fbe5955d8e3fbb93bc604bad7809a46b1b",
 					"env": "master"
 				}
 			}
