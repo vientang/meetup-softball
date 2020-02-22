@@ -8,7 +8,13 @@ import { BoxScoreGroup, Layout } from '../components';
 import pageStyles from './pages.module.css';
 import configuration from '../aws-exports';
 
-Amplify.configure(configuration);
+Amplify.configure({
+    ...configuration,
+    aws_appsync_apiKey: process.env.APPSYNC_API_KEY,
+    aws_appsync_graphqlEndpoint: process.env.APPSYNC_GRAPHQL_URL,
+    aws_appsync_region: process.env.APPSYNC_REGION,
+    aws_appsync_authenticationType: process.env.APPSYNC_AUTH_TYPE,
+});
 
 const IndexPage = ({ data, uri }) => {
     const recentGames = JSON.parse(get(data, 'softballstats.metadata.recentGames', []));
