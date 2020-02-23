@@ -8,7 +8,8 @@
             "DeploymentBucketName": "meetup-softball-master-20190902084613-deployment",
             "UnauthRoleName": "meetup-softball-master-20190902084613-unauthRole",
             "StackName": "meetup-softball-master-20190902084613",
-            "StackId": "arn:aws:cloudformation:us-east-1:312743227043:stack/meetup-softball-master-20190902084613/cb931d50-cd98-11e9-a414-0ec3f5318aae"
+            "StackId": "arn:aws:cloudformation:us-east-1:312743227043:stack/meetup-softball-master-20190902084613/cb931d50-cd98-11e9-a414-0ec3f5318aae",
+            "AmplifyAppId": "d2dsbftan5urh0"
         },
         "categories": {
             "auth": {

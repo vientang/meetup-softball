@@ -6,9 +6,10 @@ import Img from 'gatsby-image';
 import get from 'lodash/get';
 import { BoxScoreGroup, Layout } from '../components';
 import pageStyles from './pages.module.css';
-// import configuration from '../aws-exports';
+import configuration from '../aws-exports';
 
 Amplify.configure({
+    ...configuration,
     aws_project_region: process.env.APPSYNC_REGION,
     aws_appsync_apiKey: process.env.APPSYNC_API_KEY,
     aws_appsync_graphqlEndpoint: process.env.APPSYNC_GRAPHQL_URL,

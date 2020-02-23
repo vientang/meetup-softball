@@ -119,6 +119,7 @@
 			"Properties": {
 				"TemplateURL": "https://s3.amazonaws.com/meetup-softball-master-20190902084613-deployment/amplify-cfn-templates/api/cloudformation-template.json",
 				"Parameters": {
+					"CreateAPIKey": 1,
 					"AppSyncApiName": "SoftballStats",
 					"DynamoDBBillingMode": "PAY_PER_REQUEST",
 					"DynamoDBEnableServerSideEncryption": "false",
@@ -173,9 +174,8 @@
 								"        promises.push(iam.updateAssumeRolePolicy(unauthParams).promise());",
 								"        Promise.all(promises)",
 								"         .then((res) => {",
-								"            console.log(\"delete\" + res);",
-								"            console.log(\"response data\" + JSON.stringify(res));",
-								"            response.send(event, context, response.SUCCESS, res);",
+								"            console.log(\"delete response data\" + JSON.stringify(res));",
+								"            response.send(event, context, response.SUCCESS, {});",
 								"         });",
 								"    }",
 								"    if (event.RequestType == 'Update' || event.RequestType == 'Create') {",
@@ -203,7 +203,7 @@
 					}
 				},
 				"Handler": "index.handler",
-				"Runtime": "nodejs8.10",
+				"Runtime": "nodejs10.x",
 				"Timeout": "300",
 				"Role": {
 					"Fn::GetAtt": [

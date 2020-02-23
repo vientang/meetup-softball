@@ -8,7 +8,8 @@
 			"DeploymentBucketName": "meetup-softball-master-20190902084613-deployment",
 			"UnauthRoleName": "meetup-softball-master-20190902084613-unauthRole",
 			"StackName": "meetup-softball-master-20190902084613",
-			"StackId": "arn:aws:cloudformation:us-east-1:312743227043:stack/meetup-softball-master-20190902084613/cb931d50-cd98-11e9-a414-0ec3f5318aae"
+			"StackId": "arn:aws:cloudformation:us-east-1:312743227043:stack/meetup-softball-master-20190902084613/cb931d50-cd98-11e9-a414-0ec3f5318aae",
+			"AmplifyAppId": "d2dsbftan5urh0"
 		}
 	},
 	"auth": {
@@ -20,7 +21,7 @@
 				"s3TemplateURL": "https://s3.amazonaws.com/meetup-softball-master-20190902084613-deployment/amplify-cfn-templates/auth/meetupsoftball810f14c9-cloudformation-template.yml",
 				"logicalId": "authmeetupsoftball810f14c9"
 			},
-			"lastPushTimeStamp": "2020-02-22T18:43:58.764Z",
+			"lastPushTimeStamp": "2020-02-23T10:30:00.538Z",
 			"output": {
 				"AppClientSecret": "1v07hiu7ukslksfe7h9n4glmslogo8jg39emb6ldv7kg1a9aghim",
 				"UserPoolId": "us-east-1_B8ox6SDUq",
@@ -30,7 +31,7 @@
 				"IdentityPoolName": "meetupsoftball810f14c9_identitypool_810f14c9__master",
 				"UserPoolName": "meetupsoftball810f14c9_userpool_810f14c9"
 			},
-			"lastPushDirHash": "chDfBr+3UIOG+/+xi4Dhh+iv2Oc="
+			"lastPushDirHash": "rSNT5klqJ5dQCfC5qE5Nj412gs0="
 		}
 	},
 	"api": {
@@ -47,8 +48,8 @@
 				"s3TemplateURL": "https://s3.amazonaws.com/meetup-softball-master-20190902084613-deployment/amplify-cfn-templates/api/cloudformation-template.json",
 				"logicalId": "apiSoftballStats"
 			},
-			"lastPushTimeStamp": "2020-02-22T18:44:01.033Z",
-			"lastPushDirHash": "uVX+MYCjCfY917UihfaVOFRmqD4="
+			"lastPushTimeStamp": "2020-02-23T10:30:00.538Z",
+			"lastPushDirHash": "j2yzGFbWn0Td09orQzcvsWjy1TU="
 		}
 	},
 	"hosting": {
@@ -59,7 +60,7 @@
 				"s3TemplateURL": "https://s3.amazonaws.com/meetup-softball-master-20190902084613-deployment/amplify-cfn-templates/hosting/template.json",
 				"logicalId": "hostingS3AndCloudFront"
 			},
-			"lastPushTimeStamp": "2020-02-22T18:43:58.766Z",
+			"lastPushTimeStamp": "2020-02-23T10:29:58.742Z",
 			"output": {
 				"S3BucketSecureURL": "https://meetup-softball-20190902190346-hostingbucket-master.s3.amazonaws.com",
 				"WebsiteURL": "http://meetup-softball-20190902190346-hostingbucket-master.s3-website-us-east-1.amazonaws.com",
