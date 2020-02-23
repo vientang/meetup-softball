@@ -1,4 +1,4 @@
-import Amplify, { API, graphqlOperation } from 'aws-amplify';
+import API, { graphqlOperation } from '@aws-amplify/api';
 import fetchJsonp from 'fetch-jsonp';
 import get from 'lodash/get';
 import {
@@ -26,13 +26,19 @@ import {
 import { createGame, parsePhotosAndProfile } from './helpers';
 import configuration from '../aws-exports';
 
-Amplify.configure({
+API.configure({
     ...configuration,
     aws_project_region: process.env.APPSYNC_REGION,
     aws_appsync_apiKey: process.env.APPSYNC_API_KEY,
     aws_appsync_graphqlEndpoint: process.env.APPSYNC_GRAPHQL_URL,
     aws_appsync_region: process.env.APPSYNC_REGION,
     aws_appsync_authenticationType: process.env.APPSYNC_AUTH_TYPE,
+    API: {
+        graphql_endpoint: process.env.APPSYNC_GRAPHQL_URL,
+        graphql_headers: async () => ({
+            'x-api-key': process.env.APPSYNC_API_KEY,
+        }),
+    },
 });
 
 /** PLAYER STATS */
