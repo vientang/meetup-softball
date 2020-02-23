@@ -1,4 +1,4 @@
-import API, { graphqlOperation } from '@aws-amplify/api';
+import Amplify, { API, graphqlOperation } from 'aws-amplify';
 import fetchJsonp from 'fetch-jsonp';
 import get from 'lodash/get';
 import {
@@ -24,10 +24,9 @@ import {
     updateSummarizedStats,
 } from '../graphql/mutations';
 import { createGame, parsePhotosAndProfile } from './helpers';
-import configuration from '../aws-exports';
+// import configuration from '../aws-exports';
 
-API.configure({
-    ...configuration,
+Amplify.configure({
     aws_project_region: process.env.APPSYNC_REGION,
     aws_appsync_apiKey: process.env.APPSYNC_API_KEY,
     aws_appsync_graphqlEndpoint: process.env.APPSYNC_GRAPHQL_URL,

@@ -1,4 +1,4 @@
-import { API, graphqlOperation } from '@aws-amplify/api';
+import { API, graphqlOperation } from 'aws-amplify';
 import omit from 'lodash/omit';
 import { createGameStats, updateGameStats } from '../graphql/mutations';
 import { addDerivedStats, getTeamTotalHits, getTeamRunsScored } from './statsCalc';

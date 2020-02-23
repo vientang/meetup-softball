@@ -1,15 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import API from '@aws-amplify/api';
+import Amplify from 'aws-amplify';
 import { graphql } from 'gatsby';
 import Img from 'gatsby-image';
 import get from 'lodash/get';
 import { BoxScoreGroup, Layout } from '../components';
 import pageStyles from './pages.module.css';
-import configuration from '../aws-exports';
+// import configuration from '../aws-exports';
 
-API.configure({
-    ...configuration,
+Amplify.configure({
     aws_project_region: process.env.APPSYNC_REGION,
     aws_appsync_apiKey: process.env.APPSYNC_API_KEY,
     aws_appsync_graphqlEndpoint: process.env.APPSYNC_GRAPHQL_URL,

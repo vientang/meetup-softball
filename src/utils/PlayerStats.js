@@ -1,4 +1,4 @@
-import { API, graphqlOperation } from '@aws-amplify/api';
+import { API, graphqlOperation } from 'aws-amplify';
 import pick from 'lodash/pick';
 import omit from 'lodash/omit';
 import get from 'lodash/get';

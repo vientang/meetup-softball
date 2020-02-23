@@ -1,4 +1,4 @@
-import { API, graphqlOperation } from '@aws-amplify/api';
+import { API, graphqlOperation } from 'aws-amplify';
 import get from 'lodash/get';
 import pick from 'lodash/pick';
 import { fetchAllPlayerStats, fetchPlayerInfo, fetchAllGames } from './apiService';
