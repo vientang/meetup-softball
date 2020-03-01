@@ -44,5 +44,25 @@ module.exports = {
                 },
             },
         },
+        {
+            resolve: `gatsby-plugin-env-variables`,
+            options: {
+                whitelist: [
+                    'MEETUP_KEY',
+                    'PAST_MEETUP_GAMES_URL',
+                    'NEXT_MEETUP_GAMES_URL',
+                    'RSVP_URL',
+                    'PLAYER_URL',
+                    'APPSYNC_API_URL',
+                    'APPSYNC_API_KEY',
+                    'APPSYNC_GRAPHQL_URL',
+                    'APPSYNC_REGION',
+                    'APPSYNC_AUTH_TYPE',
+                    'COGNITO_ID_POOL_ID',
+                    'AWS_USER_POOLS_ID',
+                    'AWS_USER_POOLS_WEB_CLIENT_ID',
+                ],
+            },
+        },
     ],
 };
