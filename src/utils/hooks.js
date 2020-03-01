@@ -80,16 +80,16 @@ export const useGameStats = (id) => {
 };
 
 export const usePlayerStats = (id) => {
-    const [playerStats, setplayerStats] = useState({});
+    const [playerStats, setPlayerStats] = useState({});
     const isMounted = useIsMounted();
     useEffect(() => {
-        async function fetchPlayer() {
+        async function fetchStats() {
             if (id && isMounted) {
                 const playerStats = await fetchPlayerStats(id);
-                setplayerStats(playerStats);
+                setPlayerStats(playerStats);
             }
         }
-        fetchPlayer();
+        fetchStats();
     }, [id]);
     return playerStats;
 };
@@ -98,13 +98,13 @@ export const usePlayerInfo = (id) => {
     const [playerInfo, setPlayerInfo] = useState(null);
     const isMounted = useIsMounted();
     useEffect(() => {
-        async function fetchPlayer() {
+        async function fetchInfo() {
             if (id && isMounted) {
                 const playerInfo = await fetchPlayerInfo(id);
                 setPlayerInfo(playerInfo);
             }
         }
-        fetchPlayer();
+        fetchInfo();
     }, [id]);
     return playerInfo;
 };
@@ -114,11 +114,11 @@ export const useSummarizedStats = (id) => {
     useEffect(() => {
         let mounted = true;
         if (mounted) {
-            const fetchStats = async () => {
+            const fetchSummarized = async () => {
                 const summarizedStats = await fetchSummarizedStats(id);
                 setSummarizedStats(summarizedStats);
             };
-            fetchStats();
+            fetchSummarized();
         }
 
         return () => {
