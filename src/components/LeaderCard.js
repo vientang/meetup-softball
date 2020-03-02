@@ -18,7 +18,7 @@ const LeaderCard = ({ leaders, stat }) => {
                         {i === 0 ? (
                             <TopPlayer id={player.id} stat={playerStat} />
                         ) : (
-                            <LeaderCardPlayer id={player.id} stat={playerStat} index={i} />
+                            <LeaderCardPlayer id={player.id} stat={playerStat} />
                         )}
                     </li>
                 );

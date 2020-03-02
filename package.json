@@ -13,6 +13,7 @@
         "clean": "gatsby clean"
     },
     "dependencies": {
+        "@aws-amplify/api": "^2.1.6",
         "antd": "3.26.11",
         "aws-amplify": "2.2.5",
         "aws-amplify-react": "3.1.6",
