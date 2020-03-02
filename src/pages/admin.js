@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'gatsby';
+import Auth from '@aws-amplify/auth';
 import get from 'lodash/get';
 import pick from 'lodash/pick';
 import isEmpty from 'lodash/isEmpty';
@@ -29,6 +30,16 @@ import {
     findPlayerById,
 } from '../utils/helpers';
 import styles from './pages.module.css';
+
+Auth.configure({
+    aws_project_region: process.env.APPSYNC_REGION,
+    aws_user_pools_id: process.env.AWS_USER_POOLS_ID,
+    aws_user_pools_web_client_id: process.env.AWS_USER_POOLS_WEB_CLIENT_ID,
+    aws_appsync_apiKey: process.env.APPSYNC_API_KEY,
+    aws_appsync_graphqlEndpoint: process.env.APPSYNC_GRAPHQL_URL,
+    aws_appsync_region: process.env.APPSYNC_REGION,
+    aws_appsync_authenticationType: process.env.APPSYNC_AUTH_TYPE,
+});
 
 class Admin extends React.Component {
     constructor(props) {
