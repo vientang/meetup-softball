@@ -19,7 +19,7 @@ import { fetchSummarizedStats } from '../utils/apiService';
 import pageStyles from './pages.module.css';
 
 const defaultFilters = {
-    year: '2019',
+    year: '2020',
     month: '',
     field: '',
 };
@@ -189,7 +189,7 @@ export const query = graphql`
                     status
                 }
             }
-            summarized: getSummarizedStats(id: "_2019") {
+            summarized: getSummarizedStats(id: "_2020") {
                 id
                 stats
             }

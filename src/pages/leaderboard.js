@@ -9,7 +9,7 @@ import { buildFilterMenu, getIdFromFilterParams } from '../utils/helpers';
 import pageStyles from './pages.module.css';
 
 const defaultFilters = {
-    year: '2019',
+    year: '2020',
 };
 
 const reducer = (state, action) => {
@@ -110,7 +110,7 @@ const LeaderBoard = (props) => {
 export const query = graphql`
     query {
         softballstats {
-            summarized: getSummarizedStats(id: "_leaderboard_2019") {
+            summarized: getSummarizedStats(id: "_leaderboard_2020") {
                 id
                 stats
             }
