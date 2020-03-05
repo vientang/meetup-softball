@@ -32,11 +32,7 @@ const FilterTypes = (props) => {
                     <div key={filter} className={filterTypeClass}>
                         <Dropdown
                             overlay={
-                                <FilterMenu
-                                    menus={menus[i]}
-                                    onFilterChange={onFilterChange}
-                                    filter={filter}
-                                />
+                                <FilterMenu menus={menus[i]} onFilterChange={onFilterChange} />
                             }
                         >
                             <span

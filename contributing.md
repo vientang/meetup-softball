@@ -26,14 +26,13 @@ First of all, you'll need the following installed on your machine.
 
 **Set up AWS Amplify backend configurations (just once).**
 
-You'll need some configurations for AWS in order for Amplify to work in your project. You'll also need a `env.development` file which holds keys to the AWS AppSync API and the Meetup.com API. These files are ignored in the check-in process so connect with me about it.
+You'll need some AWS configurations in order for Amplify to work in your project. You'll also need a `env.development` file which holds keys to the AWS AppSync API and the Meetup.com API. These files are ignored in the check-in process so connect with me about it.
 
 1. [Clone the repo](https://github.com/vientang/meetup-softball.git)
-2. Add the AWS Amplify configurations to the root of `src`.
-3. Add the `env.development` file to the root of the project.
-4. Run `npm install`
-5. Run `npm run setup`. This builds the project and runs all of the unit tests.
-6. Run `npm run start`
+2. Add the `env.development` file and the keys to the root of the project.
+3. Run `npm install`
+4. Run `npm run setup`. This builds the project and runs all of the unit tests.
+5. Run `npm run start`
 
 ## Submit your changes
 
