@@ -7,7 +7,7 @@ import { useMetaData } from '../../utils/hooks';
 
 const { Option } = AutoComplete;
 
-const AddPlayer = ({ currentPlayers, listType, onAddPlayer }) => {
+const AddPlayer = ({ currentPlayers, team, onAddPlayer }) => {
     const [searchMode, setSearchMode] = useState(false);
     const [playerMenu, setPlayerMenu] = useState([]);
     const [value, setValue] = useState('');
@@ -38,7 +38,7 @@ const AddPlayer = ({ currentPlayers, listType, onAddPlayer }) => {
     const handleAddPlayer = (value, instance) => {
         let playerToAdd = allPlayers.find((player) => player.id === instance.key) || {};
         playerToAdd = createPlayer({ ...playerToAdd, battingOrder: currentPlayers.length + 1 });
-        onAddPlayer(playerToAdd, listType);
+        onAddPlayer(playerToAdd, team);
         setSearchMode(false);
         setValue('');
     };
@@ -148,8 +148,8 @@ export function filterOptions(players, value) {
 
 AddPlayer.propTypes = {
     currentPlayers: PropTypes.arrayOf(PropTypes.shape()),
-    listType: PropTypes.string,
     onAddPlayer: PropTypes.func,
+    team: PropTypes.string,
 };
 
 export default AddPlayer;

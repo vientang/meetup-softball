@@ -6,6 +6,7 @@ import { addDerivedStats, getTeamTotalHits, getTeamRunsScored } from './statsCal
 export default {
     save: async (currentGame, winners, losers, playerOfTheGame) => {
         const game = prepareGameStats(currentGame, winners, losers, playerOfTheGame);
+        console.log('GAME', game);
         await submitGame({ input: game });
     },
 };

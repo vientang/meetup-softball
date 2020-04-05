@@ -10,24 +10,24 @@ const muRed1 = '#c43045';
 const muRed2 = '#962737';
 const white = '#ffffff';
 
-const TransferHeader = ({ listType, playerCount }) => {
+const TransferHeader = ({ team, playerCount }) => {
     const winnerLogoStyle = { transform: 'translate(-80px, -20px)' };
     const loserLogoStyle = { transform: 'translate(-140px, -20px)', fill: white };
     const headerStyle = {
         background:
-            listType === 'WINNERS'
+            team === 'WINNERS'
                 ? `linear-gradient(172deg, ${muBlue2}, ${muBlue1})`
                 : `linear-gradient(172deg, ${muRed2}, ${muRed1})`,
     };
     return (
         <div className={styles.teamTransferHeader} style={headerStyle}>
             <span className={styles.teamTransferTitle}>
-                {listType === 'WINNERS' ? (
+                {team === 'WINNERS' ? (
                     <Winners gStyle={winnerLogoStyle} size={20} />
                 ) : (
                     <Losers gStyle={loserLogoStyle} size={20} />
                 )}
-                {listType}
+                {team}
             </span>
             <span className={styles.teamTransferBoxCount}>{playerCount}</span>
         </div>
@@ -36,7 +36,7 @@ const TransferHeader = ({ listType, playerCount }) => {
 
 TransferHeader.displayName = 'TransferHeader';
 TransferHeader.propTypes = {
-    listType: PropTypes.string,
     playerCount: PropTypes.number,
+    team: PropTypes.string,
 };
 export default TransferHeader;

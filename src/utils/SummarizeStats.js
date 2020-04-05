@@ -17,6 +17,7 @@ export default {
         const leaderboard = createLeaderBoard(postSummarized[`_${year}`], metadata.perYear, year);
         // calculate leaderboards
         postSummarized[`_leaderboard_${year}`] = leaderboard;
+        console.log('SUMMARIZED', postSummarized);
         await submitSummarizedStats(postSummarized);
     },
     saveLegacy: async (summarized) => {

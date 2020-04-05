@@ -8,44 +8,44 @@ import styles from './transfer.module.css';
 const TransferBox = (props) => {
     const {
         listItems,
-        listType,
         onAddPlayer,
         onRemovePlayer,
         onPlayerSelection,
         onMoveDown,
         onMoveUp,
         selected,
+        team,
     } = props;
+
+    const handlePlayerSelection = (e) => {
+        onPlayerSelection(e, team);
+    };
 
     return (
         <div className={styles.teamTransferList}>
-            <TransferHeader listType={listType} playerCount={listItems.length} />
+            <TransferHeader team={team} playerCount={listItems.length} />
             <TransferListItems
                 listItems={listItems}
-                listType={listType}
+                team={team}
                 onAddPlayer={onAddPlayer}
                 onRemovePlayer={onRemovePlayer}
-                onPlayerSelection={onPlayerSelection}
+                onPlayerSelection={handlePlayerSelection}
                 selected={selected}
             />
-            <TransferSortOperations
-                listType={listType}
-                onMoveDown={onMoveDown}
-                onMoveUp={onMoveUp}
-            />
+            <TransferSortOperations onMoveDown={onMoveDown} onMoveUp={onMoveUp} team={team} />
         </div>
     );
 };
 
 TransferBox.propTypes = {
-    selected: PropTypes.arrayOf(PropTypes.object),
     listItems: PropTypes.arrayOf(PropTypes.object),
-    listType: PropTypes.string,
     onAddPlayer: PropTypes.func,
     onRemovePlayer: PropTypes.func,
     onPlayerSelection: PropTypes.func,
     onMoveDown: PropTypes.func,
     onMoveUp: PropTypes.func,
+    selected: PropTypes.arrayOf(PropTypes.object),
+    team: PropTypes.string,
 };
 
 TransferBox.defaultProps = {

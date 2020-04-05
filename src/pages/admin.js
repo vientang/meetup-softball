@@ -103,7 +103,7 @@ class Admin extends React.Component {
     handleSubmitData = async (winners, losers, selectedGameId) => {
         const meta = await fetchMetaData();
         const { currentGame, games, playerOfTheGame } = this.state;
-
+        localStorage.setItem('game', JSON.stringify(currentGame));
         await GameStats.save(currentGame, winners, losers, playerOfTheGame);
         await PlayerStats.save(currentGame, winners, losers, playerOfTheGame);
         await MetaData.save(currentGame, winners, losers, meta);

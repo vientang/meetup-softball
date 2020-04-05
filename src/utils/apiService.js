@@ -335,7 +335,7 @@ export async function fetchGamesFromMeetup(lastGameTimeStamp) {
 }
 
 export async function fetchRsvpList(gameId) {
-    const RSVPS = `${process.env.RSVP_URL}/${gameId}/attendance?&sign=true&photo-host=public`;
+    const RSVPS = `${process.env.RSVP_URL}/${gameId}/attendance?&sign=true&photo-host=public&page=200`;
 
     let rsvpList = await fetchJsonp(RSVPS)
         .then((response) => response.json())
@@ -345,7 +345,9 @@ export async function fetchRsvpList(gameId) {
         });
 
     rsvpList = await rsvpList.map((player) =>
-        fetchJsonp(`${process.env.PLAYER_URL}/${player.member.id}?&sign=true&photo-host=public`)
+        fetchJsonp(
+            `${process.env.PLAYER_URL}/${player.member.id}?&sign=true&photo-host=public&page=200`,
+        )
             .then((response) => response.json())
             .then((playerResult) => playerResult),
     );

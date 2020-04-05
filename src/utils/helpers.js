@@ -164,7 +164,7 @@ export function createGame(game) {
  * @param {Object} player
  */
 export function createPlayer(player) {
-    const { name, id, joined, group_profile, is_pro_admin, photo, status } = player.data;
+    const { name, id = '', joined = '', group_profile, is_pro_admin, photo, status } = player.data;
     return {
         id: id.toString(),
         name,

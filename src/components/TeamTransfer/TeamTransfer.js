@@ -35,20 +35,21 @@ class TeamTransfer extends React.Component {
     /**
      * Select one or multiple (using checkboxes)
      * Deselect selected item too
+     * @param {Object} e
+     * @param {String} team
      */
-    handlePlayerSelection = (e) => {
+    handlePlayerSelection = (e, team) => {
         e.preventDefault();
         const selectedId = this.getSelectedPlayerId(e);
-        // console.log('selection', selectedId);
-        const selectedPlayers = this.findSelectedPlayers(selectedId);
+        const selectedPlayers = this.findSelectedPlayers(selectedId, team);
         this.setState(() => ({ selected: selectedPlayers }));
     };
 
     getSelectedPlayerId = (e) => e.target.value || (e.currentTarget || {}).getAttribute('data-id');
 
-    findSelectedPlayers = (id) => {
+    findSelectedPlayers = (id, team) => {
         const { selected, sourceList, targetList } = this.state;
-        let selectedPlayers = [...selected];
+        let selectedPlayers = [...selected].filter((player) => player.team === team);
         const selectedPlayerId = id.toString();
 
         const selectedPlayer = findPlayerById(selectedPlayerId, [...sourceList, ...targetList]);
@@ -73,10 +74,10 @@ class TeamTransfer extends React.Component {
     removeSelectedPlayers = (list = [], selected = []) =>
         list.filter((player) => !findPlayerById(player.id, selected));
 
-    handleAddPlayer = (player, listType) => {
-        if (player && listType) {
+    handleAddPlayer = (player, team) => {
+        if (player && team) {
             this.setState(({ sourceList, targetList }) => {
-                if (listType === WINNERS) {
+                if (team === WINNERS) {
                     return {
                         sourceList: [...sourceList, player],
                     };
@@ -88,11 +89,10 @@ class TeamTransfer extends React.Component {
         }
     };
 
-    handleRemovePlayer = (player, listType) => {
-        if (player && listType) {
-            // console.log('remove player', { player, listType });
+    handleRemovePlayer = (player, team) => {
+        if (player && team) {
             this.setState(({ sourceList, targetList }) => {
-                if (listType === WINNERS) {
+                if (team === WINNERS) {
                     return {
                         sourceList: addBattingOrder(sourceList.filter((p) => p.id !== player.id)),
                     };
@@ -142,7 +142,6 @@ class TeamTransfer extends React.Component {
         const { selected, targetList, sourceList } = this.state;
 
         // sort player to source if in targetList
-        // const validMove = targetList.find((player) => player.id === selected.id);
         const filteredTargetList = this.removeSelectedPlayers(targetList, selected);
 
         const newSourceList = addBattingOrder([...sourceList, ...selected]);
@@ -221,13 +220,13 @@ class TeamTransfer extends React.Component {
             <div className={styles.teamTransferBoxContainer}>
                 <TransferBox
                     listItems={sourceList}
-                    listType={WINNERS}
                     onAddPlayer={this.handleAddPlayer}
                     onRemovePlayer={this.handleRemovePlayer}
                     onPlayerSelection={this.handlePlayerSelection}
                     onMoveUp={this.handleUp}
                     onMoveDown={this.handleDown}
                     selected={selected}
+                    team={WINNERS}
                 />
                 <div className={styles.teamTransferOperations}>
                     <Button onClick={this.handleMoveToTarget} icon="right" {...buttonProps} />
@@ -235,13 +234,13 @@ class TeamTransfer extends React.Component {
                 </div>
                 <TransferBox
                     listItems={targetList}
-                    listType={LOSERS}
                     onAddPlayer={this.handleAddPlayer}
                     onRemovePlayer={this.handleRemovePlayer}
                     onPlayerSelection={this.handlePlayerSelection}
                     onMoveUp={this.handleUp}
                     onMoveDown={this.handleDown}
                     selected={selected}
+                    team={LOSERS}
                 />
             </div>
         );

@@ -10,16 +10,16 @@ const listItemPhotoStyle = { height: 40, width: 40, margin: '0 0.5rem' };
 
 const TransferListItems = ({
     listItems,
-    listType,
     onAddPlayer,
     onRemovePlayer,
     onPlayerSelection,
     selected,
+    team,
 }) => {
     const [forRemoval, setForRemoval] = useState(null);
     const currentPlayers = listItems.map((player) => ({ id: player.id, name: player.name }));
     const handleRemovePlayer = (player) => () => {
-        onRemovePlayer(player, listType);
+        onRemovePlayer(player, team);
         setForRemoval(null);
     };
 
@@ -89,11 +89,7 @@ const TransferListItems = ({
                 );
             })}
             {listItems.length > 0 && (
-                <AddPlayer
-                    currentPlayers={currentPlayers}
-                    listType={listType}
-                    onAddPlayer={onAddPlayer}
-                />
+                <AddPlayer currentPlayers={currentPlayers} team={team} onAddPlayer={onAddPlayer} />
             )}
         </div>
     );
@@ -102,11 +98,11 @@ const TransferListItems = ({
 TransferListItems.displayName = 'TransferListItems';
 TransferListItems.propTypes = {
     listItems: PropTypes.arrayOf(PropTypes.shape),
-    listType: PropTypes.string,
     onAddPlayer: PropTypes.func,
     onRemovePlayer: PropTypes.func,
     onPlayerSelection: PropTypes.func,
     selected: PropTypes.arrayOf(PropTypes.shape),
+    team: PropTypes.string,
 };
 TransferListItems.defaultProps = {
     listItems: [],

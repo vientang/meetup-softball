@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import { Button } from 'antd';
 import styles from './transfer.module.css';
 
-const TransferSortOperations = ({ listType, onMoveDown, onMoveUp }) => (
+const TransferSortOperations = ({ team, onMoveDown, onMoveUp }) => (
     <div className={styles.teamTransferSortOperations}>
         {['caret-up', 'caret-down'].map((icon) => (
             <Button
                 key={icon}
-                id={listType}
+                id={team}
                 icon={icon}
                 type="primary"
                 onClick={icon === 'caret-up' ? onMoveUp : onMoveDown}
@@ -22,8 +22,8 @@ const TransferSortOperations = ({ listType, onMoveDown, onMoveUp }) => (
 
 TransferSortOperations.displayName = 'TransferSortOperations';
 TransferSortOperations.propTypes = {
-    listType: PropTypes.string,
     onMoveDown: PropTypes.func,
     onMoveUp: PropTypes.func,
+    team: PropTypes.string,
 };
 export default TransferSortOperations;
