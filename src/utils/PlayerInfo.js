@@ -22,7 +22,6 @@ export default {
                     await updateExistingPlayerInfo({ input });
                 } else {
                     const newPlayerInput = { ...input, joined, admin, gender: gender || 'n/a' };
-                    console.log('PLAYER INFO NEW PLAYER', newPlayerInput)
                     await createNewPlayerInfo({ input: newPlayerInput });
                 }
             } catch (e) {

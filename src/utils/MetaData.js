@@ -38,18 +38,7 @@ export default {
             totalGamesPlayed: totalGamesPlayed + 1,
             totalPlayersCount: actives.length + inactives.length,
         };
-        // console.log('META', {
-        //     id,
-        //     activePlayers: actives,
-        //     inactivePlayers: inactives,
-        //     allFields: fields,
-        //     allYears: years,
-        //     perYear: fieldsMonthsPerYear,
-        //     recentGames: recent,
-        //     recentGamesLength: recent.length,
-        //     totalGamesPlayed: totalGamesPlayed + 1,
-        //     totalPlayersCount: actives.length + inactives.length,
-        // })
+
         await updateMeta({ input: data });
     },
 };

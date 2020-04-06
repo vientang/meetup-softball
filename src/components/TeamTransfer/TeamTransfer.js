@@ -24,10 +24,11 @@ class TeamTransfer extends React.Component {
             return null;
         }
 
-        const playersWithBattingOrder = addBattingOrder(nextProps.players);
+        const initialPlayerList = updateTeamPlayers(nextProps.players, WINNERS);
+
         return {
             gameId: nextProps.gameId,
-            sourceList: playersWithBattingOrder,
+            sourceList: initialPlayerList,
             targetList: [],
         };
     }
@@ -78,12 +79,14 @@ class TeamTransfer extends React.Component {
         if (player && team) {
             this.setState(({ sourceList, targetList }) => {
                 if (team === WINNERS) {
+                    const winner = { ...player, team: WINNERS };
                     return {
-                        sourceList: [...sourceList, player],
+                        sourceList: [...sourceList, winner],
                     };
                 }
+                const loser = { ...player, team: LOSERS };
                 return {
-                    targetList: [...targetList, player],
+                    targetList: [...targetList, loser],
                 };
             }, this.handleChange);
         }
@@ -123,7 +126,7 @@ class TeamTransfer extends React.Component {
         const filteredSourceList = this.removeSelectedPlayers(sourceList, selected);
 
         const newSourceList = addBattingOrder(filteredSourceList);
-        const newTargetList = addBattingOrder([...targetList, ...selected]);
+        const newTargetList = updateTeamPlayers([...targetList, ...selected], LOSERS);
 
         this.setState(
             () => ({
@@ -144,7 +147,7 @@ class TeamTransfer extends React.Component {
         // sort player to source if in targetList
         const filteredTargetList = this.removeSelectedPlayers(targetList, selected);
 
-        const newSourceList = addBattingOrder([...sourceList, ...selected]);
+        const newSourceList = updateTeamPlayers([...sourceList, ...selected], WINNERS);
         const newTargetList = addBattingOrder(filteredTargetList);
 
         this.setState(
@@ -275,6 +278,10 @@ function sortBattingOrder({ direction, selected, list }) {
     }
 
     return listToSort;
+}
+
+function updateTeamPlayers(players, team) {
+    return addBattingOrder(players).map((player) => ({ ...player, team }));
 }
 
 TeamTransfer.propTypes = {

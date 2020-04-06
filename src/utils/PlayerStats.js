@@ -11,7 +11,6 @@ import { gameProperties } from './constants';
 export default {
     save: async (currentGame, winners, losers, playerOfTheGame) => {
         const players = preparePlayerStats(currentGame, winners, losers, playerOfTheGame);
-        console.log('PLAYERS', players);
         await submitPlayerStats(players);
     },
 };

@@ -47,6 +47,7 @@ class Admin extends React.Component {
         this.state = {
             areTeamsSorted: false,
             currentGame: {},
+            entriesComplete: false,
             games: [],
             losers: [],
             playerOfTheGame: {},
@@ -61,7 +62,6 @@ class Admin extends React.Component {
     async componentDidMount() {
         this.mounted = true;
         const { allFields, recentGames } = await fetchMetaData();
-
         const games = await fetchGamesFromMeetup(Number(recentGames[0].timeStamp));
         const currentGame = games[0];
         currentGame.field = getFieldName(currentGame.field, allFields);
@@ -83,6 +83,10 @@ class Admin extends React.Component {
     getCurrentGamePlayers = async (currentGame = {}) => {
         if (currentGame.players) {
             return currentGame.players;
+        }
+
+        if (!currentGame.id) {
+            return [];
         }
 
         const rsvpList = await fetchRsvpList(currentGame.id);
@@ -152,16 +156,25 @@ class Admin extends React.Component {
         const selectedGameId = e.target.id || id;
         const games = this.state.games.filter(filterCurrentGame(selectedGameId));
         const nextGame = games[0];
-        nextGame.players = await this.getCurrentGamePlayers(games[0]);
 
-        const { allFields } = await fetchMetaData();
-        nextGame.field = getFieldName(nextGame.field, allFields);
+        if (!nextGame) {
+            this.setState(() => ({
+                currentGame: {},
+                entriesComplete: true,
+                selectedGameId: '',
+                games,
+            }));
+        } else {
+            nextGame.players = await this.getCurrentGamePlayers(games[0]);
 
-        this.setState(() => ({
-            currentGame: nextGame,
-            selectedGameId: get(nextGame, 'id', ''),
-            games,
-        }));
+            const { allFields } = await fetchMetaData();
+            nextGame.field = getFieldName(nextGame.field, allFields);
+            this.setState(() => ({
+                currentGame: nextGame,
+                selectedGameId: get(nextGame, 'id', ''),
+                games,
+            }));
+        }
     };
 
     handleSetTeams = (winners, losers) => {
@@ -192,6 +205,7 @@ class Admin extends React.Component {
         const {
             areTeamsSorted,
             currentGame,
+            entriesComplete,
             games,
             losers,
             playerOfTheGame,
@@ -200,7 +214,7 @@ class Admin extends React.Component {
         } = this.state;
         const adminPagePath = get(pageResources, 'page.path', null);
 
-        if (!currentGame) {
+        if (entriesComplete) {
             return (
                 <Layout className={styles.adminPageSuccess}>
                     <SuccessImage />

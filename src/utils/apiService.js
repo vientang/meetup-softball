@@ -293,7 +293,9 @@ export async function fetchNextGamesFromMeetup() {
     const games = [];
 
     await fetchJsonp(process.env.NEXT_MEETUP_GAMES_URL)
-        .then((response) => response.json())
+        .then((response) => {
+            return response.json();
+        })
         .then((result) => {
             games.push(...result.data);
         })
